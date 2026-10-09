@@ -582,6 +582,201 @@ check(lockEv.ev == "CARGO_LOCK" and lockEv.why == "returned" and lockEv.items:fi
     and lockEv.items:find("Base.Bag_Schoolbag", 1, true) ~= nil, "記 CARGO_LOCK returned（水瓶、背包）：" .. tostring(lockEv.items))
 check(water.container == owner.inv and missing == 1, "裝備中的物品不硬拿，只記一次 missing")
 
+-- ===== Phase 4：索引分頁、查詢權限、管理指令、戰利品權重 =====
+-- 新的假全域：packs/ 目錄列舉、原生沙盒選項、server->client 指令
+function listFilesInZomboidLuaDirectory(dir)
+    local prefix = dir:gsub("/$", "") .. "/"
+    local names = {}
+    for path in pairs(files) do
+        local rest = path:sub(1, #prefix) == prefix and path:sub(#prefix + 1)
+        if rest and not rest:find("/") then names[#names + 1] = rest end
+    end
+    return javaList(names)
+end
+local sandbox = {}
+function getSandboxOptions()
+    return { getOptionByName = function(_, name)
+        local k = name:match("^MinidoracatVehicleCapsule%.(.+)$")
+        if k == nil or sandbox[k] == nil then return nil end
+        return { getValue = function() return sandbox[k] end }
+    end }
+end
+local sent = {}
+function sendServerCommand(...) sent[#sent + 1] = { ... } end
+
+-- 把舊情境的快照清掉，Phase 4 從乾淨的 packs/ 開始
+for path in pairs(files) do files[path] = nil end
+require "MinidoracatVehicleCapsule/Index"
+require "MinidoracatVehicleCapsule/Query"
+require "MinidoracatVehicleCapsule/AdminCommands"
+require "MinidoracatVehicleCapsule/Loot"
+local Index, Query, AdminCommands, Loot = M.Index, M.Query, M.AdminCommands, M.Loot
+
+print("Index：分頁 50 筆、搜尋編號與玩家、狀態篩選（含當機前未確認）")
+-- 65 筆：60 筆 PACKED（玩家 p0..p5 輪流收）、2 筆 UNPACKED（ann 展開）、1 筆 RESTORED、1 筆 VOID、1 筆 uncertain
+quiet = true
+local base = nowMs
+for i = 1, 60 do
+    Store.write(70000 + i, { state = "PACKED", settled = true, script = "Base.PickUpTruck", name = "Pickup", packedBy = "P" .. (i % 6),
+        history = { { t = base + i, ev = "PACKED", by = "P" .. (i % 6), x = i, y = 2, z = 0, car = i } } })
+end
+for i = 61, 62 do
+    Store.write(70000 + i, { state = "UNPACKED", settled = true, packedBy = "p1", history = {
+        { t = base + i, ev = "PACKED", by = "p1", car = i }, { t = base + 100 + i, ev = "UNPACKED", by = "Ann", car = 900 + i } } })
+end
+Store.write(70063, { state = "RESTORED", settled = true, packedBy = "p2", history = { { t = base + 63, ev = "PACKED", by = "p2" } } })
+Store.write(70064, { state = "VOID", settled = true, packedBy = "p3", history = { { t = base + 64, ev = "PACKED", by = "p3" } } })
+Store.write(70065, { state = "PACKED", packedBy = "p4", history = { { t = base + 65, ev = "PACKED", by = "p4" } } }) -- 沒有 settled＝uncertain
+quiet = false
+local p1 = Index.page({}, 1)
+local p2 = Index.page({}, 2)
+check(#p1.rows == 50 and p1.total == 65 and p1.pages == 2 and #p2.rows == 15, "65 筆分成 50＋15（" .. #p1.rows .. "+" .. #p2.rows .. "）")
+check(p1.rows[1].id == 70065 and p2.rows[15].id == 70001, "新收的在前（第一筆 " .. tostring(p1.rows[1].id) .. "）")
+check(p1.rows[1].uncertain == true and p1.counts.UNCERTAIN == 1, "沒有 settled 的紀錄標 uncertain 並計數")
+check(p1.counts.PACKED == 61 and p1.counts.UNPACKED == 2 and p1.counts.RESTORED == 1 and p1.counts.VOID == 1,
+    "各狀態計數 PACKED 61 / UNPACKED 2 / RESTORED 1 / VOID 1")
+local unc = Index.page({ state = "UNCERTAIN" }, 1)
+check(unc.total == 1 and unc.rows[1].id == 70065, "篩「當機前未確認」只剩那一筆")
+check(Index.page({ state = "UNPACKED" }, 1).total == 2, "篩已展開 2 筆")
+check(Index.page({ q = "70064" }, 1).total == 1, "搜尋完整編號")
+check(Index.page({ q = "7006" }, 1).total == 6, "搜尋編號片段（70060..70065）")
+check(Index.page({ q = "  ANN " }, 1).total == 2, "搜尋玩家不分大小寫、去空白，展開者也算")
+check(Index.page({ q = "p1" }, 1).total == 12, "搜尋收車者 p1（10 筆 PACKED＋2 筆 UNPACKED）")
+check(Index.page({}, 99).page == 2 and Index.page({}, -3).page == 1, "頁碼夾在 1..pages")
+check(Index.page({ q = "nobody" }, 1).pages == 1 and #Index.page({ q = "nobody" }, 1).rows == 0, "沒有結果仍是 1 頁、0 列")
+
+-- 序列化大小估算（TableNetworkUtils：鍵值各 1 byte 型別、字串 2 byte 長度＋UTF-8、數字 8 byte、每層 4 byte 筆數）
+local function wireSize(v)
+    if type(v) == "table" then
+        local n = 4
+        for k, x in pairs(v) do n = n + wireSize(k) + wireSize(x) end
+        return n
+    elseif type(v) == "string" then return 1 + 2 + #v
+    elseif type(v) == "number" then return 1 + 8 end
+    return 2
+end
+quiet = true
+local longName = string.rep("W", 120)
+for i = 1, 60 do
+    Store.write(80000 + i, { state = "PACKED", settled = true, script = "Base." .. longName, name = longName, packedBy = longName,
+        history = { { t = base + 1000 + i, ev = "PACKED", by = longName } } })
+end
+quiet = false
+local worst = AdminCommands.handle(newPlayer("admin", true), "adminPage", { q = "", state = "ALL", page = 1 })
+check(#worst.rows == 50 and wireSize(worst) < 64 * 1024, "一頁 50 筆、欄位 120 字也只有 " .. wireSize(worst) .. " bytes（遠低於 1 MB）")
+
+print("Index：索引檔壞掉或漏筆時從 packs/ 重建，讀到檔案就跟上")
+Index.flush(nowMs + 10000)
+check(files["MinidoracatVehicleCapsule/index.json"] ~= nil, "flush 寫出 index.json")
+Index._resetForTests()
+check(Index.page({}, 1).total == 125, "從 index.json 讀回 125 筆")
+files["MinidoracatVehicleCapsule/index.json"] = "{broken"
+Index._resetForTests()
+quiet = true
+local rebuilt = Index.page({}, 1).total
+quiet = false
+check(rebuilt == 125, "索引壞檔 -> 從 packs/ 重建 125 筆")
+Index.flush(nowMs + 20000)
+files["MinidoracatVehicleCapsule/packs/70066.json"] = Json.encode({ state = "PACKED", settled = true, packedBy = "late",
+    history = { { t = base + 66, ev = "PACKED", by = "late" } } })
+files["MinidoracatVehicleCapsule/packs/70001.json"] = nil
+Index._resetForTests()
+check(Index.page({ q = "late" }, 1).total == 1 and Index.page({ q = "70001" }, 1).total == 0,
+    "索引沒有的檔案補進來、檔案不見的列拿掉")
+local s70002 = Store.read(70002)
+s70002.state = "VOID"
+Store.write(70002, s70002)
+check(Index.page({ q = "70002" }, 1).rows[1].state == "VOID", "寫入後索引同步（VOID）")
+
+print("Query：一般玩家只能查身上或附近的膠囊，管理員都能查")
+local bob = newPlayer("bob", false)
+local held = instanceItem(M.ITEM_LOADED)
+bob.inv:AddItem(held)
+Store.write(held.id, { state = "PACKED", settled = true, script = "Base.PickUpTruck", packedBy = "bob", skin = 2,
+    parts = { GasTank = { cond = 90, item = "Base.NormalGasTank", icond = 90, amount = 12.5 }, DoorRearRight = { cond = 0 } },
+    manifest = { ["Base.WaterBottle"] = 6 }, history = { { t = base, ev = "PACKED", by = "bob", car = 1 } } })
+local groundCap = instanceItem(M.ITEM_LOADED)
+Store.write(groundCap.id, { state = "UNPACKED", settled = true, history = { { t = base, ev = "PACKED" }, { t = base + 5, ev = "UNPACKED", by = "ann" } } })
+local farCap = instanceItem(M.ITEM_LOADED)
+Store.write(farCap.id, { state = "PACKED", settled = true, history = {} })
+local function emptyList() return javaList({}) end
+loadedSquares["102,201"] = {
+    getWorldObjects = function() return javaList({ { getItem = function() return groundCap end } }) end,
+    getObjects = emptyList, getVehicleContainer = function() return nil end,
+}
+local q = Query.query(bob, { held.id, groundCap.id, farCap.id, 99999999 })
+local byId = {}
+for _, it in ipairs(q.items) do byId[it.id] = it end
+local hs = byId[held.id]
+check(hs and hs.ok and hs.script == "Base.PickUpTruck" and hs.by == "bob" and hs.skin == 2 and #hs.manifest == 1
+    and hs.manifest[1].n == 6, "身上的膠囊：回車種、收車者、塗裝、貨物清單")
+local gas
+for _, p in ipairs(hs and hs.parts or {}) do if p.id == "GasTank" then gas = p end end
+check(gas and gas.a == 12.5 and gas.i == "Base.NormalGasTank" and gas.ic == 90, "零件精簡欄位（油量、物品、物品狀況）")
+check(byId[groundCap.id] and byId[groundCap.id].ok and byId[groundCap.id].state == "UNPACKED"
+    and byId[groundCap.id].last.by == "ann", "附近地上的膠囊可查（已展開，最後事件 ann）")
+check(byId[farCap.id] and byId[farCap.id].ok == false and byId[farCap.id].why == "FAR", "不在身上也不在附近 -> FAR，不回資料")
+check(byId[99999999] and byId[99999999].why == "FAR", "不存在的編號對一般玩家也只回 FAR（不洩漏有沒有紀錄）")
+local qa = Query.query(newPlayer("admin", true), { farCap.id, 99999999 })
+check(qa.items[1].ok and qa.items[2].why == "NO_SNAPSHOT", "管理員可查任何膠囊；沒有紀錄回 NO_SNAPSHOT")
+local many = {}
+for i = 1, 50 do many[i] = held.id end
+check(#Query.query(bob, many).items == Query.MAX_IDS, "一次最多 " .. Query.MAX_IDS .. " 個編號")
+local before = #sent
+Store.write(held.id, Store.read(held.id))
+check(#sent == before + 1 and sent[#sent][2] == "queryChanged" and sent[#sent][3].id == held.id, "寫入快照後廣播 queryChanged")
+Store.read(held.id)
+check(#sent == before + 1, "只讀不廣播")
+
+print("AdminCommands：一般玩家一律 NOT_ADMIN；明細只回最新 100 筆歷史")
+quiet = true
+local refused = {}
+for _, cmd in ipairs({ "adminPage", "adminDetail", "adminResolve", "adminRestore" }) do
+    refused[#refused + 1] = AdminCommands.handle(bob, cmd, { id = held.id }).why
+end
+check(AdminCommands.handle(bob, "handle", {}) == nil and AdminCommands.handle(bob, "debugPack", {}) == nil,
+    "不是 admin* 的指令不處理")
+local longH = {}
+for i = 1, 130 do longH[i] = { t = base + i, ev = "REJECTED", by = "x" } end
+Store.write(70100, { state = "PACKED", settled = true, history = longH })
+local det = AdminCommands.handle(newPlayer("admin", true), "adminDetail", { id = 70100 })
+quiet = false
+check(table.concat(refused, ",") == "NOT_ADMIN,NOT_ADMIN,NOT_ADMIN,NOT_ADMIN", "四個管理指令對一般玩家都拒絕：" .. table.concat(refused, ","))
+check(det.ok and #det.history == 100 and det.historyTotal == 130 and det.history[100].t == base + 130, "歷史只送最新 100 筆，另回總數")
+
+print("Loot：開關與權重照沙盒寫進表，重排不疊加，其他物品保留")
+local function fakeList()
+    return { MechanicShelfTools = { items = { "Base.Wrench", 4 } }, CrateMechanics = { items = { "Base.Jack", 2 } },
+        CarSupplyTools = { items = {} }, GasStorageMechanics = { items = { "Base.Funnel", 1 } }, GarageMechanics = { items = {} } }
+end
+local function weightIn(list, t)
+    local items, w = list[t].items, nil
+    for i = 1, #items, 2 do if items[i] == Loot.ITEM then w = (w or 0) + items[i + 1] end end
+    return w
+end
+local L = fakeList()
+Loot.apply(L, Loot.wanted())
+check(weightIn(L, "MechanicShelfTools") == 0.5 and weightIn(L, "CrateMechanics") == 0.5 and weightIn(L, "CarSupplyTools") == 0.5
+    and weightIn(L, "GasStorageMechanics") == 0.3 and weightIn(L, "GarageMechanics") == nil, "沒設沙盒＝預設值（住家車庫預設關）")
+sandbox = { LootEnabled = true, LootMechanic = true, LootMechanicWeight = 2.5, LootCarSupply = false, LootCarSupplyWeight = 9,
+    LootGasStation = true, LootGasStationWeight = 0, LootGarage = true, LootGarageWeight = 1.2 }
+Loot.apply(L, Loot.wanted())
+Loot.apply(L, Loot.wanted())
+check(weightIn(L, "MechanicShelfTools") == 2.5 and weightIn(L, "CrateMechanics") == 2.5, "修車廠兩張表都是 2.5，重排兩次不疊加")
+check(weightIn(L, "CarSupplyTools") == nil, "關掉的汽車用品店不出現")
+check(weightIn(L, "GasStorageMechanics") == nil, "權重 0 的加油站不出現")
+check(weightIn(L, "GarageMechanics") == 1.2, "打開的住家車庫 1.2")
+check(L.MechanicShelfTools.items[1] == "Base.Wrench" and L.MechanicShelfTools.items[2] == 4 and L.GasStorageMechanics.items[1] == "Base.Funnel"
+    and #L.GasStorageMechanics.items == 2, "原版物品原樣保留")
+sandbox.LootEnabled = false
+Loot.apply(L, Loot.wanted())
+local any = false
+for t in pairs(L) do if weightIn(L, t) then any = true end end
+check(not any, "總開關關掉：五張表都沒有膠囊")
+check(Loot.signature(Loot.wanted()) ~= Loot.signature((function() sandbox.LootEnabled = true; return Loot.wanted() end)()),
+    "設定改了簽章就不同（觸發重排）")
+sandbox = {}
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")

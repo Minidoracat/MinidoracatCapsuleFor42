@@ -19,5 +19,8 @@
 - **初始版本**：把停著的車收進膠囊，丟出去就展開，改裝、車況與貨物一起保存
 - **膠囊裡的貨物要展開車才拿得到**：拖曳、全部拿取、吃喝、裝填、製作都不會從膠囊裡拿東西，會提示「展開車才拿得到」
 - **伺服器當機也不會多一台車或多一份貨物**：當機前來不及確認的膠囊會先暫停使用，由管理員到現場確認後處理；確認車已在世界上時，舊膠囊裡多出的那份貨物會自動清掉、換成空膠囊
+- **滑鼠移到膠囊上就看得到車況**：車名、引擎與車身、油量、電瓶、缺件、改裝和貨物清單；空膠囊、已經展開過、或紀錄不在這台伺服器上的膠囊也會寫清楚
+- **右鍵「預覽車輛」看 3D 外觀**：可以旋轉、縮放，切換正面、側面、俯視；3D 畫的是車種的預設外觀，這台車實際的車況列在旁邊
+- **管理員面板「車輛膠囊管理」**（家族工具列）：用編號或玩家搜尋紀錄、依狀態篩選（含「當機前未確認」）、看每顆膠囊的時間軸與貨物清單、前往紀錄位置、補回車輛、判定當機前未確認的紀錄；「戰利品」分頁設定四個地點的開關與權重，套用後新打開的容器立刻照新設定
 
-> 技術要點：管理員除錯指令 `debugResolve`／`debugRestore`；每顆膠囊的紀錄在伺服器 `Zomboid/Lua/MinidoracatVehicleCapsule/packs/`，事件寫進 `VehicleCapsule` 日誌（UNCERTAIN、RESOLVED、CLEARED、CARGO_LOCK、RESTORED）。
+> 技術要點：管理員除錯指令 `debugResolve`／`debugRestore`；每顆膠囊的紀錄在伺服器 `Zomboid/Lua/MinidoracatVehicleCapsule/packs/`，管理面板的索引是上一層的 `index.json`（壞掉或刪掉會從 packs/ 重建），事件寫進 `VehicleCapsule` 日誌（UNCERTAIN、RESOLVED、CLEARED、CARGO_LOCK、RESTORED）。管理面板需要 `Capability.ManipulateVehicle`，戰利品分頁改的就是沙盒選項（需要 `Capability.SandboxOptions`），伺服器在 1 秒內重排戰利品表。玩家可在「選項 → MODS」關掉工具列上的面板按鈕。
