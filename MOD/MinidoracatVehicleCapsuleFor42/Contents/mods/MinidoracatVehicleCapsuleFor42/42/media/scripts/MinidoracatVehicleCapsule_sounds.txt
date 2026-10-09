@@ -1,0 +1,39 @@
+module Base
+{
+    /*
+        Vehicle Capsule sound effects (ElevenLabs; prompts in scripts/assets/sfx.json, take selection and
+        loudness in scripts/assets/build_sfx.py). Play with getSoundManager():PlayWorldSoundImpl("<name>", ...).
+        Keys parsed by GameSoundScript.java (category/is3D/master; clip file/distanceMax/volume).
+        Category Item like the vanilla throwables in sounds_throwable.txt; file clip like sounds_zombie_voice_tutorial.txt.
+        Sound files must exist when the mod loads: files written at runtime never play.
+    */
+    sound VehicleCapsulePop
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePop.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePack
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePack.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleButton
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButton.ogg,
+            distanceMax = 10,
+        }
+    }
+}

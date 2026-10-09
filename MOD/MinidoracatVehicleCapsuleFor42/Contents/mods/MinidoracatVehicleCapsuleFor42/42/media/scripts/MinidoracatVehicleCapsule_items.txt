@@ -5,13 +5,15 @@ module MinidoracatVehicleCapsule
         Base
     }
 
-    /* Empty capsule. Vanilla icon until the custom icon and model are made. */
+    /* Empty capsule. Icon and models come from scripts/assets/build_capsule.py (MinidoracatVehicleCapsule_models.txt). */
     item Capsule
     {
         DisplayCategory = Tool,
         ItemType = base:normal,
         Weight = 0.2,
-        Icon = Battery,
+        Icon = MinidoracatVehicleCapsule,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsule,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleHand,
     }
 
     /* Capsule holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
@@ -21,7 +23,9 @@ module MinidoracatVehicleCapsule
         DisplayCategory = Tool,
         ItemType = base:container,
         Weight = 0.2,
-        Icon = PipeBomb,
+        Icon = MinidoracatVehicleCapsuleLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleLoadedHand,
         Capacity = 1,
         MaxItemSize = 0.01,
     }

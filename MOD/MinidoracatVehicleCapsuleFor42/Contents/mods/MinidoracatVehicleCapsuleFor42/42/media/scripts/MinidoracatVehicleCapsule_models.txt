@@ -1,0 +1,38 @@
+module MinidoracatVehicleCapsule
+{
+    /*
+        Capsule models (built by scripts/assets/build_capsule.py). One mesh for both capsules; the loaded one only
+        swaps the texture (orange band). FBX vertices are metres with identity node transforms, so scale = 1.0 is the
+        real 7 cm capsule (PZ reads FBX with assimp: node Lcl Scaling applies, UnitScaleFactor does not).
+        Ground models are 3x so the capsule (21 x 8 cm on the floor) reads at default zoom; hand models are 1.5x.
+        Items must reference these by full name: getModelScript without a dot only looks in Base
+        (ScriptBucketCollection.java:72-89).
+    */
+    model VehicleCapsule
+    {
+        mesh = WorldItems/MinidoracatVehicleCapsule,
+        texture = WorldItems/MinidoracatVehicleCapsule,
+        scale = 3.0,
+    }
+
+    model VehicleCapsuleLoaded
+    {
+        mesh = WorldItems/MinidoracatVehicleCapsule,
+        texture = WorldItems/MinidoracatVehicleCapsuleLoaded,
+        scale = 3.0,
+    }
+
+    model VehicleCapsuleHand
+    {
+        mesh = WorldItems/MinidoracatVehicleCapsule,
+        texture = WorldItems/MinidoracatVehicleCapsule,
+        scale = 1.5,
+    }
+
+    model VehicleCapsuleLoadedHand
+    {
+        mesh = WorldItems/MinidoracatVehicleCapsule,
+        texture = WorldItems/MinidoracatVehicleCapsuleLoaded,
+        scale = 1.5,
+    }
+}
