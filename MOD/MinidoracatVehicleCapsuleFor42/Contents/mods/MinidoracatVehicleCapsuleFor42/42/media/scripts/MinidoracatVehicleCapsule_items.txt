@@ -1,0 +1,28 @@
+module MinidoracatVehicleCapsule
+{
+    imports
+    {
+        Base
+    }
+
+    /* Empty capsule. Vanilla icon until the custom icon and model are made. */
+    item Capsule
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = Battery,
+    }
+
+    /* Capsule holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
+       MaxItemSize keeps players from putting anything in; the server adds cargo with AddItem, which skips the check. */
+    item LoadedCapsule
+    {
+        DisplayCategory = Tool,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = PipeBomb,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+}
