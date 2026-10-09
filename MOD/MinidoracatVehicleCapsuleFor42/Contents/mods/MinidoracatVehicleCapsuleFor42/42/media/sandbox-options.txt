@@ -1,0 +1,50 @@
+VERSION = 1,
+
+/* 車輛膠囊。選項鍵不可改名。戰利品頁的值也是管理面板「戰利品」分頁改的那一組（不另存設定）。 */
+
+/* ===== MinidoracatVehicleCapsule：一般 ===== */
+
+/* 展開後把一顆空膠囊還給丟的人 */
+option MinidoracatVehicleCapsule.ReturnEmptyCapsule
+{type = boolean, default = true, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ReturnEmptyCapsule,}
+
+/* 沒有 Minidoracat Vehicle Manager 時誰能收車：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員。有 VehicleManager 時改用它的 canUse(MANAGE) */
+option MinidoracatVehicleCapsule.PackPermission
+{type = enum, numValues = 3, default = 1, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_PackPermission,}
+
+/* 膠囊彈開的聲音引來殭屍的半徑（格）；0 不引殭屍 */
+option MinidoracatVehicleCapsule.ZombieSoundRadius
+{type = integer, min = 0, max = 50, default = 0, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ZombieSoundRadius,}
+
+/* ===== MinidoracatVehicleCapsuleLoot：戰利品（四個地點各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
+
+option MinidoracatVehicleCapsule.LootEnabled
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootEnabled,}
+
+/* 修車廠：MechanicShelfTools、CrateMechanics */
+option MinidoracatVehicleCapsule.LootMechanic
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootMechanic,}
+
+option MinidoracatVehicleCapsule.LootMechanicWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootMechanicWeight,}
+
+/* 汽車用品店：CarSupplyTools */
+option MinidoracatVehicleCapsule.LootCarSupply
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootCarSupply,}
+
+option MinidoracatVehicleCapsule.LootCarSupplyWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootCarSupplyWeight,}
+
+/* 加油站修車區：GasStorageMechanics */
+option MinidoracatVehicleCapsule.LootGasStation
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootGasStation,}
+
+option MinidoracatVehicleCapsule.LootGasStationWeight
+{type = double, min = 0.0, max = 10.0, default = 0.3, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootGasStationWeight,}
+
+/* 住家車庫：GarageMechanics（預設關） */
+option MinidoracatVehicleCapsule.LootGarage
+{type = boolean, default = false, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootGarage,}
+
+option MinidoracatVehicleCapsule.LootGarageWeight
+{type = double, min = 0.0, max = 10.0, default = 0.2, page = MinidoracatVehicleCapsuleLoot, translation = MinidoracatVehicleCapsule_LootGarageWeight,}
