@@ -90,7 +90,7 @@
 <header>
   <h1>車輛膠囊 Vehicle Capsule 新 MOD</h1>
   <doc-changes new="51" changed="1"></doc-changes>
-  <details class="thread"><summary>Why · 11 段原話</summary>
+  <details class="thread"><summary>Why · 13 段原話</summary>
     <doc-quote via="prompt" from="使用者">我想評估製作一個新的 MOD，可以將自己的車輛用道具打包起來，上面會顯示車子名稱，然後可以打開3D預覽圖，但是我不確定能不能保存車輛的改裝、容器內物品</doc-quote>
     <doc-quote via="prompt" from="使用者">而且還想要能夠跟經濟系統結合，看是不是能在經濟系統販賣打包用的道具，沒經濟系統也能獨立用，可能就管理員發放或者設定戰利品掉落區域或機率等等</doc-quote>
     <doc-quote via="prompt" from="使用者">如果能打包車輛，應該也能緩解 javapatch 最近研究的部分 KI5 車輛占用性能過多的問題</doc-quote>
@@ -102,6 +102,8 @@
     <doc-quote via="prompt" from="使用者">管理員面板也要能顯示戰利品是會掉在哪一類，或者可以設定</doc-quote>
     <doc-quote via="prompt" from="使用者">補回的話是會有面板清單可以管理嗎?</doc-quote>
     <doc-quote via="prompt" from="使用者">膠囊的外型可以和原型一樣，用 codex 生成精緻一點的模型外觀，標誌原創就好</doc-quote>
+    <doc-quote via="prompt" from="使用者">那沒關係，就先這樣設計吧，下一步建議做甚麼? 你還有需要測試的東西嗎?</doc-quote>
+    <doc-quote via="prompt" from="使用者">好，照你建議的步驟建立 repo 和後續的測試等等</doc-quote>
   </details>
 </header>
 
@@ -165,17 +167,20 @@ end
     <doc-calls title="收車（伺服器）" caption="快照檔先寫好，刪車放在最後一步。">
 <script type="text/plain">
 + **ISPackVehicleAction**:complete()              @ media/lua/shared/TimedActions/ISPackVehicleAction.lua:1   -- MP 只在伺服器跑
-+   **whyNot**(player, vehicle)                   @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:1
-+   **Capsule.load**(emptyCapsule)                @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:30    -- 空膠囊換成 LoadedCapsule
++   **whyNot**(player, vehicle)                   @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:17
++   **Capsule.load**(emptyCapsule)                @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:43    -- 空膠囊換成 LoadedCapsule
 +   **Snapshot.capture**(vehicle)                 @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:1   -- 車況、零件、modData
++   **Store.write**(capsuleId, snapshot)          @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:44     -- 先寫檔並讀回；失敗就什麼都不動
 +   **Snapshot.packCargo**(vehicle, capsule)      @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:60  -- 貨物原物件搬進膠囊
 +   vehicle:getCurrentKey() → 玩家背包             @ zombie/vehicles/BaseVehicle.java:9673   -- 點火孔上的鑰匙不跟車消失
-+   **Store.write**(capsuleId, snapshot)          @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:10     -- 立刻寫進伺服器檔案
 +   square:AddWorldInventoryItem(capsule, x, y, 0) @ zombie/iso/IsoGridSquare.java:6059   -- 膠囊掉在車原本的位置
 +   **Fx.broadcast**("pack", x, y, z)             @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1         -- 一團煙，車不見了
 +   vehicle:permanentlyRemove()                   @ zombie/vehicles/BaseVehicle.java:8102   -- VehicleManager 在這裡記下「移出世界」
++ **Store.settle**(capsuleId)                    @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:120   -- 5 秒後標成「已落盤」
 </script>
     </doc-calls>
+    <doc-note tone="ok"><strong>已實測（42.21.0 專用伺服器）</strong> 收車後，伺服器與客戶端都看不到這台車。膠囊在地上，客戶端看得到車名。點火孔上的鑰匙移到玩家背包。測試輪次 <code>vcap-rt0-1010e</code>、<code>vcap-rt1-1010e</code>。</doc-note>
+    <doc-note tone="info"><strong>modData 照引擎規則保存</strong> userdata 與函式本來就不會存檔，快照照樣跳過，路徑記進快照的 <code>skipped</code> 和日誌。KI5 車的 damnlib 會把 <code>_vehicle</code> 放進 modData，不能因此拒收。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -315,6 +320,8 @@ flying  -dup->    used    : 展開過
     </doc-calls>
     <doc-note tone="ok"><strong>已定：游標選落點</strong> 游標畫出車身範圍：放得下是綠框加「✓ 放得下」，放不下是紅框加原因。顏色跟著玩家設定的好壞提示色，手把也能操作。</doc-note>
     <doc-note tone="info"><strong>不用原版投擲武器</strong> 膠囊是容器，不能同時是武器。原版落點由丟的人回報，伺服器不檢查（AddExplosiveTrapPacket.java:123-150），不能拿來生車。Workshop 的 Throwables（3809762635）也用自訂動作，再由伺服器保管物品。</doc-note>
+    <doc-note tone="ok"><strong>已實測：動作與同步</strong> 雙客戶端測試：丟的人在動作開始後 551–590 ms 放手，旁觀者看得到整段丟擲。伺服器模擬的放手比客戶端晚 35–116 ms，每丟只跑一次。單人模式也能播。測試輪次 <code>vcap-throw-1010h</code>、<code>vcap-throw-sp-1010a</code>。</doc-note>
+    <doc-note tone="warn"><strong>生車只放在 complete()</strong> 玩家放手後被打斷時，伺服器的放手事件已經跑了，complete() 卻不會跑。伺服器照客戶端送來的參數重建動作，所以丟的人是誰要先用 OnClientCommand 確認（pitfalls.md）。</doc-note>
     <doc-claim at="media/AnimSets/player/actions/MinidoracatVehicleCapsuleThrow.xml:1">
       <p><b>MinidoracatVehicleCapsuleThrow.xml:1</b> · 丟擲動作</p>
       <doc-code title="MinidoracatVehicleCapsuleThrow.xml · sketch" lang="xml">
@@ -336,10 +343,16 @@ flying  -dup->    used    : 展開過
 		<m_TimePc>0.3</m_TimePc>
 		<m_ParameterValue></m_ParameterValue>
 	</m_Events>
+	<m_Events>
+		<m_EventName>CapsuleEnd</m_EventName>
+		<m_TimePc>0.75</m_TimePc>
+		<m_ParameterValue></m_ParameterValue>
+	</m_Events>
 </animNode>
 </script>
         <doc-pin line="4" tone="ok" title="沿用原版丟汽油彈的動畫">AnimSets/player/ranged/Throw.xml 用同一段。</doc-pin>
         <doc-pin line="11" tone="info" title="由 setActionAnim 觸發">原版丟擲節點只認武器，所以另開動作節點。</doc-pin>
+        <doc-pin line="19" tone="info" title="CapsuleEnd 結束動作">伺服器不播動畫，用同樣的時間模擬這兩個事件。</doc-pin>
       </doc-code>
     </doc-claim>
   </doc-claim>
@@ -356,11 +369,16 @@ flying  -dup->    used    : 展開過
 +   vehicle:setEngineFeature(q, l, p)              @ zombie/vehicles/BaseVehicle.java:8125
 +   part:setInventoryItem(item)                    @ media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua:94
 +   VehicleUtils.callLua(install.complete)         @ media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua:97   -- KI5 靠它切換模型
++   modData["defaultPartSet_" .. 空槽] = "true"    @ damnlib/42.20/media/lua/shared/DAMN_Parts.lua:349   -- KI5 空槽不被客戶端隨機補件
 +   **Snapshot.restoreCargo**(capsule, vehicle)    @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:180
++   vehicle:exit(nil)                              @ zombie/vehicles/BaseVehicle.java:2543   -- 立刻更新 vehicles.db
 +   **Fx.broadcast**("unpack", x, y, z)            @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1
++ **Store.settle**(capsuleId)                      @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:120   -- 5 秒後標成「已落盤」
     VehicleManager 接回車主綁定                       @ MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua:574   -- 不用改 VehicleManager
 </script>
     </doc-calls>
+    <doc-note tone="ok"><strong>已實測：狀態全部寫回</strong> 原版皮卡比對 115 項，KI5 93 款 F350 比對 172 項，伺服器與客戶端都一致。比對項目包含 keyId、塗裝、零件、油量、胎壓、電量、門窗鎖。截圖看得到 KI5 的前護槓與擋風玻璃護網，拆掉的後保險桿也維持拆除。測試輪次 <code>vcap-rt0-1010e</code>、<code>vcap-ki5-1010b</code>。</doc-note>
+    <doc-note tone="info"><strong>生車當下就寫進資料庫</strong> addVehicleDebug 存進 vehicles.db 的是生成當下的隨機狀態。寫回後呼叫 <code>vehicle:exit(nil)</code>，引擎就立刻更新資料庫。少了這一步，當機重開後會是一台隨機車。</doc-note>
     <doc-claim at="MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua:574">
       <p><b>OwnershipSystem.lua:574</b> · adopt()</p>
       <doc-code src="MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua" lines="574-589" hl="579-581">
@@ -394,6 +412,14 @@ end
     </doc-code>
     <doc-note tone="ok"><strong>已定：重量照算</strong> 膠囊重量＝0.2＋貨物，拿在手上也一樣。玩家背包上限 50（ItemContainer.java:91、268），貨物重的膠囊撿不起來，也就丟不出去。玩家不能把東西放進膠囊（MaxItemSize 設得很小）。</doc-note>
     <doc-note tone="ok"><strong>已定：太重就在地上按下按鈕</strong> 膠囊放在地上時，選單多一個「按下按鈕」，用同一個落點游標選位置，車出現在膠囊 3 格內，貨物照樣放回車上。</doc-note>
+    <doc-note tone="ok"><strong>已實測：貨物原樣保存</strong> 收車後，伺服器與客戶端看到的貨物一致：水瓶的水量、背包裡的兩件東西、衣服的血跡與髒污、蘋果的新鮮度。正常重開伺服器後也一樣。展開時全部回到車斗與手套箱，玩家也放不進膠囊。測試輪次 <code>vcap-cargo-1010b</code>。</doc-note>
+    <doc-ask id="cargoAccess">
+      <p>裝了車的膠囊，玩家能直接拿出貨物嗎？</p>
+      <label><input type="radio" name="cargoAccess" value="locked" checked> 不能，展開車才拿得到 <small>當機回溯也不會多出貨物</small></label>
+      <label><input type="radio" name="cargoAccess" value="takeOut"> 可以拿出，不能放回 <small>比較方便；當機回溯後可能多出一份貨物</small></label>
+    </doc-ask>
+    <div data-if="cargoAccess=locked"><doc-note tone="info">伺服器擋掉從膠囊搬出物品。製作、裝填這類會從背包深處拿東西的動作，實作時再實測。</doc-note></div>
+    <div data-if="cargoAccess=takeOut"><doc-note tone="warn">伺服器要在玩家進場時清空已展開過的膠囊。玩家能不能搶在清空前拿出，實作後要再實測。</doc-note></div>
   </doc-claim>
 
   <doc-claim>
@@ -406,7 +432,8 @@ end
 +   getFileWriter(path, true, false)             @ zombie/Lua/LuaManager.java:6727       -- 寫到 Zomboid/Lua，不等世界存檔
 </script>
     </doc-calls>
-    <doc-note tone="risk"><strong>伺服器當機</strong> 背包約 3 分鐘存一次，地上的物品要等區塊卸載或世界存檔。收車後當機，膠囊可能不見，但快照檔還在，管理員補得回車（claim 5）。展開後當機，膠囊可能回來，但檔案已標成展開過，不會多出一台車。</doc-note>
+    <doc-note tone="risk"><strong>實測當機的四種結果</strong> 收車後 9 ms 當機：原車回來，膠囊不見。收車後 5 秒：車和膠囊都不見，管理員補得回。展開後 8 ms：新車不見，膠囊回到背包但不能再丟。展開後 2 秒：新車在，膠囊也回到背包，裡面還有同一批貨物。測試輪次 <code>vcap-crasha-1010b</code>、<code>vcap-crashb-1010b</code>、<code>vcap-crashc1-1010b</code>、<code>vcap-crashc1-d2-1010c</code>。</doc-note>
+    <doc-note tone="info"><strong>三個修正</strong> ① 收車與展開 5 秒後，快照標成「已落盤」；重開後沒有標記的紀錄，面板標成「當機前未確認」。② 展開過但沒落盤的紀錄也能補回，補之前伺服器先找那台車，找到就拒絕。③ 伺服器遇到已展開過的膠囊，就清空內容、換成空膠囊。</doc-note>
     <doc-claim at="media/lua/server/MinidoracatVehicleCapsule/Store.lua:30">
       <p><b>Store.lua:30</b> · Store.claim()</p>
       <doc-code title="Store.lua · sketch（伺服器）" lang="lua" start="30">
@@ -747,10 +774,14 @@ additem "Bob" "MinidoracatVehicleCapsule.Capsule"
     <p>管理員補回車時，原本的膠囊同時失效，不會多出一台車。</p>
     <doc-code title="Admin.lua · sketch（伺服器）" lang="lua">
 <script type="text/plain">
-function Admin.restore(admin, capsuleId, square, note)
+function Admin.restore(admin, capsuleId, square, note, checked)
   if not canManageVehicles(admin) then return "NOT_ADMIN" end
   local snap = Store.read(capsuleId)
-  if not snap or snap.state ~= "PACKED" then return "NOT_PACKED" end
+  if not snap then return "NO_SNAPSHOT" end
+  local open = snap.state == "PACKED" or (snap.state == "UNPACKED" and not snap.settled)
+  if not open then return "NOT_RESTORABLE" end
+  if findLoadedVehicle(snap.history[#snap.history].car) then return "CAR_EXISTS" end
+  if not snap.settled and not checked then return "CHECK_SITE" end
   snap.state = "RESTORED"                         -- 原膠囊之後丟出會被拒絕
   if not Store.write(capsuleId, snap) then return "WRITE_FAILED" end
   local ok = Unpack.spawn(snap, square)            -- 只補車，貨物只列清單
@@ -759,11 +790,13 @@ function Admin.restore(admin, capsuleId, square, note)
 end
 </script>
       <doc-pin line="2" tone="info" title="照原版權限">和 VehicleManager 一樣看 Capability.ManipulateVehicle。</doc-pin>
-      <doc-pin line="5" tone="ok" title="先改狀態再生車">原膠囊找回來也不能再展開。</doc-pin>
-      <doc-pin line="8" tone="info" title="備註寫進紀錄">補了哪些貨物，其他管理員也看得到。</doc-pin>
+      <doc-pin line="5" tone="ok" title="展開過但沒落盤也能補">當機時新車可能沒存到。</doc-pin>
+      <doc-pin line="7" tone="ok" title="車還在就拒絕">在所有已載入的車裡找紀錄的車輛編號。</doc-pin>
+      <doc-pin line="8" tone="warn" title="當機前未確認">管理員要先到現場確認，再勾選。</doc-pin>
+      <doc-pin line="9" tone="ok" title="先改狀態再生車">原膠囊找回來也不能再展開。</doc-pin>
     </doc-code>
     <doc-note tone="ok"><strong>已定：貨物只列清單</strong> 補回時只補車。明細列出貨物種類與數量，要不要補由管理員決定，補了就寫在備註。</doc-note>
-    <doc-note tone="info"><strong>補得回的情況</strong> 伺服器當機回溯、本 MOD 移除後又裝回，以及地上的膠囊被清理 MOD 清掉。家族 ItemCleaner 同種地上物品超過 100 件才會清；把 LoadedCapsule 加進它的 ProtectList 就不會被清。玩家死亡時膠囊在屍體上或地上，找得回來，不必補。</doc-note>
+    <doc-note tone="info"><strong>補得回的情況</strong> 伺服器當機回溯（含展開後還沒存到的新車）、本 MOD 移除後又裝回，以及地上的膠囊被清理 MOD 清掉。家族 ItemCleaner 同種地上物品超過 100 件才會清；把 LoadedCapsule 加進它的 ProtectList 就不會被清。玩家死亡時膠囊在屍體上或地上，找得回來，不必補。</doc-note>
     <doc-note tone="warn"><strong>補不回的部分</strong> 貨物原物件放在膠囊裡，膠囊不見就跟著不見，紀錄只留種類與數量。Zomboid/Lua 的紀錄檔被刪掉時，收起中的車都補不回，要列入伺服器備份。</doc-note>
   </doc-claim>
 
@@ -792,6 +825,8 @@ end
 {
   v = 1,                                   -- 格式版本
   state = "PACKED",                        -- PACKED → UNPACKED 或 RESTORED，只能改一次
+                                           -- 例外：沒落盤的 UNPACKED 也能 RESTORED
+  settled = true,                          -- 收車或展開 5 秒後才寫；重開後沒有＝當機前未確認
   packedBy = "Bob",                        -- 收車的玩家
   script = "Base.93fordF150",              -- 車種全名；找不到就拒絕展開
   name = "93款福特F-150單排座",              -- 車種 MOD 不在時的備用車名
@@ -799,6 +834,7 @@ end
   engine = { 80, 40, 120 },                -- quality、loudness、power
   keyId = 48213977,                        -- 寫回新車，舊鑰匙照樣能用
   modData = { },                           -- 車輛 modData 深拷貝，含其他 MOD 的資料
+  skipped = { "modData._vehicle" },        -- 引擎本來就不存的值（userdata、函式），只記路徑
   parts = {                                -- 每個零件一列
     Engine  = { cond = 92, modData = { } },                       -- VehicleManager 見證在這裡
     GasTank = { item = "Base.BigGasTank2", cond = 100, amount = 48.5 },
@@ -814,7 +850,7 @@ end
 }
 </script>
   </doc-schema>
-  <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創。</doc-note>
+  <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創、modData 照引擎規則跳過存不了的值、KI5 空槽補 defaultPartSet。</doc-note>
 </doc-claim>
 
 <doc-claim aux="scope">
