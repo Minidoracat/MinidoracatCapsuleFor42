@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<meta charset="utf-8">
+<title>車輛膠囊設計稿</title>
+<link rel="stylesheet" href="htmlplan.css">
+<script src="htmlplan.js" defer></script>
+<style data-mock-shared>
+  .pz { font: 14px/1.45 "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", system-ui, sans-serif; color: #fff; background: #4f5a45; padding: 12px; border-radius: 8px; }
+  .pz * { box-sizing: border-box; }
+  .row2 { display: flex; gap: 8px; align-items: flex-start; }
+  .ctx { background: rgba(26,26,26,.7); border: 1px solid rgba(255,255,255,.15); font-size: 13.5px; flex: none; }
+  .ctx div { padding: 5px 12px; white-space: nowrap; }
+  .ctx .on { background: #4d4d4d; }
+  .tip { background: rgba(0,0,0,.85); border: 1px solid #666; padding: 8px 10px; font-size: 13px; line-height: 1.5; }
+  .tip .h { font-weight: 600; margin-bottom: 4px; }
+  .tip .gap { margin-top: 6px; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; }
+  .kv dt { font-weight: 600; }
+  .kv dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .ok { color: #7ccf7a; } .bad { color: #e6594d; }
+  .win { background: rgba(10,11,13,.95); border: 1px solid #666; border-radius: 6px; overflow: hidden; }
+  .win .tb { display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 10px; background: rgba(255,255,255,.10); font-weight: 600; }
+  .win .tb .x { margin-inline-start: auto; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 4px; font-weight: 400; }
+  .win .bd { padding: 10px; display: grid; gap: 8px; }
+  .hint { font-size: 12.5px; color: #9e9e9e; }
+  .well { background: #0b0b0d; border: 1px solid rgba(255,255,255,.06); border-radius: 4px; height: 128px; display: grid; place-items: center; }
+  .views { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 0 10px; border: 1px solid #666; border-radius: 6px; background: rgba(255,255,255,.06); color: #fff; font-size: 13px; white-space: nowrap; }
+  .btn.pri { background: #ffd966; border-color: #ffd966; color: #1a1405; font-weight: 600; }
+  .nm { font-weight: 600; font-size: 15px; line-height: 1.3; }
+  .mut { color: #9e9e9e; }
+  .sm { font-size: 12.5px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 1px 8px; border: 1px solid #666; border-radius: 10px; font-size: 12.5px; }
+  .sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(255,255,255,.5); background: #9a2b22; }
+  .st { display: grid; grid-template-columns: max-content 1fr max-content; align-items: center; gap: 4px 8px; font-size: 13px; }
+  .st b { font-weight: 400; text-align: end; font-variant-numeric: tabular-nums; }
+  .bar { height: 6px; background: rgba(255,255,255,.14); border-radius: 3px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: #d9d9d9; }
+  .lst { font-size: 13px; display: grid; gap: 2px; }
+  .note { font-size: 12.5px; color: #9e9e9e; border-top: 1px solid rgba(255,255,255,.10); padding-top: 6px; margin-top: 8px; }
+  .grpgap { margin-top: 8px; }
+  .dlg { background: rgba(10,11,13,.95); border: 1px solid #666; border-radius: 6px; padding: 12px; display: grid; gap: 10px; }
+  .dlg .t { font-weight: 600; display: flex; gap: 6px; align-items: center; }
+  .dlg .ft { display: flex; justify-content: flex-end; gap: 8px; }
+  .dlg .ft .btn { min-width: 80px; }
+  .toast { background: rgba(10,11,13,.95); border: 1px solid #666; border-inline-start: 3px solid #7ccf7a; border-radius: 6px; padding: 8px 12px; font-size: 13px; }
+  .opt { display: grid; grid-template-columns: 1fr max-content; gap: 6px 10px; align-items: center; font-size: 13px; }
+  .cb { width: 16px; height: 16px; border: 1px solid #999; border-radius: 3px; display: inline-grid; place-items: center; font-size: 12px; line-height: 1; }
+  .sel { border: 1px solid #666; border-radius: 4px; padding: 2px 8px; background: rgba(255,255,255,.06); white-space: nowrap; }
+  .num { border: 1px solid #666; border-radius: 4px; padding: 2px 8px; min-width: 52px; text-align: end; font-variant-numeric: tabular-nums; }
+  .grp { font-weight: 600; margin-top: 4px; }
+  .cmp { display: grid; grid-template-columns: max-content 1fr max-content; gap: 6px 8px; align-items: center; font-size: 13px; }
+  .cmp .bar { height: 10px; }
+  .cmp b { font-weight: 400; font-variant-numeric: tabular-nums; }
+  .scene { display: block; width: 100%; height: auto; background: #55604a; border-radius: 6px; }
+  .stack { display: grid; gap: 8px; }
+  .inv { background: rgba(10,11,13,.95); border: 1px solid #666; border-radius: 6px; }
+  .ir { display: grid; grid-template-columns: 32px 1fr max-content; gap: 8px; align-items: center; padding: 4px 10px; font-size: 13px; }
+  .ir + .ir { border-top: 1px solid rgba(255,255,255,.08); }
+  .ir b { font-weight: 400; font-variant-numeric: tabular-nums; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; font-size: 13px; }
+  .pair svg, .pair img { display: block; margin: 0 auto 4px; }
+  .pair img, .ir img { image-rendering: pixelated; }
+  .srch { display: flex; gap: 6px; }
+  .fld { flex: 1; border: 1px solid #666; border-radius: 4px; padding: 3px 8px; background: rgba(255,255,255,.06); font-size: 13px; }
+  .rec { border: 1px solid rgba(255,255,255,.14); border-radius: 6px; padding: 8px; display: grid; gap: 6px; }
+  .rh { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 13px; }
+  .rh b { font-variant-numeric: tabular-nums; }
+  .tag { margin-inline-start: auto; border: 1px solid #666; border-radius: 10px; padding: 0 8px; font-size: 12px; }
+  .tl { margin: 0; padding-inline-start: 18px; font-size: 12.5px; display: grid; gap: 2px; font-variant-numeric: tabular-nums; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid #666; }
+  .tab { padding: 4px 12px; font-size: 13px; color: #9e9e9e; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .tab.on { color: #fff; border-color: #666; background: rgba(255,255,255,.08); font-weight: 600; }
+  .lt { display: grid; gap: 6px; }
+  .lr { display: grid; grid-template-columns: max-content 1fr max-content; gap: 8px; align-items: center; font-size: 13px; }
+  .ft2 { display: flex; justify-content: flex-end; gap: 8px; }
+  .ft2 .btn { min-width: 64px; }
+  .chipf { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chipf span { border: 1px solid #666; border-radius: 10px; padding: 1px 8px; font-size: 12.5px; }
+  .chipf .on { background: rgba(255,255,255,.14); border-color: #d9d9d9; font-weight: 600; }
+  .lst2 { border: 1px solid rgba(255,255,255,.12); border-radius: 6px; overflow: hidden; }
+  .lr2 { display: grid; grid-template-columns: max-content 1fr max-content; gap: 8px; padding: 5px 8px; font-size: 13px; align-items: center; border-inline-start: 3px solid transparent; }
+  .lr2 + .lr2 { border-top: 1px solid rgba(255,255,255,.08); }
+  .lr2.sel { background: rgba(255,255,255,.10); border-inline-start-color: #ffd966; }
+  .lr2 b { font-variant-numeric: tabular-nums; }
+</style>
+<body>
+
+<header>
+  <h1>車輛膠囊 Vehicle Capsule 新 MOD</h1>
+  <doc-changes new="51" changed="1"></doc-changes>
+  <details class="thread"><summary>Why · 11 段原話</summary>
+    <doc-quote via="prompt" from="使用者">我想評估製作一個新的 MOD，可以將自己的車輛用道具打包起來，上面會顯示車子名稱，然後可以打開3D預覽圖，但是我不確定能不能保存車輛的改裝、容器內物品</doc-quote>
+    <doc-quote via="prompt" from="使用者">而且還想要能夠跟經濟系統結合，看是不是能在經濟系統販賣打包用的道具，沒經濟系統也能獨立用，可能就管理員發放或者設定戰利品掉落區域或機率等等</doc-quote>
+    <doc-quote via="prompt" from="使用者">如果能打包車輛，應該也能緩解 javapatch 最近研究的部分 KI5 車輛占用性能過多的問題</doc-quote>
+    <doc-quote via="prompt" from="使用者">打包機制可以研究是另外將車輛資訊、狀態等快照，或者乾脆傳送到地圖外的地方存放，需要再呼叫過來?</doc-quote>
+    <doc-quote via="prompt" from="使用者">還要幫我想這個 MOD 的名稱候選讓我挑選</doc-quote>
+    <doc-quote via="prompt" from="使用者">膠囊的話，能作成類似七龍珠那種膠囊嗎? 最好還能丟出去產生效果? 這點能做到嗎? 可以的話就補充到設計稿</doc-quote>
+    <doc-quote via="prompt" from="使用者">所有動畫和素材一樣可以用 codex 生成</doc-quote>
+    <doc-quote via="prompt" from="使用者">展開過應該都會有紀錄可以追蹤對吧? 遺失應該也能追蹤回來對吧?</doc-quote>
+    <doc-quote via="prompt" from="使用者">管理員面板也要能顯示戰利品是會掉在哪一類，或者可以設定</doc-quote>
+    <doc-quote via="prompt" from="使用者">補回的話是會有面板清單可以管理嗎?</doc-quote>
+    <doc-quote via="prompt" from="使用者">膠囊的外型可以和原型一樣，用 codex 生成精緻一點的模型外觀，標誌原創就好</doc-quote>
+  </details>
+</header>
+
+<main>
+<doc-plan>
+
+<!-- ═════ 1 收車 ═════ -->
+<doc-claim>
+  <p>車主可以把停著的車收進膠囊，膠囊上寫著車名。</p>
+  <doc-mock frame="none" w="340" caption="條件都打勾時，這個選項才能按。"><template>
+<div class="pz">
+  <div class="row2">
+    <div class="ctx">
+      <div>檢查車輛</div>
+      <div>打開後車廂</div>
+      <div>車輛管理 ▸</div>
+      <div class="on" data-ref="pack">收進膠囊</div>
+    </div>
+    <div class="tip" data-ref="req">
+      <div class="h">收進膠囊</div>
+      <div><span class="ok">✓</span> 你是車主</div>
+      <div><span class="ok">✓</span> 引擎已熄火，車上沒有人</div>
+      <div><span class="ok">✓</span> 背包裡有空膠囊</div>
+      <div class="gap">車上 132 件物品會一起收進膠囊。需要 10 秒。</div>
+    </div>
+  </div>
+</div></template>
+    <doc-pin ref="pack" anchor="bl" title="新選項">加在原版車外選單的最後。</doc-pin>
+    <doc-pin ref="req" anchor="tr" offset="-10,10" title="缺條件時">該列改成 ✗ 並寫出怎麼做，選項變灰。</doc-pin>
+  </doc-mock>
+
+  <doc-claim>
+    <p>伺服器重新檢查車主、乘客和拖車，全部通過才收車。</p>
+    <doc-code title="Pack.lua · sketch（伺服器）" lang="lua">
+<script type="text/plain">
+-- 回傳 nil 表示可以收車；否則回傳原因，客戶端照原因顯示 ✗ 列
+local function whyNot(player, vehicle)
+  if vehicle == nil or vehicle:DistTo(player) > 4 then return "TOO_FAR" end
+  if not hasEmptyCapsule(player) then return "NO_CAPSULE" end
+  if hasOccupant(vehicle) then return "OCCUPIED" end
+  if vehicle:getVehicleTowing() or vehicle:getVehicleTowedBy() then return "TOWING" end
+  if vehicle:getAnimals():size() > 0 then return "ANIMALS" end   -- 移除時動物會直接消失
+  if vehicle:isEngineRunning() then return "ENGINE_ON" end
+  if hasCapsuleInside(vehicle) then return "CAPSULE_INSIDE" end  -- 不收裝著膠囊的車
+  local vm = MinidoracatVehicleManagerAPI
+  if vm then                                                     -- 有 VehicleManager：由它判斷
+    local ok, why = vm.canUse(player, vehicle, "MANAGE")
+    if not ok then return why end
+  elseif not sandboxAllows(player, vehicle) then                 -- 沒有：照沙盒設定
+    return "NOT_OWNER"
+  end
+  return nil
+end
+</script>
+      <doc-pin line="12" tone="info" title="MANAGE 只給車主與管理員">VehicleManager 不開放分享這個權限。</doc-pin>
+    </doc-code>
+  </doc-claim>
+
+  <doc-claim>
+    <p>伺服器記下車況、把貨物裝進膠囊，最後才刪掉這台車。</p>
+    <doc-calls title="收車（伺服器）" caption="快照檔先寫好，刪車放在最後一步。">
+<script type="text/plain">
++ **ISPackVehicleAction**:complete()              @ media/lua/shared/TimedActions/ISPackVehicleAction.lua:1   -- MP 只在伺服器跑
++   **whyNot**(player, vehicle)                   @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:1
++   **Capsule.load**(emptyCapsule)                @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:30    -- 空膠囊換成 LoadedCapsule
++   **Snapshot.capture**(vehicle)                 @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:1   -- 車況、零件、modData
++   **Snapshot.packCargo**(vehicle, capsule)      @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:60  -- 貨物原物件搬進膠囊
++   vehicle:getCurrentKey() → 玩家背包             @ zombie/vehicles/BaseVehicle.java:9673   -- 點火孔上的鑰匙不跟車消失
++   **Store.write**(capsuleId, snapshot)          @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:10     -- 立刻寫進伺服器檔案
++   square:AddWorldInventoryItem(capsule, x, y, 0) @ zombie/iso/IsoGridSquare.java:6059   -- 膠囊掉在車原本的位置
++   **Fx.broadcast**("pack", x, y, z)             @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1         -- 一團煙，車不見了
++   vehicle:permanentlyRemove()                   @ zombie/vehicles/BaseVehicle.java:8102   -- VehicleManager 在這裡記下「移出世界」
+</script>
+    </doc-calls>
+  </doc-claim>
+
+  <doc-claim>
+    <p>Lua 不能把車搬到地圖外，也叫不回來。</p>
+    <doc-code title="地圖外存放 · sketch（做不到）" lang="lua" wrap>
+<script type="text/plain">
+vehicle:setWorldTransform(far)   -- 伺服器只改 jniTransform（BaseVehicle.java:4049）
+-- 下一次 update：目標格沒載入，引擎把車拉回原本的 chunk（BaseVehicle.java:3380）
+local v = getVehicleById(id)     -- 車沒載入時回 nil（LuaManager.java:10279）
+loadChunk(wx, wy)                -- 不存在：ServerMap 沒有暴露給 Lua
+</script>
+      <doc-pin line="2" tone="risk" title="搬不出去">引擎不讓車進入沒載入的格子。</doc-pin>
+      <doc-pin line="3" tone="risk" title="找不到">存起來的車沒有 vehicleId。</doc-pin>
+      <doc-pin line="4" tone="risk" title="叫不回來">Lua 不能要伺服器載入遠處。</doc-pin>
+    </doc-code>
+  </doc-claim>
+
+  <doc-claim>
+    <p>收起來的車不在世界上，附近的車變少，畫面更順。</p>
+    <doc-calls title="一台已載入的車，每幀的成本" caption="紅色是收車後不再發生的呼叫。">
+<script type="text/plain">
+- IsoCell.vehicles 逐台更新                   @ zombie/iso/IsoCell.java:159
+-   BaseVehicle.update()                     @ zombie/vehicles/BaseVehicle.java:3195
+-   BaseVehicle.postupdate()                 @ zombie/vehicles/BaseVehicle.java:3770   -- 每個零件模型重算骨架
+-     updateAnimationPlayer()                @ zombie/vehicles/BaseVehicle.java:3900   -- KI5 的主要成本
+- VehicleManager.sendVehicles()              @ zombie/vehicles/VehicleManager.java:156  -- 伺服器對每個連線逐台送
+</script>
+    </doc-calls>
+    <doc-note tone="info"><strong>實測（42.21，9950X3D）</strong> 同一處停約 110 台車時是 64–76 fps，把車移走後是 235–240 fps。KI5 車每台每幀 22–47 µs，原版車 3–5 µs。只收一部分車時，效益照比例。</doc-note>
+    <doc-note tone="info"><strong>收車解決不了的部分</strong> 行駛中的車、開機時載入的車種與模型，以及展開那一刻約 30–70 ms 的卡頓。沒收起來的車照舊，靠骨架裁剪與 JavaPatch 降低每台的成本。</doc-note>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 2 丟出展開 ═════ -->
+<doc-claim>
+  <p>把膠囊丟出去，落地冒煙，車連同改裝、車況和貨物一起出現。</p>
+  <doc-machine name="throw" caption="點狀態，看玩家當時看到的畫面。">
+<script type="text/plain">
+machine throw initial capsule
+state capsule        # 膠囊在背包或地上。
+state aiming         # 游標顯示車身範圍。
+state flying         # 膠囊飛 0.5 秒。
+state dropped        # 放不下，膠囊掉在落點。
+state used    final  # 這顆膠囊已經展開過。
+state placed  final  # 冒煙後車出現，膠囊用掉。
+
+| capsule | aiming | .    |
+| dropped | flying | used |
+| .       | placed | .    |
+
+capsule -throw->  aiming  : 丟出／按鈕
+aiming  -go->     flying  : 放手
+flying  -ok->     placed  : 展開
+flying  -fail->   dropped : 放不下
+dropped -pick->   capsule : 撿起
+flying  -dup->    used    : 展開過
+</script>
+    <div data-state="capsule"><doc-mock frame="none" w="300"><template>
+<div class="pz"><div class="ctx" style="display:inline-block">
+  <div class="on">丟出膠囊</div>
+  <div data-ref="press">按下按鈕</div>
+  <div>預覽車輛</div>
+</div></div></template>
+      <doc-pin ref="press" anchor="r" title="膠囊在地上時才有">太重撿不起來也能展開。</doc-pin>
+    </doc-mock></div>
+    <div data-state="aiming"><doc-mock frame="none" w="340"><template>
+<div class="pz stack">
+  <div class="tip" data-ref="cur"><div><span class="ok">✓</span> 放得下：93款福特F-150單排座</div><div>左鍵丟出・右鍵取消</div></div>
+  <svg class="scene" viewBox="0 0 300 165" aria-hidden="true">
+    <path d="M150 10L6 82M150 10L294 82M166 18L22 90M134 18L278 90M182 26L38 98M118 26L262 98M198 34L54 106M102 34L246 106M214 42L70 114M86 42L230 114M230 50L86 122M70 50L214 122M246 58L102 130M54 58L198 130M262 66L118 138M38 66L182 138M278 74L134 146M22 74L166 146M294 82L150 154M6 82L150 154" stroke="rgba(255,255,255,.16)" fill="none"/>
+    <polygon points="182,58 214,74 134,114 102,98" fill="rgba(124,207,122,.35)" stroke="#7ccf7a" stroke-width="2"/>
+    <circle cx="158" cy="86" r="4" fill="#fff" stroke="#1c1a18"/>
+    <g stroke="#fff" stroke-width="2" fill="none"><circle cx="214" cy="102" r="5" fill="#2b2b2b"/><path d="M214 107 L214 122 M206 113 L222 113 M214 122 L208 132 M214 122 L220 132"/></g>
+  </svg>
+</div></template>
+      <doc-pin ref="cur" anchor="bl" title="放不下時寫原因">例：「✗ 放不下：有圍欄」，框改成紅色。</doc-pin>
+    </doc-mock></div>
+    <div data-state="flying"><doc-mock frame="none" w="340"><template>
+<div class="pz">
+  <svg class="scene" viewBox="0 0 300 165" aria-hidden="true">
+    <path d="M150 10L6 82M150 10L294 82M166 18L22 90M134 18L278 90M182 26L38 98M118 26L262 98M198 34L54 106M102 34L246 106M214 42L70 114M86 42L230 114M230 50L86 122M70 50L214 122M246 58L102 130M54 58L198 130M262 66L118 138M38 66L182 138M278 74L134 146M22 74L166 146M294 82L150 154M6 82L150 154" stroke="rgba(255,255,255,.16)" fill="none"/>
+    <ellipse cx="158" cy="86" rx="10" ry="5" fill="none" stroke="#fff" stroke-dasharray="3 3"/>
+    <path d="M214 104 Q186 40 158 86" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <g transform="translate(186 68) rotate(-20)"><rect x="-9" y="-4.5" width="18" height="9" rx="4.5" fill="#f2f2f2" stroke="#1c1a18" stroke-width="1.5"/><rect x="-1.5" y="-4.5" width="3" height="9" fill="#e8742a"/></g>
+    <g stroke="#fff" stroke-width="2" fill="none"><circle cx="214" cy="102" r="5" fill="#2b2b2b"/><path d="M214 107 L214 122 M214 112 L224 104 M206 114 L214 112 M214 122 L208 132 M214 122 L220 132"/></g>
+  </svg>
+</div></template></doc-mock></div>
+    <div data-state="placed"><doc-mock frame="none" w="340"><template>
+<div class="pz stack">
+  <svg class="scene" viewBox="0 0 300 165" aria-hidden="true">
+    <path d="M150 10L6 82M150 10L294 82M166 18L22 90M134 18L278 90M182 26L38 98M118 26L262 98M198 34L54 106M102 34L246 106M214 42L70 114M86 42L230 114M230 50L86 122M70 50L214 122M246 58L102 130M54 58L198 130M262 66L118 138M38 66L182 138M278 74L134 146M22 74L166 146M294 82L150 154M6 82L150 154" stroke="rgba(255,255,255,.16)" fill="none"/>
+    <polygon points="181.2,62.4 205.2,74.4 134.8,109.6 110.8,97.6" fill="#8a8f96" stroke="#c4c4c4" stroke-width="1.5"/>
+    <polygon points="162.8,74 182,83.6 153.2,98 134,88.4" fill="#5a5f66" stroke="#c4c4c4"/>
+    <g fill="#f4f4f4" stroke="#2a2a2a" stroke-width="1.5" opacity=".92"><circle cx="132" cy="70" r="14"/><circle cx="152" cy="58" r="18"/><circle cx="176" cy="66" r="15"/><circle cx="196" cy="78" r="11"/><circle cx="118" cy="86" r="10"/></g>
+  </svg>
+  <div class="toast" role="status"><b>已展開：93款福特F-150單排座</b><br>空膠囊回到你的背包。</div>
+</div></template></doc-mock></div>
+    <div data-state="dropped"><doc-mock frame="none" w="340"><template>
+<div class="pz stack">
+  <svg class="scene" viewBox="0 0 300 165" aria-hidden="true">
+    <path d="M150 10L6 82M150 10L294 82M166 18L22 90M134 18L278 90M182 26L38 98M118 26L262 98M198 34L54 106M102 34L246 106M214 42L70 114M86 42L230 114M230 50L86 122M70 50L214 122M246 58L102 130M54 58L198 130M262 66L118 138M38 66L182 138M278 74L134 146M22 74L166 146M294 82L150 154M6 82L150 154" stroke="rgba(255,255,255,.16)" fill="none"/>
+    <polygon points="182,58 214,74 134,114 102,98" fill="rgba(230,89,77,.25)" stroke="#e6594d" stroke-width="2" stroke-dasharray="5 4"/>
+    <line x1="129.2" y1="71.6" x2="193.2" y2="103.6" stroke="#8b5a2b" stroke-width="5" stroke-linecap="round"/>
+    <g transform="translate(158 94)"><rect x="-8" y="-4" width="16" height="8" rx="4" fill="#f2f2f2" stroke="#1c1a18" stroke-width="1.5"/><rect x="-1.5" y="-4" width="3" height="8" fill="#e8742a"/></g>
+  </svg>
+  <div class="dlg" role="alertdialog">
+    <div class="t"><span class="bad" aria-hidden="true">⚠</span>這裡放不下車</div>
+    <div class="sm">落點有圍欄擋住車身。膠囊掉在落點：換個空曠的位置，在地上按下按鈕，或撿起來再丟。</div>
+    <div class="ft"><span class="btn pri">知道了</span></div>
+  </div>
+</div></template></doc-mock></div>
+    <div data-state="used"><doc-mock frame="none" w="340"><template>
+<div class="pz"><div class="dlg" role="alertdialog">
+  <div class="t"><span class="bad" aria-hidden="true">⚠</span>這顆膠囊已經展開過</div>
+  <div class="sm">紀錄：10/11 08:15 已展開。車不見了的話，請把編號 10023114 告訴管理員，他查得到這顆膠囊的去向。</div>
+  <div class="ft"><span class="btn pri">知道了</span></div>
+</div></div></template></doc-mock></div>
+  </doc-machine>
+
+  <doc-claim>
+    <p>丟膠囊用自訂動作，伺服器決定落點並保管膠囊。</p>
+    <doc-calls title="丟出膠囊" caption="落點由伺服器檢查，客戶端只負責畫面。">
+<script type="text/plain">
++ **ThrowCursor**:render(x, y, z, square)                 @ media/lua/client/MinidoracatVehicleCapsule/ThrowCursor.lua:1   -- 車身範圍與文字原因
+    ISFarmingCursorMouse（原版範本）                         @ media/lua/server/Farming/BuildingObjects/ISFarmingCursorMouse.lua:77   -- 支援手把提示
++ **ISThrowCapsuleAction**:new(player, capsule, x, y, z)  @ media/lua/shared/TimedActions/ISThrowCapsuleAction.lua:1   -- MP 由伺服器照參數重建
++   setActionAnim("MinidoracatVehicleCapsuleThrow")        @ media/AnimSets/player/actions/MinidoracatVehicleCapsuleThrow.xml:1
++   **Throw.validate**(player, capsule, square)           @ media/lua/server/MinidoracatVehicleCapsule/Throw.lua:1    -- 8 格內、看得到、車身範圍淨空
++   **Fx.broadcast**("flight", from, to)                   @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1
++   **Throw.schedule**(capsuleId, square)                  @ media/lua/server/MinidoracatVehicleCapsule/Throw.lua:40   -- 0.5 秒後落地；膠囊先留在背包
++ **Throw.land**(pending)                                  @ media/lua/server/MinidoracatVehicleCapsule/Throw.lua:80   -- OnTick 到時間
++   **Unpack.run**(capsule, square)                       @ media/lua/server/MinidoracatVehicleCapsule/Unpack.lua:1
++   失敗：square:AddWorldInventoryItem(capsule, x, y, 0)   @ zombie/iso/IsoGridSquare.java:6059   -- 膠囊掉在落點，不會消失
++ **ISPressCapsuleAction**:new(player, capsule, x, y, z)  @ media/lua/shared/TimedActions/ISPressCapsuleAction.lua:1   -- 地上的膠囊；車身在 3 格內
++   **Throw.schedule**(capsuleId, square)                  @ media/lua/server/MinidoracatVehicleCapsule/Throw.lua:40   -- 同一條落地流程
+</script>
+    </doc-calls>
+    <doc-note tone="ok"><strong>已定：游標選落點</strong> 游標畫出車身範圍：放得下是綠框加「✓ 放得下」，放不下是紅框加原因。顏色跟著玩家設定的好壞提示色，手把也能操作。</doc-note>
+    <doc-note tone="info"><strong>不用原版投擲武器</strong> 膠囊是容器，不能同時是武器。原版落點由丟的人回報，伺服器不檢查（AddExplosiveTrapPacket.java:123-150），不能拿來生車。Workshop 的 Throwables（3809762635）也用自訂動作，再由伺服器保管物品。</doc-note>
+    <doc-claim at="media/AnimSets/player/actions/MinidoracatVehicleCapsuleThrow.xml:1">
+      <p><b>MinidoracatVehicleCapsuleThrow.xml:1</b> · 丟擲動作</p>
+      <doc-code title="MinidoracatVehicleCapsuleThrow.xml · sketch" lang="xml">
+<script type="text/plain">
+<?xml version="1.0" encoding="utf-8"?>
+<animNode>
+	<m_Name>MinidoracatVehicleCapsuleThrow</m_Name>
+	<m_AnimName>Bob_AttackThrowMolotov</m_AnimName>
+	<m_Looped>false</m_Looped>
+	<m_BlendTime>0.20</m_BlendTime>
+	<m_SpeedScale>0.80</m_SpeedScale>
+	<m_Conditions>
+		<m_Name>PerformingAction</m_Name>
+		<m_Type>STRING</m_Type>
+		<m_Value>MinidoracatVehicleCapsuleThrow</m_Value>
+	</m_Conditions>
+	<m_Events>
+		<m_EventName>CapsuleRelease</m_EventName>
+		<m_TimePc>0.3</m_TimePc>
+		<m_ParameterValue></m_ParameterValue>
+	</m_Events>
+</animNode>
+</script>
+        <doc-pin line="4" tone="ok" title="沿用原版丟汽油彈的動畫">AnimSets/player/ranged/Throw.xml 用同一段。</doc-pin>
+        <doc-pin line="11" tone="info" title="由 setActionAnim 觸發">原版丟擲節點只認武器，所以另開動作節點。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>伺服器在落點生出同一車種，同一個 tick 內寫回全部狀態。</p>
+    <doc-calls title="展開（伺服器）" caption="照原版安裝零件的流程，KI5 的改裝模型才會出現。">
+<script type="text/plain">
++ **Unpack.run**(capsule, square)                  @ media/lua/server/MinidoracatVehicleCapsule/Unpack.lua:1    -- 落地時由 Throw.land 呼叫
++   **Store.claim**(capsuleId)                     @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:30    -- 先標成已展開
++   addVehicleDebug(script, dir, skin, square)     @ zombie/Lua/LuaManager.java:10788       -- 車頭朝丟出的方向；失敗也回傳車
++   vehicle:setKeyId(snapshot.keyId)               @ zombie/iso/IsoObject.java:4995         -- 舊鑰匙照樣能開
++   vehicle:setColorHSV(h, s, v)                   @ zombie/vehicles/BaseVehicle.java:9779
++   vehicle:setEngineFeature(q, l, p)              @ zombie/vehicles/BaseVehicle.java:8125
++   part:setInventoryItem(item)                    @ media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua:94
++   VehicleUtils.callLua(install.complete)         @ media/lua/shared/Vehicles/TimedActions/ISInstallVehiclePart.lua:97   -- KI5 靠它切換模型
++   **Snapshot.restoreCargo**(capsule, vehicle)    @ media/lua/server/MinidoracatVehicleCapsule/Snapshot.lua:180
++   **Fx.broadcast**("unpack", x, y, z)            @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1
+    VehicleManager 接回車主綁定                       @ MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua:574   -- 不用改 VehicleManager
+</script>
+    </doc-calls>
+    <doc-claim at="MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua:574">
+      <p><b>OwnershipSystem.lua:574</b> · adopt()</p>
+      <doc-code src="MOD/MinidoracatVehicleManagerFor42/Contents/mods/MinidoracatVehicleManagerFor42/42/media/lua/server/MinidoracatVehicleManager_OwnershipSystem.lua" lines="574-589" hl="579-581">
+        <doc-pin line="579" tone="ok" title="零件 modData 要原樣寫回">見證存在 Engine 等零件的 modData。</doc-pin>
+        <doc-pin line="581" tone="ok" title="keyId 要寫回舊值">所以展開時先呼叫 setKeyId。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>貨物用原物件裝進膠囊，展開時放回原來的容器。</p>
+    <doc-code title="Snapshot.lua · sketch（伺服器）" lang="lua" start="60">
+<script type="text/plain">
+function S.packCargo(vehicle, capsule, snap)
+  local box = capsule:getInventory()               -- AddItem 不檢查容量
+  for i = 0, vehicle:getPartCount() - 1 do
+    local part = vehicle:getPartByIndex(i)
+    local inv = part:getItemContainer()
+    if inv then
+      local items = inv:getItems()
+      for j = items:size() - 1, 0, -1 do
+        local item = items:get(j)
+        snap.cargo[tostring(item:getID())] = part:getId()   -- 記住原容器
+        box:AddItem(item)                                   -- 同一個 Java 物件
+      end
+    end
+  end
+end
+</script>
+      <doc-pin line="70" tone="ok" title="液體、髒污、背包內容都保留">不用自己寫序列化。</doc-pin>
+    </doc-code>
+    <doc-note tone="ok"><strong>已定：重量照算</strong> 膠囊重量＝0.2＋貨物，拿在手上也一樣。玩家背包上限 50（ItemContainer.java:91、268），貨物重的膠囊撿不起來，也就丟不出去。玩家不能把東西放進膠囊（MaxItemSize 設得很小）。</doc-note>
+    <doc-note tone="ok"><strong>已定：太重就在地上按下按鈕</strong> 膠囊放在地上時，選單多一個「按下按鈕」，用同一個落點游標選位置，車出現在膠囊 3 格內，貨物照樣放回車上。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>快照只存在伺服器檔案，每顆膠囊只能展開一次。</p>
+    <doc-calls title="快照的保管" caption="物品 modData 會被客戶端整份改寫，所以膠囊只帶編號。">
+<script type="text/plain">
+  SyncItemFieldsPacket.processServer()            @ zombie/network/packets/SyncItemFieldsPacket.java:513   -- 任何已登入的客戶端都能改物品 modData
++ **Store.write**(capsuleId, snapshot)            @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:10  -- 收車當下寫檔
++ **Store.claim**(capsuleId)                      @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:30  -- PACKED 改成 UNPACKED，只能一次
++   getFileWriter(path, true, false)             @ zombie/Lua/LuaManager.java:6727       -- 寫到 Zomboid/Lua，不等世界存檔
+</script>
+    </doc-calls>
+    <doc-note tone="risk"><strong>伺服器當機</strong> 背包約 3 分鐘存一次，地上的物品要等區塊卸載或世界存檔。收車後當機，膠囊可能不見，但快照檔還在，管理員補得回車（claim 5）。展開後當機，膠囊可能回來，但檔案已標成展開過，不會多出一台車。</doc-note>
+    <doc-claim at="media/lua/server/MinidoracatVehicleCapsule/Store.lua:30">
+      <p><b>Store.lua:30</b> · Store.claim()</p>
+      <doc-code title="Store.lua · sketch（伺服器）" lang="lua" start="30">
+<script type="text/plain">
+function Store.claim(capsuleId, player)
+  local snap = Store.read(capsuleId)              -- Zomboid/Lua/MinidoracatVehicleCapsule/packs/<id>.json
+  if not snap then return nil, "NO_SNAPSHOT" end
+  if snap.state ~= "PACKED" then                  -- UNPACKED 或 RESTORED
+    Store.event(capsuleId, "REJECTED", player)    -- 記下誰又丟了一次
+    return nil, "NOT_PACKED"
+  end
+  snap.state = "UNPACKED"
+  if not Store.write(capsuleId, snap) then return nil, "WRITE_FAILED" end
+  return snap                                     -- 生車失敗時再改回 PACKED
+end
+</script>
+        <doc-pin line="38" tone="warn" title="寫完要讀回確認">getFileWriter 失敗時不會報錯。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>收車和展開時，附近玩家都看到煙霧與閃光，也聽到音效。</p>
+    <doc-calls title="特效" caption="伺服器只送一小包座標，每個客戶端自己畫。">
+<script type="text/plain">
++ **Fx.broadcast**(kind, x, y, z)                    @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:1   -- 只送 30 格內的玩家
++   sendServerCommand(player, "VehicleCapsule", "fx", args)   @ zombie/Lua/LuaManager.java:8953
++   addSound(nil, x, y, z, radius, volume)          @ zombie/Lua/LuaManager.java:11754   -- 沙盒半徑大於 0 才引殭屍
++ **Fx.play**(args)                                  @ media/lua/client/MinidoracatVehicleCapsule/Fx.lua:5   -- OnServerCommand；單人直接呼叫
++   getCell():addLamppost(IsoLightSource.new(…))    @ zombie/iso/IsoCell.java:2791   -- 約 0.2 秒的閃光
++   getSoundManager():PlayWorldSoundImpl(…)         @ zombie/SoundManager.java:624   -- 只在本機播
++   isoToScreenX/Y＋UIManager.DrawTexture           @ zombie/Lua/LuaManager.java:3769   -- 8 張卡通煙，約 1.2 秒
+</script>
+    </doc-calls>
+    <doc-note tone="info"><strong>不用原版煙霧和陷阱</strong> IsoFire 的煙會讓殭屍失去目標，life 也不是秒數；陷阱的聲音會在 50 格內引殭屍。卡通煙只畫在畫面上，沒有這些副作用。</doc-note>
+    <doc-claim at="media/lua/client/MinidoracatVehicleCapsule/Fx.lua:5">
+      <p><b>Fx.lua:5</b> · Fx.play()</p>
+      <doc-code title="Fx.lua · sketch（客戶端）" lang="lua">
+<script type="text/plain">
+local SMOKE, active = {}, {}
+local DIR = "media/textures/MinidoracatVehicleCapsule/"
+for i = 1, 8 do SMOKE[i] = getTexture(DIR .. "smoke_" .. i .. ".png") end
+-- OnServerCommand 收到 {id, kind, x, y, z}
+function Fx.play(args)
+  if active[args.id] then return end       -- 分割畫面只播一次
+  local x, y, z = math.floor(args.x), math.floor(args.y), math.floor(args.z)
+  active[args.id] = { t0 = getTimestampMs(), x = x, y = y, z = z }
+  local light = IsoLightSource.new(x, y, z, 1, 0.95, 0.8, 8, 6)
+  getCell():addLamppost(light)
+  getSoundManager():PlayWorldSoundImpl("VehicleCapsulePop",
+    false, x, y, z, 1, 20, 1, false)
+end
+Events.OnPreUIDraw.Add(function()
+  local now = getTimestampMs()
+  for id, fx in pairs(active) do
+    local frame = math.floor((now - fx.t0) / 150) + 1
+    if frame > #SMOKE then active[id] = nil else
+      for p = 0, getNumActivePlayers() - 1 do
+        local w = 192 / getCore():getZoom(p)
+        local sx = isoToScreenX(p, fx.x, fx.y, fx.z)
+        local sy = isoToScreenY(p, fx.x, fx.y, fx.z)
+        UIManager.DrawTexture(SMOKE[frame], sx - w / 2, sy - w * 0.8, w, w, 1)
+      end
+    end
+  end
+end)
+</script>
+        <doc-pin line="9" tone="info" title="life 6 約 0.2 秒">和原版槍口火光一樣（EffectsManager.java:41-59）。</doc-pin>
+        <doc-pin line="11" tone="warn" title="不用 PlayWorldSound">那個在 MP 客戶端會再送回伺服器。</doc-pin>
+        <doc-pin line="17" tone="ok" title="用時間算第幾張">FPS 高低不影響煙的長度。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 3 查看與預覽 ═════ -->
+<doc-claim>
+  <p>玩家可以查看膠囊裡的車況，也能打開 3D 預覽。</p>
+  <doc-mock frame="none" w="340"><template>
+<div class="pz"><div class="win">
+  <div class="tb">車輛預覽<span class="x" data-ref="close" aria-label="關閉">✕</span></div>
+  <div class="bd">
+    <div class="hint">左鍵旋轉・右鍵平移・滾輪縮放・雙擊重設</div>
+    <div class="well" data-ref="scene">
+      <svg viewBox="0 0 200 104" width="180" height="94" aria-hidden="true">
+        <path d="M24 70 L62 44 L128 38 L176 58 L176 76 L40 88 Z" fill="#8a8f96" stroke="#c4c4c4" stroke-width="1.5"/>
+        <path d="M74 45 L98 28 L134 28 L144 42 Z" fill="#5a5f66" stroke="#c4c4c4" stroke-width="1.5"/>
+        <circle cx="60" cy="86" r="9" fill="#1d1d1d" stroke="#777"/><circle cx="152" cy="78" r="9" fill="#1d1d1d" stroke="#777"/>
+      </svg>
+    </div>
+    <div class="views" data-ref="views"><span class="btn">正面</span><span class="btn">側面</span><span class="btn">俯視</span><span class="btn">重設視角</span></div>
+    <div class="grpgap"><div class="nm">93款福特F-150單排座</div><div class="sm mut">Base.93fordF150</div>
+      <div class="chips" style="margin-top:6px"><span class="chip">塗裝 第 5 / 12 款</span><span class="chip"><span class="sw"></span>車色</span></div></div>
+    <div class="st grpgap" data-ref="stats">
+      <span>引擎</span><span class="bar"><i style="width:92%"></i></span><b>92%</b>
+      <span>車身</span><span class="bar"><i style="width:71%"></i></span><b>71%</b>
+      <span>油量</span><span class="bar"><i style="width:69%"></i></span><b>48.5 / 70 L</b>
+      <span>電瓶</span><span class="bar"><i style="width:76%"></i></span><b>76%</b>
+    </div>
+    <div class="lst">
+      <div>缺件：右後車門</div>
+      <div>改裝：車頂架、前保桿護架</div>
+      <div>貨物：132 件，重 85.3</div>
+    </div>
+    <div class="note" data-ref="caveat">3D 畫的是車種預設外觀，選配零件全部畫出。這台車的實際狀態看上面的清單。</div>
+  </div>
+</div></div></template>
+    <doc-pin ref="scene" anchor="tr" title="ISUI3DScene">沿用 VehicleSpawnControl 的場景寫法。</doc-pin>
+    <doc-pin ref="views" anchor="r" title="鍵盤與手把也能換視角">四個按鈕取代拖曳旋轉。</doc-pin>
+    <doc-pin ref="stats" anchor="r" title="數字一律寫出">長條只是輔助，不靠顏色表示好壞。</doc-pin>
+    <doc-pin ref="caveat" anchor="br" title="預覽的限制寫在畫面上">避免玩家以為 3D 就是實車。</doc-pin>
+  </doc-mock>
+
+  <doc-claim>
+    <p>滑鼠移到膠囊上，提示框列出車名、車況和貨物。</p>
+    <doc-mock frame="none" w="320" caption="上：讀到車況。下：等伺服器回覆時。"><template>
+<div class="pz"><div class="tip" style="background:rgba(0,0,0,.5)">
+  <div class="h">車輛膠囊：93款福特F-150單排座</div>
+  <dl class="kv" data-ref="kv" style="margin:0">
+    <dt>重量</dt><dd>85.5</dd>
+    <dt>車種</dt><dd>Base.93fordF150</dd>
+    <dt>車況</dt><dd>引擎 92%・車身 71%</dd>
+    <dt>油量</dt><dd>48.5 / 70 L</dd>
+    <dt>缺件</dt><dd>右後車門</dd>
+    <dt>貨物</dt><dd>132 件，重 85.3</dd>
+    <dt>收車者</dt><dd>Bob</dd>
+  </dl>
+  <div class="gap">右鍵選「預覽車輛」看 3D 外觀。</div>
+</div>
+<div class="tip" style="background:rgba(0,0,0,.5);margin-top:8px" data-ref="loading">
+  <div class="h">車輛膠囊：93款福特F-150單排座</div>
+  <div>車況讀取中…</div>
+</div></div></template>
+      <doc-pin ref="kv" anchor="r" offset="-14,0" title="車況向伺服器要">不讀物品 modData，那份可被改寫。</doc-pin>
+      <doc-pin ref="loading" anchor="r" offset="-14,0" title="伺服器找不到快照時">改寫「這顆膠囊的資料不在這台伺服器上，請找管理員」。</doc-pin>
+    </doc-mock>
+  </doc-claim>
+
+  <doc-claim>
+    <p>3D 預覽只畫車種外觀，不照實際塗裝與選配零件。</p>
+    <doc-shot src="vsc-preview.jpg" caption="VehicleSpawnControl 的預覽：同一套 ISUI3DScene，車色固定。"></doc-shot>
+    <doc-claim>
+      <p><b>MVSC_VehicleTab.lua:173</b> · 預覽場景建立</p>
+      <doc-code src="MOD/MinidoracatVehicleSpawnControlFor42/Contents/mods/MinidoracatVehicleSpawnControlFor42/42/media/lua/client/MinidoracatVehicleSpawnControl/MVSC_VehicleTab.lua" lines="173-198" hl="194-198">
+        <doc-pin line="197" tone="info" title="一個場景、一台車">換車時只呼叫 setVehicleScript。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>膠囊照原作的外型，標誌原創，裝了車的多一條橘色環帶。</p>
+    <doc-shot src="capsule-concept.jpg" caption="codex imagegen 生成的概念圖：左邊空膠囊，右邊裝了車的。">
+      <doc-pin at="4%,40%" title="端蓋按鈕">按下就展開，和原作一樣。</doc-pin>
+      <doc-pin at="29%,27%" title="原創徽記">圓圈裡的汽車側面剪影，機身只印編號。</doc-pin>
+      <doc-pin at="74%,26%" title="裝了車才有橘色環帶">空膠囊沒有，一眼分得出來。</doc-pin>
+    </doc-shot>
+    <doc-note tone="info"><strong>原創的部分</strong> 徽記與編號字樣都是新畫的，不用七龍珠 Capsule Corporation 的標誌、文字與名稱。外型（圓頭短圓柱、端蓋按鈕、接縫環）照原作。地上的模型做大一點，預設縮放下才看得到。</doc-note>
+    <doc-claim at="media/scripts/MinidoracatVehicleCapsule_items.txt:1">
+      <p><b>MinidoracatVehicleCapsule_items.txt:1</b> · 兩種膠囊</p>
+      <doc-code title="MinidoracatVehicleCapsule_items.txt · sketch" lang="text">
+<script type="text/plain">
+module MinidoracatVehicleCapsule
+{
+    item Capsule
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsule,
+        WorldStaticModel = MinidoracatVehicleCapsule.Capsule,
+    }
+
+    item LoadedCapsule
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+        Icon = MinidoracatVehicleCapsuleLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.LoadedCapsule,
+    }
+}
+</script>
+        <doc-pin line="6" tone="info" title="空膠囊不是容器">商店、戰利品、管理員只發這一種。</doc-pin>
+        <doc-pin line="16" tone="info" title="已定：重量照算">膠囊 0.2＋貨物；不設 WeightReduction。</doc-pin>
+        <doc-pin line="18" tone="ok" title="玩家放不進東西">ItemContainer.java:247 擋掉重量超過的物品。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>縮成 32×32 的物品圖示，仍看得出哪顆裝了車。</p>
+    <doc-mock frame="none" w="320" caption="從概念圖直接縮小的預覽。正式圖示會用 3D 模型算圖。"><template>
+<div class="pz stack">
+  <div class="pair">
+    <div><img src="icon-empty.png" width="96" height="96" alt="">空膠囊（放大 3 倍）</div>
+    <div><img src="icon-loaded.png" width="96" height="96" alt="">裝了車（放大 3 倍）</div>
+  </div>
+  <div class="inv" data-ref="inv">
+    <div class="ir"><img src="icon-empty.png" width="32" height="32" alt=""><span>空膠囊</span><b>0.2</b></div>
+    <div class="ir"><img src="icon-loaded.png" width="32" height="32" alt=""><span>車輛膠囊：93款福特F-150單排座</span><b>85.5</b></div>
+  </div>
+</div></template>
+      <doc-pin ref="inv" anchor="tr" offset="-8,-12" title="物品欄實際大小">名稱也寫出車名，不只靠顏色。</doc-pin>
+    </doc-mock>
+  </doc-claim>
+
+  <doc-claim>
+    <p>素材都由 codex 產出：圖片用 imagegen，模型由 codex 寫 Blender 腳本。</p>
+    <doc-tree caption="每個素材旁邊寫著怎麼產生。">
+<script type="text/plain">
+media/textures/
+  + Item_*.png ×2          # 圖示：用膠囊模型算圖，PIL 縮成 32×32
+  + WorldItems/*.png ×2    # 模型貼圖：codex imagegen，照概念圖
+media/textures/MinidoracatVehicleCapsule/
+  + smoke_*.png ×8         # 煙霧：codex imagegen 一張 8 格，PIL 切開去背
+media/models_X/WorldItems/
+  + *.fbx                  # 模型：codex 寫 Blender 腳本，照概念圖
+media/sound/
+  + *.ogg                  # 音效：ElevenLabs，codex 不出聲音
+media/AnimSets/player/actions/
+  + *.xml                  # 丟擲動作節點：沿用原版動畫，不另做
++ poster.png               # 封面：codex imagegen ＋ build_cover.py
+</script>
+    </doc-tree>
+    <doc-note tone="info"><strong>出圖之後要照 PZ 規格後製</strong> 圖示 32×32 透明底、內容約 28×28、1 px 深色外框（pz-blender-models）。煙霧幀在 #FF00FF 底上生成再去背，和封面動畫的遮罩做法相同（release.md:65）。codex 每張圖約 5–10 分鐘（release.md:64）。</doc-note>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 4 取得 ═════ -->
+<doc-claim>
+  <p>空膠囊可以在經濟中心買到，也能由管理員發放或從戰利品拿到。</p>
+  <doc-mock frame="none" w="340" caption="管理員面板的戰利品分頁：每個地點都寫出對應的原版戰利品表。"><template>
+<div class="pz"><div class="win">
+  <div class="tb">車輛膠囊管理<span class="x" aria-label="關閉">✕</span></div>
+  <div class="bd">
+    <div class="tabs"><span class="tab">紀錄</span><span class="tab on">戰利品</span></div>
+    <div class="opt"><span>空膠囊出現在戰利品</span><span class="cb">✓</span></div>
+    <div class="lt">
+      <div class="lr"><span class="cb">✓</span><div><b>修車廠</b><div class="sm mut">MechanicShelfTools、CrateMechanics</div></div><span class="num">0.5</span></div>
+      <div class="lr"><span class="cb">✓</span><div><b>汽車用品店</b><div class="sm mut">CarSupplyTools</div></div><span class="num" data-ref="w2">0.5</span></div>
+      <div class="lr"><span class="cb">✓</span><div><b>加油站修車區</b><div class="sm mut">GasStorageMechanics</div></div><span class="num">0.3</span></div>
+      <div class="lr"><span class="cb"></span><div><b>住家車庫</b><div class="sm mut">GarageMechanics</div></div><span class="num">0.2</span></div>
+    </div>
+    <div class="note" data-ref="fresh">只影響之後第一次打開的容器；已經翻過的容器不會重新生成。</div>
+    <div class="ft2"><span class="btn">取消變更</span><span class="btn pri">套用</span></div>
+  </div>
+</div></div></template>
+    <doc-pin ref="w2" anchor="l" offset="-14,0" title="權重和原版同一套">數字直接寫進原版戰利品表。</doc-pin>
+    <doc-pin ref="fresh" anchor="bl" offset="8,16" title="限制寫在面板上">避免以為翻過的容器會補貨。</doc-pin>
+  </doc-mock>
+  <doc-note tone="ok"><strong>已定：四個地點各自開關與權重</strong> 不開放自訂戰利品表，避免打錯表名卻看不出沒效果。</doc-note>
+
+  <doc-claim>
+    <p>經濟中心不用整合程式，管理員把空膠囊上架即可。</p>
+    <doc-code src="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" lines="176-180" hl="178">
+      <doc-pin line="178" tone="ok" title="任何已載入的物品都能上架">商店只檢查物品 script 存在。</doc-pin>
+    </doc-code>
+  </doc-claim>
+
+  <doc-claim>
+    <p>面板改的就是原版沙盒選項，權限與傳送方式都和沙盒設定頁相同。</p>
+    <doc-calls title="套用戰利品設定" caption="不另存一份設定，所以兩邊看到的值一定一樣。">
+<script type="text/plain">
++ **AdminPanel**:onApply()                         @ media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:1
++   SandboxOptions.new()＋copyValuesFrom(…)        @ media/lua/client/ISUI/AdminPanel/ISServerSandboxOptionsUI.lua:794   -- 原版沙盒頁同一招
++   options:sendToServer()                         @ zombie/SandboxOptions.java:1107
+    SandboxOptions 封包                             @ zombie/network/PacketTypes.java:421   -- 需要 Capability.SandboxOptions
+</script>
+    </doc-calls>
+    <doc-note tone="info"><strong>其他選項留在原版沙盒頁</strong> 展開後歸還空膠囊、沒有 VehicleManager 時誰能收車、膠囊聲音引殭屍的範圍，面板不重做。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>伺服器發現戰利品設定改了，就重排戰利品表，新容器立刻照新設定。</p>
+    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="142-167" hl="150,165" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。">
+      <doc-pin line="150" tone="ok" title="讓引擎重讀分佈表">開服後改設定也立刻生效。</doc-pin>
+      <doc-pin line="165" tone="info" title="每 2 秒比對一次">專用伺服器收到新沙盒時不會自己重讀。</doc-pin>
+    </doc-code>
+  </doc-claim>
+
+  <doc-claim>
+    <p>管理員用原版指令或物品清單發放，不用寫程式。</p>
+    <doc-code title="伺服器主控台 · 原版指令" lang="bash" wrap>
+<script type="text/plain">
+additem "Bob" "MinidoracatVehicleCapsule.Capsule"
+# Item MinidoracatVehicleCapsule.Capsule Added in Bob's inventory.
+</script>
+      <doc-pin line="1" tone="info" title="需要 AddItem 權限">管理面板的物品清單走同一個指令。</doc-pin>
+    </doc-code>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 5 紀錄與補回 ═════ -->
+<doc-claim>
+  <p>每顆膠囊都留下紀錄，管理員查得到去向，遺失時補得回車。</p>
+  <doc-mock frame="none" w="340" caption="紀錄分頁：篩選、清單和選中那顆的明細。入口只出現在管理員的家族工具列。"><template>
+<div class="pz"><div class="win">
+  <div class="tb">車輛膠囊管理<span class="x" aria-label="關閉">✕</span></div>
+  <div class="bd">
+    <div class="tabs"><span class="tab on">紀錄</span><span class="tab">戰利品</span></div>
+    <div class="srch"><span class="sm" style="align-self:center">編號或玩家</span><span class="fld mut">例：10023114、Bob</span><span class="btn">搜尋</span></div>
+    <div class="chipf" data-ref="filter"><span>全部 128</span><span class="on">收起中 2</span><span>已展開 125</span><span>已補回 1</span></div>
+    <div class="lst2">
+      <div class="lr2 sel"><b>10023188</b><span>85款雪佛蘭Step-Van</span><span class="sm">Bob・10/09</span></div>
+      <div class="lr2"><b>10023201</b><span>73款道奇Charger</span><span class="sm">Ann・10/12</span></div>
+    </div>
+    <div class="rec" data-ref="detail">
+      <div class="rh"><b>10023188</b><span>85款雪佛蘭Step-Van</span><span class="tag">收起中</span></div>
+      <ol class="tl"><li>收車・Bob・10/09 18:40・(10598, 9861)</li></ol>
+      <div class="sm">貨物：水瓶 ×6、ALICE 背包 ×1、汽油桶 ×2</div>
+      <div class="ft2"><span class="btn">前往收車位置</span><span class="btn pri">補回車輛</span></div>
+    </div>
+  </div>
+</div></div></template>
+    <doc-pin ref="filter" anchor="tr" offset="-10,10" title="依狀態篩選">已補回的那筆會顯示誰補的和備註。</doc-pin>
+    <doc-pin ref="detail" anchor="bl" offset="10,-10" title="補回前會再確認">可以留備註，例如「已補發水瓶」。</doc-pin>
+  </doc-mock>
+
+  <doc-claim>
+    <p>收車、展開、拒絕和補回，都寫進膠囊紀錄檔和伺服器日誌。</p>
+    <doc-calls title="紀錄" caption="紀錄檔不刪；日誌照原版每次開服封存。">
+<script type="text/plain">
++ **Store.event**(capsuleId, kind, player, extra)   @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:50   -- history 加一筆
++   **Store.write**(capsuleId, snapshot)            @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:10
++   writeLog("VehicleCapsule", line)                @ zombie/Lua/LuaManager.java:9196   -- 寫到 Zomboid/Logs
+    ZLogger 每行加時間                               @ zombie/core/logger/ZLogger.java:18   -- dd-MM-yy HH:mm:ss.SSS
++ ISPackVehicleAction:complete() → PACKED           @ media/lua/shared/TimedActions/ISPackVehicleAction.lua:1   -- 原車編號、位置
++ Unpack.run() → UNPACKED                           @ media/lua/server/MinidoracatVehicleCapsule/Unpack.lua:1   -- 新車編號、位置
++ Store.claim() 失敗 → REJECTED                     @ media/lua/server/MinidoracatVehicleCapsule/Store.lua:30   -- 誰又丟了一次
++ Admin.restore() → RESTORED                        @ media/lua/server/MinidoracatVehicleCapsule/Admin.lua:1    -- 哪位管理員補的
+</script>
+    </doc-calls>
+  </doc-claim>
+
+  <doc-claim>
+    <p>管理員補回車時，原本的膠囊同時失效，不會多出一台車。</p>
+    <doc-code title="Admin.lua · sketch（伺服器）" lang="lua">
+<script type="text/plain">
+function Admin.restore(admin, capsuleId, square, note)
+  if not canManageVehicles(admin) then return "NOT_ADMIN" end
+  local snap = Store.read(capsuleId)
+  if not snap or snap.state ~= "PACKED" then return "NOT_PACKED" end
+  snap.state = "RESTORED"                         -- 原膠囊之後丟出會被拒絕
+  if not Store.write(capsuleId, snap) then return "WRITE_FAILED" end
+  local ok = Unpack.spawn(snap, square)            -- 只補車，貨物只列清單
+  Store.event(capsuleId, ok and "RESTORED" or "RESTORE_FAILED", admin, { note = note })
+  return ok and nil or "SPAWN_FAILED"
+end
+</script>
+      <doc-pin line="2" tone="info" title="照原版權限">和 VehicleManager 一樣看 Capability.ManipulateVehicle。</doc-pin>
+      <doc-pin line="5" tone="ok" title="先改狀態再生車">原膠囊找回來也不能再展開。</doc-pin>
+      <doc-pin line="8" tone="info" title="備註寫進紀錄">補了哪些貨物，其他管理員也看得到。</doc-pin>
+    </doc-code>
+    <doc-note tone="ok"><strong>已定：貨物只列清單</strong> 補回時只補車。明細列出貨物種類與數量，要不要補由管理員決定，補了就寫在備註。</doc-note>
+    <doc-note tone="info"><strong>補得回的情況</strong> 伺服器當機回溯、本 MOD 移除後又裝回，以及地上的膠囊被清理 MOD 清掉。家族 ItemCleaner 同種地上物品超過 100 件才會清；把 LoadedCapsule 加進它的 ProtectList 就不會被清。玩家死亡時膠囊在屍體上或地上，找得回來，不必補。</doc-note>
+    <doc-note tone="warn"><strong>補不回的部分</strong> 貨物原物件放在膠囊裡，膠囊不見就跟著不見，紀錄只留種類與數量。Zomboid/Lua 的紀錄檔被刪掉時，收起中的車都補不回，要列入伺服器備份。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>伺服器維護一份索引，面板一次只拿一頁資料。</p>
+    <doc-calls title="清單查詢" caption="每次事件都更新索引；索引壞掉時，列出 packs 資料夾重建。">
+<script type="text/plain">
++ **Index.put**(capsuleId, row)                     @ media/lua/server/MinidoracatVehicleCapsule/Index.lua:1    -- 編號、狀態、車名、玩家、時間
++   getFileWriter(".../index.json", true, false)   @ zombie/Lua/LuaManager.java:6727
++ **Index.rebuild**()                               @ media/lua/server/MinidoracatVehicleCapsule/Index.lua:60
++   listFilesInZomboidLuaDirectory(".../packs")    @ zombie/Lua/LuaManager.java:6020   -- 索引不見或壞掉時才跑
++ **AdminPanel**:query(filter, page)                @ media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:40
++   **Index.page**(filter, page, 50)               @ media/lua/server/MinidoracatVehicleCapsule/Index.lua:40   -- 先確認是管理員；一頁 50 筆
++   sendServerCommand(admin, "VehicleCapsule", "page", rows)   @ zombie/Lua/LuaManager.java:8953
++ UI.Dock.register{ isAvailable = isAdmin }        @ MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788   -- 入口只給管理員
+</script>
+    </doc-calls>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ shared · not changing ═════ -->
+<doc-claim aux="shared">
+  <p>共用：伺服器的快照檔，以膠囊的物品 id 為鍵。</p>
+  <doc-schema id="snap" lang="lua" title="Zomboid/Lua/MinidoracatVehicleCapsule/packs/&lt;膠囊 id&gt;.json（以 Lua 表示）" caption="檔案存成 JSON；膠囊身上只放名稱。">
+<script type="text/plain">
+{
+  v = 1,                                   -- 格式版本
+  state = "PACKED",                        -- PACKED → UNPACKED 或 RESTORED，只能改一次
+  packedBy = "Bob",                        -- 收車的玩家
+  script = "Base.93fordF150",              -- 車種全名；找不到就拒絕展開
+  name = "93款福特F-150單排座",              -- 車種 MOD 不在時的備用車名
+  skin = 4, hsv = { 0.02, 0.80, 0.60 }, rust = 0.1,
+  engine = { 80, 40, 120 },                -- quality、loudness、power
+  keyId = 48213977,                        -- 寫回新車，舊鑰匙照樣能用
+  modData = { },                           -- 車輛 modData 深拷貝，含其他 MOD 的資料
+  parts = {                                -- 每個零件一列
+    Engine  = { cond = 92, modData = { } },                       -- VehicleManager 見證在這裡
+    GasTank = { item = "Base.BigGasTank2", cond = 100, amount = 48.5 },
+    DoorRearRight = { cond = 0 },                                  -- 沒裝零件：沒有 item
+    -- … 其餘零件同格式
+  },
+  cargo = { ["10023114"] = "TruckBed" },   -- 物品 id → 原本的容器
+  manifest = { ["Base.WaterBottle"] = 6, ["Base.Bag_ALICEpack"] = 1 },   -- 貨物種類與數量，只供查閱
+  history = {                              -- 每次事件加一筆，檔案不刪
+    { t = 1791600000000, ev = "PACKED", by = "Bob", x = 10612, y = 9876, z = 0, car = 3311 },
+    { t = 1791640000000, ev = "UNPACKED", by = "Ann", x = 10650, y = 9900, z = 0, car = 4521 },
+  },
+}
+</script>
+  </doc-schema>
+  <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創。</doc-note>
+</doc-claim>
+
+<doc-claim aux="scope">
+  <p>不改：VehicleManager、Economy、VehicleSpawnControl 的程式。</p>
+  <ul>
+    <li>只呼叫 VehicleManager 的公開 API <code>canUse</code>，不改它的程式。</li>
+    <li>不用原版投擲武器流程：膠囊是容器，原版落點也由客戶端回報。</li>
+    <li>不用原版煙霧與陷阱：它們會改變殭屍行為，也會引殭屍。</li>
+    <li>外型照原作，但不用七龍珠 Capsule Corporation 的標誌、文字與名稱。</li>
+    <li>不做每次收車收費。要收費時，Economy 已有 debit API。</li>
+    <li>不做依地圖座標限制掉落區域。Zones 沒有伺服器端的查詢 API。</li>
+    <li>裝了車的膠囊不能上 Economy 市場：市場會重建物品，編號對不上。</li>
+    <li>拖車裡有動物、正在拖車或引擎發動中的車不能收。</li>
+    <li>膠囊名稱用伺服器語言產生；提示框與預覽用玩家自己的語言。</li>
+    <li>不追蹤展開後那台車的後續；車主與位置交給 VehicleManager。</li>
+  </ul>
+</doc-claim>
+
+</doc-plan>
+</main>
+</body>
+</html>
