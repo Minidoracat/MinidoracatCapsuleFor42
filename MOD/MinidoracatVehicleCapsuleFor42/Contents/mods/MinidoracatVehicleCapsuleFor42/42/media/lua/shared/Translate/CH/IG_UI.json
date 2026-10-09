@@ -1,3 +1,4 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "車輛膠囊：%1"
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "車輛膠囊：%1",
+    "IGUI_MinidoracatVehicleCapsule_CargoLocked": "展開車才拿得到"
 }

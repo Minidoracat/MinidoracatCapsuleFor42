@@ -51,7 +51,8 @@ function Pack.pack(player, vehicle)
         M.log("pack refused " .. tostring(werr) .. " " .. tostring(path or ""))
         return { ok = false, why = werr, path = path }
     end
-    -- From here the snapshot is on disk; move things, delete the car last.
+    -- From here the snapshot is on disk; move things, delete the car last. Settles once the DELETE is committed.
+    Store.schedule(capsuleId)
     local moved = Snapshot.packCargo(vehicle, capsule, snap)
     local key = vehicle:getCurrentKey()
     if key then

@@ -1,11 +1,12 @@
--- Vehicle Capsule: admin-only debug entry points (Phase 1 E2E). The server re-resolves every target by id;
--- client coordinates are only accepted as the unpack spot, within PACK_RANGE of the player.
+-- Vehicle Capsule: admin-only debug entry points (E2E). The server re-resolves every target by id;
+-- client coordinates are only accepted as the unpack spot, within PACK_RANGE of the player, or an admin restore spot.
 -- Real player actions/UI come in later phases.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Store"
 require "MinidoracatVehicleCapsule/Pack"
 require "MinidoracatVehicleCapsule/Unpack"
+require "MinidoracatVehicleCapsule/Admin"
 local M = MinidoracatVehicleCapsule
 local Commands = {}
 M.Commands = Commands
@@ -37,12 +38,26 @@ function Commands.debugUnpack(player, args)
     })
 end
 
--- Read-only: snapshot state and history size (no modData dump).
+-- Read-only: snapshot state, settled/uncertain and history size (no modData dump).
 function Commands.debugInfo(player, args)
-    local snap, why = M.Store.read(tonumber(args.capsuleId) or -1)
+    local id = tonumber(args.capsuleId) or -1
+    local snap, why = M.Store.read(id)
     if not snap then return { ok = false, why = why } end
-    return { ok = true, state = snap.state, script = snap.script, keyId = snap.keyId,
-        history = snap.history and #snap.history or 0 }
+    return { ok = true, state = snap.state, script = snap.script, keyId = snap.keyId, settled = snap.settled == true,
+        uncertain = M.Store.uncertain(id, snap), history = snap.history and #snap.history or 0 }
+end
+
+local function flag(v) return v == true or v == "1" end
+
+-- args: capsuleId, verdict ("present" / "missing"), note, checked
+function Commands.debugResolve(player, args)
+    return M.Admin.resolve(player, tonumber(args.capsuleId) or -1, args.verdict, args.note, flag(args.checked))
+end
+
+-- args: capsuleId, x, y, z, note, checked
+function Commands.debugRestore(player, args)
+    return M.Admin.restore(player, tonumber(args.capsuleId) or -1, tonumber(args.x), tonumber(args.y),
+        tonumber(args.z) or 0, args.note, flag(args.checked))
 end
 
 Events.OnClientCommand.Add(function(module, command, player, args)

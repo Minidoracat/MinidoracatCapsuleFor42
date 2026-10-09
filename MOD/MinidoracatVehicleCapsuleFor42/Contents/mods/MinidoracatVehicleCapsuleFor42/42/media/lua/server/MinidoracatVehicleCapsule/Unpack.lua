@@ -1,11 +1,13 @@
 -- Vehicle Capsule: unpack a capsule into a vehicle (server authority). The snapshot is claimed (UNPACKED)
 -- before the vehicle exists; any failure before the vehicle is in the world puts it back to PACKED.
+-- Unpack.spawn is the one place that builds a vehicle from a snapshot (also used by Admin.restore).
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Store"
 require "MinidoracatVehicleCapsule/Snapshot"
+require "MinidoracatVehicleCapsule/Guard"
 local M = MinidoracatVehicleCapsule
-local Store, Snapshot = M.Store, M.Snapshot
+local Store, Snapshot, Guard = M.Store, M.Snapshot, M.Guard
 local Unpack = {}
 M.Unpack = Unpack
 
@@ -53,34 +55,45 @@ local function removeCapsule(player, capsule)
     end
 end
 
+-- Spawns snap's vehicle on square and writes the snapshot back in the same tick. With `capsule` its cargo goes back
+-- into the part containers; without (admin restore) the containers stay empty.
 -- opts.transmit: flag every transmit* after the restore (test knob).
 -- opts.persist (default true): queue a vehicles.db UPDATE right away; addVehicleDebug INSERTed the random spawn state.
--- Returns { ok = true, vehicleId, sqlId, ... } or { ok = false, why }.
-function Unpack.unpack(player, capsule, square, dir, opts)
+-- Returns vehicle, cargo { home, other, ground } or nil, why ("SCRIPT_MISSING" / "BLOCKED").
+function Unpack.spawn(snap, square, dir, opts, capsule)
     opts = opts or {}
-    local capsuleId = capsule:getID()
-    local snap, why = Store.claim(capsuleId, player)
-    if not snap then return { ok = false, why = why } end
-    if not getScriptManager():getVehicle(snap.script) then
-        Store.release(capsuleId, snap, player, "SCRIPT_MISSING")
-        return { ok = false, why = "SCRIPT_MISSING" }
-    end
-    if not square then
-        Store.release(capsuleId, snap, player, "BLOCKED")
-        return { ok = false, why = "BLOCKED" }
-    end
+    if not getScriptManager():getVehicle(snap.script) then return nil, "SCRIPT_MISSING" end
+    if not square then return nil, "BLOCKED" end
     spawning = true
     local ok, vehicle = pcall(addVehicleDebug, snap.script, IsoDirections[dir or "N"] or IsoDirections.N, nil, square)
     spawning = false
     -- addVehicleDebug returns a vehicle even when the spot is invalid (LuaManager.java:10817-10826)
     if not ok or not vehicle or not vehicle:getSquare() then
         if not ok then M.log("addVehicleDebug failed: " .. tostring(vehicle)) end
-        Store.release(capsuleId, snap, player, "BLOCKED")
-        return { ok = false, why = "BLOCKED" }
+        return nil, "BLOCKED"
     end
     Snapshot.restore(vehicle, snap, opts)
-    local cargo = Snapshot.restoreCargo(capsule, vehicle, snap)
+    local cargo = { home = 0, other = 0, ground = 0 }
+    if capsule then cargo = Snapshot.restoreCargo(capsule, vehicle, snap) end
     if opts.persist ~= false then vehicle:exit(nil) end -- exit(null) only runs VehiclesDB2.updateVehicleAndTrailer (BaseVehicle.java:2543-2549)
+    return vehicle, cargo
+end
+
+-- Returns { ok = true, vehicleId, sqlId, ... } or { ok = false, why }. A capsule whose record is stale (its cargo is
+-- a second copy) is replaced by an empty one: why = "CLEARED".
+function Unpack.unpack(player, capsule, square, dir, opts)
+    local capsuleId = capsule:getID()
+    local snap, why, stale = Store.claim(capsuleId, player)
+    if why == "STALE" then
+        Guard.clear(player, capsule, capsuleId, stale, "unpack")
+        return { ok = false, why = "CLEARED" }
+    end
+    if not snap then return { ok = false, why = why } end
+    local vehicle, cargo = Unpack.spawn(snap, square, dir, opts, capsule)
+    if not vehicle then
+        Store.release(capsuleId, snap, player, cargo)
+        return { ok = false, why = cargo }
+    end
     removeCapsule(player, capsule)
     local inv = player:getInventory()
     local empty = instanceItem(M.ITEM_EMPTY)

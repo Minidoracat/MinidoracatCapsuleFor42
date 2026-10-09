@@ -17,3 +17,7 @@
 ### 新增
 
 - **初始版本**：把停著的車收進膠囊，丟出去就展開，改裝、車況與貨物一起保存
+- **膠囊裡的貨物要展開車才拿得到**：拖曳、全部拿取、吃喝、裝填、製作都不會從膠囊裡拿東西，會提示「展開車才拿得到」
+- **伺服器當機也不會多一台車或多一份貨物**：當機前來不及確認的膠囊會先暫停使用，由管理員到現場確認後處理；確認車已在世界上時，舊膠囊裡多出的那份貨物會自動清掉、換成空膠囊
+
+> 技術要點：管理員除錯指令 `debugResolve`／`debugRestore`；每顆膠囊的紀錄在伺服器 `Zomboid/Lua/MinidoracatVehicleCapsule/packs/`，事件寫進 `VehicleCapsule` 日誌（UNCERTAIN、RESOLVED、CLEARED、CARGO_LOCK、RESTORED）。

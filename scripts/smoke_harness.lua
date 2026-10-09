@@ -38,6 +38,95 @@ function print(...) if not quiet then realPrint(...) end end
 
 Events = setmetatable({}, { __index = function() return { Add = function() end } end })
 
+-- 假物品／容器：只做 Store、Guard、Admin 用到的方法。AddItem 刻意不從舊容器移除（漏呼叫 Remove 會被抓到）
+local nextItemId = 1000
+local function javaList(l)
+    return { size = function() return #l end, get = function(_, i) return l[i + 1] end }
+end
+local function newContainer(holder)
+    local c = { list = {}, holder = holder }
+    function c:getItems() return javaList(self.list) end
+    function c:getContainingItem() return self.holder end
+    function c:AddItem(it) self.list[#self.list + 1] = it; it.container = self; return it end
+    function c:Remove(it)
+        for i, x in ipairs(self.list) do
+            if x == it then table.remove(self.list, i); it.container = nil; return end
+        end
+    end
+    c.DoRemoveItem = c.Remove
+    function c:getItemWithIDRecursiv(id)
+        for _, x in ipairs(self.list) do
+            if x.id == id then return x end
+            local r = x.inv and x.inv:getItemWithIDRecursiv(id)
+            if r then return r end
+        end
+    end
+    function c:getAllTypeRecurse(t)
+        local out = {}
+        local function walk(cc)
+            for _, x in ipairs(cc.list) do
+                if x.type == t then out[#out + 1] = x end
+                if x.inv then walk(x.inv) end
+            end
+        end
+        walk(self)
+        return javaList(out)
+    end
+    return c
+end
+local function newItem(fullType, isContainer)
+    nextItemId = nextItemId + 1
+    local it = { id = nextItemId, type = fullType }
+    function it:getID() return self.id end
+    function it:getFullType() return self.type end
+    function it:getContainer() return self.container end
+    function it:getWorldItem() return nil end
+    if isContainer then
+        it.inv = newContainer(it)
+        function it:getInventory() return self.inv end
+    end
+    return it
+end
+function instanceof(o, cls) return cls == "InventoryContainer" and type(o) == "table" and o.inv ~= nil end
+function instanceItem(t)
+    return newItem(t, t == "MinidoracatVehicleCapsule.LoadedCapsule" or t == "Base.Bag_Schoolbag")
+end
+function sendAddItemToContainer() end
+function sendRemoveItemFromContainer() end
+Capability = { ManipulateVehicle = "ManipulateVehicle" }
+function checkPermissions(p) return p.admin == true end
+local function newPlayer(name, admin)
+    local p = { admin = admin, inv = newContainer(nil) }
+    function p:getUsername() return name end
+    function p:getX() return 100.5 end
+    function p:getY() return 200.7 end
+    function p:getZ() return 0 end
+    function p:getInventory() return self.inv end
+    function p:removeFromHands() end
+    function p:isEquipped(it) return it.equipped == true end
+    function p:isAttachedItem() return false end
+    return p
+end
+-- 假世界：已載入的車（sqlId）與已載入的格子
+local loadedCars, loadedSquares = {}, {}
+function getCell()
+    return {
+        getVehicles = function()
+            return { iterator = function()
+                local i = 0
+                return { hasNext = function() return i < #loadedCars end,
+                    next = function() i = i + 1; return loadedCars[i] end }
+            end }
+        end,
+        getGridSquare = function(_, x, y) return loadedSquares[tostring(x) .. "," .. tostring(y)] end,
+    }
+end
+local function fakeCar(sqlId, script)
+    return { getSqlId = function() return sqlId end, getScriptName = function() return script or "Base.PickUpTruck" end }
+end
+function getScriptManager() return { getVehicle = function(_, s) return s == "Base.PickUpTruck" end } end
+function getOnlinePlayers() return javaList({}) end
+
 -- 假檔案系統：照 getFileWriter 的副檔名白名單（LuaManager.java:1035），且可植入「靜默丟寫」與「寫壞」
 local files, dropWrites, corruptWrites = {}, false, false
 local WHITELIST = { ini = true, cfg = true, txt = true, log = true, json = true }
@@ -79,8 +168,10 @@ end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Json"
 require "MinidoracatVehicleCapsule/Store"
+require "MinidoracatVehicleCapsule/Guard"
+require "MinidoracatVehicleCapsule/Admin"
 local M = MinidoracatVehicleCapsule
-local Json, Store = M.Json, M.Store
+local Json, Store, Guard, Admin = M.Json, M.Store, M.Guard, M.Admin
 
 -- ===== 測試工具 =====
 local failures = 0
@@ -184,7 +275,7 @@ Json.storable(deep, "m", dskip)
 check(#dskip == 1, "循環參照在深度上限處截斷並記一條路徑")
 
 print("Store：寫後讀回、狀態只轉一次")
-local snap = { v = 1, state = "PACKED", script = "Base.PickUpTruck", modData = nasty, history = {} }
+local snap = { v = 1, state = "PACKED", settled = true, script = "Base.PickUpTruck", modData = nasty, history = {} }
 check(Store.write(42, snap) == true, "寫入並讀回一致")
 check(files["MinidoracatVehicleCapsule/packs/42.json"] ~= nil, "落在 packs/<id>.json")
 local r = Store.read(42)
@@ -201,9 +292,9 @@ check(again == nil and why == "NOT_PACKED", "第二次 claim 被拒 NOT_PACKED")
 local h = Store.read(42).history
 check(#h == 1 and h[1].ev == "REJECTED" and h[1].by == "tester", "被拒記 REJECTED（by=" .. tostring(h[1] and h[1].by) .. "）")
 check(#logLines >= 1 and logLines[#logLines]:find("REJECTED capsule=42", 1, true) ~= nil, "REJECTED 寫進 writeLog")
-check(select(2, Store.setState(42, Store.read(42), "RESTORED", player)) == "BAD_TRANSITION", "UNPACKED 不能再轉 RESTORED")
+check(Store.read(42).settled == nil, "claim 清掉 settled（新狀態要重新落盤）")
 
-Store.write(50, { state = "PACKED", history = {} })
+Store.write(50, { state = "PACKED", settled = true, history = {} })
 local s50 = Store.claim(50, player)
 check(Store.release(50, s50, player, "BLOCKED") == true and Store.read(50).state == "PACKED", "生車失敗 release 回 PACKED")
 check(Store.read(50).history[1].ev == "UNPACK_FAILED" and Store.read(50).history[1].why == "BLOCKED", "release 記 UNPACK_FAILED 與原因")
@@ -218,7 +309,7 @@ local ok1, why1 = Store.write(60, { state = "PACKED" })
 quiet = false
 dropWrites = false
 check(ok1 == nil and why1 == "WRITE_FAILED", "靜默丟寫 -> WRITE_FAILED")
-Store.write(61, { state = "PACKED", history = {} })
+Store.write(61, { state = "PACKED", settled = true, history = {} })
 corruptWrites = true
 quiet = true
 local c61, cwhy = Store.claim(61, player)
@@ -228,6 +319,268 @@ check(c61 == nil and cwhy == "WRITE_FAILED", "claim 寫壞 -> WRITE_FAILED，不
 local ok2, why2, path2 = Store.write(62, { modData = { bad = function() end } })
 check(ok2 == nil and why2 == "MODDATA_UNSUPPORTED" and path2 == "modData.bad", "存不成 JSON -> MODDATA_UNSUPPORTED＋路徑")
 check(files["MinidoracatVehicleCapsule/packs/62.json"] == nil, "被拒時不留快照檔")
+
+print("Store：狀態轉換表（只有表上的 5 條箭頭）")
+local STATES = { "PACKED", "UNPACKED", "RESTORED", "VOID" }
+local ARROWS = { ["PACKED>UNPACKED"] = true, ["PACKED>RESTORED"] = true, ["PACKED>VOID"] = true,
+    ["UNPACKED>PACKED"] = true, ["UNPACKED>RESTORED"] = true }
+local tid, badArrows = 100, {}
+quiet = true
+for _, from in ipairs(STATES) do
+    for _, to in ipairs(STATES) do
+        tid = tid + 1
+        Store.write(tid, { state = from, settled = true, history = {} })
+        local ok = Store.setState(tid, Store.read(tid), to, player) == true
+        local after = Store.read(tid)
+        local want = ARROWS[from .. ">" .. to] == true
+        if ok ~= want or after.state ~= (ok and to or from) or (ok and after.history[1].ev ~= to) then
+            badArrows[#badArrows + 1] = from .. ">" .. to
+        end
+    end
+end
+quiet = false
+check(#badArrows == 0, "16 組只有表上的允許，其餘 BAD_TRANSITION 且不動檔案：" .. table.concat(badArrows, ","))
+
+print("Store：落盤標記 settled 與 uncertain")
+local t0 = nowMs
+Store.write(200, { state = "PACKED", history = {} })
+Store.schedule(200)
+check(not Store.uncertain(200, Store.read(200)), "剛收車（pending）不是 uncertain")
+nowMs = t0 + Store.SETTLE_MS - 1
+Store.settleDue(nowMs)
+check(Store.read(200).settled == nil, "未滿 5 秒不寫 settled")
+nowMs = t0 + Store.SETTLE_MS
+quiet = true
+Store.settleDue(nowMs)
+quiet = false
+check(Store.read(200).settled == true and not Store.uncertain(200, Store.read(200)), "滿 5 秒寫上 settled（含讀回）")
+Store.write(201, { state = "UNPACKED", history = {} })
+local logBefore = #logLines
+quiet = true
+check(Store.uncertain(201, Store.read(201)), "沒有 settled 又不在 pending＝uncertain（當機留下的）")
+Store.read(201)
+quiet = false
+local warns = 0
+for i = logBefore + 1, #logLines do
+    if logLines[i]:find("UNCERTAIN capsule=201", 1, true) then warns = warns + 1 end
+end
+check(warns == 1, "開服後第一次讀到 uncertain 寫一行 log，之後不重複（" .. warns .. "）")
+Store.write(202, { state = "PACKED", history = {} })
+Store.schedule(202)
+dropWrites, quiet = true, true
+nowMs = nowMs + Store.SETTLE_MS
+Store.settleDue(nowMs)
+dropWrites, quiet = false, false
+check(Store.read(202).settled == nil and Store.uncertain(202, Store.read(202)), "settle 寫不進去：離開 pending，變 uncertain")
+check(Store.uncertain(203, { state = "VOID" }) == false, "VOID 不算 uncertain")
+
+-- history: PACKED with the original car 7 at (1, 2); UNPACKED/RESTORED add the new car 8 at (x or 1, 2)
+local function rec(id, state, settled, x)
+    local h = { { ev = "PACKED", car = 7, x = 1, y = 2, z = 0 } }
+    if state ~= "PACKED" then h[2] = { ev = state, car = 8, x = x or 1, y = 2, z = 0 } elseif x then h[1].x = x end
+    Store.write(id, { state = state, settled = settled, script = "Base.PickUpTruck",
+        manifest = { ["Base.WaterBottle"] = 2 }, history = h })
+end
+
+print("Store.claim：只接受 PACKED 且不是 uncertain；舊膠囊依狀態處理")
+quiet = true
+local claimCases = {
+    { 301, "PACKED", true, nil }, { 302, "PACKED", nil, "UNCERTAIN" }, { 303, "UNPACKED", nil, "UNCERTAIN" },
+    { 304, "UNPACKED", true, "STALE" }, { 305, "VOID", nil, "STALE" }, { 306, "RESTORED", true, "NOT_PACKED" },
+}
+local claimResults = {}
+for _, c in ipairs(claimCases) do
+    rec(c[1], c[2], c[3])
+    local s, w, stale = Store.claim(c[1], player)
+    local after = Store.read(c[1])
+    local ev = after.history[#after.history]
+    local good
+    if c[4] == nil then
+        good = s ~= nil and after.state == "UNPACKED"
+    elseif c[4] == "STALE" then
+        good = s == nil and w == "STALE" and stale ~= nil and after.state == c[2] and ev.ev ~= "REJECTED"
+    else
+        good = s == nil and w == c[4] and after.state == c[2] and ev.ev == "REJECTED" and ev.why == c[4]
+    end
+    claimResults[#claimResults + 1] = { good, c[2] .. (c[3] and "+settled" or "+unsettled") .. " -> "
+        .. tostring(c[4] or "UNPACKED") .. "（得到 " .. tostring(w or (s and s.state)) .. "）" }
+end
+rec(307, "PACKED", nil)
+Store.schedule(307)
+local quick = Store.claim(307, player)
+quiet = false
+for _, cr in ipairs(claimResults) do check(cr[1], cr[2]) end
+check(quick ~= nil, "同一次開服收車後馬上展開（pending）照常成功")
+
+print("Admin.resolve：只處理 uncertain，分支照判定")
+local admin, nobody = newPlayer("admin", true), newPlayer("bob", false)
+loadedSquares["1,2"] = {}
+local function resolve(id, verdict, checked) return Admin.resolve(admin, id, verdict, "note", checked) end
+quiet = true
+rec(401, "PACKED", nil)
+local rNo = Admin.resolve(nobody, 401, "present")
+rec(402, "PACKED", true)
+local rSettled = resolve(402, "present")
+loadedCars = { fakeCar(7) }
+local r401 = resolve(401, "present")
+local s401 = Store.read(401)
+rec(403, "PACKED", nil)
+local r403exists = resolve(403, "missing")
+loadedCars = {}
+local r403site = resolve(403, "present")
+local r403checked = resolve(403, "present", true)
+rec(404, "PACKED", nil)
+local r404 = resolve(404, "missing")
+rec(405, "UNPACKED", nil)
+loadedCars = { fakeCar(7) } -- only the original car is loaded; the record's car is the new one (8)
+local r405 = resolve(405, "missing")
+local s405 = Store.read(405)
+local claim405 = Store.claim(405, player)
+loadedCars = { fakeCar(8) }
+rec(406, "UNPACKED", nil)
+local r406 = resolve(406, "present")
+loadedCars = {}
+rec(407, "PACKED", nil, 900)
+local r407 = resolve(407, "missing")
+local r407checked = resolve(407, "missing", true)
+rec(408, "PACKED", nil)
+local r408 = resolve(408, "maybe")
+loadedCars = { fakeCar(7, "Base.CarNormal") } -- sqlId reused by another model after a crash
+rec(409, "PACKED", nil)
+local r409 = resolve(409, "missing")
+loadedCars = {}
+quiet = false
+check(rNo.why == "NOT_ADMIN", "非管理員 NOT_ADMIN")
+check(rSettled.why == "NOT_UNCERTAIN", "已落盤的紀錄不必判定 NOT_UNCERTAIN")
+check(r401.ok and s401.state == "VOID" and s401.history[#s401.history].ev == "RESOLVED"
+    and s401.history[#s401.history].verdict == "present", "PACKED＋原車找得到，判「車在」-> VOID，記 RESOLVED")
+check(r403exists.why == "CAR_EXISTS", "伺服器找得到車時「車不在」被拒 CAR_EXISTS")
+check(r403site.why == "CHECK_SITE", "找不到車又沒到現場確認，「車在」-> CHECK_SITE")
+check(r403checked.ok and Store.read(403).state == "VOID", "到現場確認車在 -> VOID")
+check(r404.ok and Store.read(404).state == "PACKED" and Store.read(404).settled == true, "PACKED＋車不在 -> 寫上 settled（照常可補回）")
+check(r405.ok and s405.state == "PACKED" and s405.settled == true, "UNPACKED＋新車不在 -> 改回 PACKED 並 settled")
+check(claim405 ~= nil, "改回 PACKED 後玩家可以再丟一次")
+check(r406.ok and Store.isStale(Store.read(406)), "UNPACKED＋新車在 -> settled，舊膠囊之後會被清空")
+check(r407.why == "CHECK_SITE" and r407checked.ok, "紀錄位置沒載入：「車不在」要 checked")
+check(r408.why == "BAD_ARGS", "不認得的判定 BAD_ARGS")
+check(r409.ok, "同 sqlId 但車種不同（sqlId 被重用）不算紀錄的車")
+
+print("Admin.restore：可補的狀態、CAR_EXISTS、checked、先改 RESTORED 再生車")
+local spawnFails, restoringId, fileAtSpawn = false, nil, {}
+M.Unpack.spawn = function(s)
+    fileAtSpawn[restoringId] = s.state .. "/" .. tostring(Store.read(restoringId).state)
+    if spawnFails then return nil, "BLOCKED" end
+    local sq = { getX = function() return 1 end, getY = function() return 2 end, getZ = function() return 0 end }
+    return { getSquare = function() return sq end, getSqlId = function() return 99 end, getId = function() return 5 end }, {}
+end
+local function restore(id, x, checked)
+    restoringId = id
+    return Admin.restore(admin, id, x or 1, 2, 0, "gave water back", checked)
+end
+quiet = true
+local notRestorable = {}
+for id, st in pairs({ [501] = { "VOID", true }, [502] = { "RESTORED", true }, [503] = { "UNPACKED", true } }) do
+    rec(id, st[1], st[2])
+    notRestorable[#notRestorable + 1] = restore(id, 1, true).why
+end
+rec(504, "PACKED", true)
+loadedCars = { fakeCar(7) }
+local r504 = restore(504)
+loadedCars = {}
+rec(505, "PACKED", nil)
+local r505 = restore(505)
+local r505checked = restore(505, 1, true)
+rec(506, "PACKED", true)
+local r506 = restore(506)
+local s506 = Store.read(506)
+local claim506, why506 = Store.claim(506, player)
+rec(507, "UNPACKED", nil)
+local r507 = restore(507, 1, true)
+rec(508, "UNPACKED", nil)
+spawnFails = true
+local r508 = restore(508, 1, true)
+spawnFails = false
+nowMs = nowMs + Store.SETTLE_MS
+Store.settleDue(nowMs)
+local s508 = Store.read(508)
+rec(509, "PACKED", true)
+local r509 = restore(509, 900)
+quiet = false
+check(table.concat(notRestorable, ",") == "NOT_RESTORABLE,NOT_RESTORABLE,NOT_RESTORABLE", "VOID、RESTORED、已落盤 UNPACKED 不能補：" .. table.concat(notRestorable, ","))
+check(r504.why == "CAR_EXISTS", "紀錄的車找得到 -> CAR_EXISTS")
+check(r505.why == "CHECK_SITE" and r505checked.ok, "uncertain 的 PACKED 要 checked 才補")
+check(r506.ok and r506.sqlId == 99 and fileAtSpawn[506] == "RESTORED/RESTORED", "生車時快照與檔案已是 RESTORED（" .. tostring(fileAtSpawn[506]) .. "）")
+local last506 = s506.history[#s506.history]
+check(last506.ev == "RESTORED" and last506.car == 99 and last506.note == "gave water back" and last506.items == "Base.WaterBottle*2"
+    and s506.history[#s506.history - 1].ev == "RESTORE_START", "記 RESTORE_START、RESTORED（新車、備註、貨物清單）")
+check(claim506 == nil and why506 == "NOT_PACKED", "補回後原膠囊不能再展開")
+check(r507.ok and Store.read(507).state == "RESTORED", "uncertain 的 UNPACKED 確認後可補")
+check(r508.why == "BLOCKED" and s508.state == "UNPACKED" and s508.settled == nil and Store.uncertain(508, s508)
+    and s508.history[#s508.history].ev == "RESTORE_FAILED", "生車失敗退回原狀態，仍是 uncertain（不會被 settle）")
+check(r509.why == "BLOCKED" and Store.read(509).state == "PACKED", "補回位置沒載入 -> BLOCKED，不動狀態")
+
+print("Guard：清空規則（哪些狀態清、哪些不動）與貨物鎖")
+local owner = newPlayer("owner", false)
+local function packedCapsule(state, settled)
+    local cap = instanceItem(M.ITEM_LOADED)
+    local water, bag, pencil = newItem("Base.WaterBottle"), newItem("Base.Bag_Schoolbag", true), newItem("Base.Pencil")
+    cap.inv:AddItem(water)
+    cap.inv:AddItem(bag)
+    bag.inv:AddItem(pencil)
+    owner.inv:AddItem(cap)
+    Store.write(cap.id, { state = state, settled = settled, script = "Base.PickUpTruck",
+        sealed = { water.id, bag.id, pencil.id }, history = { { ev = "PACKED", car = 7 } } })
+    return cap, water, bag, pencil
+end
+local function topLevel(type)
+    local n = 0
+    for _, x in ipairs(owner.inv.list) do if x.type == type then n = n + 1 end end
+    return n
+end
+local clearCases = {
+    { "UNPACKED", true, true }, { "VOID", nil, true },
+    { "PACKED", nil, false }, { "UNPACKED", nil, false }, { "RESTORED", true, false }, { "PACKED", true, false },
+}
+quiet = true
+local clearResults = {}
+for _, c in ipairs(clearCases) do
+    local cap = packedCapsule(c[1], c[2])
+    local empties = topLevel(M.ITEM_EMPTY)
+    Guard.pass(owner)
+    local gone = owner.inv:getItemWithIDRecursiv(cap.id) == nil
+    local h = Store.read(cap.id).history
+    local cleared = gone and topLevel(M.ITEM_EMPTY) == empties + 1 and h[#h].ev == "CLEARED"
+        and h[#h].items:find("Base.Pencil*1", 1, true) ~= nil
+    clearResults[#clearResults + 1] = { (c[3] and cleared) or (not c[3] and not gone and h[#h].ev ~= "CLEARED"),
+        c[1] .. (c[2] and "+settled" or "+unsettled") .. (c[3] and " -> 換成空膠囊、記 CLEARED 與貨物" or " -> 不動") }
+    if not gone then owner.inv:Remove(cap) end
+end
+local stale = packedCapsule("UNPACKED", true)
+local unpackRes = M.Unpack.unpack(owner, stale, nil, "N")
+local staleGone = owner.inv:getItemWithIDRecursiv(stale.id) == nil
+local cap, water, bag, pencil = packedCapsule("PACKED", true)
+cap.inv:Remove(water)
+owner.inv:AddItem(water)
+cap.inv:Remove(bag)
+owner.inv:AddItem(bag)
+Guard.pass(owner)
+local lockH = Store.read(cap.id).history
+cap.inv:Remove(water)
+owner.inv:AddItem(water)
+water.equipped = true
+Guard.pass(owner)
+Guard.pass(owner)
+local missing = 0
+for _, e in ipairs(Store.read(cap.id).history) do if e.why == "missing" then missing = missing + 1 end end
+quiet = false
+for _, cr in ipairs(clearResults) do check(cr[1], cr[2]) end
+check(unpackRes.why == "CLEARED" and staleGone, "展開時遇到已落盤的 UNPACKED：拒絕並清空（CLEARED）")
+check(bag.container == cap.inv and pencil.container == bag.inv and topLevel("Base.Bag_Schoolbag") == 0,
+    "搬出的背包連同裡面的鉛筆放回膠囊，玩家身上不留")
+local lockEv = lockH[#lockH]
+check(lockEv.ev == "CARGO_LOCK" and lockEv.why == "returned" and lockEv.items:find("Base.WaterBottle", 1, true) ~= nil
+    and lockEv.items:find("Base.Bag_Schoolbag", 1, true) ~= nil, "記 CARGO_LOCK returned（水瓶、背包）：" .. tostring(lockEv.items))
+check(water.container == owner.inv and missing == 1, "裝備中的物品不硬拿，只記一次 missing")
 
 print()
 if failures > 0 then

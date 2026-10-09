@@ -1,3 +1,4 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Vehicle Capsule: %1"
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Vehicle Capsule: %1",
+    "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Unpack the vehicle to get this out"
 }

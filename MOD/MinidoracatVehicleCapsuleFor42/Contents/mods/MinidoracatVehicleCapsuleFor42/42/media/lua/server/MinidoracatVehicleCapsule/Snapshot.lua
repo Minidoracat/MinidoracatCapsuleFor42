@@ -57,6 +57,15 @@ local function capturePart(part, skipped)
     return ps
 end
 
+-- Appends the ids of item and everything inside it (bags in the cargo) to list.
+local function seal(item, list)
+    list[#list + 1] = item:getID()
+    if instanceof(item, "InventoryContainer") then
+        local items = item:getInventory():getItems()
+        for i = 0, items:size() - 1 do seal(items:get(i), list) end
+    end
+end
+
 -- Plain table of everything we restore. snap.skipped lists modData paths the engine would not persist either.
 function Snapshot.capture(vehicle)
     local snap = {
@@ -75,6 +84,7 @@ function Snapshot.capture(vehicle)
         parts = {},
         cargo = {},    -- item id -> part id it came from
         manifest = {}, -- full type -> count (top-level items only)
+        sealed = {},   -- every cargo item id at any depth: what the guard keeps inside the capsule
         skipped = {},
     }
     snap.modData = modDataOf(vehicle, "modData", snap.skipped)
@@ -90,6 +100,7 @@ function Snapshot.capture(vehicle)
                 snap.cargo[item:getID()] = part:getId()
                 local ft = item:getFullType()
                 snap.manifest[ft] = (snap.manifest[ft] or 0) + 1
+                seal(item, snap.sealed)
             end
         end
     end
