@@ -1,0 +1,44 @@
+require "TimedActions/ISBaseTimedAction"
+require "MinidoracatVehicleCapsule/Rules"
+
+-- Pack a parked vehicle into the player's empty capsule. The client sends a "pack" intent (with the capsule name in
+-- its own language) when it queues this (client/MinidoracatVehicleCapsule/Menu.lua); complete() runs on the server
+-- (SP: locally) and checks everything again (MinidoracatVehicleCapsule.Play.pack).
+ISPackVehicleAction = ISBaseTimedAction:derive("ISPackVehicleAction")
+local M = MinidoracatVehicleCapsule
+
+function ISPackVehicleAction:isValid()
+    return self.vehicle ~= nil and self.vehicle:getSquare() ~= nil
+        and M.Rules.vehicleWhyNot(self.character, self.vehicle) == nil
+end
+
+function ISPackVehicleAction:waitToStart()
+    self.character:faceThisObject(self.vehicle)
+    return self.character:shouldBeTurning()
+end
+
+function ISPackVehicleAction:update()
+    self.character:faceThisObject(self.vehicle)
+    self.character:setMetabolicTarget(Metabolics.LightWork)
+end
+
+function ISPackVehicleAction:start()
+    self:setActionAnim("VehicleWorkOnMid")
+end
+
+function ISPackVehicleAction:complete()
+    return M.Play.pack(self.character, self.vehicle, self.capsuleName)
+end
+
+function ISPackVehicleAction:getDuration()
+    if self.character:isTimedActionInstant() then return 1 end
+    return M.Rules.PACK_SECONDS * 50 -- 1 unit = 20 ms (NetTimedAction.getDuration)
+end
+
+-- MP: the server rebuilds the action from these parameters (NetTimedAction.java:36-55); capsuleName is SP only.
+function ISPackVehicleAction:new(character, vehicle)
+    local o = ISBaseTimedAction.new(self, character)
+    o.vehicle = vehicle
+    o.maxTime = o:getDuration()
+    return o
+end

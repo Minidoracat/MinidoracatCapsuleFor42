@@ -1,12 +1,14 @@
 require "TimedActions/ISBaseTimedAction"
+require "MinidoracatVehicleCapsule/Core"
 
--- Throw a capsule at (x, y, z). Plays the vanilla Molotov clip through our own action node
+-- Throw a loaded capsule at (x, y, z). Plays the vanilla Molotov clip through our own action node
 -- (AnimSets/player/actions/MinidoracatVehicleCapsuleThrow.xml): the vanilla Throw node only
 -- matches Weapon=throwing, and a capsule is a container, not a HandWeapon.
--- CapsuleRelease (30%) is when the item leaves the hand; CapsuleEnd (75%) ends the action.
--- The dedicated server plays no animations, so serverStart emulates both events with the same
+-- CapsuleRelease (30%) is when the capsule leaves the hand (nearby clients see it fly); CapsuleEnd (75%) ends
+-- the action. The dedicated server plays no animations, so serverStart emulates both events with the same
 -- timing (emulateAnimEventOnce, LuaManager.java:12237; same approach as Workshop 3809762635).
--- Spike stage: the item is not consumed and nothing spawns; release and complete only log.
+-- Only complete() changes the world (server, or SP): an action stopped after the release never gets there.
+-- The client sends a "throw" intent when it queues this (client/MinidoracatVehicleCapsule/Menu.lua).
 ISThrowCapsuleAction = ISBaseTimedAction:derive("ISThrowCapsuleAction")
 
 ISThrowCapsuleAction.ANIM = "MinidoracatVehicleCapsuleThrow"
@@ -14,7 +16,7 @@ ISThrowCapsuleAction.ANIM = "MinidoracatVehicleCapsuleThrow"
 -- Bob_AttackThrowMolotov lasts 7040 ticks at 4800 ticks/s; the node plays it at m_SpeedScale 0.8.
 local ANIM_MS = 7040 / 4800 / 0.8 * 1000
 local RELEASE_PC, END_PC = 0.3, 0.75
-local LOG = "[MinidoracatVehicleCapsule] "
+local M = MinidoracatVehicleCapsule
 
 local function side()
     if isServer() then return "server" end
@@ -22,7 +24,8 @@ local function side()
 end
 
 function ISThrowCapsuleAction:isValid()
-    return self.item ~= nil and self.character:getInventory():containsID(self.item:getID())
+    return self.item ~= nil and self.item:getFullType() == M.ITEM_LOADED
+        and self.character:getInventory():containsID(self.item:getID())
 end
 
 -- faceLocation sets the direction at once but the body (animAngle) turns over up to ~700 ms, and the clip
@@ -58,12 +61,13 @@ function ISThrowCapsuleAction:animEvent(event, parameter)
     if event == "CapsuleRelease" then
         if self.released then return end
         self.released = getTimestampMs()
-        print(string.format("%srelease side=%s player=%s item=%d sinceStart=%d ts=%d", LOG, side(),
+        M.log(string.format("release side=%s player=%s item=%d sinceStart=%d ts=%d", side(),
             self.character:getUsername(), self.item and self.item:getID() or -1,
             self.released - (self.startMs or self.released), self.released))
         if not isServer() then
             self:setOverrideHandModels(nil, self.character:getSecondaryHandItem())
         end
+        if not isClient() and M.Play then M.Play.released(self) end
     elseif event == "CapsuleEnd" and self.maxTime == -1 then
         if isServer() then
             self.netAction:forceComplete()
@@ -75,15 +79,7 @@ end
 
 -- MP: server only (LuaTimedActionNew.java:163-170); SP: local.
 function ISThrowCapsuleAction:complete()
-    if not self:isValid() then
-        print(LOG .. "complete rejected: item not in inventory")
-        return false
-    end
-    local now = getTimestampMs()
-    print(string.format("%scomplete side=%s ts=%d player=%s item=%d target=%d,%d,%d sinceStart=%d released=%s",
-        LOG, side(), now, self.character:getUsername(), self.item:getID(), self.x, self.y, self.z,
-        now - (self.startMs or now), tostring(self.released ~= nil)))
-    return true
+    return M.Play.throw(self)
 end
 
 function ISThrowCapsuleAction:getDuration()

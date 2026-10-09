@@ -582,6 +582,152 @@ check(lockEv.ev == "CARGO_LOCK" and lockEv.why == "returned" and lockEv.items:fi
     and lockEv.items:find("Base.Bag_Schoolbag", 1, true) ~= nil, "記 CARGO_LOCK returned（水瓶、背包）：" .. tostring(lockEv.items))
 check(water.container == owner.inv and missing == 1, "裝備中的物品不硬拿，只記一次 missing")
 
+-- ===== Phase 3：落點範圍、收車權限、玩家身分（intent） =====
+require "MinidoracatVehicleCapsule/Footprint"
+require "MinidoracatVehicleCapsule/Rules"
+local clientCommand
+Events.OnClientCommand = { Add = function(fn) clientCommand = fn end }
+require "MinidoracatVehicleCapsule/PlayerCommands"
+local Footprint, Rules, Play = M.Footprint, M.Rules, M.Play
+
+print("Footprint：方向與範圍")
+check(Footprint.dirOf(5, 1) == "E" and Footprint.dirOf(-5, 1) == "W" and Footprint.dirOf(1, 6) == "S"
+    and Footprint.dirOf(0, -3) == "N" and Footprint.dirOf(3, 3) == "E", "丟出方向取最近的東南西北")
+-- 車身繞中心最多偏 0.2 rad（addVehicleDebug）：四角在各角度都要落在 box 內
+local function bodyInside(x, y, dir, w, l)
+    local b = Footprint.box(x, y, dir, w, l)
+    local base = ({ N = 0, S = 0, E = math.pi / 2, W = math.pi / 2 })[dir]
+    for _, da in ipairs({ -0.2, -0.1, 0, 0.1, 0.2 }) do
+        local a = base + da
+        for _, c in ipairs({ { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } }) do
+            local lx, ly = c[1] * w / 2, c[2] * l / 2 -- 寬沿 x、長沿 y（朝北）
+            local px = x + lx * math.cos(a) - ly * math.sin(a)
+            local py = y + lx * math.sin(a) + ly * math.cos(a)
+            local tx, ty = math.floor(px), math.floor(py)
+            if tx < b.x1 or tx > b.x2 or ty < b.y1 or ty > b.y2 then return false, b end
+        end
+    end
+    return true, b
+end
+local inN, bN = bodyInside(10, 20, "N", 2.2, 5.0)
+local inE, bE = bodyInside(10, 20, "E", 2.2, 5.0)
+check(inN and inE, "皮卡（2.2×5）朝北／朝東轉 ±0.2 rad，四角都在 box 內")
+check(bN.y2 - bN.y1 > bN.x2 - bN.x1 and bE.x2 - bE.x1 > bE.y2 - bE.y1, "朝北長邊沿 y、朝東長邊沿 x")
+
+-- 假格子：預設空曠的戶外地面
+IsoFlagType = { solidfloor = "solidfloor" }
+for k in pairs(loadedSquares) do loadedSquares[k] = nil end
+local function fakeSquare(x, y)
+    local s = { x = x, y = y, free = true, floor = true, outside = true, wallE = false, wallS = false }
+    function s:getX() return self.x end
+    function s:getY() return self.y end
+    function s:getZ() return 0 end
+    function s:getVehicleContainer() return self.vehicle end
+    function s:getMovingObjects() return javaList(self.movers or {}) end
+    function s:isFree() return self.free and self.floor and not self.tree end
+    function s:HasTree() return self.tree == true end
+    function s:has(flag) return flag == "solidfloor" and self.floor end
+    function s:isOutside() return self.outside end
+    function s:isBlockedTo(o)
+        if o.x == self.x + 1 then return self.wallE end
+        if o.y == self.y + 1 then return self.wallS end
+        return false
+    end
+    loadedSquares[x .. "," .. y] = s
+    return s
+end
+for x = 0, 30 do for y = 0, 40 do fakeSquare(x, y) end end
+local function sq(x, y) return loadedSquares[x .. "," .. y] end
+local function getSq(x, y) return sq(x, y) end
+local pickup = { getExtents = function() return { x = function() return 2.2 end, z = function() return 5.0 end } end }
+local function clearAt(x, y, dir) return (Footprint.clear(pickup, x, y, 0, dir or "N")) end
+check(clearAt(10, 20) == nil, "空地：放得下")
+local function blockedBy(setup, undo, want, label)
+    setup()
+    local got = clearAt(10, 20)
+    undo()
+    check(got == want, label .. "（得到 " .. tostring(got) .. "）")
+end
+blockedBy(function() sq(9, 18).tree = true end, function() sq(9, 18).tree = nil end, "TREE", "車身範圍內有樹")
+blockedBy(function() sq(10, 22).free = false end, function() sq(10, 22).free = true end, "SOLID", "車身範圍內有家具")
+blockedBy(function() sq(11, 17).floor = false end, function() sq(11, 17).floor = true end, "NO_FLOOR", "沒有地面（水）")
+blockedBy(function() sq(8, 22).vehicle = {} end, function() sq(8, 22).vehicle = nil end, "VEHICLE", "另一台車壓到範圍")
+blockedBy(function() sq(10, 17).movers = { {} } end, function() sq(10, 17).movers = nil end, "PERSON", "範圍內有人或殭屍")
+blockedBy(function() sq(10, 16).movers = { {} } end, function() sq(10, 16).movers = nil end, nil, "車頭前一格的人不算")
+blockedBy(function() sq(9, 20).wallE = true end, function() sq(9, 20).wallE = false end, "WALL", "範圍內兩格之間有牆或圍欄")
+blockedBy(function() sq(11, 20).wallE = true end, function() sq(11, 20).wallE = false end, nil, "範圍外緣的牆不算（不擋車身）")
+blockedBy(function() sq(10, 20).outside = false end, function() sq(10, 20).outside = true end, "INDOORS", "中心在室內")
+blockedBy(function() loadedSquares["12,21"] = nil end, function() fakeSquare(12, 21) end, nil, "範圍外的格子沒載入不影響")
+blockedBy(function() loadedSquares["11,21"] = nil end, function() fakeSquare(11, 21) end, "UNLOADED", "範圍內的格子沒載入")
+check(Footprint.blocked(getSq, Footprint.box(10, 20, "E", 2.2, 5.0), 0) == nil, "朝東也放得下")
+-- 按按鈕：玩家站在膠囊旁邊，車放在另一側 3 格（中心＝落點格的西北角），玩家那一格不能在範圍內
+local pb = Footprint.box(23, 30, "E", 2.2, 5.0)
+check(pb.x1 >= 20, "膠囊在 (20,30)、往東 3 格放車：站在膠囊西邊 (19,30) 的玩家不在範圍內（x1=" .. pb.x1 .. "）")
+
+print("Footprint：丟擲距離與視線")
+local losBlocked = false
+LosUtil = { lineClear = function() return losBlocked and "Blocked" or "Clear" end }
+check(Footprint.reach(10.5, 10.5, 0, 17, 10, 0, 8, true) == nil, "7 格、看得到：可以丟")
+check(Footprint.reach(10.5, 10.5, 0, 19, 10, 0, 8, true) == "TOO_FAR", "8.5 格：太遠")
+check(Footprint.reach(10.5, 10.5, 1, 15, 10, 0, 8, true) == "TOO_FAR", "不同樓層：不行")
+losBlocked = true
+check(Footprint.reach(10.5, 10.5, 0, 15, 10, 0, 8, true) == "NO_SIGHT", "視線被擋：看不到")
+check(Footprint.reach(10.5, 10.5, 0, 12, 10, 0, 3, false) == nil, "按按鈕不看視線，只看 3 格內")
+losBlocked = false
+
+print("Rules：膠囊名稱、收車權限")
+check(Rules.cleanName("  Vehicle Capsule: [b]Car\n\1<RGB:1,0,0>  ") == "Vehicle Capsule: bCarRGB:1,0,0",
+    "清掉控制字元、[ ]、< >，去頭尾空白：" .. tostring(Rules.cleanName("  Vehicle Capsule: [b]Car\n\1<RGB:1,0,0>  ")))
+check(#Rules.cleanName(string.rep("a", 200)) == Rules.NAME_MAX, "名稱最長 64")
+check(Rules.cleanName(" \n ") == nil and Rules.cleanName(nil) == nil and Rules.cleanName(5) == nil, "空的或不是字串：退回伺服器組字")
+local car = { keyId = 4242, ignition = false }
+function car:getKeyId() return self.keyId end
+function car:isKeysInIgnition() return self.ignition end
+function car:getCurrentKey() return nil end
+local keyHolder, stranger, admin3 = newPlayer("keyholder", false), newPlayer("stranger", false), newPlayer("boss", true)
+keyHolder.inv.haveThisKeyId = function(_, id) return id == 4242 and {} or nil end
+stranger.inv.haveThisKeyId = function() return nil end
+admin3.inv.haveThisKeyId = function() return nil end
+SandboxVars = { MinidoracatVehicleCapsule = { PackPermission = 1 } }
+check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car), "模式 1：有鑰匙才行（背包）")
+check(not Rules.mayPack(admin3, car), "模式 1：管理員沒鑰匙也不行（照設定字面）")
+car.ignition = true
+check(Rules.mayPack(stranger, car), "模式 1：鑰匙插在點火孔，誰都能收")
+car.ignition = false
+SandboxVars.MinidoracatVehicleCapsule.PackPermission = 2
+check(Rules.mayPack(stranger, car), "模式 2：任何人")
+SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
+check(Rules.mayPack(admin3, car) and not Rules.mayPack(keyHolder, car), "模式 3：只有管理員")
+MinidoracatVehicleManagerAPI = { canUse = function(p) return p == stranger end }
+local vmOk, vmMode = Rules.mayPack(stranger, car)
+check(vmOk and vmMode == "VM" and not Rules.mayPack(admin3, car), "有 VehicleManager：改用 canUse(MANAGE)，沙盒不看")
+MinidoracatVehicleManagerAPI = nil
+SandboxVars = nil
+
+print("Play：身分只認 OnClientCommand 的連線（intent）")
+local alice, bob = newPlayer("alice", false), newPlayer("bob", false)
+clientCommand(M.MODULE, "intent", alice, { kind = "pack", id = 77, name = "[x]Car\n" })
+clientCommand(M.MODULE, "intent", alice, { kind = "nuke", id = 77 })
+check(Play.takeIntent(bob, "pack", 77) == nil, "別人的 intent 不能拿來用（bob 冒充 alice 的車）")
+local it = Play.takeIntent(alice, "pack", 77)
+check(it ~= nil and it.name == "xCar", "同一連線的 intent 可用，名稱已清理：" .. tostring(it and it.name))
+check(Play.takeIntent(alice, "pack", 77) == nil, "intent 用一次就沒了")
+check(Play.takeIntent(alice, "nuke", 77) == nil, "不認得的種類不收")
+clientCommand(M.MODULE, "intent", alice, { kind = "throw", id = 9 })
+nowMs = nowMs + 61000
+check(not Play.hasIntent(alice, "throw", 9), "60 秒後過期")
+logLines = {}
+local printed, savedPrint = {}, print
+alice.inv.containsID = function() return false end
+print = function(s) printed[#printed + 1] = tostring(s) end
+local refused = Play.pack(alice, { getId = function() return 77 end }, "local")
+local thrown = Play.throw({ character = alice, item = { getID = function() return 5 end,
+    getFullType = function() return M.ITEM_LOADED end }, x = 1, y = 1, z = 0 })
+print = savedPrint
+check(refused == false and printed[1] and printed[1]:find("pack refused by=alice why=NO_INTENT", 1, true) ~= nil,
+    "沒有 intent 的收車被拒並記一行：" .. tostring(printed[1]))
+check(thrown == false, "膠囊不在背包裡的丟擲被拒")
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")
