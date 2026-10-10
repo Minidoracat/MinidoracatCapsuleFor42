@@ -185,6 +185,14 @@ function Info.details(r)
     local byName = function(a, b) return a < b end
     isort(d.missing, byName)
     isort(d.mods, byName)
+    -- Parts can share one item (KI5 left and right window armor): list each name once, with " x2" for repeats.
+    local merged = {}
+    for _, name in ipairs(d.mods) do
+        local last = merged[#merged]
+        if last and last.name == name then last.n = last.n + 1 else merged[#merged + 1] = { name = name, n = 1 } end
+    end
+    d.mods = {}
+    for i, m in ipairs(merged) do d.mods[i] = m.n > 1 and (m.name .. " x" .. m.n) or m.name end
     for _, e in ipairs(r.manifest or {}) do
         d.cargo[#d.cargo + 1] = { name = Info.itemName(e.ft), n = tonumber(e.n) or 0 }
         d.cargoN = d.cargoN + (tonumber(e.n) or 0)
