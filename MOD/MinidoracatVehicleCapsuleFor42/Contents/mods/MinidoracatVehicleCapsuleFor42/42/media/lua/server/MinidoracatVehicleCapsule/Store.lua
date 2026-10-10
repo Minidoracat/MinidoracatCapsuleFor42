@@ -62,6 +62,8 @@ function Store.isStale(snap)
 end
 
 -- Returns snap, or nil plus "NO_SNAPSHOT" / "CORRUPT". The first uncertain read of a run is logged for admins.
+-- A record whose last event is newer than two settle windows is being written right now (the index reloads inside
+-- Store.write before the caller schedules the settle), not a crash leftover: no log for it.
 function Store.read(capsuleId)
     local text = readText(Store.path(capsuleId))
     if not text then return nil, "NO_SNAPSHOT" end
@@ -72,11 +74,15 @@ function Store.read(capsuleId)
     end
     remember(capsuleId, snap)
     if Store.uncertain(capsuleId, snap) and not warned[capsuleId] then
-        warned[capsuleId] = true
-        local line = M.LOG_PREFIX .. "UNCERTAIN capsule=" .. tostring(capsuleId) .. " state=" .. tostring(snap.state)
-            .. " (written right before a crash; an admin has to resolve it)"
-        writeLog("VehicleCapsule", line)
-        print(line)
+        local h = snap.history
+        local last = h and h[#h] and tonumber(h[#h].t) or 0
+        if getTimestampMs() - last > 2 * Store.SETTLE_MS then
+            warned[capsuleId] = true
+            local line = M.LOG_PREFIX .. "UNCERTAIN capsule=" .. tostring(capsuleId) .. " state=" .. tostring(snap.state)
+                .. " (written right before a crash; an admin has to resolve it)"
+            writeLog("VehicleCapsule", line)
+            print(line)
+        end
     end
     return snap
 end

@@ -464,6 +464,12 @@ check(r406.ok and Store.isStale(Store.read(406)), "UNPACKED＋新車在 -> settl
 check(r407.why == "CHECK_SITE" and r407checked.ok, "紀錄位置沒載入：「車不在」要 checked")
 check(r408.why == "BAD_ARGS", "不認得的判定 BAD_ARGS")
 check(r409.ok, "同 sqlId 但車種不同（sqlId 被重用）不算紀錄的車")
+local placed = Admin.recordedCar({ history = {
+    { ev = "PACKED", x = 10, y = 10, z = 0, car = 7 },
+    { ev = "RESOLVED", verdict = "missing", x = 20, y = 20, z = 0, car = 7 },
+} })
+check(placed.ev == "PACKED" and placed.x == 10 and placed.y == 10,
+    "紀錄位置取最後一次放車的事件，判定（RESOLVED）時管理員站的位置不算")
 
 print("Unpack.spawn：快照缺欄位時不生車（CORRUPT）")
 local spawnedCount = 0

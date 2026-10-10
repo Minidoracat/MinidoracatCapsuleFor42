@@ -24,11 +24,15 @@ function Admin.findLoadedVehicle(sqlId, script)
     return nil
 end
 
--- The last history entry that names a car: PACKED -> the original car, UNPACKED/RESTORED -> the spawned one.
+-- Events that put a car somewhere. RESOLVED also names the car, but its x/y/z are where the admin stood
+-- (vcap-admin-1010s restored the car at the admin's square after a "missing" verdict).
+local PLACES_CAR = { PACKED = true, UNPACKED = true, RESTORED = true }
+
+-- The last history entry that placed a car: PACKED -> the original car, UNPACKED/RESTORED -> the spawned one.
 function Admin.recordedCar(snap)
     local h = snap.history or {}
     for i = #h, 1, -1 do
-        if h[i].car ~= nil then return h[i] end
+        if PLACES_CAR[h[i].ev] and h[i].car ~= nil then return h[i] end
     end
     return {}
 end
