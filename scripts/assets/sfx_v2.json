@@ -1,0 +1,74 @@
+[
+  {
+    "id": "PopChampagne",
+    "text": "Realistic champagne bottle opening close-up: one crisp clean cork pop, then a very short soft fizz of bubbles hissing away. Single event, dry, no reverb, no music, no voice.",
+    "duration": 1.0,
+    "influence": 0.6
+  },
+  {
+    "id": "PopToyCork",
+    "text": "Cartoon cork pop: one exaggerated bouncy rubbery POP! like a toy popgun cork, round and punchy with a tiny springy wobble after it. Playful cartoon sound effect, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.8,
+    "influence": 0.6
+  },
+  {
+    "id": "PopMagicCapsule",
+    "text": "Cartoon magic capsule opening: a loud round bottle-opening pop, then a fluffy soft puff of smoke billowing out, ending with a very faint gentle sparkle shimmer. Playful cartoon gadget sound, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 1.5,
+    "influence": 0.6
+  },
+  {
+    "id": "PopBubbleBloop",
+    "text": "Big soap bubble bursting: one rubbery wet cartoon bloop pop, low-pitched and round, short and squishy. Dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.7,
+    "influence": 0.6
+  },
+  {
+    "id": "PopSmokePoof",
+    "text": "Cartoon smoke poof: a soft fluffy puff of smoke bursting out, airy whoomph that fades away, no pop, no click. Dry, no reverb, no music, no voice.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "PopSparkle",
+    "text": "Very soft gentle magic sparkle twinkle, a few warm muted chime glints fading out, quiet and rounded, not shrill, no harsh high frequencies, no bells. Dry, no reverb, no music, no voice.",
+    "duration": 1.0,
+    "influence": 0.5
+  },
+  {
+    "id": "PackShwoop",
+    "text": "Cartoon suction shwoop: a slide whistle pulling upward as something gets sucked into a tiny capsule, ending with one soft cork-like thoomp. Playful cartoon sound effect, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.3,
+    "influence": 0.6
+  },
+  {
+    "id": "PackShrink",
+    "text": "Cartoon magic shrink: a fast shrinking zip sound rising quickly as an object shrinks to nothing, ending with a light soft click as it snaps into a small capsule. Playful cartoon gadget sound, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "PackGenieSwirl",
+    "text": "Cartoon genie bottle: a swirling airy whoosh spiralling inward and getting sucked into a bottle, ending with a muffled cork stopper plugged in, a soft thunk. Playful cartoon sound, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.4,
+    "influence": 0.6
+  },
+  {
+    "id": "ButtonToyBeep",
+    "text": "Chunky plastic toy push button pressed: one solid soft click, then a low-pitched gentle two-note confirmation boop-beep, warm rounded tones, not shrill, not a buzzer, no harsh high frequencies. Close-up, dry, no reverb.",
+    "duration": 0.6,
+    "influence": 0.5
+  },
+  {
+    "id": "ButtonArcade",
+    "text": "Arcade push button pressed and released: a solid weighty plastic click-clack, deep and muffled, two clicks about 0.15 seconds apart. Close-up, dry, no reverb, not shrill.",
+    "duration": 0.6,
+    "influence": 0.5
+  },
+  {
+    "id": "ButtonCartoonGadget",
+    "text": "Cartoon gadget button: a soft squishy rubber button press, a cute boing-like plunk with a tiny springy bounce, low-pitched and rounded. Playful cartoon sound, dry, no reverb, not shrill, no music, no voice.",
+    "duration": 0.6,
+    "influence": 0.5
+  }
+]
