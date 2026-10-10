@@ -20,7 +20,7 @@
 - **改裝、車況和貨物原樣保存**：塗裝、零件與車況（含改裝與拆掉的零件）、油量、胎壓、電瓶、門窗與門鎖、鑰匙都會保留；車上的貨物連同水量、新鮮度、血跡一起收進膠囊，展開時放回原來的容器。原版車與 KI5 等 MOD 車都可以收。
 - **丟出膠囊就展開**：右鍵膠囊選「丟出膠囊」，游標會框出車身，綠框表示放得下，紅框寫出放不下的原因（太遠、看不到、有車、有人、有牆、在室內等）。丟出時「咻～」一聲，膠囊落地「蹦」地冒煙、閃光，車原樣出現；伺服器可設定展開後歸還一顆空膠囊（預設開）。落地時被擋住就不展開，膠囊留在落點，換個位置再試即可。
 - **膠囊太重撿不起來也能展開**：膠囊重量會算進貨物，太重撿不起來時，對地上的膠囊選「按下按鈕」，車就出現在旁邊。
-- **膠囊裡的貨物要展開車才拿得到**：拖曳、全部拿取、吃喝、裝填、製作都不會從膠囊裡拿東西，會提示「展開車才拿得到」。
+- **膠囊裡的貨物要展開車才拿得到**：拖曳、全部拿取、吃喝、裝填、製作都不會從膠囊裡拿東西，會提示「展開車才拿得到」。伺服器可以開啟沙盒選項「可以從膠囊拿出貨物」，讓玩家不用展開車也能拿出（只能拿出、不能放進去；剛收好約 5 秒內與當機前未確認的膠囊照樣拿不出來），提示框與管理面板列的會是還在膠囊裡的貨物。
 - **滑鼠移到膠囊上就看得到車況**：車名、引擎與車身、油量、電瓶、缺件、改裝和貨物清單；空膠囊、已經展開過、或紀錄不在這台伺服器上的膠囊也會寫清楚。
 - **右鍵「預覽車輛」看 3D 外觀**：可以旋轉、縮放，切換正面、側面、俯視；3D 畫的是車種的預設外觀，這台車實際的車況列在旁邊。
 - **伺服器當機也不會多一台車或多一份貨物**：當機前來不及確認的膠囊會先暫停使用，由管理員到現場確認後處理；確認車已在世界上時，舊膠囊裡多出的那份貨物會自動清掉、換成空膠囊。
@@ -30,4 +30,4 @@
 - **收起來的車不在世界上**：車多、或有 KI5 這類比較吃效能的車時，收起來可以減輕負擔。
 - **介面語言**：繁體中文、简体中文、English、日本語、한국어、Русский、Español、Português、Türkçe、Français、Polski、Deutsch。翻譯有問題請回報。
 
-> 技術要點：需要 Minidoracat UI Library；Vehicle Manager 與 Economy 選用（只呼叫 Vehicle Manager 的公開權限查詢，展開後同車種、同鑰匙編號與零件資料原樣寫回，由它自動接回車主）。快照與紀錄只存在伺服器的 `Zomboid/Lua/MinidoracatVehicleCapsule/packs/`（一顆膠囊一個檔，物品身上只帶名稱），管理面板的索引是上一層的 `index.json`（壞掉或刪掉會從 packs/ 重建）；這個資料夾要列入伺服器備份。中途移除本 MOD 時，收在膠囊裡的車會跟著膠囊消失，紀錄仍在，裝回後管理員可補回車輛，貨物補不回。使用清理類 MOD 時請把 `MinidoracatVehicleCapsule.LoadedCapsule` 列入保護（Minidoracat Cleaner 的 ProtectList）。管理面板需要 `Capability.ManipulateVehicle`，戰利品分頁改的就是沙盒選項（需要 `Capability.SandboxOptions`），伺服器在 1 秒內重排戰利品表；玩家可在「選項 → MODS」關掉工具列上的面板按鈕。管理員除錯指令 `debugResolve`／`debugRestore`；事件寫進 `VehicleCapsule` 日誌（PACKED、LANDED、UNCERTAIN、RESOLVED、CLEARED、CARGO_LOCK、RESTORED）。
+> 技術要點：需要 Minidoracat UI Library；Vehicle Manager 與 Economy 選用（只呼叫 Vehicle Manager 的公開權限查詢，展開後同車種、同鑰匙編號與零件資料原樣寫回，由它自動接回車主）。快照與紀錄只存在伺服器的 `Zomboid/Lua/MinidoracatVehicleCapsule/packs/`（一顆膠囊一個檔，物品身上只帶名稱），管理面板的索引是上一層的 `index.json`（壞掉或刪掉會從 packs/ 重建）；這個資料夾要列入伺服器備份。中途移除本 MOD 時，收在膠囊裡的車會跟著膠囊消失，紀錄仍在，裝回後管理員可補回車輛，貨物補不回。使用清理類 MOD 時請把 `MinidoracatVehicleCapsule.LoadedCapsule` 列入保護（Minidoracat Cleaner 的 ProtectList）。管理面板需要 `Capability.ManipulateVehicle`，戰利品分頁改的就是沙盒選項（需要 `Capability.SandboxOptions`），伺服器在 1 秒內重排戰利品表；玩家可在「選項 → MODS」關掉工具列上的面板按鈕。沙盒 `AllowCargoTakeOut`（預設關）只放行紀錄已落盤的 PACKED 膠囊，伺服器不放回、改把拿走的貨物從紀錄刪掉。管理員除錯指令 `debugResolve`／`debugRestore`；事件寫進 `VehicleCapsule` 日誌（PACKED、LANDED、UNCERTAIN、RESOLVED、CLEARED、CARGO_LOCK、CARGO_TAKEN、RESTORED）。

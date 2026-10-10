@@ -60,6 +60,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Weight counts[/b]: a capsule weighs the capsule itself plus all of its cargo, in your hands too. A capsule with heavy cargo can't be picked up; use Press the Button.
 [*] [b]No taking cargo out directly[/b]: you get it by unpacking the vehicle. Dragging, Take All, eating and drinking, loading ammo and crafting never use what is inside a capsule, and you get the message "Unpack the vehicle to get this out". This also means a server rollback can't leave a second copy of the cargo. You can't put anything into a capsule either.
 [*] [b]The server checks too[/b]: if cargo is taken out anyway, the server puts it back into the capsule within a second and logs it.
+[*] [b]When the server allows taking cargo out[/b] (sandbox option "Allow taking cargo out of capsules"): dragging, Take All, eating and drinking and loading ammo work straight from the capsule; crafting and building still don't use what is inside, so take it out first. Items can only be taken out, never put in. A freshly packed capsule opens after about 5 seconds, and a capsule waiting for an admin stays locked. Taken items are removed from the record, so the tooltip, the preview and the admin panel list what is still inside, and only that comes back with the vehicle.
 [/list]
 
 [h3]Capsules that were already unpacked[/h3]
@@ -96,6 +97,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Return an empty capsule after unpacking[/b]: on by default. After a capsule unpacks, an empty capsule goes back into the thrower's inventory.
 [*] [b]Who can pack vehicles[/b]: "Key holders" by default (the key in the inventory or in the ignition); can be set to "Anyone" or "Admins only". Admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead (the owner and players with Tow shared) and this option covers unclaimed vehicles.
 [*] [b]Zombie attraction radius of the capsule sound[/b]: 0 tiles by default (0–50). 0 means the capsule's pop attracts no zombies.
+[*] [b]Allow taking cargo out of capsules[/b]: off by default. When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked.
 [*] [b]Empty capsules appear as loot[/b]: on by default. Master switch; when off, none of the four locations below spawn empty capsules.
 [*] [b]Mechanic shops[/b]: on by default, weight 0.5.
 [*] [b]Car supply stores[/b]: on by default, weight 0.5.
@@ -157,7 +159,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Removing this mod?[/b] Unpack every capsule first, then remove it. Capsules that are still packed disappear along with their cargo. The server records remain, so if you reinstall the mod later, admins can restore the vehicles from the admin panel, but not the cargo.
 [*] [b]My capsule is gone. What now?[/b] Check bodies, the ground and the vehicle containers first. If it's really gone, give an admin the capsule number (shown in the tooltip or dialog) or your name; the admin can see where the capsule went and restore the vehicle (the cargo doesn't come back).
 [*] [b]What happens to capsules after a server crash?[/b] Mostly nothing. If the crash came within a few seconds of a pack or unpack, the capsule says it needs an admin; give the number to an admin. After the admin checks on site, the vehicle and the capsule end up in the right state, with no extra vehicle and no second copy of the cargo.
-[*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo.
+[*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo. Servers can turn on the sandbox option "Allow taking cargo out of capsules" to let players take things out directly; a capsule waiting for an admin still stays locked.
 [*] [b]I can't pick up the capsule.[/b] The cargo is too heavy. Right-click the capsule on the ground and choose [b]Press the Button[/b] to unpack it right there.
 [*] [b]Can I pack someone else's vehicle?[/b] A vehicle claimed in Vehicle Manager: only if the owner shared Tow with you (admins need override on). Other vehicles depend on the server: by default you need the vehicle's key, and admins always can.
 [*] [b]I threw it and no vehicle appeared.[/b] The landing spot was blocked when it landed; a window shows the reason and the capsule is on the landing spot. Pick a clear spot and press the button on the ground, or pick it up and throw again.

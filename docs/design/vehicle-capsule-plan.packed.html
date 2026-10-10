@@ -2314,7 +2314,7 @@ end
     <doc-note tone="ok"><strong>已定：重量照算</strong> 膠囊重量＝0.2＋貨物，拿在手上也一樣。玩家背包上限 50（ItemContainer.java:91、268），貨物重的膠囊撿不起來，也就丟不出去。玩家不能把東西放進膠囊（MaxItemSize 設得很小）。</doc-note>
     <doc-note tone="ok"><strong>已定：太重就在地上按下按鈕</strong> 膠囊放在地上時，選單多一個「按下按鈕」，用同一個落點游標選位置，車出現在膠囊 3 格內，貨物照樣放回車上。</doc-note>
     <doc-note tone="ok"><strong>已實測：貨物原樣保存</strong> 收車後，伺服器與客戶端看到的貨物一致：水瓶的水量、背包裡的兩件東西、衣服的血跡與髒污、蘋果的新鮮度。正常重開伺服器後也一樣。展開時全部回到車斗與手套箱，玩家也放不進膠囊。測試輪次 <code>vcap-cargo-1010b</code>。</doc-note>
-    <doc-note tone="ok"><strong>已定：不能直接拿出貨物</strong> 要展開車才拿得到，當機回溯也不會多出一份貨物。已實測：拿取、全部拿取、拖曳、吃喝、裝填、製作都拿不到膠囊裡的東西，畫面提示「展開車才拿得到」。測試輪次 <code>vcap-lock-1010c</code>。</doc-note>
+    <doc-note tone="ok"><strong>已定：不能直接拿出貨物</strong> 要展開車才拿得到，當機回溯也不會多出一份貨物。已實測：拿取、全部拿取、拖曳、吃喝、裝填、製作都拿不到膠囊裡的東西，畫面提示「展開車才拿得到」。測試輪次 <code>vcap-lock-1010c</code>、<code>vcap-lock-1010w</code>。伺服器可以開沙盒選項「可以從膠囊拿出貨物」（預設關）：只有紀錄已落盤的膠囊能拿，只能拿出、不能放進去，伺服器把拿走的從紀錄刪掉，提示框與管理面板跟著更新。測試輪次 <code>vcap-take-1010c</code>。</doc-note>
     <doc-note tone="warn"><strong>伺服器只能事後放回</strong> 引擎的物品搬移沒有讓 MOD 否決的地方，所以擋在客戶端。改版客戶端硬搬時，伺服器在 1 秒內把貨物放回膠囊；被丟到別處或給了別人的就拿不回來，只留一筆日誌。</doc-note>
   </doc-claim>
 
@@ -2638,7 +2638,7 @@ end
 
   <doc-claim>
     <p>伺服器發現戰利品設定改了，就重排戰利品表，新容器立刻照新設定。</p>
-    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="98-125" hl="108,121" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。" file="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" start="98" sha="8f37404+wt"><script type="text/plain">L.applied = nil
+    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="98-125" hl="108,121" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。" file="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" start="98" sha="181fa3b"><script type="text/plain">L.applied = nil
 -- parse＝改完要不要讓 Java 重讀分佈表（開局的 merge 事件之後引擎自己會 Parse）
 function L.sync(parse)
     local list = ProceduralDistributions and ProceduralDistributions.list
