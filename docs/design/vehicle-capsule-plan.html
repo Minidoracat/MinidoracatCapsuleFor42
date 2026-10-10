@@ -151,7 +151,7 @@ local function whyNot(player, vehicle)
   if hasCapsuleInside(vehicle) then return "CAPSULE_INSIDE" end  -- 不收裝著膠囊的車
   local vm = MinidoracatVehicleManagerAPI
   local ok, why = true, "UNCLAIMED"
-  if vm then ok, why = vm.canUse(player, vehicle, "MANAGE") end  -- 沒綁定的車回 UNCLAIMED
+  if vm then ok, why = vm.canUse(player, vehicle, "TOW") end    -- 沒綁定的車回 UNCLAIMED
   if why ~= "UNCLAIMED" then                                     -- 在 VehicleManager 綁定：由它判斷
     if not ok then return "NOT_ALLOWED" end
   elseif not sandboxAllows(player, vehicle) then                 -- 沒綁定或沒裝：照沙盒設定
@@ -160,7 +160,7 @@ local function whyNot(player, vehicle)
   return nil
 end
 </script>
-      <doc-pin line="12" tone="info" title="MANAGE 只給車主與開了越權的管理員">VehicleManager 不開放分享這個權限；沒綁定的車改照沙盒設定。</doc-pin>
+      <doc-pin line="12" tone="info" title="問的是「拖曳」權限">車主、被分享拖曳的人、開了越權的管理員能收；收進膠囊等於把車帶走，跟拖曳一樣，而且分享給所有人不能開拖曳。沒綁定的車改照沙盒設定。</doc-pin>
     </doc-code>
   </doc-claim>
 

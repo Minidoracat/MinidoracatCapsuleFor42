@@ -8,7 +8,7 @@
 [h2]📦 必要なMOD[/h2]
 [list]
 [*] [b]必須：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701]Minidoracat UI Library for B42[/url]
-[*] [b]任意：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279]Minidoracat Vehicle Manager[/url]（登録済みの車は所有者だけがしまえます）
+[*] [b]任意：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279]Minidoracat Vehicle Manager[/url]（登録済みの車をしまえるのは、所有者と「牽引」の権限を共有された人だけです）
 [*] [b]任意：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125]Minidoracat Economy[/url]（管理者が経済センターで空のカプセルを販売できます）
 [*] [b]途中追加・削除：[/b]追加は可能。外す前にガイドをお読みください。しまった車はカプセルごと消え、入れ直しても戻せるのは車だけです
 [*] [b]対応言語：[/b]繁體中文、简体中文、English、日本語、한국어、Русский、Español、Português、Türkçe、Français、Polski、Deutsch（翻訳の問題はお知らせください）

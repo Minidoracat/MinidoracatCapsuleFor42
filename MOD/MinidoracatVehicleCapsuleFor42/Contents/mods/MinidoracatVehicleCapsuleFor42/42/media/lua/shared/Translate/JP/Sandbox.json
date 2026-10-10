@@ -4,7 +4,7 @@
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule": "展開後に空のカプセルを返す",
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule_tooltip": "オンにすると、車両が出現した後、カプセルを投げたプレイヤーに空のカプセルが戻り、別の車両の収納に使えます。",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission": "車両を収納できる人",
-    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Minidoracat Vehicle Manager が導入されている場合、登録済みの車両は所有者だけが収納できます（管理者は車両一覧でオーバーライドをオンにする必要があります）。この設定は未登録の車両に適用されます。\n鍵の所持者：この車両の鍵を持っているか、鍵がイグニッションに挿さっている。\n誰でも：全プレイヤーが収納できる。\n管理者のみ：一般プレイヤーは収納できない。\n管理者はこの設定に関係なく、いつでも収納できます。",
+    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Minidoracat Vehicle Manager が導入されている場合、登録済みの車両は所有者と「牽引」の権限を共有された人だけが収納できます（管理者は車両一覧でオーバーライドをオンにする必要があります）。この設定は未登録の車両に適用されます。\n鍵の所持者：この車両の鍵を持っているか、鍵がイグニッションに挿さっている。\n誰でも：全プレイヤーが収納できる。\n管理者のみ：一般プレイヤーは収納できない。\n管理者はこの設定に関係なく、いつでも収納できます。",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option1": "鍵の所持者",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option2": "誰でも",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "管理者のみ",

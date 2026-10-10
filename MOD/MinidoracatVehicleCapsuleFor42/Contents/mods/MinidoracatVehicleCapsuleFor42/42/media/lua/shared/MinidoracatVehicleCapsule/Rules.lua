@@ -45,16 +45,22 @@ function Rules.vehicleWhyNot(player, vehicle)
     return nil
 end
 
--- Who may pack: a vehicle claimed in VehicleManager follows its MANAGE (the owner, or an admin with its override on);
--- any other vehicle: admins always, others by SandboxVars PackPermission (1 key in the inventory or in the ignition,
--- 2 anyone, 3 admins only).
--- Returns ok, mode ("VM"/"KEY"/"ANY"/"ADMIN"; an admin passing in mode 1 or by VM override reports "ADMIN").
+-- Who may pack: a vehicle claimed in VehicleManager needs its Tow permission (the owner, players the owner or the
+-- faction shared Tow with, or an admin with its override on): packing takes the vehicle away like towing does, and
+-- Tow is never part of a share with everyone. Any other vehicle: admins always, others by SandboxVars PackPermission
+-- (1 key in the inventory or in the ignition, 2 anyone, 3 admins only).
+-- Returns ok, mode, why. mode: "VM" (VehicleManager's owner, or its refusal), "SHARED" (Tow shared with this
+-- player), "KEY"/"ANY"/"ADMIN" (an admin passing in mode 1 or by VM override reports "ADMIN"); why: VM's reason code.
 function Rules.mayPack(player, vehicle)
     local vm = MinidoracatVehicleManagerAPI
     if vm and vm.canUse then
-        local ok, why = vm.canUse(player, vehicle, "MANAGE")
+        local ok, why = vm.canUse(player, vehicle, "TOW")
         -- An unclaimed vehicle has no owner there (VM allows anyone): the sandbox rule below decides instead
-        if why ~= "UNCLAIMED" then return ok == true, why == "ADMIN" and "ADMIN" or "VM" end
+        if why ~= "UNCLAIMED" then
+            if ok ~= true then return false, "VM", why end
+            if why == "ADMIN" then return true, "ADMIN", why end
+            return true, why == "OWNER" and "VM" or "SHARED", why
+        end
     end
     local mode = tonumber(Rules.sandbox().PackPermission) or 1
     if mode == 2 then return true, "ANY" end

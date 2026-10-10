@@ -5,6 +5,7 @@
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Effects"
 require "MinidoracatVehicleCapsule/Info"
+require "MinidoracatVehicleCapsule/Rules"
 local okUI = pcall(require, "MinidoracatUI/V1")
 local M = MinidoracatVehicleCapsule
 local Notify = { shown = {} }
@@ -66,6 +67,23 @@ function Notify.reason(code)
         or getText("IGUI_MinidoracatVehicleCapsule_Why_OTHER", tostring(code))
 end
 
+-- Whether this player may pack this vehicle, and the permission text for the menu row and the refusal toast.
+-- VehicleManager decides for a claimed vehicle (its Tow permission, Rules.mayPack); its own wording covers rental
+-- locks, quarantine, paused faction shares, and an admin whose override is off (every override use is logged there).
+local PERM_TEXT = { VM = "PermOwner", SHARED = "PermShared", KEY = "PermKey", ADMIN = "PermAdmin", ANY = "PermAny" }
+local VM_REASON = { RENT_LOCKED = true, QUARANTINED = true, FACTION_PAUSED = true, NOT_READY = true }
+function Notify.permission(player, vehicle)
+    local may, mode, why = M.Rules.mayPack(player, vehicle)
+    local tow = getTextOrNull("IGUI_MVM_ActionShort_TOW") or "Tow"
+    if may then return true, getText("IGUI_MinidoracatVehicleCapsule_" .. PERM_TEXT[mode], tow) end
+    if mode == "VM" then
+        local own = VM_REASON[why] and getTextOrNull("IGUI_MVM_Reason_" .. tostring(why))
+            or M.Rules.isAdmin(player) and getTextOrNull("IGUI_MVM_ProtectedAdmin")
+        if own then return false, own end
+    end
+    return false, getText("IGUI_MinidoracatVehicleCapsule_" .. PERM_TEXT[mode] .. "No", tow)
+end
+
 -- local time like the admin panel (Kahlua's os.date is UTC: 06:28 for a 14:28 restore in UTC+8)
 local function stamp(t)
     return t and M.Info.date(t) or "?"
@@ -90,7 +108,11 @@ end
 
 function Handlers.packed(args)
     if args.ok then return end
-    Notify.toast(getText("IGUI_MinidoracatVehicleCapsule_PackFailed"), Notify.reason(args.why), true)
+    local text = Notify.reason(args.why)
+    -- refused for permission: the same reason the menu row gives (VehicleManager's wording included)
+    local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
+    if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
+    Notify.toast(getText("IGUI_MinidoracatVehicleCapsule_PackFailed"), text, true)
 end
 
 function Handlers.landed(args)

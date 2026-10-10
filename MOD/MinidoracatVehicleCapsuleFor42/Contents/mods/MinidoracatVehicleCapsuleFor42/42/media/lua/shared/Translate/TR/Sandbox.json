@@ -4,7 +4,7 @@
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule": "Açıldıktan sonra boş kapsülü geri ver",
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule_tooltip": "Açıksa, araç ortaya çıktıktan sonra kapsülü fırlatan oyuncu boş bir kapsül geri alır ve başka bir aracı koymak için kullanabilir.",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission": "Araçları kim kapsüle koyabilir",
-    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Minidoracat Vehicle Manager yüklüyse, sahiplenilmiş bir aracı yalnızca sahibi kapsüle koyabilir (yöneticilerin filo penceresinden geçersiz kılmayı açması gerekir); bu seçenek sahiplenilmemiş araçlar için geçerlidir.\nAnahtarı olanlar: oyuncu bu aracın anahtarını taşıyor veya anahtar kontakta.\nHerkes: tüm oyuncular kapsüle koyabilir.\nYalnızca yöneticiler: normal oyuncular kapsüle koyamaz.\nYöneticiler, bu seçenek ne olursa olsun her zaman kapsüle koyabilir.",
+    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Minidoracat Vehicle Manager yüklüyse, sahiplenilmiş bir aracı yalnızca sahibi ve “Çek” izni paylaşılan kişiler kapsüle koyabilir (yöneticilerin filo penceresinden geçersiz kılmayı açması gerekir); bu seçenek sahiplenilmemiş araçlar için geçerlidir.\nAnahtarı olanlar: oyuncu bu aracın anahtarını taşıyor veya anahtar kontakta.\nHerkes: tüm oyuncular kapsüle koyabilir.\nYalnızca yöneticiler: normal oyuncular kapsüle koyamaz.\nYöneticiler, bu seçenek ne olursa olsun her zaman kapsüle koyabilir.",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option1": "Anahtarı olanlar",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option2": "Herkes",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Yalnızca yöneticiler",

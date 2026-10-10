@@ -4,7 +4,7 @@
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule": "展開後歸還空膠囊",
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule_tooltip": "開啟時，膠囊展開後會有一顆空膠囊回到丟的人背包，可以再拿來收車。",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission": "誰能收車",
-    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "有安裝 Minidoracat Vehicle Manager 時，已綁定的車只有車主能收（管理員要先在車隊視窗開啟越權）；這個選項只管沒綁定的車。\n有車鑰匙的人：背包裡有這台車的鑰匙，或鑰匙插在點火孔上。\n任何人：誰都能收。\n只有管理員：一般玩家不能收車。\n管理員不受這個選項限制，一律可以收車。",
+    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "有安裝 Minidoracat Vehicle Manager 時，已綁定的車只有車主和被分享「拖曳」權限的人能收（管理員要先在車隊視窗開啟越權）；這個選項只管沒綁定的車。\n有車鑰匙的人：背包裡有這台車的鑰匙，或鑰匙插在點火孔上。\n任何人：誰都能收。\n只有管理員：一般玩家不能收車。\n管理員不受這個選項限制，一律可以收車。",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option1": "有車鑰匙的人",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option2": "任何人",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "只有管理員",

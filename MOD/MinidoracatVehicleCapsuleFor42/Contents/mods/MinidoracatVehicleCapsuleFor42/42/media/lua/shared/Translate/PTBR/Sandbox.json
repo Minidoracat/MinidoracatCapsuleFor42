@@ -4,7 +4,7 @@
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule": "Devolver cápsula vazia após liberar",
     "Sandbox_MinidoracatVehicleCapsule_ReturnEmptyCapsule_tooltip": "Se ativado, quem arremessou a cápsula recebe uma cápsula vazia depois que o veículo aparece, pronta para guardar outro veículo.",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission": "Quem pode guardar veículos",
-    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Com o Minidoracat Vehicle Manager instalado, só o dono pode guardar um veículo reivindicado (admins precisam ligar o acesso total na janela da frota); esta opção vale para os veículos não reivindicados.\nCom a chave: o jogador carrega a chave deste veículo ou a chave está na ignição.\nQualquer um: todos os jogadores podem guardar.\nSó administradores: jogadores comuns não podem guardar.\nAdministradores sempre podem guardar, independentemente desta opção.",
+    "Sandbox_MinidoracatVehicleCapsule_PackPermission_tooltip": "Com o Minidoracat Vehicle Manager instalado, um veículo reivindicado só pode ser guardado pelo dono e por quem recebeu a permissão “Rebocar” (admins precisam ligar o acesso total na janela da frota); esta opção vale para os veículos não reivindicados.\nCom a chave: o jogador carrega a chave deste veículo ou a chave está na ignição.\nQualquer um: todos os jogadores podem guardar.\nSó administradores: jogadores comuns não podem guardar.\nAdministradores sempre podem guardar, independentemente desta opção.",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option1": "Com a chave",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option2": "Qualquer um",
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Só administradores",

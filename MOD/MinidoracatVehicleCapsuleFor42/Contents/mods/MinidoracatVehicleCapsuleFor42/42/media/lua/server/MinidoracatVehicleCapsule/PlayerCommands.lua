@@ -105,7 +105,7 @@ function Play.pack(player, vehicle, localName)
     local intent = Play.takeIntent(player, "pack", id)
     if not intent then return refuse(player, "pack", "NO_INTENT", id) end
     local why = Rules.packWhyNot(player, vehicle)
-    local res = why and { ok = false, why = why }
+    local res = why and { ok = false, why = why, vehicleId = id } -- the client words a NOT_ALLOWED like its menu row
         or M.Pack.pack(player, vehicle, { name = intent.name or Rules.cleanName(localName), empty = Rules.emptyCapsule(player) })
     if not res.ok then refuse(player, "pack", tostring(res.why), id) end
     Play.send(player, "packed", res)

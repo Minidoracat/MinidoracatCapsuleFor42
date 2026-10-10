@@ -1,7 +1,8 @@
 -- Vehicle Capsule (client): context menu entries.
 --   * "Pack into capsule" at the end of the vanilla outside-vehicle menu, with a tooltip that checks each
 --     requirement (permission, engine off and nobody inside, an empty capsule) and says how to fix it; greyed out
---     until all pass. The server checks again in complete() (PlayerCommands.lua).
+--     until all pass. Without permission it stays clickable, drawn red like an unavailable option, and a click shows
+--     the reason in a toast. The server checks again in complete() (PlayerCommands.lua).
 --   * A loaded capsule: "Throw capsule" when the player carries it, "Press the button" when it lies on the ground
 --     (inventory/loot window and world right click). Both open the landing cursor (ThrowCursor.lua).
 require "MinidoracatVehicleCapsule/Rules"
@@ -16,30 +17,26 @@ M.Menu = Menu
 
 local function tr(key, ...) return getText("IGUI_MinidoracatVehicleCapsule_" .. key, ...) end
 
-local PERM_TEXT = { VM = "PermOwner", KEY = "PermKey", ADMIN = "PermAdmin", ANY = "PermAny" }
 local IDLE = { OCCUPIED = true, ENGINE_RUNNING = true }
 
--- Permission row. VehicleManager lets an admin pack a claimed vehicle only with its override on (every use is
--- logged), so a refused admin gets its own hint saying where to turn it on.
-local function permRow(player, may, mode)
-    local text = tr(may and PERM_TEXT[mode] or PERM_TEXT[mode] .. "No")
-    if not may and mode == "VM" and Rules.isAdmin(player) then text = getTextOrNull("IGUI_MVM_ProtectedAdmin") or text end
-    return Notify.row(may, text)
-end
-
--- Tooltip rows for packing this vehicle; returns ok (every row passes), rich text.
+-- Tooltip rows for packing this vehicle; returns ok (every row passes), rich text, may (permission), permission text.
 function Menu.packTooltip(player, vehicle)
-    local may, mode = Rules.mayPack(player, vehicle)
+    local may, permText = Notify.permission(player, vehicle)
     local idle = not vehicle:isEngineRunning() and not Rules.occupied(vehicle)
     local capsule = Rules.emptyCapsule(player) ~= nil
     local other = Rules.vehicleWhyNot(player, vehicle)
     if IDLE[other] then other = nil end
-    local text = permRow(player, may, mode)
+    local text = Notify.row(may, permText)
         .. Notify.row(idle, tr(idle and "Idle" or "IdleNo"))
         .. Notify.row(capsule, tr(capsule and "HasCapsule" or "HasCapsuleNo"))
     if other then text = text .. Notify.row(false, Notify.reason(other)) end
     text = text .. " <RGB:1,1,1> <LINE> " .. tr("PackInfo", Rules.cargoCount(vehicle), Rules.PACK_SECONDS)
-    return may and idle and capsule and other == nil, text
+    return may and idle and capsule and other == nil, text, may, permText
+end
+
+-- Clicked without permission: the reason as a toast.
+function Menu.onDenied(text)
+    Notify.toast(Notify.reason("NOT_ALLOWED"), text, true)
 end
 
 function Menu.capsuleName(vehicle)
@@ -63,14 +60,15 @@ function Menu.addPack(playerNum, context, vehicle)
     local player = getSpecificPlayer(playerNum)
     if not player or player:getVehicle() then return end
     local label = getText("ContextMenu_MinidoracatVehicleCapsule_Pack")
-    local option = context:addOption(label, player, Menu.onPack, vehicle)
-    local ok, text = Menu.packTooltip(player, vehicle)
+    local ok, text, may, permText = Menu.packTooltip(player, vehicle)
+    local option = may and context:addOption(label, player, Menu.onPack, vehicle)
+        or context:addOption(label, permText, Menu.onDenied)
     local tip = ISWorldObjectContextMenu.addToolTip()
     tip:setName(label)
     tip.description = text
     tip.maxLineWidth = 420 -- keeps a long "how to fix" row on the line of its mark
     option.toolTip = tip
-    option.notAvailable = not ok
+    if may then option.notAvailable = not ok else option.badColor = true end -- badColor: red but clickable
     return option
 end
 
