@@ -2,19 +2,21 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy"]
 # ///
-"""車輛膠囊音效第 2、3 版候選：從 ElevenLabs 原始 take 加程式合成元素，重建所有候選與試聽頁。
+"""車輛膠囊音效第 2–4 版候選：從 ElevenLabs 原始 take 加程式合成元素，重建所有候選與試聽頁。
 
 步驟（repo 根目錄）：
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx_v2.json \
         --out-dir temp/assets-review/sfx-v2/raw --format wav --variants 4 --trim
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx_v3.json \
         --out-dir temp/assets-review/sfx-v3/raw --format wav --variants 4 --trim
-    uv run scripts/assets/design_sfx.py       # 寫 temp/assets-review/sfx-v2、sfx-v3 的 <Name>_<ID>.wav 與 index.html
-    uv run scripts/assets/build_sfx.py        # 列表模式檢查長度；選定後 --write --pick <Name>=v3:<ID>
+    (sfx_v4.json → sfx-v4/raw 同上)
+    uv run scripts/assets/design_sfx.py       # 寫 temp/assets-review/sfx-v2–v4 的 <Name>_<ID>.wav 與 index.html
+    uv run scripts/assets/build_sfx.py        # 列表模式檢查長度；選定後 --write --pick <Name>=v4:<ID>
 
 第 2 版：Pop／Pack／Button 各一組（Pack 已選 K3）。第 3 版（使用者：丟出＋彈開要更誇大的卡通化，丟出「咻～」、落地「蹦！」）：
-新的 VehicleCapsuleThrow（膠囊固定飛 500 ms）、更誇張的 Pop P10 起，以及「咻在 0 s、蹦在 0.5 s」的組合 Combo_C<n>.wav。
-每條候選都照 build_sfx.level_af 整理（剪前面靜音、淡入淡出、RMS 峰值 -18 dBFS、限幅 -1 dBFS），試聽才公平。
+新的 VehicleCapsuleThrow（膠囊固定飛 500 ms，已選 T1）、更誇張的 Pop P10 起，以及「咻在 0 s、蹦在 0.5 s」的組合 Combo_C<n>.wav。
+第 4 版（使用者：蹦要大一點、有炸開的感覺）：Pop P19 起，響度用 build_sfx.LOUDER 的 -14 dBFS，每條附「T1＋蹦」組合。
+每條候選都照 build_sfx.level_af 整理（剪前面靜音、淡入淡出、RMS 峰值 -18 dBFS（第 4 版 Pop -14）、限幅 -1 dBFS），試聽才公平。
 ElevenLabs 的 take 高頻偏多（開瓶嘶聲、按鈕喀聲、zip 重心 5–10 kHz），SOFT 照 elevenlabs-tts 技能的刺耳處理削掉。
 合成元素的音高壓在 1 kHz 上下再低通：純音在高頻怎麼削都刺耳（技能 2026-10-06 的教訓）。
 """
@@ -30,7 +32,7 @@ import build_sfx as bs  # noqa: E402
 
 SR = bs.SR
 REVIEW = bs.REVIEW
-RAWS = [os.path.join(REVIEW, f"sfx-{v}", "raw") for v in ("v2", "v3")]
+RAWS = [os.path.join(REVIEW, f"sfx-{v}", "raw") for v in ("v2", "v3", "v4")]
 SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
 rng = np.random.default_rng(42)
 
@@ -182,6 +184,36 @@ def kaboing(d=0.75):
     return mix((norm(thump), 0, 1), (norm(burst), 0, 0.6), (norm(twang), 0.015, 0.8))
 
 
+def boom(f0=120, f1=38, d=0.6):
+    """sub 低頻衝擊：120 → 38 Hz 降音（τ 60 ms）的正弦，2 ms 起音、180 ms 衰減。"""
+    x = t(d)
+    return norm(tone(f1 + (f0 - f1) * np.exp(-x / 0.06), (1 - np.exp(-x / 0.002)) * np.exp(-x / 0.18)))
+
+
+def burst(d=0.12, lp=2500):
+    """噪音爆裂：100 Hz–lp 的噪音、25 ms 衰減。"""
+    return norm(ff(noise(d) * np.exp(-t(d) / 0.025), f"highpass=f=100,lowpass=f={lp},lowpass=f={lp}"))
+
+
+def crack():
+    """短 crack：8 ms、600 Hz–3.5 kHz 的噪音尖峰（不往上開，避免變成槍聲）。"""
+    return norm(ff(noise(0.008) * np.exp(-t(0.008) / 0.0012), "highpass=f=600,lowpass=f=3500"))
+
+
+def smoke(d=0.9, lp=1200):
+    """往外噴的煙霧：150 Hz–lp 的噪音，30 ms 起、220 ms 衰減。"""
+    x = t(d)
+    return norm(ff(noise(d), f"highpass=f=150,lowpass=f={lp},lowpass=f={lp}") * (1 - np.exp(-x / 0.03)) * np.exp(-x / 0.22))
+
+
+def explode():
+    """卡通炸開：sub boom＋噪音爆裂＋crack 同時起，20 ms 後煙霧噴出。"""
+    return mix((boom(), 0, 1), (burst(), 0, 0.7), (crack(), 0, 0.5), (smoke(), 0.02, 0.45))
+
+
+PUNCH = "volume=10dB,asoftclip=type=tanh,acompressor=threshold=-18dB:ratio=4:attack=2:release=120"  # 飽和＋壓縮，讓尾巴更飽、更衝
+
+
 POP, PACK, BTN, THROW = "VehicleCapsulePop", "VehicleCapsulePack", "VehicleCapsuleButton", "VehicleCapsuleThrow"
 # 第 2 版：(名稱, ID, 做法, 配方, 照提示詞與波形推測的聽感, 產生函式)，寫進 sfx-v2
 V2_CANDIDATES = [
@@ -286,6 +318,36 @@ COMBOS = [
     ("C4", "v3:T4", "v3:P14", "一口風聲「咻——」，落地大「砰！」冒煙"),
     ("C5", "v3:T8", "v3:P15", "氣流由遠而近「咻～」，落地「砰—蹦嗡～」"),
 ]
+# 第 4 版：同 V2／V3 格式，寫進 sfx-v4，響度用 build_sfx.target_db(POP)（-14 dBFS）。
+FIREWORK_SIZZLE = "rubberband=pitch=0.5:pitchq=quality,lowpass=f=3500,lowpass=f=3500"  # 煙火劈啪原檔 6 kHz：降八度再低通
+V4_CANDIDATES = [
+    (POP, "P19", "ElevenLabs", "BurstCartoonExplosion_2（cartoon explosion pop）",
+     "飽滿的「碰！」接 0.2 kHz 上下的低沉「轟～」慢慢散掉，約 1 s", lambda: raw("BurstCartoonExplosion_2")),
+    (POP, "P20", "ElevenLabs＋後製", "BurstCartoonExplosion_3 過 SOFT；原檔起頭 3 kHz 的爆裂偏亮",
+     "先一陣爆裂「啪碰」，再沉成低頻的煙霧聲，比 P19 短、亮一點", lambda: raw("BurstCartoonExplosion_3", af=SOFT)),
+    (POP, "P21", "ElevenLabs", "BurstKaboom_4（comic KABOOM capsule burst）",
+     "胖胖的卡通「咖碰！」，1 kHz 左右的身體帶幾下彈性起伏再沉下去", lambda: raw("BurstKaboom_4")),
+    (POP, "P22", "ElevenLabs＋後製", "BurstMagicSmoke_4（magic burst with smoke）過 SOFT",
+     "魔術揭曉式的「噗轟」，接一大團煙霧往外湧再淡掉", lambda: raw("BurstMagicSmoke_4", af=SOFT)),
+    (POP, "P23", "ElevenLabs＋後製", "BurstConfettiCannon_1（big confetti cannon pop）過 SOFT",
+     "派對拉炮式的「碰！」一口氣噴出去，尾巴短", lambda: raw("BurstConfettiCannon_1", af=SOFT)),
+    (POP, "P24", "ElevenLabs＋後製", "BurstBigPoof_2（巨大煙霧彈 WHUMPH）過 SOFT，再加 10 dB 進 tanh 軟削波＋4:1 壓縮",
+     "很厚的「轟噗——」，飽和後尾巴更滿、更衝", lambda: raw("BurstBigPoof_2", af=SOFT + "," + PUNCH)),
+    (POP, "P25", "混音", "PopGiant_4 前 0.12 s 的大砰 ＋ BurstSubBoom_4 低頻 boom 墊底（×0.9）＋ 30 ms 後 PopSmokePoof_1 煙霧（SOFT，×0.5）",
+     "清楚的「砰」疊上很沉的「轟」，再冒一團煙",
+     lambda: mix((raw("PopGiant_4", end=0.12), 0, 1), (raw("BurstSubBoom_4"), 0, 0.9), (raw("PopSmokePoof_1", af=SOFT), 0.03, 0.5))),
+    (POP, "P26", "混音", "BurstCartoonExplosion_2 ＋ 80 ms 後 BurstFirework_3 的火花劈啪（降一個八度、兩次 3.5 kHz 低通，×0.45）",
+     "P19 的「碰轟～」再加一層悶悶的火花劈啪往外散",
+     lambda: mix((raw("BurstCartoonExplosion_2"), 0, 1), (raw("BurstFirework_3", af=FIREWORK_SIZZLE), 0.08, 0.45))),
+    (POP, "P27", "混音", "BurstKaboom_4 ＋ 60 ms 後 BurstDebris_2 的碎屑灑落（降一個八度、兩次 3 kHz 低通，×0.2）",
+     "「咖碰！」之後細碎的殼片落地聲",
+     lambda: mix((raw("BurstKaboom_4"), 0, 1),
+                 (raw("BurstDebris_2", af="rubberband=pitch=0.5:pitchq=quality,lowpass=f=3000,lowpass=f=3000"), 0.06, 0.2))),
+    (POP, "P28", "程式合成", "sub boom（120 → 38 Hz 降音正弦、180 ms 衰減）＋ 噪音爆裂（100 Hz–2.5 kHz、25 ms）＋ 8 ms crack（0.6–3.5 kHz）＋ 20 ms 後 0.9 s 低通 1.2 kHz 煙霧",
+     "乾淨的卡通炸開「碰——轟」加一口煙", lambda: explode()),
+    (POP, "P29", "程式合成＋後製", "P28 加 10 dB 進 tanh 軟削波＋4:1 壓縮（attack 2 ms、release 120 ms）",
+     "跟 P28 同一顆，但更飽、更衝，尾巴拉得比較長", lambda: ff(explode(), PUNCH)),
+]
 V2_NOW = {  # 第 2 版頁上的「目前使用」：當時 build_sfx.SPEC 選定的 sfx-takes 編號與描述
     POP: (12, "啵 0.2 s → 短暫停頓 → 噗地冒煙升起再淡出"),
     PACK: (7, "持續的吸入咻聲 0.8 s → 停 0.2 s → 啵"),
@@ -297,11 +359,11 @@ NOTE = ("所有候選都對齊響度（剪掉前面靜音、RMS 峰值 -18 dBFS�
         "「聽起來像」一欄<strong>沒有人耳試聽過</strong>，是照提示詞與波形（包絡、頻譜）推測的。")
 
 
-def save(ver, name, cid, a):
-    """照 build_sfx 的整理法寫成 sfx-<ver>/<name>_<cid>.wav（44.1 kHz 單聲道 16-bit），回傳成品的 stats。"""
+def save(ver, name, cid, a, target=bs.TARGET_RMS_DB):
+    """照 build_sfx 的整理法寫成 sfx-<ver>/<name>_<cid>.wav（44.1 kHz 單聲道 16-bit），RMS 峰值對齊 target；回傳成品的 stats。"""
     dst = os.path.join(REVIEW, f"sfx-{ver}", f"{name}_{cid}.wav")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0",
-                    "-af", bs.level_af(bs.stats(a)), "-ac", "1", "-ar", str(SR), "-c:a", "pcm_s16le",
+                    "-af", bs.level_af(bs.stats(a), target), "-ac", "1", "-ar", str(SR), "-c:a", "pcm_s16le",
                     "-map_metadata", "-1", dst], input=a.astype("<f4").tobytes(), check=True)
     s = bs.stats(bs.decode(dst))
     bad = bs.check(name, s) if name in bs.SPEC else []
@@ -314,20 +376,22 @@ def row(label, src, how, recipe, guess, s, cls=""):
 
 
 def page(ver, title, intro, sections):
-    """sections：[(小標, [row…])]；audio 用相對路徑，瀏覽器直接開檔就能播。"""
+    """sections：[(小標, [row…])]；audio 用相對路徑，瀏覽器直接開檔就能播。row 有 combo（檔名）時多一欄組合試聽。"""
     e = html.escape
     out = [f"<!doctype html><html lang='zh-Hant'><meta charset='utf-8'><title>{e(title)}</title>",
-           "<style>body{font-family:system-ui,'Microsoft JhengHei',sans-serif;max-width:1100px;margin:2em auto;padding:0 1em;"
+           "<style>body{font-family:system-ui,'Microsoft JhengHei',sans-serif;max-width:1300px;margin:2em auto;padding:0 1em;"
            "line-height:1.5}table{border-collapse:collapse;width:100%;margin-bottom:2em}td,th{border:1px solid #ccc;"
            "padding:.4em .6em;vertical-align:top;text-align:left}th{background:#f4f4f4}tr.now{background:#fff8e0}"
-           "tr.ref{color:#666}audio{width:260px}.id{font-weight:bold;white-space:nowrap}</style>",
+           "tr.ref{color:#666}audio{width:240px}.id{font-weight:bold;white-space:nowrap}</style>",
            f"<h1>{e(title)}</h1>", f"<p>{intro}</p>"]
     for head, rows in sections:
-        out.append(f"<h2>{e(head)}</h2><table><tr><th>ID</th><th>試聽</th><th>做法</th><th>配方</th>"
-                   "<th>聽起來像（推測）</th><th>有聲長度</th><th>頻譜重心</th></tr>")
+        combo = any(r.get("combo") for r in rows)
+        out.append(f"<h2>{e(head)}</h2><table><tr><th>ID</th><th>試聽</th>{'<th>T1＋蹦（參考）</th>' if combo else ''}"
+                   "<th>做法</th><th>配方</th><th>聽起來像（推測）</th><th>有聲長度</th><th>頻譜重心</th></tr>")
         for r in rows:
+            extra = (f"<td><audio controls preload='auto' src='{e(r['combo'])}'></audio></td>" if r.get("combo") else "<td></td>") if combo else ""
             out.append(f"<tr class='{r['cls']}'><td class='id'>{e(r['label'])}</td>"
-                       f"<td><audio controls preload='auto' src='{e(r['src'])}'></audio></td><td>{e(r['how'])}</td>"
+                       f"<td><audio controls preload='auto' src='{e(r['src'])}'></audio></td>{extra}<td>{e(r['how'])}</td>"
                        f"<td>{e(r['recipe'])}</td><td>{e(r['guess'])}</td><td>{r['s']['active']:.2f} s</td>"
                        f"<td>{r['s']['centroid'] / 1000:.1f} kHz</td></tr>")
         out.append("</table>")
@@ -350,6 +414,14 @@ def build_v2():
     return rows
 
 
+def overlay(throw, pop):
+    """咻從 0 s、蹦從 0.5 s（膠囊固定飛 500 ms）疊成一條，只供試聽。"""
+    out = np.zeros(max(len(throw), int(0.5 * SR) + len(pop)))
+    out[:len(throw)] += throw
+    out[int(0.5 * SR):int(0.5 * SR) + len(pop)] += pop
+    return out
+
+
 def build_v3(v2rows):
     def ref(r, label=None, cls="ref"):
         return {**r, "src": "../sfx-v2/" + r["src"], "label": label or f"{r['label']}（第 2 版）", "cls": cls}
@@ -361,10 +433,7 @@ def build_v3(v2rows):
     rows[POP] += [ref(r) for r in v2rows[POP][1:]]
     combos = []
     for cid, throw, pop, guess in COMBOS:
-        a, p = bs.decode(bs.src_path(THROW, throw)), bs.decode(bs.src_path(POP, pop))
-        out = np.zeros(max(len(a), int(0.5 * SR) + len(p)))
-        out[:len(a)] += a
-        out[int(0.5 * SR):int(0.5 * SR) + len(p)] += p
+        out = overlay(bs.decode(bs.src_path(THROW, throw)), bs.decode(bs.src_path(POP, pop)))
         combos.append(row(cid, f"Combo_{cid}.wav", "組合", f"{throw[3:]} 咻（0 s）＋ {pop[3:]} 蹦（0.5 s）", guess,
                           save("v3", "Combo", cid, out)))
     page("v3", "車輛膠囊音效候選（第 3 版）",
@@ -374,10 +443,47 @@ def build_v3(v2rows):
          [("丟出＋彈開組合（咻 0 s → 蹦 0.5 s）", combos), (TITLES[THROW], rows[THROW]), (TITLES[POP], rows[POP]),
           (TITLES[PACK], [ref(v2[PACK, "K3"], "已選 K3", "now"), ref(v2[PACK, "目前使用"], "舊版（第 1 版 take 7）")]),
           (TITLES[BTN], [ref(v2[BTN, "目前使用"], "已選（目前 take 4）", "now")])])
+    return v2, {(n, r["label"]): r for n, rs in rows.items() for r in rs}
+
+
+def build_v4(v2, v3):
+    """第 4 版：新蹦聲 P19 起與對照組都用 -14 dBFS，每條附「T1＋蹦」組合（組合也對齊 -14，咻與蹦的相對音量跟遊戲裡一樣）。"""
+    loud = bs.target_db(POP)
+    throw = bs.decode(bs.src_path(THROW, "v3:T1"))
+
+    def loud_row(cid, label, how, recipe, guess, a, cls=""):
+        s = save("v4", POP, cid, a, loud)
+        save("v4", "Combo", cid, overlay(throw, bs.decode(os.path.join(REVIEW, "sfx-v4", f"{POP}_{cid}.wav"))), loud)
+        return {**row(label, f"{POP}_{cid}.wav", how, recipe, guess, s, cls), "combo": f"Combo_{cid}.wav"}
+
+    def ref(r, ver, label=None, cls="ref"):
+        return {**r, "src": f"../sfx-{ver}/" + r["src"], "label": label or r["label"], "cls": cls}
+
+    new = [loud_row(cid, cid, how, recipe, guess, make()) for _, cid, how, recipe, guess, make in V4_CANDIDATES]
+    now = v2[POP, "目前使用"]
+    compare = [ref(now, "v2", "目前使用（-18 dBFS，遊戲裡現在的音量）", "now"),
+               loud_row("now14", "目前使用（-14 dBFS）", now["how"], now["recipe"] + "，重新整理到 -14 dBFS", now["guess"],
+                        bs.decode(bs.src_path(POP, "v2:now")), "now")]
+    for cid in ("P14", "P15"):
+        r = v3[POP, cid]
+        compare.append(loud_row(f"{cid}_14", f"{cid}（-14 dBFS）", r["how"], r["recipe"] + "，重新整理到 -14 dBFS", r["guess"],
+                                bs.decode(bs.src_path(POP, f"v3:{cid}"))))
+    older = [ref(r, "v3", f"{r['label']}（第 3 版）") for (n, _), r in v3.items() if n == POP and r["src"].startswith(POP)]
+    older += [ref(r, "v2", f"{r['label']}（第 2 版）") for (n, lbl), r in v2.items() if n == POP and lbl != "目前使用"]
+    page("v4", "車輛膠囊音效候選（第 4 版）：蹦要大一點、有炸開的感覺",
+         NOTE.replace("RMS 峰值 -18 dBFS", "RMS 峰值 -14 dBFS（Pop；咻、Pack、Button 照舊 -18）")
+         + "「T1＋蹦」欄是已選的咻 T1（0 s）接這條蹦（0.5 s），只當聽感參考。「對照」一組用來分辨差別是內容還是音量。"
+         "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v4:P19</code>（換成你選的 ID；"
+         "裝進 MOD 時 Pop 一律整理到 -14 dBFS）。",
+         [(f"新蹦聲：{TITLES[POP]}，-14 dBFS", new), ("對照：目前使用與第 3 版 P14／P15 用 -14 dBFS 重新整理", compare),
+          (TITLES[THROW].replace("，新", ""), [ref(v3[THROW, "T1"], "v3", "已選 T1", "now")]),
+          (TITLES[PACK], [ref(v2[PACK, "K3"], "v2", "已選 K3", "now")]),
+          (TITLES[BTN], [ref(v2[BTN, "目前使用"], "v2", "已選（目前 take 4）", "now")]),
+          ("前幾輪的 Pop 候選（-18 dBFS，參考）", older)])
 
 
 def main():
-    build_v3(build_v2())
+    build_v4(*build_v3(build_v2()))
 
 
 if __name__ == "__main__":

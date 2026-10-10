@@ -1,0 +1,50 @@
+[
+  {
+    "id": "BurstCartoonExplosion",
+    "text": "Cartoon explosion pop: a big full round BOOM-pop as a small capsule bursts open, a punchy deep low thump with a fluffy cloud of smoke whooshing outward and fading, comic and playful, not a real explosion, no gunshot, no debris crash, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 1.1,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstKaboom",
+    "text": "Comic KABOOM capsule burst: one huge exaggerated cartoon kaboom, a fat bouncy low boom with a soft puffy smoke burst spreading out, playful toy-like, not realistic, no gunshot, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstMagicSmoke",
+    "text": "Magic burst with smoke: a loud deep magical poof-boom as a capsule bursts open, a thick billowing cloud of smoke rushing outward, warm and soft, cartoon magic trick reveal, dry, no reverb, no music, no voice, no bells, no harsh high frequencies.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstConfettiCannon",
+    "text": "Big confetti cannon pop: one loud punchy party cannon BOOF, a deep round air blast followed by soft rustling paper confetti fluttering down, playful, dry, no reverb, no music, no voice, no cheering, not shrill.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstFirework",
+    "text": "Cartoon firework burst, softened: a big round low thump of a firework shell bursting, then a gentle warm crackle and sizzle of sparks spreading out and fading, playful and muffled, no whistle, no gunshot, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 1.2,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstBigPoof",
+    "text": "Huge cartoon smoke bomb poof: a deep heavy WHUMPH of air and smoke bursting out all at once, thick and fluffy, low-pitched and powerful, then the smoke hissing softly away, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.0,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstSubBoom",
+    "text": "Deep cartoon boom: one short heavy low-frequency impact boom, round and punchy like a big drum hit with a soft thud, no crack, no debris, dry, no reverb, no music, no voice.",
+    "duration": 0.8,
+    "influence": 0.6
+  },
+  {
+    "id": "BurstDebris",
+    "text": "Soft cartoon debris scatter: light plastic capsule shell pieces and little bits scattering and pattering on the ground after a pop, soft muted rattles, quiet and gentle, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 1.0,
+    "influence": 0.5
+  }
+]
