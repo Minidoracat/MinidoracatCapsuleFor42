@@ -22,9 +22,9 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Requirements[/b]: engine off, nobody inside, an empty capsule in your inventory (bags count), and permission to pack this vehicle (next item). A vehicle that is towing or being towed, has animals in its trailer, or holds another loaded capsule can't be packed; the menu tells you why.
 [*] [b]Who can pack[/b]:
 [list]
-[*] With Minidoracat Vehicle Manager installed: its owner decides, so only the owner can pack; sharing a vehicle never grants packing.
-[*] Without Vehicle Manager: the sandbox option "Who can pack vehicles" decides. By default it is anyone carrying this vehicle's key (in the inventory or in the ignition); it can be changed to anyone or admins only.
-[*] Admins can always pack.
+[*] Vehicles claimed in Minidoracat Vehicle Manager: only the owner can pack; sharing a vehicle never grants packing. Admins must first turn on override in the Admin tab of the fleet window.
+[*] Other vehicles (no Vehicle Manager, or not claimed): the sandbox option "Who can pack vehicles" decides. By default it is anyone carrying this vehicle's key (in the inventory or in the ignition); it can be changed to anyone or admins only.
+[*] Admins are not limited by the sandbox option and can always pack these.
 [/list]
 [*] [b]Packing[/b]: takes about 10 seconds. The server checks permission, passengers and towing again and only packs when everything passes; it saves the vehicle and its cargo first and removes the vehicle from the world last. A key left in the ignition moves to your inventory.
 [*] [b]Afterwards[/b]: the empty capsule is used up and a capsule named after the vehicle drops where the vehicle stood. The name is in the game language of the player who packed it. Nearby players see smoke and a flash and hear a sound.
@@ -94,7 +94,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [h2]⚙️ Server Settings (sandbox pages "Minidoracat Vehicle Capsule" and "Minidoracat Vehicle Capsule - Loot")[/h2]
 [list]
 [*] [b]Return an empty capsule after unpacking[/b]: on by default. After a capsule unpacks, an empty capsule goes back into the thrower's inventory.
-[*] [b]Who can pack vehicles (without Vehicle Manager)[/b]: "Key holders" by default (the key in the inventory or in the ignition); can be set to "Anyone" or "Admins only". Admins are never limited; with Vehicle Manager installed, it decides instead and this option does nothing.
+[*] [b]Who can pack vehicles[/b]: "Key holders" by default (the key in the inventory or in the ignition); can be set to "Anyone" or "Admins only". Admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead and this option covers unclaimed vehicles.
 [*] [b]Zombie attraction radius of the capsule sound[/b]: 0 tiles by default (0–50). 0 means the capsule's pop attracts no zombies.
 [*] [b]Empty capsules appear as loot[/b]: on by default. Master switch; when off, none of the four locations below spawn empty capsules.
 [*] [b]Mechanic shops[/b]: on by default, weight 0.5.
@@ -159,7 +159,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]What happens to capsules after a server crash?[/b] Mostly nothing. If the crash came within a few seconds of a pack or unpack, the capsule says it needs an admin; give the number to an admin. After the admin checks on site, the vehicle and the capsule end up in the right state, with no extra vehicle and no second copy of the cargo.
 [*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo.
 [*] [b]I can't pick up the capsule.[/b] The cargo is too heavy. Right-click the capsule on the ground and choose [b]Press the Button[/b] to unpack it right there.
-[*] [b]Can I pack someone else's vehicle?[/b] It depends on the server: with Vehicle Manager, only the owner can; without it, you need the vehicle's key by default. Admins always can.
+[*] [b]Can I pack someone else's vehicle?[/b] A vehicle claimed in Vehicle Manager: only its owner (admins need override on). Other vehicles depend on the server: by default you need the vehicle's key, and admins always can.
 [*] [b]I threw it and no vehicle appeared.[/b] The landing spot was blocked when it landed; a window shows the reason and the capsule is on the landing spot. Pick a clear spot and press the button on the ground, or pick it up and throw again.
 [*] [b]Is it safe in multiplayer?[/b] Packing, unpacking and restoring are all validated by the server; the vehicle data lives only on the server, and the capsule itself only carries its name.
 [/list]

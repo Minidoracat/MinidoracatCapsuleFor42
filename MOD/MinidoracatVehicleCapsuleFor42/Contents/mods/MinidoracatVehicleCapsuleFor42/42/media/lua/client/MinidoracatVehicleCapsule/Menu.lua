@@ -19,6 +19,14 @@ local function tr(key, ...) return getText("IGUI_MinidoracatVehicleCapsule_" .. 
 local PERM_TEXT = { VM = "PermOwner", KEY = "PermKey", ADMIN = "PermAdmin", ANY = "PermAny" }
 local IDLE = { OCCUPIED = true, ENGINE_RUNNING = true }
 
+-- Permission row. VehicleManager lets an admin pack a claimed vehicle only with its override on (every use is
+-- logged), so a refused admin gets its own hint saying where to turn it on.
+local function permRow(player, may, mode)
+    local text = tr(may and PERM_TEXT[mode] or PERM_TEXT[mode] .. "No")
+    if not may and mode == "VM" and Rules.isAdmin(player) then text = getTextOrNull("IGUI_MVM_ProtectedAdmin") or text end
+    return Notify.row(may, text)
+end
+
 -- Tooltip rows for packing this vehicle; returns ok (every row passes), rich text.
 function Menu.packTooltip(player, vehicle)
     local may, mode = Rules.mayPack(player, vehicle)
@@ -26,8 +34,7 @@ function Menu.packTooltip(player, vehicle)
     local capsule = Rules.emptyCapsule(player) ~= nil
     local other = Rules.vehicleWhyNot(player, vehicle)
     if IDLE[other] then other = nil end
-    local key = PERM_TEXT[mode]
-    local text = Notify.row(may, tr(may and key or key .. "No"))
+    local text = permRow(player, may, mode)
         .. Notify.row(idle, tr(idle and "Idle" or "IdleNo"))
         .. Notify.row(capsule, tr(capsule and "HasCapsule" or "HasCapsuleNo"))
     if other then text = text .. Notify.row(false, Notify.reason(other)) end

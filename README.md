@@ -7,12 +7,12 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 ## 需要
 
 - [Minidoracat UI Library for B42](https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701)（必裝：3D 預覽與管理面板）
-- [Minidoracat Vehicle Manager](https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279)（選用：裝了就照它的車主決定誰能收車，展開後車主不變）
+- [Minidoracat Vehicle Manager](https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279)（選用：綁定的車只有車主能收，展開後車主不變）
 - [Minidoracat Economy](https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125)（選用：管理員把空膠囊上架到經濟中心販售，不需要整合程式）
 
 ## 功能
 
-- **收車**：右鍵車輛「收進膠囊」，約 10 秒；條件是引擎熄火、車上沒人、背包有空膠囊。選單逐項列出條件，沒符合的寫出要怎麼做。權限：有 Vehicle Manager 時只有車主，沒有時照沙盒（預設要有車鑰匙，可改任何人或只有管理員），管理員一律可收。
+- **收車**：右鍵車輛「收進膠囊」，約 10 秒；條件是引擎熄火、車上沒人、背包有空膠囊。選單逐項列出條件，沒符合的寫出要怎麼做。權限：在 Vehicle Manager 綁定的車只有車主能收（管理員要開越權）；其他車照沙盒（預設要有車鑰匙，可改任何人或只有管理員），管理員一律可收。
 - **原樣保存**：車種、塗裝、零件與車況（含改裝與拆掉的零件）、油量、胎壓、電瓶、門窗與門鎖、鑰匙編號，以及車上所有貨物（用原物件保存，水量、新鮮度、血跡都在）。原版車與 KI5 車都實測過。
 - **丟出展開**：物品欄右鍵「丟出膠囊」，游標框出車身（綠框放得下、紅框寫原因），落地冒煙、閃光與音效，車原樣出現，貨物放回原容器；可設定歸還一顆空膠囊。
 - **按下按鈕**：貨物太重、膠囊撿不起來時，對地上的膠囊「按下按鈕」，車出現在旁邊。

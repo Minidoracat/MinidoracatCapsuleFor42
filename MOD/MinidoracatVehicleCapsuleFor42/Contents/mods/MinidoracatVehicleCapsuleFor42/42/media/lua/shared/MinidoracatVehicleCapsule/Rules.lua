@@ -45,12 +45,17 @@ function Rules.vehicleWhyNot(player, vehicle)
     return nil
 end
 
--- Who may pack: VehicleManager's MANAGE when it is loaded; otherwise admins always, others by SandboxVars
--- PackPermission (1 key in the inventory or in the ignition, 2 anyone, 3 admins only).
--- Returns ok, mode ("VM"/"KEY"/"ANY"/"ADMIN"; an admin passing in mode 1 reports "ADMIN").
+-- Who may pack: a vehicle claimed in VehicleManager follows its MANAGE (the owner, or an admin with its override on);
+-- any other vehicle: admins always, others by SandboxVars PackPermission (1 key in the inventory or in the ignition,
+-- 2 anyone, 3 admins only).
+-- Returns ok, mode ("VM"/"KEY"/"ANY"/"ADMIN"; an admin passing in mode 1 or by VM override reports "ADMIN").
 function Rules.mayPack(player, vehicle)
     local vm = MinidoracatVehicleManagerAPI
-    if vm and vm.canUse then return vm.canUse(player, vehicle, "MANAGE") == true, "VM" end
+    if vm and vm.canUse then
+        local ok, why = vm.canUse(player, vehicle, "MANAGE")
+        -- An unclaimed vehicle has no owner there (VM allows anyone): the sandbox rule below decides instead
+        if why ~= "UNCLAIMED" then return ok == true, why == "ADMIN" and "ADMIN" or "VM" end
+    end
     local mode = tonumber(Rules.sandbox().PackPermission) or 1
     if mode == 2 then return true, "ANY" end
     if Rules.isAdmin(player) then return true, "ADMIN" end

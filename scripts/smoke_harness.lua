@@ -716,8 +716,8 @@ check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car), "模�
 check(Rules.mayPack(admin3, car) and select(2, Rules.mayPack(admin3, car)) == "ADMIN", "模式 1：管理員沒鑰匙也能收")
 SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
 check(not Rules.mayPack(stranger, car) and not Rules.mayPack(keyHolder, car), "模式 3：有鑰匙的一般玩家也不行")
-MinidoracatVehicleManagerAPI = { canUse = function() return false end }
-check(not Rules.mayPack(admin3, car), "有 VehicleManager：管理員也照 canUse")
+MinidoracatVehicleManagerAPI = { canUse = function() return false, "NOT_AUTHORIZED" end }
+check(not Rules.mayPack(admin3, car), "VehicleManager 綁定的車：管理員也照 canUse（沒開越權就不行）")
 MinidoracatVehicleManagerAPI = nil
 SandboxVars.MinidoracatVehicleCapsule.PackPermission = 1
 car.ignition = true
@@ -727,9 +727,18 @@ SandboxVars.MinidoracatVehicleCapsule.PackPermission = 2
 check(Rules.mayPack(stranger, car), "模式 2：任何人")
 SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
 check(Rules.mayPack(admin3, car) and not Rules.mayPack(keyHolder, car), "模式 3：只有管理員")
-MinidoracatVehicleManagerAPI = { canUse = function(p) return p == stranger end }
+MinidoracatVehicleManagerAPI = { canUse = function(p) return p == stranger, p == stranger and "OWNER" or "NOT_AUTHORIZED" end }
 local vmOk, vmMode = Rules.mayPack(stranger, car)
-check(vmOk and vmMode == "VM" and not Rules.mayPack(admin3, car), "有 VehicleManager：改用 canUse(MANAGE)，沙盒不看")
+check(vmOk and vmMode == "VM" and not Rules.mayPack(admin3, car), "VehicleManager 綁定的車：改用 canUse(MANAGE)，沙盒不看")
+MinidoracatVehicleManagerAPI = { canUse = function(p) return p == admin3, p == admin3 and "ADMIN" or "NOT_AUTHORIZED" end }
+local ovOk, ovMode = Rules.mayPack(admin3, car)
+check(ovOk and ovMode == "ADMIN" and not Rules.mayPack(keyHolder, car),
+    "VehicleManager 越權中的管理員算「管理員」；別人綁定的車，有鑰匙也不行")
+MinidoracatVehicleManagerAPI = { canUse = function() return true, "UNCLAIMED" end }
+SandboxVars.MinidoracatVehicleCapsule.PackPermission = 1
+local unOk, unMode = Rules.mayPack(admin3, car)
+check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car) and unOk and unMode == "ADMIN",
+    "VehicleManager 沒綁定的車照沙盒：模式 1 要鑰匙，管理員照常")
 MinidoracatVehicleManagerAPI = nil
 SandboxVars = nil
 
