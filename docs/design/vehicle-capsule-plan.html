@@ -326,6 +326,7 @@ flying  -dup->    used    : 展開過
     <doc-note tone="ok"><strong>已實測：動作與同步</strong> 雙客戶端測試：丟的人在動作開始後 551–590 ms 放手，旁觀者看得到整段丟擲。伺服器模擬的放手比客戶端晚 35–116 ms，每丟只跑一次。單人模式也能播。測試輪次 <code>vcap-throw-1010h</code>、<code>vcap-throw-sp-1010a</code>。</doc-note>
     <doc-note tone="warn"><strong>生車只放在 complete()</strong> 玩家放手後被打斷時，伺服器的放手事件已經跑了，complete() 卻不會跑。伺服器照客戶端送來的參數重建動作，所以丟的人是誰要先用 OnClientCommand 確認（pitfalls.md）。</doc-note>
     <doc-note tone="info"><strong>實作差異</strong> 只有綠框能丟。飛行特效在放手時廣播，落地展開在動作結束後，所以膠囊落地約 0.3 秒才彈開。車身範圍用原版格子線畫。已實測：旁觀者看得到飛行與煙霧，40 格外收不到特效（<code>vcap-throw-1010r</code>）。</doc-note>
+    <doc-note tone="ok"><strong>已定：動作瞬間完成時只有飛行與煙霧（2026-10-11）</strong> 管理員開了「動作瞬間完成」時，丟出動作第一下就結束，所以不會播丟擲動畫，原版其他動作也一樣。修正前這種情況連飛行特效都沒有，畫面上只剩煙霧；現在沒有放手事件時，伺服器直接送飛行特效。已實測：伺服器確認旗標開著；修正前那一丟沒有放手也沒有飛行，跟你本機的伺服器紀錄一樣；修正後飛行與煙霧各一次。測試輪次 <code>vcap-throw-inst0-1011d</code>（修正前）、<code>vcap-throw-inst-1011d</code>。</doc-note>
     <doc-claim at="media/AnimSets/player/actions/MinidoracatVehicleCapsuleThrow.xml:1">
       <p><b>MinidoracatVehicleCapsuleThrow.xml:1</b> · 丟擲動作</p>
       <doc-code title="MinidoracatVehicleCapsuleThrow.xml · sketch" lang="xml">
