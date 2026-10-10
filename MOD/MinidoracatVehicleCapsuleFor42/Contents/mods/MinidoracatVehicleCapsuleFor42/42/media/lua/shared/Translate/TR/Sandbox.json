@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Yalnızca yöneticiler",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "Kapsül sesinin zombi çekme yarıçapı (kare)",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 ile 50 kare arası. 0, kapsülün açılma sesinin zombileri çekmediği anlamına gelir.",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Kapsüllerden yük almaya izin ver",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Açıksa oyuncular, aracı kapsülden çıkarmadan araçlı bir kapsüldeki yükü alabilir. Yük yalnızca alınabilir, içine bir şey konamaz. Aracın yeni konduğu kapsül yaklaşık 5 saniye sonra açılır; sunucu çökmesi yüzünden onaylanmamış bir kapsül kilitli kalır.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Boş kapsüller ganimet olarak çıkar",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Ana anahtar: kapalıyken aşağıdaki dört yerin hiçbirinde boş kapsül çıkmaz.\nYalnızca bundan sonra ilk kez açılan konteynerleri etkiler; önceden yağmalanmış konteynerler yenilenmez.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Oto tamirhaneleri",

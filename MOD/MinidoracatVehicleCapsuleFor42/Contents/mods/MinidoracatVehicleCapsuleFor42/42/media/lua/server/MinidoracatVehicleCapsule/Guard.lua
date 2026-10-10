@@ -6,8 +6,11 @@
 --     otherwise sealed cargo that left the capsule is put back when the player carries it (cargo lock). Vanilla item
 --     transfers are pure Java (ItemTransactionPacket -> TransactionManager.isConsistent/Transaction.update, no Lua
 --     hook on the source), so the server can only undo them, not refuse them.
+--   * Sandbox AllowCargoTakeOut and a confirmed PACKED record (Rules.cargoOpen): cargo that left stays out; the
+--     record drops it (sealed, manifest) so the tooltip, the preview and the admin panel list what is still inside.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
+require "MinidoracatVehicleCapsule/Rules"
 require "MinidoracatVehicleCapsule/Store"
 local M = MinidoracatVehicleCapsule
 local Store = M.Store
@@ -109,7 +112,39 @@ local function lock(player, capsule, capsuleId, sealed)
     if #gone > 0 then Store.event(capsuleId, snap, "CARGO_LOCK", player, { why = "missing", items = table.concat(gone, ",") }) end
 end
 
--- One loaded capsule seen by a pass: clear it when stale, otherwise keep its cargo inside.
+-- Taking out is allowed: drop what left from the record. sealed keeps the ids still inside (any depth), manifest is
+-- counted again from the top level like Snapshot.capture; the history names what left (fullType when the player
+-- carries it, "#id" when it went elsewhere).
+local function sync(player, capsule, capsuleId, sealed)
+    if not sealed or #sealed == 0 then return end
+    local box = capsule:getInventory()
+    local here = idsIn(box, {})
+    local kept, taken = {}, {}
+    for _, itemId in ipairs(sealed) do
+        if here[itemId] then
+            kept[#kept + 1] = itemId
+        else
+            local item = player:getInventory():getItemWithIDRecursiv(itemId)
+            local name = item and item:getFullType() or ("#" .. itemId)
+            taken[name] = (taken[name] or 0) + 1
+        end
+    end
+    if #kept == #sealed then return end
+    local snap = Store.read(capsuleId)
+    if not snap then return end
+    local manifest, items = {}, box:getItems()
+    for i = 0, items:size() - 1 do
+        local ft = items:get(i):getFullType()
+        manifest[ft] = (manifest[ft] or 0) + 1
+    end
+    local parts = {}
+    for name, n in pairs(taken) do parts[#parts + 1] = name .. "*" .. n end
+    snap.sealed, snap.manifest = kept, manifest
+    Store.event(capsuleId, snap, "CARGO_TAKEN", player, { items = table.concat(parts, ",") })
+end
+
+-- One loaded capsule seen by a pass: clear it when stale, otherwise keep its cargo inside, or follow what was taken
+-- when the server lets cargo out.
 function Guard.check(player, capsule)
     local capsuleId = capsule:getID()
     local st = Store.status(capsuleId)
@@ -119,7 +154,11 @@ function Guard.check(player, capsule)
         if snap and Store.isStale(snap) then Guard.clear(player, capsule, capsuleId, snap, "scan") end
         return
     end
-    lock(player, capsule, capsuleId, st.sealed)
+    if M.Rules.cargoOpen(st) then
+        sync(player, capsule, capsuleId, st.sealed)
+    else
+        lock(player, capsule, capsuleId, st.sealed)
+    end
 end
 
 local function groundCapsules(player, out)

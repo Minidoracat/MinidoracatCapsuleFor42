@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "展開失敗",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "清除重複的貨物",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "放回貨物",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "拿出貨物",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "車在",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "車不在",
     "UI_MinidoracatVehicleCapsule_NoteShown": "備註：%1",

@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Unpack failed",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Duplicate cargo cleared",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Cargo put back",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Cargo taken out",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "car is there",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "car is gone",
     "UI_MinidoracatVehicleCapsule_NoteShown": "note: %1",

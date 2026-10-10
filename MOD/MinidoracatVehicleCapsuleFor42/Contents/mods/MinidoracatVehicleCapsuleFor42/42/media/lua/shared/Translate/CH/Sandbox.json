@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "只有管理員",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "膠囊聲音引來殭屍的範圍（格）",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 到 50 格。0 表示膠囊彈開的聲音不會引來殭屍。",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "可以從膠囊拿出貨物",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "開啟時，玩家不用展開車也能從裝了車的膠囊拿出貨物，只能拿出、不能放進去。剛收好的膠囊要等約 5 秒才能拿；當機前未確認的膠囊仍然拿不出來。",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "空膠囊出現在戰利品",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "總開關：關閉時，下面四個地點都不會生出空膠囊。\n只影響之後第一次打開的容器，已經翻過的容器不會重新生成。",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "修車廠",

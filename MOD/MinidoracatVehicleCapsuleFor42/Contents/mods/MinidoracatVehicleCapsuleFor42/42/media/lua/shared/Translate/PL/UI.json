@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Rozpakowanie nieudane",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Usunięto zdublowany ładunek",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Odłożono ładunek",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Wyjęto ładunek",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "pojazd jest",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "pojazdu nie ma",
     "UI_MinidoracatVehicleCapsule_NoteShown": "notatka: %1",

@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Échec du déploiement",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Chargement en double supprimé",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Chargement remis en place",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Chargement sorti",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "véhicule présent",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "véhicule disparu",
     "UI_MinidoracatVehicleCapsule_NoteShown": "note : %1",

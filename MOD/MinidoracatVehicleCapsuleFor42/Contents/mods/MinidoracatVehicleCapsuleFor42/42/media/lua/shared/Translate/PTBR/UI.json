@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Falha ao liberar",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Carga duplicada removida",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Carga devolvida",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Carga retirada",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "o veículo está lá",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "o veículo sumiu",
     "UI_MinidoracatVehicleCapsule_NoteShown": "nota: %1",

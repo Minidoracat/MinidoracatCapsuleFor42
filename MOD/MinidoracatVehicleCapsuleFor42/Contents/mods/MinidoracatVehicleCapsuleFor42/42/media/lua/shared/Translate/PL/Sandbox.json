@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Tylko administratorzy",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "Zasięg przyciągania zombie dźwiękiem kapsuły (pola)",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "Od 0 do 50 pól. 0 oznacza, że dźwięk otwierania kapsuły nie przyciąga zombie.",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Pozwól wyjmować ładunek z kapsuł",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Gdy włączone, gracze mogą wyjmować ładunek z kapsuły z pojazdem bez rozpakowywania go. Można tylko wyjmować, nie da się nic włożyć. Świeżo spakowana kapsuła otwiera się po około 5 sekundach; kapsuła niepotwierdzona z powodu awarii serwera pozostaje zablokowana.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Puste kapsuły do znalezienia",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Główny przełącznik: gdy wyłączony, w żadnym z czterech miejsc poniżej nie pojawią się puste kapsuły.\nDotyczy tylko pojemników otwartych po raz pierwszy od tej pory; już przeszukane pojemniki się nie odnawiają.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Warsztaty samochodowe",

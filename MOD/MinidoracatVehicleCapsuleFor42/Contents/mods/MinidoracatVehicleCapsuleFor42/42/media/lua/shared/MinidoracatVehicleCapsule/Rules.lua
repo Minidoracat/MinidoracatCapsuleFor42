@@ -14,6 +14,13 @@ function Rules.sandbox()
     return SandboxVars and SandboxVars.MinidoracatVehicleCapsule or {}
 end
 
+-- Sandbox AllowCargoTakeOut: cargo may leave a loaded capsule whose record is a confirmed PACKED one (settled, so
+-- never one still settling, left uncertain by a crash, unpacked or void). rec: a snapshot, a Store.status entry or
+-- a Query reply. Nothing can be put into a capsule either way (MaxItemSize in the item script).
+function Rules.cargoOpen(rec)
+    return Rules.sandbox().AllowCargoTakeOut == true and rec ~= nil and rec.state == "PACKED" and rec.settled == true
+end
+
 -- Admin on either side: the server asks the connection (M.isAdmin, SP host = admin); an MP client reads its own role.
 function Rules.isAdmin(player)
     if not isClient() then return M.isAdmin(player) end

@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Только админы",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "Радиус привлечения зомби звуком капсулы (клетки)",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "От 0 до 50 клеток. 0 - звук открытия капсулы не привлекает зомби.",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Разрешить доставать груз из капсул",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Если включено, игроки могут доставать груз из капсулы с транспортом, не распаковывая его. Груз можно только доставать, класть внутрь нельзя. Только что упакованная капсула открывается примерно через 5 секунд; капсула, не подтверждённая из-за сбоя сервера, остаётся закрытой.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Пустые капсулы встречаются в добыче",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Главный переключатель: если выключено, ни в одном из четырёх мест ниже пустые капсулы не появятся.\nВлияет только на контейнеры, впервые открытые после этого; уже обысканные контейнеры не пополняются.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Автомастерские",

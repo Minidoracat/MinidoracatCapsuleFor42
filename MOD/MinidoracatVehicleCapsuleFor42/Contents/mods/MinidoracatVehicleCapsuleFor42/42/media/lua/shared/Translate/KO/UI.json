@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "꺼내기 실패",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "중복 화물 삭제",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "화물 되돌림",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "화물 가져감",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "차량 있음",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "차량 없음",
     "UI_MinidoracatVehicleCapsule_NoteShown": "메모: %1",

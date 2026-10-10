@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Распаковка не удалась",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Дубликаты груза удалены",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Груз возвращён",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Груз вынут",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "транспорт на месте",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "транспорта нет",
     "UI_MinidoracatVehicleCapsule_NoteShown": "заметка: %1",

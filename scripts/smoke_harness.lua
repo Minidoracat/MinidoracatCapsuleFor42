@@ -616,6 +616,52 @@ check(lockEv.ev == "CARGO_LOCK" and lockEv.why == "returned" and lockEv.items:fi
     and lockEv.items:find("Base.Bag_Schoolbag", 1, true) ~= nil, "記 CARGO_LOCK returned（水瓶、背包）：" .. tostring(lockEv.items))
 check(water.container == owner.inv and missing == 1, "裝備中的物品不硬拿，只記一次 missing")
 
+do -- 拿出模式（AllowCargoTakeOut）：主程式的 local 已接近 200 個上限，放進函式
+    (function()
+        print("Guard：伺服器允許拿出貨物時，跟著紀錄、不放回；沒落盤的照樣放回")
+        owner.inv:Remove(cap) -- 上面貨物鎖那顆（水瓶裝備中）不參與
+        SandboxVars = { MinidoracatVehicleCapsule = { AllowCargoTakeOut = true } }
+        quiet = true
+        local open, water, bag, pencil = packedCapsule("PACKED", true)
+        local s0 = Store.read(open.id)
+        s0.manifest = { ["Base.WaterBottle"] = 1, ["Base.Bag_Schoolbag"] = 1 }
+        Store.write(open.id, s0)
+        open.inv:Remove(water)
+        owner.inv:AddItem(water)
+        bag.inv:Remove(pencil)
+        owner.inv:AddItem(pencil)
+        Guard.pass(owner)
+        Guard.pass(owner)
+        local s1 = Store.read(open.id)
+        local taken = 0
+        for _, e in ipairs(s1.history) do if e.ev == "CARGO_TAKEN" then taken = taken + 1 end end
+        local last = s1.history[#s1.history]
+        owner.inv:Remove(open)
+        local settling, water2 = packedCapsule("PACKED", nil)
+        settling.inv:Remove(water2)
+        owner.inv:AddItem(water2)
+        Guard.pass(owner)
+        local h2 = Store.read(settling.id).history
+        owner.inv:Remove(settling)
+        local R = M.Rules
+        local only = R.cargoOpen({ state = "PACKED", settled = true }) and not R.cargoOpen({ state = "PACKED", settled = false })
+            and not R.cargoOpen({ state = "UNPACKED", settled = true }) and not R.cargoOpen({ state = "VOID", settled = true })
+            and not R.cargoOpen(nil)
+        SandboxVars = nil
+        local off = not R.cargoOpen({ state = "PACKED", settled = true })
+        quiet = false
+        check(water.container == owner.inv and pencil.container == owner.inv,
+            "已落盤的膠囊：拿出的水瓶、背包裡拿出的鉛筆都留在玩家身上")
+        check(#s1.sealed == 1 and s1.sealed[1] == bag.id and s1.manifest["Base.Bag_Schoolbag"] == 1
+            and s1.manifest["Base.WaterBottle"] == nil, "紀錄只剩還在膠囊裡的背包（sealed、manifest）")
+        check(taken == 1 and last.ev == "CARGO_TAKEN" and last.items:find("Base.WaterBottle*1", 1, true) ~= nil
+            and last.items:find("Base.Pencil*1", 1, true) ~= nil, "記一次 CARGO_TAKEN（水瓶、鉛筆），第二輪不重記：" .. tostring(last.items))
+        check(water2.container == settling.inv and h2[#h2].ev == "CARGO_LOCK" and h2[#h2].why == "returned",
+            "剛收好、還沒落盤的膠囊照樣放回（CARGO_LOCK returned）")
+        check(only and off, "Rules.cargoOpen：只有已落盤的 PACKED，而且沙盒開著")
+    end)()
+end
+
 -- ===== Phase 3：落點範圍、收車權限、玩家身分（intent） =====
 require "MinidoracatVehicleCapsule/Footprint"
 require "MinidoracatVehicleCapsule/Rules"

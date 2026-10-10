@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "只有管理员",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "胶囊声音引来僵尸的范围（格）",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 到 50 格。0 表示胶囊弹开的声音不会引来僵尸。",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "可以从胶囊拿出货物",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "开启时，玩家不用展开车也能从装了车的胶囊拿出货物，只能拿出、不能放进去。刚收好的胶囊要等约 5 秒才能拿；宕机前未确认的胶囊仍然拿不出来。",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "空胶囊出现在战利品",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "总开关：关闭时，下面四个地点都不会生成空胶囊。\n只影响之后第一次打开的容器，已经翻过的容器不会重新生成。",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "修车厂",

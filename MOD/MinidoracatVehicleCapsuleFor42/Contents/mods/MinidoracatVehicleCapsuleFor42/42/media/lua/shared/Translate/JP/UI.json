@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "展開失敗",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "重複した積み荷を削除",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "積み荷を戻した",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "積み荷を取り出した",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "車両あり",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "車両なし",
     "UI_MinidoracatVehicleCapsule_NoteShown": "メモ：%1",

@@ -10,6 +10,8 @@
     "Sandbox_MinidoracatVehicleCapsule_PackPermission_option3": "Admins only",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius": "Zombie attraction radius of the capsule sound (tiles)",
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 to 50 tiles. 0 means the capsule popping open does not attract zombies.",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Allow taking cargo out of capsules",
+    "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "When on, players can take cargo out of a loaded capsule without unpacking the vehicle. Items can only be taken out, never put in. A freshly packed capsule opens after about 5 seconds; a capsule left unconfirmed by a server crash stays locked.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Empty capsules appear as loot",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Master switch: when off, none of the four locations below spawn empty capsules.\nOnly affects containers opened for the first time afterwards; containers already looted do not respawn.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Mechanic shops",

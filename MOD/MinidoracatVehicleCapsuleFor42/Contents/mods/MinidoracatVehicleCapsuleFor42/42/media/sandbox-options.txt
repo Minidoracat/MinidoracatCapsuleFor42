@@ -8,13 +8,17 @@ VERSION = 1,
 option MinidoracatVehicleCapsule.ReturnEmptyCapsule
 {type = boolean, default = true, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ReturnEmptyCapsule,}
 
-/* 沒有 Minidoracat Vehicle Manager 時誰能收車：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員。有 VehicleManager 時改用它的 canUse(MANAGE) */
+/* 誰能收車（Vehicle Manager 沒綁定的車才看這個；綁定的車問它的 canUse(TOW)）：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員 */
 option MinidoracatVehicleCapsule.PackPermission
 {type = enum, numValues = 3, default = 1, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_PackPermission,}
 
 /* 膠囊彈開的聲音引來殭屍的半徑（格）；0 不引殭屍 */
 option MinidoracatVehicleCapsule.ZombieSoundRadius
 {type = integer, min = 0, max = 50, default = 0, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ZombieSoundRadius,}
+
+/* 不用展開車也能從裝了車的膠囊拿出貨物（只能拿出，放不進去）。紀錄要已落盤：剛收好約 5 秒內、當機前未確認、已展開的膠囊照樣鎖住（Rules.cargoOpen） */
+option MinidoracatVehicleCapsule.AllowCargoTakeOut
+{type = boolean, default = false, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_AllowCargoTakeOut,}
 
 /* ===== MinidoracatVehicleCapsuleLoot：戰利品（四個地點各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
 

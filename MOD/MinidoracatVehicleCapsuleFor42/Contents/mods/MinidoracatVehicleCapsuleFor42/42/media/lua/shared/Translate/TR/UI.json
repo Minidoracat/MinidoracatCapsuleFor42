@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Açma başarısız",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Yinelenen yük temizlendi",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Yük geri kondu",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Yük alındı",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "araç orada",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "araç yok",
     "UI_MinidoracatVehicleCapsule_NoteShown": "not: %1",

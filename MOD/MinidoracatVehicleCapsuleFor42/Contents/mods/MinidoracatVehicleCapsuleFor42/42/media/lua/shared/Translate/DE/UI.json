@@ -50,6 +50,7 @@
     "UI_MinidoracatVehicleCapsule_Ev_UNPACK_FAILED": "Entpacken fehlgeschlagen",
     "UI_MinidoracatVehicleCapsule_Ev_CLEARED": "Doppelte Ladung entfernt",
     "UI_MinidoracatVehicleCapsule_Ev_CARGO_LOCK": "Ladung zurückgelegt",
+    "UI_MinidoracatVehicleCapsule_Ev_CARGO_TAKEN": "Ladung herausgenommen",
     "UI_MinidoracatVehicleCapsule_Verdict_present": "Fahrzeug da",
     "UI_MinidoracatVehicleCapsule_Verdict_missing": "Fahrzeug weg",
     "UI_MinidoracatVehicleCapsule_NoteShown": "Notiz: %1",
