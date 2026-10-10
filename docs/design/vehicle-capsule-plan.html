@@ -183,7 +183,7 @@ end
     </doc-calls>
     <doc-note tone="ok"><strong>已實測（42.21.0 專用伺服器）</strong> 收車後，伺服器與客戶端都看不到這台車。膠囊在地上，客戶端看得到車名。點火孔上的鑰匙移到玩家背包。測試輪次 <code>vcap-rt0-1010e</code>、<code>vcap-rt1-1010e</code>。</doc-note>
     <doc-note tone="info"><strong>modData 照引擎規則保存</strong> userdata 與函式本來就不會存檔，快照照樣跳過，路徑記進快照的 <code>skipped</code> 和日誌。KI5 車的 damnlib 會把 <code>_vehicle</code> 放進 modData，不能因此拒收。</doc-note>
-    <doc-note tone="ok"><strong>已實測：收車選單與權限</strong> 選單三種狀態（缺空膠囊、缺鑰匙、全打勾）照設計顯示；冒充別人的收車被伺服器拒絕；膠囊名稱用收車玩家的語言。裝了 Vehicle Manager 時，非車主被擋；車主收車再展開，車主照樣接回，舊鑰匙也能開門。沒裝時管理員一律可以收。測試輪次 <code>vcap-pack-1010r</code>、<code>vcap-vm-1010a</code>。</doc-note>
+    <doc-note tone="ok"><strong>已實測：收車選單與權限</strong> 選單三種狀態（缺空膠囊、缺鑰匙、全打勾）照設計顯示；冒充別人的收車被伺服器拒絕；膠囊名稱用收車玩家的語言。裝了 Vehicle Manager 時：沒綁定的車照沙盒設定；綁定的車非車主被擋，管理員沒開越權時選單寫出要到車隊視窗開越權，開了就能收；車主收車再展開，車主照樣接回，舊鑰匙也能開門。沒裝時管理員一律可以收。測試輪次 <code>vcap-pack-1010r</code>、<code>vcap-vm-1010u</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
