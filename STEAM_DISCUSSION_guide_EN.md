@@ -88,8 +88,18 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [h3]Getting capsules[/h3]
 [list]
 [*] [b]Loot[/b]: empty capsules show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Servers can toggle each location and tune its weight (see the settings below).
-[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule[/b]) to sell it. Loaded capsules can't be listed, auctioned or used to fill buy requests: an Economy trade makes a brand-new copy of the item, and the copy no longer matches the vehicle's record. To hand a vehicle to someone, drop the capsule on the ground and let them pick it up.
+[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule[/b]) to sell it. Loaded capsules can be listed or auctioned too, see "Trading vehicles in the Economy Center" below.
 [*] [b]From admins[/b]: hand out empty capsules with the vanilla item list or the /additem command.
+[/list]
+
+[h3]Trading vehicles in the Economy Center[/h3]
+[list]
+[*] [b]Needs a recent Minidoracat Economy[/b]: a loaded capsule can be listed on the market or put up for auction, cargo included. Older Economy versions still refuse loaded capsules.
+[*] [b]What buyers see[/b]: market and auction listings show the vehicle and its condition (engine and body, fuel, battery, number of missing parts, number of cargo items).
+[*] [b]The buyer gets that very vehicle[/b]: the capsule they receive is the same as the original, with the same number and the same cargo; thrown, it's that vehicle, and the cargo goes back into its containers. When the seller cancels or an auction ends without a winner, the capsule comes back unchanged.
+[*] [b]One capsule per listing[/b]: every capsule holds a different vehicle, so each one is its own listing; buy requests can't take them and the shop doesn't buy them.
+[*] [b]When listing is refused[/b]: in the first seconds after packing, while a record is unconfirmed after a crash, or when the cargo holds something the Economy Center can't carry (for example written paper, mixed liquids, a radio with a disc inside, or more than 300 cargo items). The item picker says why; unpack, take that item out and pack again.
+[*] [b]Weapon attachments[/b]: attachments come off when the capsule is listed and stay in the weapon's container, so the buyer gets the weapon and its attachments separately.
 [/list]
 
 [h2]⚙️ Server Settings (sandbox pages "Minidoracat Vehicle Capsule" and "Minidoracat Vehicle Capsule - Loot")[/h2]
@@ -125,8 +135,9 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [list]
 [*] [b]When[/b]: the capsule is gone (lost by the player, removed by a cleanup mod, or this mod was removed and reinstalled), or a server rollback made the vehicle disappear. When a player dies, the capsule stays on the body or on the ground; if it can be found, there's nothing to restore.
 [*] [b]How[/b]: select the capsule in the records, use [b]Go to the recorded spot[/b] first, make sure nothing is in the way, then press [b]Restore vehicle[/b]. The vehicle appears at the recorded spot (where it was last packed or unpacked) with its saved condition. Records that are unconfirmed after a crash need [b]I checked on site[/b] ticked first.
+[*] [b]Restore at a spot[/b]: when the recorded spot doesn't suit, press [b]Restore at a spot[/b]. The panel steps aside and the vehicle's ground shows on the floor: green where it fits, red with the reason where it doesn't. Left-click and confirm, and the vehicle appears there facing away from you; right-click cancels and the panel comes back.
 [*] [b]The cargo doesn't come back[/b]: the cargo lived inside the capsule and is gone with it. The record lists the cargo types and counts; whether to hand anything out is up to the admin, and you can leave a note (for example "replaced the water bottles").
-[*] [b]Never an extra vehicle[/b]: restoring makes the original capsule void at the same time, so it can't be unpacked even if it turns up later. If the server can find the recorded vehicle in the world, the restore is refused.
+[*] [b]Never an extra vehicle[/b]: restoring makes the original capsule void at the same time, so it can't be unpacked even if it turns up later. If the server can find the recorded vehicle in the world, the restore is refused. A capsule that is listed or up for auction in the Economy Center can't be restored either; the seller cancels the listing first, or the auction ends.
 [/list]
 
 [h3]Unconfirmed after a crash[/h3]
@@ -154,7 +165,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] Vehicles that are towing or being towed, carry animals in a trailer, have the engine running or have someone inside can't be packed.
 [*] Capsules don't unpack indoors; a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle within about 3 tiles of the capsule.
 [*] If a vehicle mod is removed, capsules holding its vehicles can't unpack (the tooltip says the server doesn't have this vehicle type); they work again once the vehicle mod is back.
-[*] Loaded capsules can't be put on the Economy market.
+[*] Loaded capsules can only be listed or auctioned: buy requests can't take them and the shop doesn't buy them, and a capsule whose cargo holds something the Economy Center can't carry has to be unpacked first. A recent Minidoracat Economy is needed; older versions refuse loaded capsules.
 [*] A capsule's name is in the game language of the player who packed it and doesn't change for other players; the tooltip and preview use your own language.
 [*] Restoring brings back the vehicle, not the cargo; the server only finds vehicles that are loaded nearby, so check on site before deciding.
 [*] "Last seen" only records the moment the server saw the capsule: one in a container or vehicle updates when someone opens that container, and who took it afterwards or where it went is not known.
@@ -167,7 +178,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]My capsule is gone. What now?[/b] Check bodies, the ground and the vehicle containers first. If it's really gone, give an admin the capsule number (shown in the tooltip or dialog) or your name; the admin can see where the capsule went and restore the vehicle (the cargo doesn't come back).
 [*] [b]What happens to capsules after a server crash?[/b] Mostly nothing. If the crash came within a few seconds of a pack or unpack, the capsule says it needs an admin; give the number to an admin. After the admin checks on site, the vehicle and the capsule end up in the right state, with no extra vehicle and no second copy of the cargo.
 [*] [b]Do the records keep growing?[/b] No. Closed records are deleted after 30 days by default (sandbox option, 1–90 days), and the number of files is fixed at 513 per server at most; only packed records stay for good.
-[*] [b]Can I sell a loaded capsule to someone?[/b] Not through the Economy Center (listing it is refused), because a traded capsule is a brand-new copy that no longer matches the vehicle's record. Drop the capsule on the ground and let them pick it up; the vehicle and its record go with it.
+[*] [b]Can I sell a loaded capsule to someone?[/b] Yes. List it on the Economy Center market or put it up for auction: the buyer gets the same capsule (same number, same cargo), and thrown it's that vehicle. You can also drop the capsule on the ground and let them pick it up.
 [*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo. Servers can turn on the sandbox option "Allow taking cargo out of capsules" to let players take things out directly; a capsule waiting for an admin still stays locked.
 [*] [b]I can't pick up the capsule.[/b] The cargo is too heavy. Right-click the capsule on the ground and choose [b]Press the Button[/b] to unpack it right there.
 [*] [b]Can I pack someone else's vehicle?[/b] A vehicle claimed in Vehicle Manager: only if the owner shared Tow with you (admins need override on). Other vehicles depend on the server: by default you need the vehicle's key, and admins always can.

@@ -2478,7 +2478,7 @@ end)
     <doc-note tone="ok"><strong>已實測</strong> 預覽視窗能旋轉、縮放、切換視角，旁邊列出實際車況；KI5 車也畫得出來。測試輪次 <code>vcap-prev-1010r</code>、<code>vcap-prevki5-1010r</code>。</doc-note>
     <doc-claim>
       <p><b>MVSC_VehicleTab.lua:173</b> · 預覽場景建立</p>
-      <doc-code src="MOD/MinidoracatVehicleSpawnControlFor42/Contents/mods/MinidoracatVehicleSpawnControlFor42/42/media/lua/client/MinidoracatVehicleSpawnControl/MVSC_VehicleTab.lua" lines="173-198" hl="194-198" file="MOD/MinidoracatVehicleSpawnControlFor42/Contents/mods/MinidoracatVehicleSpawnControlFor42/42/media/lua/client/MinidoracatVehicleSpawnControl/MVSC_VehicleTab.lua" start="173" sha="8bb9155"><script type="text/plain">    self.scene = ISUI3DScene:new(mx + IN, sceneTop, mw - IN * 2, sceneH)
+      <doc-code src="MOD/MinidoracatVehicleSpawnControlFor42/Contents/mods/MinidoracatVehicleSpawnControlFor42/42/media/lua/client/MinidoracatVehicleSpawnControl/MVSC_VehicleTab.lua" lines="173-198" hl="194-198" file="MOD/MinidoracatVehicleSpawnControlFor42/Contents/mods/MinidoracatVehicleSpawnControlFor42/42/media/lua/client/MinidoracatVehicleSpawnControl/MVSC_VehicleTab.lua" start="173" sha="2b4cc7f"><script type="text/plain">    self.scene = ISUI3DScene:new(mx + IN, sceneTop, mw - IN * 2, sceneH)
     self.scene:initialise()
     self.scene:instantiate()
     self.scene.background = true
@@ -2615,15 +2615,25 @@ media/AnimSets/player/actions/
   <doc-note tone="ok"><strong>已定：四個地點各自開關與權重</strong> 不開放自訂戰利品表，避免打錯表名卻看不出沒效果。</doc-note>
 
   <doc-claim>
-    <p>經濟中心賣空膠囊；裝了車的膠囊進不了任何交易。</p>
-    <doc-code src="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" lines="176-180" hl="178" file="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" start="176" sha="c80f354"><script type="text/plain">
+    <p>經濟中心賣空膠囊；裝了車的膠囊連貨物可以在市場上架或拍賣，買到的是同一顆。</p>
+    <doc-code src="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" lines="176-180" hl="178" file="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" start="176" sha="3e09716"><script type="text/plain">
 local function isInt(v, lo, hi)
     return type(v) == "number" and v == math.floor(v) and v >= lo and v <= hi
 end
 </script>
       <doc-pin line="178" tone="ok" title="任何已載入的物品都能上架">商店只檢查物品 script 存在。</doc-pin>
     </doc-code>
-    <doc-note tone="ok"><strong>已定：裝了車的膠囊不能交易（2026-10-11）</strong> Economy 的市場、拍賣、求購和收購都把物品存成快照，交回時重新做一顆，物品編號會變。膠囊的紀錄綁在編號上，所以交易回來的膠囊找不到車。實測：空的裝車膠囊上架再下架，就變成「資料不在這台伺服器上」。現在兩層擋：膠囊的物品分類改成「容器」，Economy 預設與正式服白名單都沒開；Economy 另加一個公開 API <code>blockItemType</code>（rev 5），膠囊開服時登記，之後管理員開放容器分類也擋得住。要把車交給別人，把膠囊放在地上讓對方撿。</doc-note>
+    <doc-calls title="交易時紀錄跟著膠囊走" caption="Economy 只帶膠囊編號、上架車況與含貨物的重量；貨物與原物品編號由膠囊自己存進紀錄、自己放回。">
+<script type="text/plain">
+  Mk.list → Codec.escrowUnique                       @ media/lua/server/MinidoracatEconomy/ECMarket.lua:441    -- 物品移走前最後一關（拍賣 ECAuction.lua:397）
++   Trade.escrow：拆下槍上配件、v1.snapshotItem 存整批貨物 @ media/lua/server/MinidoracatVehicleCapsule/Trade.lua:167
+  M.prepare → Codec.rebuild                          @ media/lua/server/MinidoracatEconomy/ECCodec.lua:1299    -- 每一種交出都走這裡
++   Trade.rebuilt：改回原編號、重建貨物                @ media/lua/server/MinidoracatVehicleCapsule/Trade.lua:189 -- 放進任何容器之前
++ Guard.check → Trade.landed：記 TRADED                @ media/lua/server/MinidoracatVehicleCapsule/Trade.lua:45  -- 出現在玩家身上才算交出
+</script>
+    </doc-calls>
+    <doc-note tone="ok"><strong>已定：連貨物一起賣（2026-10-11 改）</strong> 同一天稍早決定全擋；使用者改成「連貨物一起賣」，上架頁顯示車名與車況。Economy 加公開 API rev 6「唯一物品」：登記的物品一件一筆、不受白名單分類限制、市場與拍賣才收，求購單與賣給商店不收（每顆膠囊的車都不同）。膠囊上架時，伺服器用 Economy 自己的物品快照把整批貨物連同原物品編號存進紀錄；Economy 交出新物品時，在放進任何容器之前把膠囊與每件貨物的編號改回原值、重建貨物。紀錄、貨物對應與重複膠囊規則都不用改。Economy 可能為同一次交付重做好幾次，所以膠囊出現在玩家身上時才算交出。交易中管理員不能補回。舊版 Economy 照樣擋下（rev 5 的 blockItemType，更舊的靠分類）。</doc-note>
+    <doc-note tone="ok"><strong>已實測：上架、購買、取消、展開</strong> 雙客戶端：剛收好的膠囊被拒（寫出原因），落盤後每顆膠囊自成一列；上架後列表第二行與明細卡列出車種、車況、油量、電瓶、缺件數、貨物件數；買方拿到的膠囊編號相同，9 件貨物連原編號都在，背包與鑰匙圈裡的東西還在原處；丟出去後 6 件貨物回到原本的車上位置。另一顆上架再取消，原樣退回；求購單不收。舊版 Economy（rev 5）照樣擋下。測試輪次 <code>vcap-trade-1011c</code>、<code>vcap-econ-1011d</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -2759,6 +2769,7 @@ end
     <doc-note tone="info"><strong>補得回的情況</strong> 伺服器當機回溯（含展開後還沒存到的新車）、本 MOD 移除後又裝回，以及地上的膠囊被清理 MOD 清掉。家族 ItemCleaner 同種地上物品超過 100 件才會清；把 LoadedCapsule 加進它的 ProtectList 就不會被清。玩家死亡時膠囊在屍體上或地上，找得回來，不必補。</doc-note>
     <doc-note tone="warn"><strong>補不回的部分</strong> 貨物原物件放在膠囊裡，膠囊不見就跟著不見，紀錄只留種類與數量。Zomboid/Lua 的紀錄檔被刪掉時，收起中的車都補不回；紀錄資料夾要和世界存檔一起備份、一起還原。</doc-note>
     <doc-note tone="ok"><strong>已實測</strong> 64 筆紀錄分頁、搜尋、篩選、明細時間軸、判定、補回（找得到車就拒絕）與前往紀錄位置都正常，一般玩家打不開面板。回歸時發現判定後補回會生在管理員的位置，已修正為紀錄位置。紀錄改版後也實測：最後看到那一行與「前往最後看到的位置」、「7 天沒看到」篩選、超過保留天數的舊紀錄被刪掉而收起中的留著、世界比展開舊時改回未確認且膠囊不動。測試輪次 <code>vcap-admin-1011a</code>；法文、俄文版面 <code>vcap-admin-fr-1011b</code>、<code>vcap-admin-ru-1011b</code>。</doc-note>
+    <doc-note tone="ok"><strong>已定：補回可以指定位置（2026-10-11）</strong> 「補回車輛」照紀錄位置補，行為不變。新增「指定位置補回」：面板先收起，地面游標畫出車身範圍，綠色放得下、紅色寫出原因，車頭朝離開管理員的方向，不限丟擲距離。點下去並確認後送出座標與方向，伺服器用丟出落點同一套車身範圍檢查再驗一次。已實測：選的格子綠色、停著的車底下紅色；補回後車在那格朝東；送到停著的車上被拒。法文、俄文的詳情按鈕換成兩列也放得下。測試輪次 <code>vcap-admin-1011f</code>、<code>vcap-admin-fr-1011f</code>、<code>vcap-admin-ru-1011f</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -2777,7 +2788,7 @@ end
 + UI.Dock.register{ isAvailable = isAdmin }        @ MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788   -- 入口只給管理員
 </script>
     
-<script type="text/plain" data-excerpt="MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788" data-start="782" data-sha="b371b4e">
+<script type="text/plain" data-excerpt="MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788" data-start="782" data-sha="f96b65b">
 function DockPanel:onJoypadDirLeft(joypadData) if Focus then Focus.onJoypadDir(self, "left", joypadData) end end
 function DockPanel:onJoypadDirRight(joypadData) if Focus then Focus.onJoypadDir(self, "right", joypadData) end end
 function DockPanel:onJoypadBeforeDeactivate(joypadData) endFocus(self) end
@@ -2823,7 +2834,14 @@ function Dock.register(spec)
   cargo = { ["10023114"] = "TruckBed" },   -- 物品 id → 原本的容器
   manifest = { ["Base.WaterBottle"] = 6, ["Base.Bag_ALICEpack"] = 1 },   -- 貨物種類與數量，只供查閱
   seen = { t = 1791650000000, where = "player", by = "Ann",
-           x = 10651, y = 9902, z = 0 },  -- 最後看到；不進時間軸
+           x = 10651, y = 9902, z = 0 },  -- 最後看到；不進時間軸。交易中是 where = "economy"
+  escrow = {                               -- 經濟中心交易時才有；展開、補回或下次上架時清掉或換新
+    active = true,                         -- 還在 Economy 手上；膠囊出現在玩家身上時清掉，管理員這段時間不能補回
+    channel = "market", ref = "1791672341915:5", by = "Bob",
+    cargo = { { id = 10023114, s = { type = "Base.Bag_Schoolbag" },  -- Economy 的物品快照，連原物品 id
+                c = { { id = 10023115, s = { type = "Base.Pencil" } } }, k = "bag" } },
+    last = { kind = "market", ref = "1791672341915:5", to = "Ann" },  -- 最近一次交出給誰
+  },
   history = {                              -- 每次事件加一筆；紀錄結束超過保留天數才整筆刪掉
     { t = 1791600000000, ev = "PACKED", by = "Bob", x = 10612, y = 9876, z = 0, car = 3311 },
     { t = 1791640000000, ev = "UNPACKED", by = "Ann", x = 10650, y = 9900, z = 0, car = 4521 },
@@ -2832,11 +2850,11 @@ function Dock.register(spec)
 </script>
   </doc-schema>
   <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創、modData 照引擎規則跳過存不了的值、KI5 空槽補 defaultPartSet、裝了車的膠囊不能直接拿出貨物。</doc-note>
-  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。之後加上管理面板的「設定」分頁與「裝了車的膠囊不能進經濟系統」，相關情境也都通過（經濟系統擋下測試輪次 <code>vcap-econ-1011c</code>）。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意；經濟系統的配合改動也要跟著發新版。</doc-note>
+  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。之後加上管理面板的「設定」分頁、補回可以指定位置，以及「裝了車的膠囊連貨物在經濟中心交易」，相關情境也都通過（測試輪次 <code>vcap-admin-1011f</code>、<code>vcap-trade-1011c</code>）。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意；經濟系統的 API rev 6 要跟著發新版。</doc-note>
 </doc-claim>
 
 <doc-claim aux="scope">
-  <p>不改：VehicleManager、VehicleSpawnControl 的程式；Economy 只加一個公開 API（blockItemType，rev 5）。</p>
+  <p>不改：VehicleManager、VehicleSpawnControl 的程式；Economy 只加公開 API（rev 5 的 blockItemType、rev 6 的唯一物品）。</p>
   <ul>
     <li>只呼叫 VehicleManager 的公開 API <code>canUse</code>，不改它的程式。</li>
     <li>不用原版投擲武器流程：膠囊是容器，原版落點也由客戶端回報。</li>
@@ -2844,7 +2862,7 @@ function Dock.register(spec)
     <li>外型照原作，但不用七龍珠 Capsule Corporation 的標誌、文字與名稱。</li>
     <li>不做每次收車收費。要收費時，Economy 已有 debit API。</li>
     <li>不做依地圖座標限制掉落區域。Zones 沒有伺服器端的查詢 API。</li>
-    <li>裝了車的膠囊不能進 Economy 的任何交易：交易會重建物品，編號對不上（物品分類改成容器，加上 Economy 的 blockItemType）。</li>
+    <li>裝了車的膠囊只走 Economy 的市場與拍賣（rev 6 唯一物品），求購單與賣給商店不收；舊版 Economy 照樣擋下。貨物裡有 Economy 帶不走的物品時要先展開拿出來。</li>
     <li>拖車裡有動物、正在拖車或引擎發動中的車不能收。</li>
     <li>膠囊名稱用伺服器語言產生；提示框與預覽用玩家自己的語言。</li>
     <li>不追蹤展開後那台車的後續；車主與位置交給 VehicleManager。</li>
