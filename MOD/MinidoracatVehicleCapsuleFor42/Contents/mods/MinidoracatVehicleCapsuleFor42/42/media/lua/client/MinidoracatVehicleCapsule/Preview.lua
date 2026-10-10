@@ -95,7 +95,7 @@ function Body:render()
     if not w.shown then
         Kit.text(self, w.sceneMsg or "", PAD + 12, PAD + 12, "textMuted")
     end
-    Kit.text(self, w.hint, PAD, w.hintY, "textFaint")
+    for i, line in ipairs(w.hint) do Kit.text(self, line, PAD, w.hintY + (i - 1) * FH, "textFaint") end
     local y = PAD
     Kit.text(self, w.title or "", x0, y, "text", UIFont.Medium)
     y = y + getTextManager():getFontHeight(UIFont.Medium) + 2
@@ -118,9 +118,13 @@ local Win = {}
 Win.__index = Win
 
 function Win.new()
-    local self = setmetatable({ lines = {}, labelW = 0, note = {} }, Win)
+    local self = setmetatable({ lines = {}, labelW = 0 }, Win)
     local sw, sh = getCore():getScreenWidth(), getCore():getScreenHeight()
-    local bh = PAD + SCENE_H + GAP + (FH + 10) + GAP + FH + PAD
+    -- the hint under the view buttons and the note under the list keep every line: the window grows from the
+    -- hint's second line and the note's fourth line on
+    self.hint = Kit.wrap(U("PreviewHint"), SCENE_W)
+    self.note = Kit.wrap(U("PreviewNote"), LIST_W)
+    local bh = PAD + SCENE_H + GAP + (FH + 10) + GAP + FH + PAD + math.max(0, #self.hint - 1, #self.note - 3) * FH
     local width = PAD + SCENE_W + PAD + LIST_W + PAD
     self.win = UI.Window.new({ x = math.floor((sw - width) / 2), y = math.floor((sh - bh) / 2) - 20, width = width,
         height = bh + 40, title = U("PreviewTitle"), theme = Kit.theme, icon = "carPickup",
@@ -165,19 +169,22 @@ function Win.new()
 
     local by = PAD + SCENE_H + GAP
     local views = { { "ViewFront", "front" }, { "ViewSide", "side" }, { "ViewTop", "top" }, { "ViewReset", "iso" } }
-    local bw = math.floor((SCENE_W - GAP * 3) / 4)
+    -- each button fits its title and they share the spare width; titles too long for the row get equal widths
+    -- (the framework button cuts its title and shows the rest in a tooltip)
+    local need = 0
+    for _, v in ipairs(views) do need = need + Kit.measure(U(v[1])) + 20 end
+    local spare = math.floor((SCENE_W - GAP * 3 - need) / 4)
+    local bx = PAD
     self.buttons = {}
     for i, v in ipairs(views) do
-        local b = UI.Button.new({ x = PAD + (i - 1) * (bw + GAP), y = by, width = bw, height = FH + 10, title = U(v[1]),
+        local bw = spare >= 0 and Kit.measure(U(v[1])) + 20 + spare or math.floor((SCENE_W - GAP * 3) / 4)
+        local b = UI.Button.new({ x = bx, y = by, width = bw, height = FH + 10, title = U(v[1]),
             theme = Kit.theme, target = self, onClick = function(target) target:setAngle(Preview.ANGLES[v[2]]) end })
         body:addChild(b)
         self.buttons[i] = b
+        bx = bx + bw + GAP
     end
     self.hintY = by + FH + 10 + GAP
-    self.hint = Kit.fit(U("PreviewHint"), SCENE_W)
-    self.noteY = bh - PAD - FH * 3
-    self.note = Kit.wrap(U("PreviewNote"), LIST_W)
-    while #self.note > 3 do self.note[#self.note] = nil end
     self.noteY = bh - PAD - FH * #self.note
     return self
 end

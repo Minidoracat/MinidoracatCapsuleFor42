@@ -4,6 +4,7 @@
 -- SP has no server->client channel; the server code calls M.onServerCommand directly (PlayerCommands.send).
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Effects"
+require "MinidoracatVehicleCapsule/Info"
 local okUI = pcall(require, "MinidoracatUI/V1")
 local M = MinidoracatVehicleCapsule
 local Notify = { shown = {} }
@@ -65,8 +66,9 @@ function Notify.reason(code)
         or getText("IGUI_MinidoracatVehicleCapsule_Why_OTHER", tostring(code))
 end
 
+-- local time like the admin panel (Kahlua's os.date is UTC: 06:28 for a 14:28 restore in UTC+8)
 local function stamp(t)
-    return t and os.date("%m/%d %H:%M", t / 1000) or "?"
+    return t and M.Info.date(t) or "?"
 end
 
 -- One rich-text tooltip row (ISToolTip description): a check or a red mark, then the text in the player's

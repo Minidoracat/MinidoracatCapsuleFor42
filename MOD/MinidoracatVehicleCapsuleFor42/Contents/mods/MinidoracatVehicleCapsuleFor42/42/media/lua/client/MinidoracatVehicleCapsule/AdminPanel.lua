@@ -223,7 +223,9 @@ Win.__index = Win
 function Win.new()
     local self = setmetatable({ q = "", state = "ALL", page = 1, pages = 1, total = 0, counts = {}, rows = {} }, Win)
     local sw, sh = getCore():getScreenWidth(), getCore():getScreenHeight()
-    local w, h = math.min(980, sw - 40), math.min(640, sh - 40)
+    -- 720 high: with a larger font (e.g. a font mod) and the detail buttons on two rows, 640 left the timeline at
+    -- its minimum and the status line one row (French, 2026-10-10)
+    local w, h = math.min(980, sw - 40), math.min(720, sh - 40)
     self.w, self.h = w, h
     self.win = UI.Window.new({ x = math.floor((sw - w) / 2), y = math.floor((sh - h) / 2), width = w, height = h,
         title = U("PanelTitle"), theme = theme, icon = "carPickup", onClose = function() end })
@@ -253,11 +255,14 @@ end
 function Win:buildRecords(p)
     local w = p.width
     local x, y = PAD, 0
-    self.search = UI.TextField.new({ x = x, y = y, width = 300, height = CH, placeholder = U("SearchHint"),
+    -- the field fits its (translated) hint; the button sits right after it
+    local go = UI.Button.new({ y = y, height = CH, title = U("Search"), style = "primary",
+        theme = theme, target = self, onClick = function(t) t:runSearch() end })
+    local sw = math.min(math.max(300, Kit.measure(U("SearchHint")) + 40), w - PAD * 2 - GAP - go.width)
+    self.search = UI.TextField.new({ x = x, y = y, width = sw, height = CH, placeholder = U("SearchHint"),
         theme = theme, clearButton = true })
     p:addChild(self.search)
-    local go = UI.Button.new({ x = x + 300 + GAP, y = y, height = CH, title = U("Search"), style = "primary",
-        theme = theme, target = self, onClick = function(t) t:runSearch() end })
+    go:setX(x + sw + GAP)
     p:addChild(go)
     y = y + CH + GAP
     self.chips = {}
@@ -276,10 +281,11 @@ function Win:buildRecords(p)
     self.list = newList(p, x, y, listW, listH, true, function(c, row, cw) self:bindRow(c, row, cw) end,
         function() self:onPick() end)
     local py = y + listH + GAP
-    self.prevBtn = UI.Button.new({ x = x, y = py, width = 90, height = CH, title = U("PrevPage"), theme = theme,
-        target = self, onClick = function(t) t:goPage(t.page - 1) end })
-    self.nextBtn = UI.Button.new({ x = x + listW - 90, y = py, width = 90, height = CH, title = U("NextPage"),
-        theme = theme, target = self, onClick = function(t) t:goPage(t.page + 1) end })
+    local function pagerW(key) return math.max(90, Kit.measure(U(key)) + 20) end
+    self.prevBtn = UI.Button.new({ x = x, y = py, width = pagerW("PrevPage"), height = CH, title = U("PrevPage"),
+        theme = theme, target = self, onClick = function(t) t:goPage(t.page - 1) end })
+    self.nextBtn = UI.Button.new({ x = x + listW - pagerW("NextPage"), y = py, width = pagerW("NextPage"), height = CH,
+        title = U("NextPage"), theme = theme, target = self, onClick = function(t) t:goPage(t.page + 1) end })
     p:addChild(self.prevBtn)
     p:addChild(self.nextBtn)
     self.pagerY = py
@@ -289,14 +295,26 @@ function Win:buildRecords(p)
     local dw = w - dx - PAD
     self.dx, self.dw = dx, dw
     local dy = y
-    self.headY = dy                                    -- title + state
-    dy = dy + getTextManager():getFontHeight(UIFont.Medium) + FH + GAP
-    self.infoY = dy                                    -- recorded spot, car
-    dy = dy + FH + GAP
+    self.headY = dy                                    -- title, state (two lines: the crash help is long)
+    dy = dy + getTextManager():getFontHeight(UIFont.Medium) + FH * 2 + GAP
+    self.infoY = dy                                    -- recorded spot; car
+    dy = dy + FH * 2 + GAP
     self.timelineHeadY = dy
     dy = dy + FH + 4
-    local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + CH + GAP + FH
+    -- action buttons size to their (translated) titles and flow into as many rows as the column needs; the
+    -- timeline gives up that height. Added to the pane below, in the original order.
+    local function btn(key, style, fn)
+        return UI.Button.new({ height = CH, title = U(key), style = style, theme = theme, target = self, onClick = fn })
+    end
+    self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
+    self.restoreBtn = btn("Restore", "primary", function(t) t:confirmRestore() end)
+    self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
+    self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
+    local actions = { self.gotoBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
+    local btnRows = Kit.flow(actions, dw, GAP)
+    local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + btnRows * (CH + GAP) + FH
     local tlH = math.max(FH * 4, listH - (dy - y) - bottomBlock)
+    self.whyRows = math.max(1, math.floor((dy - self.headY) / FH)) -- a refused detail shows its reason above the timeline
     self.timeline = newList(p, dx, dy, dw, tlH, false, function(c, row, cw)
         c.line1 = fit(Panel.eventLine(row), cw)
         c.token1 = (row.ev == "REJECTED" or row.ev == "RESTORE_FAILED" or row.ev == "UNPACK_FAILED") and "errorText" or "text"
@@ -311,20 +329,14 @@ function Win:buildRecords(p)
     self.checked = UI.Checkbox.new({ x = dx, y = dy, width = dw, label = U("CheckedSite"), theme = theme })
     p:addChild(self.checked)
     dy = dy + CH + GAP
-    local bx = dx
-    local function btn(key, style, fn)
-        local b = UI.Button.new({ x = bx, y = dy, height = CH, title = U(key), style = style, theme = theme, target = self,
-            onClick = fn })
+    for _, b in ipairs(actions) do
+        b:setX(dx + b.flowX)
+        b:setY(dy + b.flowRow * (CH + GAP))
         p:addChild(b)
-        bx = bx + b.width + GAP
-        return b
     end
-    self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
-    self.restoreBtn = btn("Restore", "primary", function(t) t:confirmRestore() end)
-    self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
-    self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
-    dy = dy + CH + GAP
+    dy = dy + btnRows * (CH + GAP)
     self.msgY = dy
+    self.msgRows = math.max(1, math.floor((p.height - PAD - dy) / FH))
     p.drawBack = function(el)
         theme:fill(el, PAD, self.listY, self.listW, self.listH, "well")
         theme:fill(el, self.dx, self.timeline:getY(), self.dw, self.timeline.height, "well")
@@ -360,18 +372,21 @@ function Win:drawRecords(el)
     if not d then
         text(el, self.pickedId and U("Loading") or U("PickRecord"), x, self.headY, "textFaint")
     elseif not d.ok then
-        text(el, Panel.whyText(d.why), x, self.headY, "errorText")
+        for i, line in ipairs(self.dWhy) do text(el, line, x, self.headY + (i - 1) * FH, "errorText") end
     else
         text(el, self.dTitle, x, self.headY, "text", UIFont.Medium)
         local sy = self.headY + getTextManager():getFontHeight(UIFont.Medium)
-        text(el, self.dState, x, sy, d.uncertain and "errorText" or "accent")
-        text(el, self.dInfo, x, self.infoY, "textMuted")
+        local token = d.uncertain and "errorText" or "accent"
+        for i, line in ipairs(self.dState) do text(el, line, x, sy + (i - 1) * FH, token) end
+        for i, line in ipairs(self.dInfo) do text(el, line, x, self.infoY + (i - 1) * FH, "textMuted") end
         text(el, self.dTimelineHead, x, self.timelineHeadY, "textMuted")
         for i, line in ipairs(self.dCargo) do
             text(el, line, x, self.cargoY + (i - 1) * (FH + 2), "text")
         end
     end
-    if self.msg then text(el, self.msg, x, self.msgY, self.msgToken or "accent") end
+    if self.msgLines then
+        for i, line in ipairs(self.msgLines) do text(el, line, x, self.msgY + (i - 1) * FH, self.msgToken) end
+    end
 end
 
 function Win:refreshButtons()
@@ -408,6 +423,12 @@ function Win:setStateFilter(st)
     self:requestPage()
 end
 
+-- Status line under the buttons: wrapped to the detail column, as many rows as fit above the pane's bottom.
+function Win:setMsg(s, token)
+    self.msg, self.msgToken = s, token
+    self.msgLines = s and Kit.lines(s, self.dw, self.msgRows) or nil
+end
+
 function Win:goPage(n)
     if n < 1 or n > self.pages then return end
     self.page = n
@@ -418,7 +439,7 @@ function Win:onPage(res)
     if res.seq ~= nil and res.seq ~= self.seq then return end
     self.loading = false
     if not res.ok then
-        self.msg, self.msgToken = Panel.whyText(res.why), "errorText"
+        self:setMsg(Panel.whyText(res.why), "errorText")
         self:refreshButtons()
         return
     end
@@ -442,7 +463,8 @@ function Win:onPick()
 end
 
 function Win:select(id)
-    self.pickedId, self.detail, self.msg = id, nil, nil
+    self.pickedId, self.detail = id, nil
+    self:setMsg(nil)
     self.timeline:setItems({})
     self.note:setText("")
     self.checked:setChecked(false, true)
@@ -453,17 +475,18 @@ end
 function Win:onDetail(d)
     if tonumber(d.id) ~= self.pickedId then return end
     self.detail = d
-    if d.ok then
+    if not d.ok then
+        self.dWhy = Kit.lines(Panel.whyText(d.why), self.dw, self.whyRows)
+    else
         self.dTitle = fit(tostring(d.id) .. "   " .. Info.carName(d.script, d.name), self.dw)
-        self.dState = fit(stateLabel(d.state, d.uncertain) .. (d.uncertain and ("  " .. U("UncertainHelp")) or ""), self.dw)
+        self.dState = Kit.lines(stateLabel(d.state, d.uncertain) .. (d.uncertain and ("  " .. U("UncertainHelp")) or ""),
+            self.dw, 2)
         local spot = d.x and U("Spot", tostring(d.x), tostring(d.y), tostring(d.z or 0)) or U("SpotNone")
         local car = U(d.carLoaded and "CarLoaded" or "CarNotLoaded", tostring(d.car or "-"))
-        self.dInfo = fit(spot .. "   " .. car, self.dw)
+        self.dInfo = { fit(spot, self.dw), fit(car, self.dw) }
         local more = (tonumber(d.historyTotal) or 0) - #(d.history or {})
         self.dTimelineHead = more > 0 and U("TimelineMore", tostring(more)) or U("Timeline")
-        local lines = Kit.wrap(cargoText(d.manifest), self.dw)
-        self.dCargo = { lines[1], lines[2] }
-        if #lines > 2 then self.dCargo[2] = fit(lines[2] .. " ...", self.dw) end
+        self.dCargo = Kit.lines(cargoText(d.manifest), self.dw, 2)
         local h = {}
         for i = #(d.history or {}), 1, -1 do h[#h + 1] = d.history[i] end -- newest first
         self.timeline:setItems(h)
@@ -482,7 +505,7 @@ function Win:goTo()
     else
         player:teleportTo(x, y, z)
     end
-    self.msg, self.msgToken = U("WentTo", tostring(d.x), tostring(d.y)), "accent"
+    self:setMsg(U("WentTo", tostring(d.x), tostring(d.y)), "accent")
 end
 
 local function noteText(field)
@@ -493,7 +516,7 @@ end
 
 function Win:act(cmd, args)
     self.busy = true
-    self.msg, self.msgToken = U("Sending"), "textMuted"
+    self:setMsg(U("Sending"), "textMuted")
     self:refreshButtons()
     Panel.send(cmd, args)
 end
@@ -520,10 +543,10 @@ end
 function Win:onAction(cmd, res)
     self.busy = false
     if res.ok then
-        self.msg, self.msgToken = U(cmd == "adminRestore" and "Restored" or "Resolved"), "accent"
+        self:setMsg(U(cmd == "adminRestore" and "Restored" or "Resolved"), "accent")
         Kit.notify(U("PanelTitle"), self.msg)
     else
-        self.msg, self.msgToken = Panel.whyText(res.why), "errorText"
+        self:setMsg(Panel.whyText(res.why), "errorText")
     end
     self:refreshButtons()
     self:requestPage()

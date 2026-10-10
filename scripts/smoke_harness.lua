@@ -951,6 +951,79 @@ check(Loot.signature(Loot.wanted()) ~= Loot.signature((function() sandbox.LootEn
     "設定改了簽章就不同（觸發重排）")
 sandbox = {}
 
+-- ===== 介面版面：管理面板訊息依欄寬換行、詳情按鈕列放不下就換列（真框架 Text.wrap／fit，實際譯文）=====
+print("UI：訊息換行不超出欄寬、行數有上限；按鈕列換列不出欄")
+local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local MUI = os.getenv("MUI_LUA_DIR") or "../MinidoracatUIFor42/MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/"
+    local mui = io.open(MUI .. "V1.lua", "rb")
+    if not mui then
+        print("  SKIP  找不到框架 " .. MUI .. "（把 MinidoracatUIFor42 clone 在本 repo 同層，或設 MUI_LUA_DIR）")
+        return
+    end
+    mui:close()
+    -- 量字：每個字 7px（UTF-8 一個字元算一個字，俄文、法文重音字母不會被當成 2 個）
+    local function width(s) return 7 * select(2, s:gsub("[^\128-\191]", "")) end
+    UIFont = { Small = "Small", Medium = "Medium" }
+    function getTextManager()
+        return { MeasureStringX = function(_, _, s) return width(s) end, getFontHeight = function() return 16 end }
+    end
+    dofile(MUI .. "V1.lua")
+    dofile(MUI .. "TextWrap.lua")
+    local caps = MinidoracatUI.v1.CAPABILITIES
+    caps.window, caps.controls, caps.virtualList, caps.slider = true, true, true, true -- widget 檔要遊戲 UI 類別；這裡只驗文字與排版
+    require "MinidoracatVehicleCapsule/UIKit"
+    local Kit = M.UIKit
+    check(Kit.ok and caps.textWrap == true, "UIKit 接上框架（含 Text.wrap）")
+    local function ui(lang)
+        local fh = assert(io.open(MEDIA .. "/shared/Translate/" .. lang .. "/UI.json", "rb"))
+        local t = Json.decode(fh:read("*a"))
+        fh:close()
+        return t
+    end
+    local P = "UI_MinidoracatVehicleCapsule_"
+    local DW = 548 -- 980 寬面板的詳情欄
+    local msgs = 0
+    for _, lang in ipairs({ "EN", "FR", "RU" }) do
+        local t = ui(lang)
+        for k, s in pairs(t) do
+            if k:find("^" .. P .. "Why_") or k == P .. "Restored" or k == P .. "WentTo" then
+                msgs = msgs + 1
+                for _, w in ipairs({ DW, 160 }) do
+                    local lines = Kit.lines(s, w, 3)
+                    local ok = #lines >= 1 and #lines <= 3
+                    for _, line in ipairs(lines) do ok = ok and width(line) <= w end
+                    local all = #Kit.wrap(s, w) <= 3
+                    ok = ok and (all or lines[3]:sub(-3) == "...")
+                    if not ok then check(false, lang .. " " .. k .. " 寬 " .. w .. " 超出或沒標省略") end
+                end
+                local whole = table.concat(Kit.lines(s, DW, 3), " ")
+                if width(s) <= DW * 2 and whole:gsub("%s", "") ~= s:gsub("%s", "") then
+                    check(false, lang .. " " .. k .. " 兩行內放得下卻少了字")
+                end
+            end
+        end
+    end
+    check(msgs >= 30, "三語的拒絕原因與結果訊息都量過（" .. msgs .. " 則）")
+    local items = { { width = 120 }, { width = 200 }, { width = 260 }, { width = 180 }, { width = 600 } }
+    local rows = Kit.flow(items, DW, 8)
+    local inside = true
+    for i, it in ipairs(items) do
+        if i < #items then inside = inside and it.flowX + it.width <= DW end
+    end
+    check(inside and rows == 3 and items[3].flowRow == 1 and items[3].flowX == 0 and items[4].flowX == 268
+        and items[5].flowRow == 2 and items[5].flowX == 0, "按鈕列放不下就換到下一列、比欄還寬的自成一列（rows=" .. rows .. "）")
+    local ru = ui("RU")
+    local btns = {}
+    for _, key in ipairs({ "GoTo", "Restore", "VerdictPresent", "VerdictMissing" }) do
+        btns[#btns + 1] = { width = width(ru[P .. key]) + 20 }
+    end
+    Kit.flow(btns, DW, 8)
+    inside = true
+    for _, b in ipairs(btns) do inside = inside and b.flowX + b.width <= DW end
+    check(inside, "RU 四顆詳情按鈕都在詳情欄內")
+end
+uiLayout()
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")
