@@ -2614,19 +2614,20 @@ media/AnimSets/player/actions/
   <doc-note tone="ok"><strong>已定：四個地點各自開關與權重</strong> 不開放自訂戰利品表，避免打錯表名卻看不出沒效果。</doc-note>
 
   <doc-claim>
-    <p>經濟中心不用整合程式，管理員把空膠囊上架即可。</p>
-    <doc-code src="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" lines="176-180" hl="178" file="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" start="176" sha="8df5883"><script type="text/plain">
+    <p>經濟中心賣空膠囊；裝了車的膠囊進不了任何交易。</p>
+    <doc-code src="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" lines="176-180" hl="178" file="MOD/MinidoracatEconomyFor42/Contents/mods/MinidoracatEconomyFor42/42/media/lua/server/MinidoracatEconomy/ECShop.lua" start="176" sha="c80f354"><script type="text/plain">
 local function isInt(v, lo, hi)
     return type(v) == "number" and v == math.floor(v) and v >= lo and v <= hi
 end
 </script>
       <doc-pin line="178" tone="ok" title="任何已載入的物品都能上架">商店只檢查物品 script 存在。</doc-pin>
     </doc-code>
+    <doc-note tone="ok"><strong>已定：裝了車的膠囊不能交易（2026-10-11）</strong> Economy 的市場、拍賣、求購和收購都把物品存成快照，交回時重新做一顆，物品編號會變。膠囊的紀錄綁在編號上，所以交易回來的膠囊找不到車。實測：空的裝車膠囊上架再下架，就變成「資料不在這台伺服器上」。現在兩層擋：膠囊的物品分類改成「容器」，Economy 預設與正式服白名單都沒開；Economy 另加一個公開 API <code>blockItemType</code>（rev 5），膠囊開服時登記，之後管理員開放容器分類也擋得住。要把車交給別人，把膠囊放在地上讓對方撿。</doc-note>
   </doc-claim>
 
   <doc-claim>
     <p>面板改的就是原版沙盒選項，權限與傳送方式都和沙盒設定頁相同。</p>
-    <doc-calls title="套用戰利品設定" caption="不另存一份設定，所以兩邊看到的值一定一樣。">
+    <doc-calls title="套用設定與戰利品" caption="「設定」與「戰利品」兩個分頁都不另存一份設定，所以兩邊看到的值一定一樣。">
 <script type="text/plain">
 + **AdminPanel**:onApply()                         @ media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:1
 +   SandboxOptions.new()＋copyValuesFrom(…)        @ media/lua/client/ISUI/AdminPanel/ISServerSandboxOptionsUI.lua:794   -- 原版沙盒頁同一招
@@ -2634,7 +2635,7 @@ end
     SandboxOptions 封包                             @ zombie/network/PacketTypes.java:421   -- 需要 Capability.SandboxOptions
 </script>
     </doc-calls>
-    <doc-note tone="info"><strong>其他選項留在原版沙盒頁</strong> 展開後歸還空膠囊、沒有 VehicleManager 時誰能收車、膠囊聲音引殭屍的範圍，面板不重做。</doc-note>
+    <doc-note tone="ok"><strong>已定：全部沙盒選項都在面板（2026-10-11）</strong> 使用者要求面板能改所有沙盒選項。「設定」分頁放五個一般選項：展開後歸還空膠囊、誰能收車（三顆選項鈕）、膠囊聲音引殭屍的範圍、可以從膠囊拿出貨物、結束紀錄保留天數；戰利品仍在「戰利品」分頁。已實測：五項改完套用，伺服器讀到新值，重開分頁也是新值；法文、俄文版面放得下。測試輪次 <code>vcap-loot-1011d</code>、<code>vcap-admin-fr-1011d</code>、<code>vcap-admin-ru-1011d</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -2775,7 +2776,7 @@ end
 + UI.Dock.register{ isAvailable = isAdmin }        @ MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788   -- 入口只給管理員
 </script>
     
-<script type="text/plain" data-excerpt="MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788" data-start="782" data-sha="ee3bc93">
+<script type="text/plain" data-excerpt="MOD/MinidoracatUIFor42/Contents/mods/MinidoracatUIFor42/42/media/lua/client/MinidoracatUI/Widgets/Dock.lua:788" data-start="782" data-sha="b371b4e">
 function DockPanel:onJoypadDirLeft(joypadData) if Focus then Focus.onJoypadDir(self, "left", joypadData) end end
 function DockPanel:onJoypadDirRight(joypadData) if Focus then Focus.onJoypadDir(self, "right", joypadData) end end
 function DockPanel:onJoypadBeforeDeactivate(joypadData) endFocus(self) end
@@ -2830,11 +2831,11 @@ function Dock.register(spec)
 </script>
   </doc-schema>
   <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創、modData 照引擎規則跳過存不了的值、KI5 空槽補 defaultPartSet、裝了車的膠囊不能直接拿出貨物。</doc-note>
-  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意。</doc-note>
+  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。之後加上管理面板的「設定」分頁與「裝了車的膠囊不能進經濟系統」，相關情境也都通過（經濟系統擋下測試輪次 <code>vcap-econ-1011c</code>）。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意；經濟系統的配合改動也要跟著發新版。</doc-note>
 </doc-claim>
 
 <doc-claim aux="scope">
-  <p>不改：VehicleManager、Economy、VehicleSpawnControl 的程式。</p>
+  <p>不改：VehicleManager、VehicleSpawnControl 的程式；Economy 只加一個公開 API（blockItemType，rev 5）。</p>
   <ul>
     <li>只呼叫 VehicleManager 的公開 API <code>canUse</code>，不改它的程式。</li>
     <li>不用原版投擲武器流程：膠囊是容器，原版落點也由客戶端回報。</li>
@@ -2842,7 +2843,7 @@ function Dock.register(spec)
     <li>外型照原作，但不用七龍珠 Capsule Corporation 的標誌、文字與名稱。</li>
     <li>不做每次收車收費。要收費時，Economy 已有 debit API。</li>
     <li>不做依地圖座標限制掉落區域。Zones 沒有伺服器端的查詢 API。</li>
-    <li>裝了車的膠囊不能上 Economy 市場：市場會重建物品，編號對不上。</li>
+    <li>裝了車的膠囊不能進 Economy 的任何交易：交易會重建物品，編號對不上（物品分類改成容器，加上 Economy 的 blockItemType）。</li>
     <li>拖車裡有動物、正在拖車或引擎發動中的車不能收。</li>
     <li>膠囊名稱用伺服器語言產生；提示框與預覽用玩家自己的語言。</li>
     <li>不追蹤展開後那台車的後續；車主與位置交給 VehicleManager。</li>
