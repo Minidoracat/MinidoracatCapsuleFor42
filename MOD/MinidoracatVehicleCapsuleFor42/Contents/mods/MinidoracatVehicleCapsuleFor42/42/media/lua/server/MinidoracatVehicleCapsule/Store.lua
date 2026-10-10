@@ -37,8 +37,16 @@ local function readText(path)
     return table.concat(lines, "\n")
 end
 
-local function remember(capsuleId, snap)
+-- fn(capsuleId, snap, written) after every successful read (written = false) and write (written = true): the admin
+-- index follows both, the query cache invalidation only writes. A failing listener never breaks the Store.
+Store.listeners = {}
+
+local function remember(capsuleId, snap, written)
     status[capsuleId] = { state = snap.state, settled = snap.settled == true, sealed = snap.sealed }
+    for _, fn in ipairs(Store.listeners) do
+        local ok, err = pcall(fn, capsuleId, snap, written)
+        if not ok then M.log("store listener failed: " .. tostring(err)) end
+    end
 end
 
 -- Unsettled and not waiting to settle in this run: written right before a crash. VOID is final either way.
@@ -100,7 +108,7 @@ function Store.write(capsuleId, snap)
         M.log("snapshot " .. tostring(capsuleId) .. " write did not read back")
         return nil, "WRITE_FAILED"
     end
-    remember(capsuleId, snap)
+    remember(capsuleId, snap, true)
     return true
 end
 
