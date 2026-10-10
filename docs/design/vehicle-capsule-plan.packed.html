@@ -2018,7 +2018,7 @@ local function whyNot(player, vehicle)
   if hasCapsuleInside(vehicle) then return "CAPSULE_INSIDE" end  -- 不收裝著膠囊的車
   local vm = MinidoracatVehicleManagerAPI
   local ok, why = true, "UNCLAIMED"
-  if vm then ok, why = vm.canUse(player, vehicle, "MANAGE") end  -- 沒綁定的車回 UNCLAIMED
+  if vm then ok, why = vm.canUse(player, vehicle, "TOW") end    -- 沒綁定的車回 UNCLAIMED
   if why ~= "UNCLAIMED" then                                     -- 在 VehicleManager 綁定：由它判斷
     if not ok then return "NOT_ALLOWED" end
   elseif not sandboxAllows(player, vehicle) then                 -- 沒綁定或沒裝：照沙盒設定
@@ -2027,7 +2027,7 @@ local function whyNot(player, vehicle)
   return nil
 end
 </script>
-      <doc-pin line="12" tone="info" title="MANAGE 只給車主與開了越權的管理員">VehicleManager 不開放分享這個權限；沒綁定的車改照沙盒設定。</doc-pin>
+      <doc-pin line="12" tone="info" title="問的是「拖曳」權限">車主、被分享拖曳的人、開了越權的管理員能收；收進膠囊等於把車帶走，跟拖曳一樣，而且分享給所有人不能開拖曳。沒綁定的車改照沙盒設定。</doc-pin>
     </doc-code>
   </doc-claim>
 
@@ -2050,7 +2050,7 @@ end
     </doc-calls>
     <doc-note tone="ok"><strong>已實測（42.21.0 專用伺服器）</strong> 收車後，伺服器與客戶端都看不到這台車。膠囊在地上，客戶端看得到車名。點火孔上的鑰匙移到玩家背包。測試輪次 <code>vcap-rt0-1010e</code>、<code>vcap-rt1-1010e</code>。</doc-note>
     <doc-note tone="info"><strong>modData 照引擎規則保存</strong> userdata 與函式本來就不會存檔，快照照樣跳過，路徑記進快照的 <code>skipped</code> 和日誌。KI5 車的 damnlib 會把 <code>_vehicle</code> 放進 modData，不能因此拒收。</doc-note>
-    <doc-note tone="ok"><strong>已實測：收車選單與權限</strong> 選單三種狀態（缺空膠囊、缺鑰匙、全打勾）照設計顯示；冒充別人的收車被伺服器拒絕；膠囊名稱用收車玩家的語言。裝了 Vehicle Manager 時：沒綁定的車照沙盒設定；綁定的車非車主被擋，管理員沒開越權時選單寫出要到車隊視窗開越權，開了就能收；車主收車再展開，車主照樣接回，舊鑰匙也能開門。沒裝時管理員一律可以收。測試輪次 <code>vcap-pack-1010r</code>、<code>vcap-vm-1010u</code>。</doc-note>
+    <doc-note tone="ok"><strong>已實測：收車選單與權限</strong> 選單三種狀態照設計顯示：缺空膠囊灰掉；缺鑰匙紅字但可以點，點了跳通知說明原因；全打勾才收。冒充別人的收車被伺服器拒絕；膠囊名稱用收車玩家的語言。裝了 Vehicle Manager 時：沒綁定的車照沙盒設定；綁定的車只有車主和被分享「拖曳」的人能收，別人點選項跳通知，硬送也被伺服器拒收；管理員沒開越權時選單寫出要到車隊視窗開越權，開了就能收；車主撤銷分享後又不能收；車主收車再展開，車主照樣接回，舊鑰匙也能開門。沒裝時管理員一律可以收。測試輪次 <code>vcap-pack-1010v</code>、<code>vcap-vm-1010w</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -2365,7 +2365,7 @@ end
 </script>
     </doc-calls>
     <doc-note tone="info"><strong>不用原版煙霧和陷阱</strong> IsoFire 的煙會讓殭屍失去目標，life 也不是秒數；陷阱的聲音會在 50 格內引殭屍。卡通煙只畫在畫面上，沒有這些副作用。</doc-note>
-    <doc-note tone="ok"><strong>素材已完成</strong> 8 格卡通煙霧由 codex imagegen 產生；落地、收車、按鈕三個音效由 ElevenLabs 產生，長度約 0.3–1.1 秒。</doc-note>
+    <doc-note tone="ok"><strong>素材已完成</strong> 8 格卡通煙霧由 codex imagegen 產生。丟出、彈開、收車、按鈕四個音效由 ElevenLabs 產生，使用者逐一試聽挑選：丟出是滑哨「咻～」，彈開是拉炮式的「蹦！」（比其他音效大 4 dB），收車是神燈式旋轉吸入，按鈕是喀－嚓。</doc-note>
     <doc-claim at="media/lua/client/MinidoracatVehicleCapsule/Fx.lua:5">
       <p><b>Fx.lua:5</b> · Fx.play()</p>
       <doc-code title="Fx.lua · sketch（客戶端）" lang="lua">
@@ -2638,7 +2638,9 @@ end
 
   <doc-claim>
     <p>伺服器發現戰利品設定改了，就重排戰利品表，新容器立刻照新設定。</p>
-    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="142-167" hl="150,165" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。" file="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" start="142" sha="17a54ae"><script type="text/plain">function L.sync(parse)
+    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="98-125" hl="108,121" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。" file="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" start="98" sha="8f37404+wt"><script type="text/plain">L.applied = nil
+-- parse＝改完要不要讓 Java 重讀分佈表（開局的 merge 事件之後引擎自己會 Parse）
+function L.sync(parse)
     local list = ProceduralDistributions and ProceduralDistributions.list
     if type(list) ~= "table" then return end
     local sig = L.signature()
@@ -2664,8 +2666,8 @@ function L.tick()
     L.sync(true)
 end
 Events.OnTickEvenPaused.Add(L.tick)</script>
-      <doc-pin line="150" tone="ok" title="讓引擎重讀分佈表">開服後改設定也立刻生效。</doc-pin>
-      <doc-pin line="165" tone="info" title="每 2 秒比對一次">專用伺服器收到新沙盒時不會自己重讀。</doc-pin>
+      <doc-pin line="108" tone="ok" title="讓引擎重讀分佈表">開服後改設定也立刻生效。</doc-pin>
+      <doc-pin line="121" tone="info" title="每 2 秒比對一次">專用伺服器收到新沙盒時不會自己重讀。</doc-pin>
     </doc-code>
     <doc-note tone="ok"><strong>已實測</strong> 改設定後 0.5 秒內重排。每張表抽樣 1500 個容器：關掉的地點 0 件，其餘大致照權重比例出現。測試輪次 <code>vcap-loot-1010r</code>。</doc-note>
   </doc-claim>

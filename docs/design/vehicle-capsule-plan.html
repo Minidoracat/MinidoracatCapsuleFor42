@@ -712,9 +712,9 @@ media/AnimSets/player/actions/
 
   <doc-claim>
     <p>伺服器發現戰利品設定改了，就重排戰利品表，新容器立刻照新設定。</p>
-    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="142-167" hl="150,165" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。">
-      <doc-pin line="150" tone="ok" title="讓引擎重讀分佈表">開服後改設定也立刻生效。</doc-pin>
-      <doc-pin line="165" tone="info" title="每 2 秒比對一次">專用伺服器收到新沙盒時不會自己重讀。</doc-pin>
+    <doc-code src="MOD/MinidoracatMiniMapWatchFor42/Contents/mods/MinidoracatMiniMapWatchFor42/42/media/lua/server/MinidoracatWatch_Loot.lua" lines="98-125" hl="108,121" caption="地圖手錶的現成做法：每 2 秒比對沙盒，變了就重排並重讀。">
+      <doc-pin line="108" tone="ok" title="讓引擎重讀分佈表">開服後改設定也立刻生效。</doc-pin>
+      <doc-pin line="121" tone="info" title="每 2 秒比對一次">專用伺服器收到新沙盒時不會自己重讀。</doc-pin>
     </doc-code>
     <doc-note tone="ok"><strong>已實測</strong> 改設定後 0.5 秒內重排。每張表抽樣 1500 個容器：關掉的地點 0 件，其餘大致照權重比例出現。測試輪次 <code>vcap-loot-1010r</code>。</doc-note>
   </doc-claim>
