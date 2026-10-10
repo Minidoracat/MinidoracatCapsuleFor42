@@ -35,7 +35,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [list]
 [*] [b]How[/b]: with the capsule on you, right-click it in the inventory and choose [b]Throw Capsule[/b] to get the landing cursor. Left-click to throw, right-click to cancel.
 [*] [b]The landing cursor[/b]: outlines the vehicle on the ground. Green with "Fits: <vehicle>" means it fits; red shows the reason it doesn't: too far, can't see there, not loaded yet, another vehicle, a person, a tree, no ground to park on, furniture or other objects, a wall or fence, indoors. The spot must be within about 8 tiles of you and in sight.
-[*] [b]Landing[/b]: the capsule flies to the spot, lands with smoke and a flash, and the vehicle appears as it was with its cargo back on board; the screen says "Unpacked: <vehicle>". With the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule goes back into your inventory, ready for the next vehicle.
+[*] [b]Landing[/b]: the capsule whooshes to the spot, lands with a pop, smoke and a flash, and the vehicle appears as it was with its cargo back on board; the screen says "Unpacked: <vehicle>". With the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule goes back into your inventory, ready for the next vehicle.
 [*] [b]Ownership[/b]: with Vehicle Manager installed, the unpacked vehicle keeps its original owner.
 [*] [b]Zombies are not affected[/b]: the smoke and flash are drawn on screen only, so zombies don't lose track of you; the capsule's pop doesn't attract zombies by default (servers can turn that on in the sandbox options).
 [/list]
