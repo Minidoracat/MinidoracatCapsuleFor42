@@ -10,9 +10,9 @@
     uv run scripts/assets/build_sfx.py              # 只列每條候選的長度、峰值、RMS、起音、尾巴、頻譜重心
     uv run scripts/assets/build_sfx.py --write      # 用 SPEC 選定的候選寫進 MOD 的 media/sound/MinidoracatVehicleCapsule/
 
-第 2 版候選（提示詞 scripts/assets/sfx_v2.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
-temp/assets-review/sfx-v2/index.html）用 `v2:<ID>` 指定，例如：
-    uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v2:P3 VehicleCapsuleButton=v2:B4
+第 2、3 版候選（提示詞 scripts/assets/sfx_v2.json、sfx_v3.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
+temp/assets-review/sfx-v2/index.html、sfx-v3/index.html）用 `v<N>:<ID>` 指定 temp/assets-review/sfx-v<N>/<Name>_<ID>.wav，例如：
+    uv run scripts/assets/build_sfx.py --write --pick VehicleCapsuleThrow=v3:T2 VehicleCapsulePop=v3:P13
 
 整理：4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）-18 dBFS，再 alimiter 限在 -1 dBFS；
 44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
@@ -26,20 +26,24 @@ import numpy as np
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TAKES = os.path.join(REPO, "temp", "assets-review", "sfx-takes")
-V2 = os.path.join(REPO, "temp", "assets-review", "sfx-v2")
+REVIEW = os.path.join(REPO, "temp", "assets-review")
 OUT = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
                    "42", "media", "sound", "MinidoracatVehicleCapsule")
 SR = 44100
-# 名稱 → (可接受的有聲長度範圍 s, 選定的候選編號)。規格：Pop 0.25–1.6 s（開瓶砰聲較短）、Pack 約 1.0–1.5 s、Button 約 0.3 s。
+# 名稱 → (可接受的有聲長度範圍 s, 選定的候選)。候選：sfx-takes 的編號，或 "v<N>:<ID>"；None = 還沒選，--write 時略過。
+# 規格：Throw 0.3–0.8 s（膠囊固定飛 500 ms）、Pop 0.25–1.6 s（開瓶砰聲較短）、Pack 約 1.0–1.5 s、Button 約 0.3 s。
 # 2026-10-10 選定（沒人耳試聽，依波形輪廓挑；用 `uv run scripts/assets/build_sfx.py` 看 env dB）：
 #   Pop 12（第 3 輪新提示）：啵 0.2 s → 短暫停頓 → 噗地冒煙升起再淡出，有聲 0.81 s。12 條候選裡
 #     「先啵後噗」形狀的只有 2、12 兩條，都短於 1.0 s；長度達標的 1、10 只有一聲啵加衰減，所以下限先放寬到 0.8 s；
 #     第 2 版候選加入較短的開瓶砰聲，再放寬到 0.25–1.6 s。
 #   Pack 7：持續的吸入咻聲 0.8 s → 停 0.2 s → 啵，有聲 1.07 s，頻譜重心 2.1 kHz（不刺耳）。
-#   Button 4：按下「喀」→ 0.2 s 後彈回「嚓」，有聲 0.26 s。
+#     第 3 輪使用者試聽後改選 v2:K3（神燈式旋轉吸入 → 塞上瓶塞的悶響）。
+#   Button 4：按下「喀」→ 0.2 s 後彈回「嚓」，有聲 0.26 s；第 3 輪使用者試聽後維持。
+#   Throw：第 3 輪新增（丟出膠囊的咻聲），候選在 sfx-v3，等使用者選。
 SPEC = {
+    "VehicleCapsuleThrow": ((0.3, 0.8), None),
     "VehicleCapsulePop": ((0.25, 1.6), 12),
-    "VehicleCapsulePack": ((1.0, 1.5), 7),
+    "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
     "VehicleCapsuleButton": ((0.15, 0.5), 4),
 }
 TARGET_RMS_DB = -18.0
@@ -97,10 +101,11 @@ def check(name, s):
 
 
 def src_path(name, take):
-    """take：sfx-takes 的編號，或 `v2:<ID>` 指 sfx-v2 的候選。"""
+    """take：sfx-takes 的編號，或 `v<N>:<ID>` 指 sfx-v<N> 的候選。"""
     take = str(take)
-    if take.startswith("v2:"):
-        return os.path.join(V2, f"{name}_{take[3:]}.wav")
+    if take.startswith("v") and ":" in take:
+        ver, cid = take.split(":", 1)
+        return os.path.join(REVIEW, f"sfx-{ver}", f"{name}_{cid}.wav")
     return os.path.join(TAKES, f"{name}_{take}.wav")
 
 
@@ -131,14 +136,16 @@ def write(name, take):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
-    ap.add_argument("--pick", nargs="*", default=[], help="name=take 或 name=v2:<ID>，覆寫 SPEC 的選定候選")
+    ap.add_argument("--pick", nargs="*", default=[], help="name=take 或 name=v<N>:<ID>，覆寫 SPEC 的選定候選")
     a = ap.parse_args()
     picks = {n: t for n, (_, t) in SPEC.items()}
     picks.update(dict(p.split("=", 1) for p in a.pick))
     if not a.write:
+        vers = sorted((d[4:] for d in os.listdir(REVIEW) if d.startswith("sfx-v")), key=lambda v: int(v[1:]))
         for name in SPEC:
-            v2 = sorted(f for f in os.listdir(V2) if f.startswith(name + "_") and f.endswith(".wav")) if os.path.isdir(V2) else []
-            for take in [*range(1, 17), *(f"v2:{f[len(name) + 1:-4]}" for f in v2)]:
+            vtakes = [f"{v}:{f[len(name) + 1:-4]}" for v in vers for f in sorted(os.listdir(os.path.join(REVIEW, f"sfx-{v}")))
+                      if f.startswith(name + "_") and f.endswith(".wav")]
+            for take in [*range(1, 17), *vtakes]:
                 path = src_path(name, take)
                 if not os.path.exists(path):
                     continue
@@ -154,7 +161,8 @@ def main():
         return
     for name, take in picks.items():
         if take is None:
-            sys.exit(f"{name}: 還沒選候選（SPEC 或 --pick）")
+            print(f"{name}: 還沒選候選，略過（SPEC 或 --pick）")
+            continue
         write(name, take)
 
 

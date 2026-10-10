@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ThrowWhoosh",
+    "text": "Cartoon throw whoosh: one quick airy swoosh as a small ball is tossed through the air in an arc, rising then fading, soft and rounded, playful cartoon sound effect, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.6,
+    "influence": 0.6
+  },
+  {
+    "id": "ThrowSlideWhistle",
+    "text": "Cartoon slide whistle going quickly up then down, a short wheee-ooo as a ball flies through the air in an arc, warm and low-pitched, soft rounded tone, playful, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.7,
+    "influence": 0.6
+  },
+  {
+    "id": "ThrowZip",
+    "text": "Cartoon zip: a fast rubbery zip of a small object flying away, quick and springy, playful cartoon sound effect, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 0.6,
+    "influence": 0.6
+  },
+  {
+    "id": "ThrowDoppler",
+    "text": "Small object flying past fast: an airy swish with a doppler pass-by, rising pitch then falling as it flies away, soft whoosh, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.6,
+    "influence": 0.6
+  },
+  {
+    "id": "ThrowSpin",
+    "text": "Cartoon spinning capsule thrown: a fast fluttering whirring whoosh, a toy spinning through the air, wobbly and airy, soft, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.6,
+    "influence": 0.6
+  },
+  {
+    "id": "PopBoing",
+    "text": "Exaggerated cartoon landing: one big punchy rubbery BOING as a toy lands and bounces, a deep springy wobble ringing out, loud, bouncy and elastic, low-pitched, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.9,
+    "influence": 0.6
+  },
+  {
+    "id": "PopKaboing",
+    "text": "Cartoon kaboing: a loud comic pop burst immediately followed by a springy boing twang wobbling away, exaggerated and playful, round, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 1.0,
+    "influence": 0.6
+  },
+  {
+    "id": "PopRubberTwang",
+    "text": "Deep rubber band twang: a ball slams on the ground with an elastic rubbery twang boing that wobbles and fades, exaggerated cartoon sound effect, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.8,
+    "influence": 0.6
+  },
+  {
+    "id": "PopGiant",
+    "text": "Huge exaggerated cartoon POP! like a giant cork or balloon bursting, a very punchy round low pop, then a fluffy puff of smoke billowing out, dry, no reverb, no music, no voice, no harsh high frequencies.",
+    "duration": 1.0,
+    "influence": 0.6
+  },
+  {
+    "id": "PopBounceBall",
+    "text": "Cartoon bouncy ball: a big loud rubbery bonk as it hits the ground and bounces up, a boing with a quick smaller second bounce, playful, low-pitched and round, dry, no reverb, no music, no voice, not shrill.",
+    "duration": 0.9,
+    "influence": 0.6
+  }
+]
