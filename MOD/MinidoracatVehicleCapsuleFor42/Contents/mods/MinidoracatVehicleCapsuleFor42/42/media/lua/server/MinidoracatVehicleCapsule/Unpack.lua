@@ -70,9 +70,18 @@ function Unpack.spawn(snap, square, dir, opts, capsule)
     end
     if not getScriptManager():getVehicle(snap.script) then return nil, "SCRIPT_MISSING" end
     if not square then return nil, "BLOCKED" end
+    -- SP and hosted games run damnlib's client Init inside addVehicleDebug, before the snapshot is written back: each
+    -- slot empty in the fresh spawn gets a random default sent as a queued silentPartInstall command, which lands
+    -- after Snapshot.restore and replaces the restored part (KI5 bull bar). Skip those defaults while we spawn; after
+    -- the restore every slot holds its part or a defaultPartSet_ flag (damnlib DAMN_Parts.lua:345-408).
+    local facing = IsoDirections[dir or "N"] or IsoDirections.N
+    local damn = DAMN and DAMN.Parts
+    local defaults = damn and damn.processDefaults
+    if defaults then damn.processDefaults = function() end end -- nothing may throw before it is put back
     spawning = true
-    local ok, vehicle = pcall(addVehicleDebug, snap.script, IsoDirections[dir or "N"] or IsoDirections.N, nil, square)
+    local ok, vehicle = pcall(addVehicleDebug, snap.script, facing, nil, square)
     spawning = false
+    if defaults then damn.processDefaults = defaults end
     -- addVehicleDebug returns a vehicle even when the spot is invalid (LuaManager.java:10817-10826)
     if not ok or not vehicle or not vehicle:getSquare() then
         if not ok then M.log("addVehicleDebug failed: " .. tostring(vehicle)) end

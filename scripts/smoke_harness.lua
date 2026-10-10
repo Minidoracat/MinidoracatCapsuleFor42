@@ -486,6 +486,17 @@ quiet = true
 local v1, why1 = M.Unpack.spawn(brokenHsv, {}, "N")
 quiet = false
 check(v1 == nil and why1 == "CORRUPT" and spawnedCount == 0, "缺欄位的快照回 CORRUPT，而且沒有呼叫 addVehicleDebug")
+do -- SP 在 addVehicleDebug 裡同步跑 damnlib 客戶端 Init：空槽的隨機補件要停掉，生完再換回原函式
+    local damnCalls, savedDirs = 0, IsoDirections
+    IsoDirections = { N = "N" }
+    local damnDefaults = function() damnCalls = damnCalls + 1 end
+    DAMN = { Parts = { processDefaults = damnDefaults } }
+    addVehicleDebug = function() DAMN.Parts:processDefaults(); return nil end
+    local v2, why2 = M.Unpack.spawn(fullSnap, {}, "N")
+    check(v2 == nil and why2 == "BLOCKED" and damnCalls == 0 and DAMN.Parts.processDefaults == damnDefaults,
+        "addVehicleDebug 期間 damnlib 的空槽隨機補件不動作，之後換回原函式")
+    DAMN, IsoDirections = nil, savedDirs
+end
 addVehicleDebug = savedAdd
 
 print("Admin.restore：可補的狀態、CAR_EXISTS、checked、先改 RESTORED 再生車")
