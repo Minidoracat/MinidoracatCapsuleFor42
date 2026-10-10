@@ -747,11 +747,12 @@ local function fmtInt(v) return tostring(math.floor(v + 0.5)) end
 
 -- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and the first
 -- paragraph of its vanilla tooltip, at most two lines, under it. Strings are computed here: draw does not allocate.
+-- Fields are cfg*: a set* field would shadow the Win:set* methods (Win:setMsg) once assigned.
 function Win:buildSettings(p)
     local w = p.width
     local y = 0
     local sliderW = 260
-    self.setRows = {}
+    self.cfgRows = {}
     for i, f in ipairs(Panel.GENERAL) do
         local label = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key)
         local row = { field = f, y = y }
@@ -784,29 +785,29 @@ function Win:buildSettings(p)
         local tip = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_tooltip")
         row.desc = Kit.lines(string.match(tip, "^[^\n]*") or tip, w - PAD * 2, 2)
         y = y + CH + #row.desc * FH + GAP * 2
-        self.setRows[i] = row
+        self.cfgRows[i] = row
     end
-    self.setNote = Kit.wrap(U("SettingsNote"), w - PAD * 2)
-    self.setNoteY = y
-    y = y + #self.setNote * FH + GAP
-    self.setDiscard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
+    self.cfgNote = Kit.wrap(U("SettingsNote"), w - PAD * 2)
+    self.cfgNoteY = y
+    y = y + #self.cfgNote * FH + GAP
+    self.cfgDiscard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
         onClick = function(t) t:loadSettings() end })
-    self.setApply = UI.Button.new({ x = PAD + self.setDiscard.width + GAP, y = y, height = CH, title = U("Apply"),
+    self.cfgApply = UI.Button.new({ x = PAD + self.cfgDiscard.width + GAP, y = y, height = CH, title = U("Apply"),
         style = "primary", theme = theme, target = self, onClick = function(t) t:applySettings() end })
-    p:addChild(self.setDiscard)
-    p:addChild(self.setApply)
-    self.setMsgY = y + CH + GAP
+    p:addChild(self.cfgDiscard)
+    p:addChild(self.cfgApply)
+    self.cfgMsgY = y + CH + GAP
     p.draw = function(el)
-        for _, r in ipairs(self.setRows) do
+        for _, r in ipairs(self.cfgRows) do
             if r.label then text(el, r.label, PAD, r.y + math.floor((CH - FH) / 2), "text") end
             for k, line in ipairs(r.desc) do text(el, line, PAD, r.y + CH + 2 + (k - 1) * FH, "textFaint") end
         end
-        local ny = self.setNoteY
-        for _, line in ipairs(self.setNote) do
+        local ny = self.cfgNoteY
+        for _, line in ipairs(self.cfgNote) do
             text(el, line, PAD, ny, "textMuted")
             ny = ny + FH
         end
-        if self.setMsg then text(el, self.setMsg, PAD, self.setMsgY, self.setMsgToken or "accent") end
+        if self.cfgMsg then text(el, self.cfgMsg, PAD, self.cfgMsgY, self.cfgMsgToken or "accent") end
     end
 end
 
@@ -816,15 +817,15 @@ function Win:showChoice(row, v)
 end
 
 function Win:pickChoice(i, v)
-    self:showChoice(self.setRows[i], v)
+    self:showChoice(self.cfgRows[i], v)
     self:settingsChanged()
 end
 
 -- Current native option values into the controls; they are the base the changes are counted against.
 function Win:loadSettings()
-    self.setBase = {}
+    self.cfgBase = {}
     for i, f in ipairs(Panel.GENERAL) do
-        local r, v = self.setRows[i], option(f.key)
+        local r, v = self.cfgRows[i], option(f.key)
         if f.kind == "bool" then
             if v == nil then v = f.default end
             v = v == true
@@ -833,16 +834,16 @@ function Win:loadSettings()
             v = math.floor((tonumber(v) or f.default) + 0.5)
             if r.slider then r.slider:setValue(v, true) else self:showChoice(r, v) end
         end
-        self.setBase[f.key] = v
+        self.cfgBase[f.key] = v
     end
-    self.setMsg = nil
+    self.cfgMsg = nil
     self:settingsChanged()
 end
 
 function Win:settingsDraft()
     local d = {}
     for i, f in ipairs(Panel.GENERAL) do
-        local r = self.setRows[i]
+        local r = self.cfgRows[i]
         if r.box then
             d[f.key] = r.box:getChecked()
         elseif r.slider then
@@ -855,12 +856,12 @@ function Win:settingsDraft()
 end
 
 function Win:settingsChanges()
-    return diff(self:settingsDraft(), self.setBase)
+    return diff(self:settingsDraft(), self.cfgBase)
 end
 
 function Win:settingsChanged()
     local allowed = Panel.canEditSandbox(getSpecificPlayer(0))
-    for _, r in ipairs(self.setRows) do
+    for _, r in ipairs(self.cfgRows) do
         if r.box then
             r.box:setEnabled(allowed)
         elseif r.slider then
@@ -870,17 +871,17 @@ function Win:settingsChanged()
         end
     end
     local n = #self:settingsChanges()
-    self.setApply:setEnabled(allowed and n > 0)
-    self.setDiscard:setEnabled(n > 0)
-    if not allowed then self.setMsg, self.setMsgToken = U("NoSandboxRight"), "errorText" end
+    self.cfgApply:setEnabled(allowed and n > 0)
+    self.cfgDiscard:setEnabled(n > 0)
+    if not allowed then self.cfgMsg, self.cfgMsgToken = U("NoSandboxRight"), "errorText" end
 end
 
 function Win:applySettings()
     local changes = self:settingsChanges()
     if #changes == 0 or not Panel.canEditSandbox(getSpecificPlayer(0)) then return end
     Panel.applySandbox(changes)
-    self.setBase = self:settingsDraft()
-    self.setMsg, self.setMsgToken = U("SettingsApplied", tostring(#changes)), "accent"
+    self.cfgBase = self:settingsDraft()
+    self.cfgMsg, self.cfgMsgToken = U("SettingsApplied", tostring(#changes)), "accent"
     self:settingsChanged()
 end
 
