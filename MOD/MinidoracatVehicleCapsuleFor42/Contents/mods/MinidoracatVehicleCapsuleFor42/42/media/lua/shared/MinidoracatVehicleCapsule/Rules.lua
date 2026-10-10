@@ -45,14 +45,16 @@ function Rules.vehicleWhyNot(player, vehicle)
     return nil
 end
 
--- Who may pack: VehicleManager's MANAGE when it is loaded, otherwise SandboxVars PackPermission
--- (1 key in the inventory or in the ignition, 2 anyone, 3 admins). Returns ok, mode ("VM"/"KEY"/"ANY"/"ADMIN").
+-- Who may pack: VehicleManager's MANAGE when it is loaded; otherwise admins always, others by SandboxVars
+-- PackPermission (1 key in the inventory or in the ignition, 2 anyone, 3 admins only).
+-- Returns ok, mode ("VM"/"KEY"/"ANY"/"ADMIN"; an admin passing in mode 1 reports "ADMIN").
 function Rules.mayPack(player, vehicle)
     local vm = MinidoracatVehicleManagerAPI
     if vm and vm.canUse then return vm.canUse(player, vehicle, "MANAGE") == true, "VM" end
     local mode = tonumber(Rules.sandbox().PackPermission) or 1
     if mode == 2 then return true, "ANY" end
-    if mode == 3 then return Rules.isAdmin(player), "ADMIN" end
+    if Rules.isAdmin(player) then return true, "ADMIN" end
+    if mode == 3 then return false, "ADMIN" end
     local key = vehicle:isKeysInIgnition() or vehicle:getCurrentKey() ~= nil
         or player:getInventory():haveThisKeyId(vehicle:getKeyId()) ~= nil
     return key, "KEY"

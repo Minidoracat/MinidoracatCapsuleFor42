@@ -690,7 +690,13 @@ stranger.inv.haveThisKeyId = function() return nil end
 admin3.inv.haveThisKeyId = function() return nil end
 SandboxVars = { MinidoracatVehicleCapsule = { PackPermission = 1 } }
 check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car), "模式 1：有鑰匙才行（背包）")
-check(not Rules.mayPack(admin3, car), "模式 1：管理員沒鑰匙也不行（照設定字面）")
+check(Rules.mayPack(admin3, car) and select(2, Rules.mayPack(admin3, car)) == "ADMIN", "模式 1：管理員沒鑰匙也能收")
+SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
+check(not Rules.mayPack(stranger, car) and not Rules.mayPack(keyHolder, car), "模式 3：有鑰匙的一般玩家也不行")
+MinidoracatVehicleManagerAPI = { canUse = function() return false end }
+check(not Rules.mayPack(admin3, car), "有 VehicleManager：管理員也照 canUse")
+MinidoracatVehicleManagerAPI = nil
+SandboxVars.MinidoracatVehicleCapsule.PackPermission = 1
 car.ignition = true
 check(Rules.mayPack(stranger, car), "模式 1：鑰匙插在點火孔，誰都能收")
 car.ignition = false
