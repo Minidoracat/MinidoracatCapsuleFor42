@@ -4,9 +4,11 @@
 --     sighting, go to the recorded spot or to the last sighting, restore, and the verdicts "car is there, close" /
 --     "car is gone" for records a crash left uncertain.
 --     Every action is a server command (server/AdminCommands.lua) checked there; this file only shows replies.
---   Loot: the master switch and the four places with their weights. They are the sandbox options of the vanilla
---     sandbox page and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the
---     server checks Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
+--   Settings and Loot: every sandbox option of the mod (Settings: return an empty capsule, who can pack, the zombie
+--     radius of the capsule sound, taking cargo out, days to keep closed records; Loot: the master switch and the
+--     four places with their weights). They are the sandbox options of the vanilla sandbox pages and are sent the same
+--     way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the server checks
+--     Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
 -- Entry: Dock (visible for admins, player option "show in the Dock"); without the Dock, the world context menu.
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Info"
@@ -245,13 +247,15 @@ function Win.new()
         title = U("PanelTitle"), theme = theme, icon = "carPickup", onClose = function() end })
     local top = self.win:contentTop() + GAP
     self.tabs = UI.Tabs.new({ x = PAD, y = top, items = { { id = "records", label = U("TabRecords") },
-        { id = "loot", label = U("TabLoot") } }, selected = "records", theme = theme, target = self,
-        onSelect = function(target, id) target:showTab(id) end })
+        { id = "settings", label = U("TabSettings") }, { id = "loot", label = U("TabLoot") } }, selected = "records",
+        theme = theme, target = self, onSelect = function(target, id) target:showTab(id) end })
     self.win:addChild(self.tabs)
     local py = top + self.tabs.height + GAP
     self.records = newPane(self.win, 0, py, w, h - py)
+    self.settings = newPane(self.win, 0, py, w, h - py)
     self.loot = newPane(self.win, 0, py, w, h - py)
     self:buildRecords(self.records)
+    self:buildSettings(self.settings)
     self:buildLoot(self.loot)
     self:showTab("records")
     return self
@@ -260,7 +264,9 @@ end
 function Win:showTab(id)
     self.tab = id
     self.records:setVisible(id == "records")
+    self.settings:setVisible(id == "settings")
     self.loot:setVisible(id == "loot")
+    if id == "settings" then self:loadSettings() end
     if id == "loot" then self:loadLoot() end
 end
 
@@ -670,15 +676,20 @@ function Win:lootDraft()
     return d
 end
 
--- Changes against the base: { { key, value } }. Weights compare at one decimal (the slider step).
-function Win:lootChanges()
-    local d, out = self:lootDraft(), {}
-    for k, v in pairs(d) do
-        local b = self.lootBase and self.lootBase[k]
+-- Draft values that differ from the base: { { key, value } }. Numbers compare at one decimal (the weight sliders'
+-- step; the integer sliders move by whole numbers).
+local function diff(draft, base)
+    local out = {}
+    for k, v in pairs(draft) do
+        local b = base and base[k]
         local differ = type(v) == "number" and math.abs(v - (tonumber(b) or 0)) > 0.05 or (type(v) ~= "number" and v ~= b)
         if differ then out[#out + 1] = { k, v } end
     end
     return out
+end
+
+function Win:lootChanges()
+    return diff(self:lootDraft(), self.lootBase)
 end
 
 function Win:lootChanged()
@@ -720,6 +731,159 @@ function Win:applyLoot()
     self:lootChanged()
 end
 
+-- ------------------------------------------------ settings tab
+
+-- The general sandbox page, in the order of sandbox-options.txt. kind: bool (checkbox), choice (one chip per value of
+-- an enum option) or int (slider).
+Panel.GENERAL = {
+    { key = "ReturnEmptyCapsule", kind = "bool", default = true },
+    { key = "PackPermission", kind = "choice", count = 3, default = 1 },
+    { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
+    { key = "AllowCargoTakeOut", kind = "bool", default = false },
+    { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
+}
+
+local function fmtInt(v) return tostring(math.floor(v + 0.5)) end
+
+-- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and the first
+-- paragraph of its vanilla tooltip, at most two lines, under it. Strings are computed here: draw does not allocate.
+function Win:buildSettings(p)
+    local w = p.width
+    local y = 0
+    local sliderW = 260
+    self.setRows = {}
+    for i, f in ipairs(Panel.GENERAL) do
+        local label = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key)
+        local row = { field = f, y = y }
+        local controlX = PAD
+        if f.kind == "bool" then
+            row.box = UI.Checkbox.new({ x = PAD, y = y, width = w - PAD * 2, label = label, theme = theme, target = self,
+                onChange = function(t) t:settingsChanged() end })
+            p:addChild(row.box)
+        elseif f.kind == "int" then
+            controlX = w - PAD - sliderW
+            row.slider = UI.Slider.new({ x = controlX, y = y, width = sliderW, min = f.min, max = f.max, step = 1,
+                value = f.default, theme = theme, format = fmtInt, target = self,
+                onChange = function(t) t:settingsChanged() end })
+            p:addChild(row.slider)
+        else
+            row.chips = {}
+            controlX = w - PAD
+            for v = f.count, 1, -1 do
+                local b = UI.Button.new({ y = y, height = CH, style = "chip", theme = theme, target = self,
+                    title = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_option" .. v),
+                    onClick = function(t) t:pickChoice(i, v) end })
+                controlX = controlX - b.width
+                b:setX(controlX)
+                controlX = controlX - 6
+                p:addChild(b)
+                row.chips[v] = b
+            end
+        end
+        if not row.box then row.label = fit(label, controlX - PAD - GAP) end
+        local tip = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_tooltip")
+        row.desc = Kit.lines(string.match(tip, "^[^\n]*") or tip, w - PAD * 2, 2)
+        y = y + CH + #row.desc * FH + GAP * 2
+        self.setRows[i] = row
+    end
+    self.setNote = Kit.wrap(U("SettingsNote"), w - PAD * 2)
+    self.setNoteY = y
+    y = y + #self.setNote * FH + GAP
+    self.setDiscard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
+        onClick = function(t) t:loadSettings() end })
+    self.setApply = UI.Button.new({ x = PAD + self.setDiscard.width + GAP, y = y, height = CH, title = U("Apply"),
+        style = "primary", theme = theme, target = self, onClick = function(t) t:applySettings() end })
+    p:addChild(self.setDiscard)
+    p:addChild(self.setApply)
+    self.setMsgY = y + CH + GAP
+    p.draw = function(el)
+        for _, r in ipairs(self.setRows) do
+            if r.label then text(el, r.label, PAD, r.y + math.floor((CH - FH) / 2), "text") end
+            for k, line in ipairs(r.desc) do text(el, line, PAD, r.y + CH + 2 + (k - 1) * FH, "textFaint") end
+        end
+        local ny = self.setNoteY
+        for _, line in ipairs(self.setNote) do
+            text(el, line, PAD, ny, "textMuted")
+            ny = ny + FH
+        end
+        if self.setMsg then text(el, self.setMsg, PAD, self.setMsgY, self.setMsgToken or "accent") end
+    end
+end
+
+function Win:showChoice(row, v)
+    row.choice = v
+    for k, b in pairs(row.chips) do b:setActive(k == v) end
+end
+
+function Win:pickChoice(i, v)
+    self:showChoice(self.setRows[i], v)
+    self:settingsChanged()
+end
+
+-- Current native option values into the controls; they are the base the changes are counted against.
+function Win:loadSettings()
+    self.setBase = {}
+    for i, f in ipairs(Panel.GENERAL) do
+        local r, v = self.setRows[i], option(f.key)
+        if f.kind == "bool" then
+            if v == nil then v = f.default end
+            v = v == true
+            r.box:setChecked(v, true)
+        else
+            v = math.floor((tonumber(v) or f.default) + 0.5)
+            if r.slider then r.slider:setValue(v, true) else self:showChoice(r, v) end
+        end
+        self.setBase[f.key] = v
+    end
+    self.setMsg = nil
+    self:settingsChanged()
+end
+
+function Win:settingsDraft()
+    local d = {}
+    for i, f in ipairs(Panel.GENERAL) do
+        local r = self.setRows[i]
+        if r.box then
+            d[f.key] = r.box:getChecked()
+        elseif r.slider then
+            d[f.key] = math.floor(r.slider:getValue() + 0.5)
+        else
+            d[f.key] = r.choice
+        end
+    end
+    return d
+end
+
+function Win:settingsChanges()
+    return diff(self:settingsDraft(), self.setBase)
+end
+
+function Win:settingsChanged()
+    local allowed = Panel.canEditSandbox(getSpecificPlayer(0))
+    for _, r in ipairs(self.setRows) do
+        if r.box then
+            r.box:setEnabled(allowed)
+        elseif r.slider then
+            r.slider:setEnabled(allowed)
+        else
+            for _, b in pairs(r.chips) do b:setEnabled(allowed) end
+        end
+    end
+    local n = #self:settingsChanges()
+    self.setApply:setEnabled(allowed and n > 0)
+    self.setDiscard:setEnabled(n > 0)
+    if not allowed then self.setMsg, self.setMsgToken = U("NoSandboxRight"), "errorText" end
+end
+
+function Win:applySettings()
+    local changes = self:settingsChanges()
+    if #changes == 0 or not Panel.canEditSandbox(getSpecificPlayer(0)) then return end
+    Panel.applySandbox(changes)
+    self.setBase = self:settingsDraft()
+    self.setMsg, self.setMsgToken = U("SettingsApplied", tostring(#changes)), "accent"
+    self:settingsChanged()
+end
+
 -- ---------------------------------------------------------------- entry points
 
 function Panel.open()
@@ -736,6 +900,7 @@ function Panel.open()
     end
     w.win:setVisible(true)
     w.win:bringToTop()
+    if w.tab == "settings" then w:loadSettings() end
     if w.tab == "loot" then w:loadLoot() end
     w:requestPage()
     return w

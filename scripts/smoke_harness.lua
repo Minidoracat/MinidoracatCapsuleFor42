@@ -886,6 +886,23 @@ print = savedPrint
 check(refused == false and printed[1] and printed[1]:find("pack refused by=alice why=NO_INTENT", 1, true) ~= nil,
     "沒有 intent 的收車被拒並記一行：" .. tostring(printed[1]))
 check(thrown == false, "膠囊不在背包裡的丟擲被拒")
+do -- 動作瞬間完成（管理員作弊）時沒有放手事件：complete 仍要先畫飛行，FLIGHT_MS 後落地
+    (function()
+        local Fx, Fp, Th = M.Fx, M.Footprint, M.Throw
+        local kinds, at = {}, nil
+        local saved = { Fx.broadcast, Fp.reach, Th.schedule }
+        Fx.broadcast = function(kind) kinds[#kinds + 1] = kind end
+        Fp.reach = function() return nil end
+        Th.schedule = function(_, t) at = t end
+        alice.inv.containsID = function() return true end
+        clientCommand(M.MODULE, "intent", alice, { kind = "throw", id = 5 })
+        local ok = Play.throw({ character = alice, item = { getID = function() return 5 end,
+            getFullType = function() return M.ITEM_LOADED end }, x = 1, y = 1, z = 0 })
+        Fx.broadcast, Fp.reach, Th.schedule = saved[1], saved[2], saved[3]
+        check(ok == true and kinds[1] == "flight" and at == nowMs + Th.FLIGHT_MS,
+            "沒有放手事件時 complete 先送飛行特效、FLIGHT_MS 後落地（" .. tostring(kinds[1]) .. "）")
+    end)()
+end
 -- ===== Phase 4：索引分頁、查詢權限、管理指令、戰利品權重 =====
 -- 新的假全域：原生沙盒選項、server->client 指令
 local sandbox = {}

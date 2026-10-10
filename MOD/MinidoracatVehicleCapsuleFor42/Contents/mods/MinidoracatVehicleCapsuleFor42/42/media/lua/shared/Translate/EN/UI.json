@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Cargo: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Records",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Loot",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Settings",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Capsule number or player, e.g. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Search",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Previous",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Discard changes",
     "UI_MinidoracatVehicleCapsule_Apply": "Apply",
     "UI_MinidoracatVehicleCapsule_LootNote": "Only containers opened for the first time afterwards are affected; containers already looted do not respawn. The numbers go straight into the vanilla loot tables.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "You need the sandbox options permission to change loot.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "Sent %1 change(s). The server updates the loot tables within a second."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "You need the sandbox options permission to change these.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "Sent %1 change(s). The server updates the loot tables within a second.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "Sent %1 change(s).",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Same values as this mod's pages in the vanilla sandbox options; they take effect as soon as the server receives them."
 }

@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "貨物：%1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "紀錄",
     "UI_MinidoracatVehicleCapsule_TabLoot": "戰利品",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "設定",
     "UI_MinidoracatVehicleCapsule_SearchHint": "編號或玩家，例：10023114、Bob",
     "UI_MinidoracatVehicleCapsule_Search": "搜尋",
     "UI_MinidoracatVehicleCapsule_PrevPage": "上一頁",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "取消變更",
     "UI_MinidoracatVehicleCapsule_Apply": "套用",
     "UI_MinidoracatVehicleCapsule_LootNote": "只影響之後第一次打開的容器；已經翻過的容器不會重新生成。數字直接寫進原版戰利品表。",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "要有沙盒設定權限才能改戰利品。",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "已送出 %1 項變更，伺服器會在 1 秒內更新戰利品表。"
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "要有沙盒設定權限才能修改。",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "已送出 %1 項變更，伺服器會在 1 秒內更新戰利品表。",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "已送出 %1 項變更。",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "這些就是原版沙盒選項中本 MOD 那幾頁的值，伺服器收到後立即生效。"
 }

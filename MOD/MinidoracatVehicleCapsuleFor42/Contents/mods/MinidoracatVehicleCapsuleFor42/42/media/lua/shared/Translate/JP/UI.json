@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "積み荷：%1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "記録",
     "UI_MinidoracatVehicleCapsule_TabLoot": "戦利品",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "設定",
     "UI_MinidoracatVehicleCapsule_SearchHint": "カプセル番号またはプレイヤー（例：10023114、Bob）",
     "UI_MinidoracatVehicleCapsule_Search": "検索",
     "UI_MinidoracatVehicleCapsule_PrevPage": "前へ",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "変更を破棄",
     "UI_MinidoracatVehicleCapsule_Apply": "適用",
     "UI_MinidoracatVehicleCapsule_LootNote": "今後初めて開けるコンテナにのみ影響し、すでに漁ったコンテナには再出現しません。数値はそのままバニラの戦利品テーブルに書き込まれます。",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "戦利品を変更するにはサンドボックス設定の権限が必要です。",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 件の変更を送信しました。サーバーは 1 秒以内に戦利品テーブルを更新します。"
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "変更するにはサンドボックス設定の権限が必要です。",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 件の変更を送信しました。サーバーは 1 秒以内に戦利品テーブルを更新します。",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "%1 件の変更を送信しました。",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "バニラのサンドボックス設定にあるこの MOD のページと同じ値です。サーバーが受け取るとすぐに反映されます。"
 }

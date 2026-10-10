@@ -36,7 +36,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]How[/b]: with the capsule on you, right-click it in the inventory and choose [b]Throw Capsule[/b] to get the landing cursor. Left-click to throw, right-click to cancel.
 [*] [b]The landing cursor[/b]: outlines the vehicle on the ground. Green with "Fits: <vehicle>" means it fits; red shows the reason it doesn't: too far, can't see there, not loaded yet, another vehicle, a person, a tree, no ground to park on, furniture or other objects, a wall or fence, indoors. The spot must be within about 8 tiles of you and in sight.
 [*] [b]Landing[/b]: the capsule whooshes to the spot, lands with a pop, smoke and a flash, and the vehicle appears as it was with its cargo back on board; the screen says "Unpacked: <vehicle>". With the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule goes back into your inventory, ready for the next vehicle.
-[*] [b]Ownership[/b]: with Vehicle Manager installed, the unpacked vehicle keeps its original owner.
+[*] [b]Ownership[/b]: with Vehicle Manager installed, the unpacked vehicle is reattached to its original claim: the owner and the shared list stay the same and the old key still opens the doors. While it is packed, the fleet window shows "Claimed - not here right now"; Vehicle Manager's inactivity release still counts, so an owner who stays offline too long loses the claim just as with a parked vehicle.
 [*] [b]Zombies are not affected[/b]: the smoke and flash are drawn on screen only, so zombies don't lose track of you; the capsule's pop doesn't attract zombies by default (servers can turn that on in the sandbox options).
 [/list]
 
@@ -88,7 +88,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [h3]Getting capsules[/h3]
 [list]
 [*] [b]Loot[/b]: empty capsules show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Servers can toggle each location and tune its weight (see the settings below).
-[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule[/b]) to sell it. Loaded capsules can't go on the market.
+[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule[/b]) to sell it. Loaded capsules can't be listed, auctioned or used to fill buy requests: an Economy trade makes a brand-new copy of the item, and the copy no longer matches the vehicle's record. To hand a vehicle to someone, drop the capsule on the ground and let them pick it up.
 [*] [b]From admins[/b]: hand out empty capsules with the vanilla item list or the /additem command.
 [/list]
 
@@ -116,6 +116,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Go to the recorded spot[/b]: teleports you next to the record's location, so you can check on site whether the vehicle is there.
 [*] [b]Go to the last sighting[/b]: teleports you to where the server last saw the capsule (on a player, on the ground, in a container or in a vehicle). When a player says a capsule is lost, start looking there. Capsules on players and on the ground near them are noted all the time; one in a container or vehicle is noted when someone opens that container.
 [*] [b]Not seen for 7 days[/b]: packed capsules nobody has been near for over 7 days; they may be forgotten somewhere or lost.
+[*] [b]Settings[/b]: every sandbox option of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press [b]Apply[/b]. They are the same values as the vanilla sandbox options and need the right to change sandbox settings.
 [*] [b]Loot[/b]: the on/off switch and weight of each of the four locations; after [b]Apply[/b], newly opened containers follow the new settings right away. Requires the right to change sandbox settings.
 [*] Every pack, unpack, refusal, restore and verdict is written to the capsule records and the server log.
 [/list]
@@ -149,6 +150,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [h2]⚠️ Known Limitations[/h2]
 [list]
 [*] The 3D preview draws the vehicle type's default look, not the actual paint and parts.
+[*] With the admin power "timed action instant" on, packing and pressing finish at once and a thrown capsule has no throwing animation (the capsule still flies and unpacks).
 [*] Vehicles that are towing or being towed, carry animals in a trailer, have the engine running or have someone inside can't be packed.
 [*] Capsules don't unpack indoors; a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle within about 3 tiles of the capsule.
 [*] If a vehicle mod is removed, capsules holding its vehicles can't unpack (the tooltip says the server doesn't have this vehicle type); they work again once the vehicle mod is back.
@@ -165,6 +167,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]My capsule is gone. What now?[/b] Check bodies, the ground and the vehicle containers first. If it's really gone, give an admin the capsule number (shown in the tooltip or dialog) or your name; the admin can see where the capsule went and restore the vehicle (the cargo doesn't come back).
 [*] [b]What happens to capsules after a server crash?[/b] Mostly nothing. If the crash came within a few seconds of a pack or unpack, the capsule says it needs an admin; give the number to an admin. After the admin checks on site, the vehicle and the capsule end up in the right state, with no extra vehicle and no second copy of the cargo.
 [*] [b]Do the records keep growing?[/b] No. Closed records are deleted after 30 days by default (sandbox option, 1–90 days), and the number of files is fixed at 513 per server at most; only packed records stay for good.
+[*] [b]Can I sell a loaded capsule to someone?[/b] Not through the Economy Center (listing it is refused), because a traded capsule is a brand-new copy that no longer matches the vehicle's record. Drop the capsule on the ground and let them pick it up; the vehicle and its record go with it.
 [*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo. Servers can turn on the sandbox option "Allow taking cargo out of capsules" to let players take things out directly; a capsule waiting for an admin still stays locked.
 [*] [b]I can't pick up the capsule.[/b] The cargo is too heavy. Right-click the capsule on the ground and choose [b]Press the Button[/b] to unpack it right there.
 [*] [b]Can I pack someone else's vehicle?[/b] A vehicle claimed in Vehicle Manager: only if the owner shared Tow with you (admins need override on). Other vehicles depend on the server: by default you need the vehicle's key, and admins always can.

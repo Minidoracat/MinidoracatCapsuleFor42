@@ -112,13 +112,19 @@ function Play.pack(player, vehicle, localName)
     return res.ok == true
 end
 
--- ISThrowCapsuleAction release (server / SP): the capsule leaves the hand, every client nearby sees it fly.
-function Play.released(action)
-    local player, item = action.character, action.item
-    if not (item and Play.hasIntent(player, "throw", item:getID())) then return end
+-- The capsule leaves the hand: every client nearby sees it fly.
+local function fly(action)
+    local player = action.character
     action.flightAt = now()
     Fx.broadcast("flight", { x0 = player:getX(), y0 = player:getY(), z0 = player:getZ(),
         x = action.x, y = action.y, z = action.z })
+end
+
+-- ISThrowCapsuleAction release (server / SP).
+function Play.released(action)
+    local item = action.item
+    if not (item and Play.hasIntent(action.character, "throw", item:getID())) then return end
+    fly(action)
 end
 
 -- ISThrowCapsuleAction complete: re-check the capsule and the spot, then land FLIGHT_MS after the release.
@@ -135,10 +141,9 @@ function Play.throw(action)
         Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = "throw" })
         return refuse(player, "throw", why, id)
     end
-    if not action.flightAt then -- no release event (instant actions)
-        Play.released(action)
-        action.flightAt = action.flightAt or now()
-    end
+    -- No release event: the admin power "timed action instant" ends the action on its first tick, before the clip
+    -- or the server's emulated events. The intent is already taken, so fly here (Play.released would refuse).
+    if not action.flightAt then fly(action) end
     Throw.schedule({ player = player, capsuleId = id, x = x, y = y, z = z, mode = "throw",
         dir = Footprint.dirOf(x - px, y - py) }, action.flightAt + Throw.FLIGHT_MS)
     return true

@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Yük: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Kayıtlar",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Ganimet",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Ayarlar",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Kapsül numarası veya oyuncu, örn. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Ara",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Önceki",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Değişiklikleri at",
     "UI_MinidoracatVehicleCapsule_Apply": "Uygula",
     "UI_MinidoracatVehicleCapsule_LootNote": "Yalnızca bundan sonra ilk kez açılan konteynerleri etkiler; önceden yağmalanmış konteynerler yenilenmez. Sayılar doğrudan orijinal ganimet tablolarına yazılır.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Ganimeti değiştirmek için sandbox seçenekleri yetkisi gerekir.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 değişiklik gönderildi. Sunucu ganimet tablolarını bir saniye içinde günceller."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Bunları değiştirmek için sandbox seçenekleri yetkisi gerekir.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 değişiklik gönderildi. Sunucu ganimet tablolarını bir saniye içinde günceller.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "%1 değişiklik gönderildi.",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Bunlar, oyunun sandbox seçeneklerindeki bu modun sayfalarıyla aynı değerlerdir; sunucu aldığı anda geçerli olur."
 }

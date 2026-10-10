@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Carga: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Registros",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Botín",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Ajustes",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Número de cápsula o jugador, p. ej. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Buscar",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Anterior",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Descartar cambios",
     "UI_MinidoracatVehicleCapsule_Apply": "Aplicar",
     "UI_MinidoracatVehicleCapsule_LootNote": "Solo afecta a los contenedores que se abran por primera vez a partir de ahora; los ya saqueados no se rellenan. Los números van directamente a las tablas de botín originales.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Necesitas el permiso de opciones de sandbox para cambiar el botín.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "Se enviaron %1 cambio(s). El servidor actualiza las tablas de botín en menos de un segundo."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Necesitas el permiso de opciones de sandbox para cambiar esto.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "Se enviaron %1 cambio(s). El servidor actualiza las tablas de botín en menos de un segundo.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "Se enviaron %1 cambio(s).",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Son los mismos valores que las páginas del mod en las opciones de sandbox del juego; se aplican en cuanto el servidor los recibe."
 }

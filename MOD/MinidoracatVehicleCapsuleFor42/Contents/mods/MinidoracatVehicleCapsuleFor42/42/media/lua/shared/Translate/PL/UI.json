@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Ładunek: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Zapisy",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Przedmioty",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Ustawienia",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Numer kapsuły lub gracz, np. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Szukaj",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Poprzednia",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Odrzuć zmiany",
     "UI_MinidoracatVehicleCapsule_Apply": "Zastosuj",
     "UI_MinidoracatVehicleCapsule_LootNote": "Dotyczy tylko pojemników otwartych po raz pierwszy od tej pory; już przeszukane pojemniki się nie odnawiają. Liczby trafiają wprost do oryginalnych tabel przedmiotów.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Aby zmienić przedmioty, potrzebujesz uprawnienia do opcji piaskownicy.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "Wysłano zmiany: %1. Serwer zaktualizuje tabele przedmiotów w ciągu sekundy."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Aby to zmienić, potrzebujesz uprawnienia do opcji piaskownicy.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "Wysłano zmiany: %1. Serwer zaktualizuje tabele przedmiotów w ciągu sekundy.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "Wysłano zmiany: %1.",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "To te same wartości co strony moda w opcjach piaskownicy gry; obowiązują, gdy tylko serwer je otrzyma."
 }

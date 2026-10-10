@@ -17,10 +17,12 @@ module MinidoracatVehicleCapsule
     }
 
     /* Capsule holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
-       MaxItemSize keeps players from putting anything in; the server adds cargo with AddItem, which skips the check. */
+       MaxItemSize keeps players from putting anything in; the server adds cargo with AddItem, which skips the check.
+       Container, not Tool: Minidoracat Economy rebuilds traded items with a new item ID (the record key), and its
+       default and production whitelists leave Container out; server/Economy.lua also blocks the type (API rev 5). */
     item LoadedCapsule
     {
-        DisplayCategory = Tool,
+        DisplayCategory = Container,
         ItemType = base:container,
         Weight = 0.2,
         Icon = MinidoracatVehicleCapsuleLoaded,

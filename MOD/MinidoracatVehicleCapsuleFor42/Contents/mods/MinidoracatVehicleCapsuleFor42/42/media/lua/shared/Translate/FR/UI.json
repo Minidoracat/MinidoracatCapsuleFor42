@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Chargement : %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Enregistrements",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Butin",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Réglages",
     "UI_MinidoracatVehicleCapsule_SearchHint": "N° de capsule ou joueur, ex. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Rechercher",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Précédent",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Annuler les modifications",
     "UI_MinidoracatVehicleCapsule_Apply": "Appliquer",
     "UI_MinidoracatVehicleCapsule_LootNote": "N'affecte que les conteneurs ouverts pour la première fois ensuite ; les conteneurs déjà fouillés ne se remplissent pas. Les valeurs vont directement dans les tables de butin d'origine.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Il vous faut la permission des options du bac à sable pour modifier le butin.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 modification(s) envoyée(s). Le serveur met à jour les tables de butin en moins d'une seconde."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Il vous faut la permission des options du bac à sable pour modifier ces réglages.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 modification(s) envoyée(s). Le serveur met à jour les tables de butin en moins d'une seconde.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "%1 modification(s) envoyée(s).",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Ce sont les mêmes valeurs que les pages du mod dans les options du bac à sable du jeu ; elles s'appliquent dès que le serveur les reçoit."
 }

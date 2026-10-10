@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Ladung: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Einträge",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Beute",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Einstellungen",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Kapselnummer oder Spieler, z. B. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Suchen",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Zurück",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Änderungen verwerfen",
     "UI_MinidoracatVehicleCapsule_Apply": "Übernehmen",
     "UI_MinidoracatVehicleCapsule_LootNote": "Betrifft nur Behälter, die danach zum ersten Mal geöffnet werden; bereits geplünderte Behälter werden nicht neu befüllt. Die Zahlen gehen direkt in die Vanilla-Beutetabellen.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Du brauchst die Berechtigung für Sandbox-Optionen, um die Beute zu ändern.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 Änderung(en) gesendet. Der Server aktualisiert die Beutetabellen innerhalb einer Sekunde."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Du brauchst die Berechtigung für Sandbox-Optionen, um das zu ändern.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "%1 Änderung(en) gesendet. Der Server aktualisiert die Beutetabellen innerhalb einer Sekunde.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "%1 Änderung(en) gesendet.",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Das sind dieselben Werte wie auf den Seiten der Mod in den Sandbox-Optionen des Spiels; sie gelten, sobald der Server sie erhält."
 }

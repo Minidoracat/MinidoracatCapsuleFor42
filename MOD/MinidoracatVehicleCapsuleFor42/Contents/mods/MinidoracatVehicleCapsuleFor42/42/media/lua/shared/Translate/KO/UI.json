@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "화물: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "기록",
     "UI_MinidoracatVehicleCapsule_TabLoot": "전리품",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "설정",
     "UI_MinidoracatVehicleCapsule_SearchHint": "캡슐 번호 또는 플레이어, 예: 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "검색",
     "UI_MinidoracatVehicleCapsule_PrevPage": "이전",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "변경 취소",
     "UI_MinidoracatVehicleCapsule_Apply": "적용",
     "UI_MinidoracatVehicleCapsule_LootNote": "이후 처음 여는 컨테이너에만 적용되며, 이미 뒤진 컨테이너에는 다시 생성되지 않습니다. 숫자는 기본 게임 전리품 테이블에 그대로 들어갑니다.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "전리품을 바꾸려면 샌드박스 설정 권한이 필요합니다.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "변경 %1건을 보냈습니다. 서버가 1초 안에 전리품 테이블을 갱신합니다."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "바꾸려면 샌드박스 설정 권한이 필요합니다.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "변경 %1건을 보냈습니다. 서버가 1초 안에 전리품 테이블을 갱신합니다.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "변경 %1건을 보냈습니다.",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "바닐라 샌드박스 설정에 있는 이 모드 페이지와 같은 값입니다. 서버가 받는 즉시 적용됩니다."
 }

@@ -60,6 +60,7 @@
     "UI_MinidoracatVehicleCapsule_CargoList": "Груз: %1",
     "UI_MinidoracatVehicleCapsule_TabRecords": "Записи",
     "UI_MinidoracatVehicleCapsule_TabLoot": "Добыча",
+    "UI_MinidoracatVehicleCapsule_TabSettings": "Настройки",
     "UI_MinidoracatVehicleCapsule_SearchHint": "Номер капсулы или игрок, напр. 10023114, Bob",
     "UI_MinidoracatVehicleCapsule_Search": "Поиск",
     "UI_MinidoracatVehicleCapsule_PrevPage": "Назад",
@@ -97,6 +98,8 @@
     "UI_MinidoracatVehicleCapsule_Discard": "Отменить изменения",
     "UI_MinidoracatVehicleCapsule_Apply": "Применить",
     "UI_MinidoracatVehicleCapsule_LootNote": "Влияет только на контейнеры, впервые открытые после этого; уже обысканные контейнеры не пополняются. Числа записываются прямо в ванильные таблицы добычи.",
-    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Чтобы менять добычу, нужно право на настройки песочницы.",
-    "UI_MinidoracatVehicleCapsule_LootApplied": "Отправлено изменений: %1. Сервер обновит таблицы добычи в течение секунды."
+    "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Чтобы менять эти значения, нужно право на настройки песочницы.",
+    "UI_MinidoracatVehicleCapsule_LootApplied": "Отправлено изменений: %1. Сервер обновит таблицы добычи в течение секунды.",
+    "UI_MinidoracatVehicleCapsule_SettingsApplied": "Отправлено изменений: %1.",
+    "UI_MinidoracatVehicleCapsule_SettingsNote": "Это те же значения, что на страницах мода в обычных настройках песочницы; они действуют, как только сервер их получит."
 }
