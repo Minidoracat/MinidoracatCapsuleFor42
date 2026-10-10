@@ -29,7 +29,7 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 
 ## 給服主
 
-- 伺服器紀錄存在 `Zomboid/Lua/MinidoracatVehicleCapsule/`（不在世界存檔裡）；收起中的車只能靠它補回，請列入備份。
+- 伺服器紀錄存在 `Zomboid/Lua/MinidoracatVehicleCapsule/<世界>/`（不在世界存檔裡，每個伺服器／單人存檔一個資料夾，最多 513 個檔）；收起中的車只能靠它補回，請和世界存檔一起備份、一起還原。已結束的紀錄預設保留 30 天（沙盒「結束紀錄保留天數」，1–90）。
 - 用 Minidoracat Cleaner 時，把 `MinidoracatVehicleCapsule.LoadedCapsule` 加進「物品保護清單」（ProtectList），地上裝了車的膠囊就不會被清掉。
 - 物品 ID：空膠囊 `MinidoracatVehicleCapsule.Capsule`（上架、發放用）、裝了車的膠囊 `MinidoracatVehicleCapsule.LoadedCapsule`（不能上市場）。
 

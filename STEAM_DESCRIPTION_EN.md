@@ -28,8 +28,8 @@ Pack a parked vehicle into a capsule and throw it to bring the vehicle back, wit
 [*] [b]Throw to unpack[/b]: the cursor outlines the vehicle, the capsule lands in a puff of smoke and the vehicle appears as it was
 [*] [b]Kept as it was[/b]: mods, paint, condition, fuel and the cargo all travel with it
 [*] [b]Tooltip and 3D preview[/b]: hover a capsule to see condition and cargo, and spin a 3D view of the model
-[*] [b]Crash-safe[/b]: a server crash never leaves you with an extra vehicle or a second copy of the cargo
-[*] [b]Records and recovery[/b]: every capsule is logged; if one goes missing, admins can trace it and restore the vehicle
+[*] [b]Crash-safe[/b]: a server crash or a rolled-back save never leaves you with an extra vehicle or a second copy of the cargo
+[*] [b]Records and recovery[/b]: every capsule is logged, along with where it was last seen; if one goes missing, admins can trace it and restore the vehicle
 [*] [b]Several ways to get capsules[/b]: buy them in the Economy Center, get them from admins, or loot them at mechanic spots
 [/list]
 📖 [b]Who can pack, throwing and pressing, cargo, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Vehicle Capsule Guide: Packing, Unpacking & Recovery[/url]

@@ -67,7 +67,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [list]
 [*] Each capsule unpacks only once. After a normal unpack the loaded capsule is gone (replaced by an empty one when the option is on).
 [*] If an already-unpacked capsule turns up again (the server rolled back to a save from before the unpack, or an admin already restored the vehicle), its tooltip shows its state, and throwing it shows "This capsule was already unpacked" with the record and the capsule number. If the vehicle is missing, give the number to an admin; they can see where the capsule went.
-[*] Any cargo still inside such a capsule is a second copy; once the server knows the vehicle is in the world, it swaps the capsule for an empty one.
+[*] Any cargo still inside such a capsule is a second copy; once the server knows the vehicle is in the world, it swaps the capsule for an empty one. If the server rolled back to a save from before the unpack and the vehicle can't be found nearby, the capsule is put on hold for an admin instead (see "Unconfirmed after a crash" below); its cargo is not cleared.
 [*] "This capsule needs an admin" means the server stopped before the capsule's last change was saved. Give the number to an admin (see "Admins: unconfirmed after a crash" below).
 [/list]
 
@@ -98,6 +98,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Who can pack vehicles[/b]: "Key holders" by default (the key in the inventory or in the ignition); can be set to "Anyone" or "Admins only". Admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead (the owner and players with Tow shared) and this option covers unclaimed vehicles.
 [*] [b]Zombie attraction radius of the capsule sound[/b]: 0 tiles by default (0–50). 0 means the capsule's pop attracts no zombies.
 [*] [b]Allow taking cargo out of capsules[/b]: off by default. When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked.
+[*] [b]Days to keep closed records[/b]: 30 days by default (1–90). Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this. Packed and unconfirmed records are always kept.
 [*] [b]Empty capsules appear as loot[/b]: on by default. Master switch; when off, none of the four locations below spawn empty capsules.
 [*] [b]Mechanic shops[/b]: on by default, weight 0.5.
 [*] [b]Car supply stores[/b]: on by default, weight 0.5.
@@ -111,8 +112,10 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [h3]Admin panel[/h3]
 [list]
 [*] [b]Opening it[/b]: admins see a Vehicle Capsule button on the family toolbar that opens [b]Vehicle Capsule Admin[/b]. It can be hidden in the options. Regular players don't see it.
-[*] [b]Records[/b]: search by capsule number or player name and filter by state (packed, unpacked, restored, voided, unconfirmed after a crash). Select a record to see its timeline (every pack, unpack, refusal, restore and verdict with time and player), its cargo list and its recorded spot.
+[*] [b]Records[/b]: search by capsule number or player name and filter by state (packed, unpacked, restored, voided, unconfirmed after a crash, not seen for 7 days). Select a record to see its timeline (every pack, unpack, refusal, restore and verdict with time and player), its cargo list, its recorded spot and when and where the capsule was last seen.
 [*] [b]Go to the recorded spot[/b]: teleports you next to the record's location, so you can check on site whether the vehicle is there.
+[*] [b]Go to the last sighting[/b]: teleports you to where the server last saw the capsule (on a player, on the ground, in a container or in a vehicle). When a player says a capsule is lost, start looking there. Capsules on players and on the ground near them are noted all the time; one in a container or vehicle is noted when someone opens that container.
+[*] [b]Not seen for 7 days[/b]: packed capsules nobody has been near for over 7 days; they may be forgotten somewhere or lost.
 [*] [b]Loot[/b]: the on/off switch and weight of each of the four locations; after [b]Apply[/b], newly opened containers follow the new settings right away. Requires the right to change sandbox settings.
 [*] Every pack, unpack, refusal, restore and verdict is written to the capsule records and the server log.
 [/list]
@@ -134,12 +137,13 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Car is gone[/b]: a pack record can be restored as usual; an unpack record goes back to packed, so the player throws the capsule again and gets both the vehicle and the cargo back. If the server can find the vehicle, "Car is gone" is refused.
 [/list]
 [*] When a record is confirmed saved and the vehicle has been unpacked, the server clears the extra cargo out of that capsule and swaps it for an empty one. Unconfirmed capsules are left alone, because their cargo may be the only copy.
+[*] [b]Rolled-back saves[/b]: when the server goes back to a save from before an unpack and the vehicle can't be found nearby, the record goes back to "Unconfirmed (crash)" (the timeline says "Older save, needs a check") and the capsule and its cargo are left alone. Decide as above: "Car is gone" if the vehicle really isn't there, so the player throws the capsule again; "Car is there, close" if it is, and the extra cargo is cleared afterwards.
 [/list]
 
 [h3]Recommended setup[/h3]
 [list]
 [*] [b]With Minidoracat Cleaner[/b]: add [b]MinidoracatVehicleCapsule.LoadedCapsule[/b] to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up. Please exclude this item in any other mod that cleans up ground items, too.
-[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatVehicleCapsule/[/b] folder, not in the world save. If that folder is deleted, packed vehicles can't be restored, so back it up together with the world save.
+[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatVehicleCapsule/[/b] folder (one subfolder per server), not in the world save. If that folder is deleted, packed vehicles can't be restored. Back it up and restore it together with the world save; if only the world save is restored, an admin has to check the already-unpacked capsules one by one.
 [/list]
 
 [h2]⚠️ Known Limitations[/h2]
@@ -151,6 +155,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] Loaded capsules can't be put on the Economy market.
 [*] A capsule's name is in the game language of the player who packed it and doesn't change for other players; the tooltip and preview use your own language.
 [*] Restoring brings back the vehicle, not the cargo; the server only finds vehicles that are loaded nearby, so check on site before deciding.
+[*] "Last seen" only records the moment the server saw the capsule: one in a container or vehicle updates when someone opens that container, and who took it afterwards or where it went is not known.
 [*] This mod doesn't track the vehicle after it is unpacked; use Vehicle Manager for owners and locations.
 [/list]
 
@@ -159,6 +164,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Removing this mod?[/b] Unpack every capsule first, then remove it. Capsules that are still packed disappear along with their cargo. The server records remain, so if you reinstall the mod later, admins can restore the vehicles from the admin panel, but not the cargo.
 [*] [b]My capsule is gone. What now?[/b] Check bodies, the ground and the vehicle containers first. If it's really gone, give an admin the capsule number (shown in the tooltip or dialog) or your name; the admin can see where the capsule went and restore the vehicle (the cargo doesn't come back).
 [*] [b]What happens to capsules after a server crash?[/b] Mostly nothing. If the crash came within a few seconds of a pack or unpack, the capsule says it needs an admin; give the number to an admin. After the admin checks on site, the vehicle and the capsule end up in the right state, with no extra vehicle and no second copy of the cargo.
+[*] [b]Do the records keep growing?[/b] No. Closed records are deleted after 30 days by default (sandbox option, 1–90 days), and the number of files is fixed at 513 per server at most; only packed records stay for good.
 [*] [b]Why can't I take things out of a capsule?[/b] By design you unpack the vehicle to get them, so a crash can never create a second copy of the cargo. Servers can turn on the sandbox option "Allow taking cargo out of capsules" to let players take things out directly; a capsule waiting for an admin still stays locked.
 [*] [b]I can't pick up the capsule.[/b] The cargo is too heavy. Right-click the capsule on the ground and choose [b]Press the Button[/b] to unpack it right there.
 [*] [b]Can I pack someone else's vehicle?[/b] A vehicle claimed in Vehicle Manager: only if the owner shared Tow with you (admins need override on). Other vehicles depend on the server: by default you need the vehicle's key, and admins always can.
