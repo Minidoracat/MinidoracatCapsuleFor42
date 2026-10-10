@@ -1,7 +1,8 @@
 -- Vehicle Capsule (client): the admin panel, opened from the family Dock (MinidoracatUIFor42 rev 13).
---   Records: search by capsule id or player, state chips (crash-uncertain is one of them), one page of 50 rows from
---     the server index, and the detail of the selected capsule: timeline, cargo list, go to the recorded spot,
---     restore, and the verdicts "car is there, close" / "car is gone" for records a crash left uncertain.
+--   Records: search by capsule id or player, state chips (crash-uncertain and "not seen for a week" among them), one
+--     page of 50 rows from the server index, and the detail of the selected capsule: timeline, cargo list, last
+--     sighting, go to the recorded spot or to the last sighting, restore, and the verdicts "car is there, close" /
+--     "car is gone" for records a crash left uncertain.
 --     Every action is a server command (server/AdminCommands.lua) checked there; this file only shows replies.
 --   Loot: the master switch and the four places with their weights. They are the sandbox options of the vanilla
 --     sandbox page and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the
@@ -119,7 +120,7 @@ local UI, COL, FS, FH, theme = Kit.UI, Kit.COL, Kit.FS, Kit.FH, Kit.theme
 local text, fit = Kit.text, Kit.fit
 local PAD, GAP = 12, 8
 local CH = FH + 10 -- control height
-Panel.STATES = { "ALL", "PACKED", "UNPACKED", "RESTORED", "VOID", "UNCERTAIN" }
+Panel.STATES = { "ALL", "PACKED", "UNPACKED", "RESTORED", "VOID", "UNCERTAIN", "UNSEEN" }
 
 -- " · " between fields; a translation key because Lua source stays ASCII (Kahlua truncates other characters).
 local SEP
@@ -159,6 +160,19 @@ local function cargoText(manifest)
     for _, e in ipairs(list) do parts[#parts + 1] = Info.T("CargoLine", e.name, tostring(e.n)) end
     return U("CargoList", table.concat(parts, ", "))
 end
+
+-- "Last seen: 10/10 18:40 · on Bob (10763, 9775, 0)": where the server last saw the capsule (Store.seen).
+local function seenText(s)
+    if type(s) ~= "table" then return U("SeenNone") end
+    local spot = "(" .. tostring(s.x or "-") .. ", " .. tostring(s.y or "-") .. ", " .. tostring(s.z or 0) .. ")"
+    local place
+    if s.where == "player" then place = U("SeenPlayer", tostring(s.by or "-"), spot)
+    elseif s.where == "container" then place = U("SeenContainer", spot)
+    elseif s.where == "vehicle" then place = U("SeenVehicle", spot)
+    else place = U("SeenGround", spot) end
+    return U("SeenLine", Info.date(s.t), place)
+end
+Panel.seenText = seenText
 
 -- List cell: one or two lines, strings computed in bind (render does not allocate).
 local Cell = ISPanel:derive("MinidoracatVehicleCapsuleCell")
@@ -268,13 +282,16 @@ function Win:buildRecords(p)
     self.chips = {}
     self.chipY = y
     for i, st in ipairs(Panel.STATES) do
-        local b = UI.Button.new({ x = x, y = y, height = CH, title = U("Chip_" .. st, "0"), style = "chip",
+        local b = UI.Button.new({ x = x, y = y, height = CH, title = U("Chip_" .. st, "9999"), style = "chip",
             active = st == self.state, theme = theme, target = self, onClick = function(t) t:setStateFilter(st) end })
         p:addChild(b)
         self.chips[i] = b
     end
+    -- the chips flow into as many rows as four-digit counts would need (longer translations wrap), reserved once
+    self.chipRows = Kit.flow(self.chips, w - PAD * 2, 6)
+    for i, st in ipairs(Panel.STATES) do self.chips[i]:setTitle(U("Chip_" .. st, "0")) end
     self:layoutChips()
-    y = y + CH + GAP
+    y = y + self.chipRows * (CH + GAP)
     local listW = math.floor((w - PAD * 3) * 0.42)
     local listH = p.height - y - CH - GAP - PAD
     self.listY, self.listW, self.listH = y, listW, listH
@@ -297,8 +314,8 @@ function Win:buildRecords(p)
     local dy = y
     self.headY = dy                                    -- title, state (two lines: the crash help is long)
     dy = dy + getTextManager():getFontHeight(UIFont.Medium) + FH * 2 + GAP
-    self.infoY = dy                                    -- recorded spot; car
-    dy = dy + FH * 2 + GAP
+    self.infoY = dy                                    -- recorded spot; car; last sighting
+    dy = dy + FH * 3 + GAP
     self.timelineHeadY = dy
     dy = dy + FH + 4
     -- action buttons size to their (translated) titles and flow into as many rows as the column needs; the
@@ -307,10 +324,11 @@ function Win:buildRecords(p)
         return UI.Button.new({ height = CH, title = U(key), style = style, theme = theme, target = self, onClick = fn })
     end
     self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
+    self.seenBtn = btn("GoSeen", "normal", function(t) t:goSeen() end)
     self.restoreBtn = btn("Restore", "primary", function(t) t:confirmRestore() end)
     self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
     self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
-    local actions = { self.gotoBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
+    local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
     local btnRows = Kit.flow(actions, dw, GAP)
     local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + btnRows * (CH + GAP) + FH
     local tlH = math.max(FH * 4, listH - (dy - y) - bottomBlock)
@@ -346,10 +364,10 @@ function Win:buildRecords(p)
 end
 
 function Win:layoutChips()
-    local x = PAD
+    Kit.flow(self.chips, self.records.width - PAD * 2, 6)
     for _, b in ipairs(self.chips) do
-        b:setX(x)
-        x = x + b.width + 6
+        b:setX(PAD + b.flowX)
+        b:setY(self.chipY + math.min(b.flowRow, self.chipRows - 1) * (CH + GAP))
     end
 end
 
@@ -395,6 +413,7 @@ function Win:refreshButtons()
     local restorable = ok and (d.state == "PACKED" or (d.state == "UNPACKED" and d.uncertain))
     local undecided = ok and d.uncertain and (d.state == "PACKED" or d.state == "UNPACKED")
     self.gotoBtn:setEnabled(ok and d.x ~= nil)
+    self.seenBtn:setEnabled(ok and type(d.seen) == "table" and d.seen.x ~= nil)
     self.restoreBtn:setEnabled(restorable == true)
     self.presentBtn:setVisible(undecided == true)
     self.missingBtn:setVisible(undecided == true)
@@ -483,7 +502,7 @@ function Win:onDetail(d)
             self.dw, 2)
         local spot = d.x and U("Spot", tostring(d.x), tostring(d.y), tostring(d.z or 0)) or U("SpotNone")
         local car = U(d.carLoaded and "CarLoaded" or "CarNotLoaded", tostring(d.car or "-"))
-        self.dInfo = { fit(spot, self.dw), fit(car, self.dw) }
+        self.dInfo = { fit(spot, self.dw), fit(car, self.dw), fit(seenText(d.seen), self.dw) }
         local more = (tonumber(d.historyTotal) or 0) - #(d.history or {})
         self.dTimelineHead = more > 0 and U("TimelineMore", tostring(more)) or U("Timeline")
         self.dCargo = Kit.lines(cargoText(d.manifest), self.dw, 2)
@@ -506,6 +525,20 @@ function Win:goTo()
         player:teleportTo(x, y, z)
     end
     self:setMsg(U("WentTo", tostring(d.x), tostring(d.y)), "accent")
+end
+
+-- The square where the capsule was last seen: an admin checks whether it is still there (a player says it is lost).
+function Win:goSeen()
+    local d, player = self.detail, getSpecificPlayer(0)
+    local s = d and d.seen
+    if not (type(s) == "table" and s.x and player) then return end
+    local x, y, z = s.x, s.y, s.z or 0
+    if isClient() then
+        SendCommandToServer("/teleportto " .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(z))
+    else
+        player:teleportTo(x, y, z)
+    end
+    self:setMsg(U("WentToSeen", tostring(x), tostring(y)), "accent")
 end
 
 local function noteText(field)

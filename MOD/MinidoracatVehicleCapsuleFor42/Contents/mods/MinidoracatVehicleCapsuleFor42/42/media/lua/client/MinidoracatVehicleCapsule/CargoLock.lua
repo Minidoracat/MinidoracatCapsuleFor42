@@ -73,14 +73,4 @@ Events.OnFillInventoryObjectContextMenu.Add(function(playerNum, context, items)
     option.notAvailable = true
 end)
 
--- Taking out allowed: ask for the records of capsules shown in the inventory and loot windows, so the first take is
--- not refused while the answer is on its way.
-Events.OnRefreshInventoryWindowContainers.Add(function(page, state)
-    if state ~= "end" or not takeOut() then return end
-    for _, button in ipairs(page.backpacks or {}) do
-        local holder = button.inventory and button.inventory:getContainingItem()
-        if holder and holder:getFullType() == M.ITEM_LOADED then M.Info.get(holder:getID()) end
-    end
-end)
-
 return CargoLock

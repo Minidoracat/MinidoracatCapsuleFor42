@@ -264,4 +264,21 @@ function Info.rows(r, full)
     return rows
 end
 
+-- Capsules shown in the inventory and loot windows (a capsule's own container, or a capsule lying in a shown
+-- container): their summaries are asked for now. The server counts a capsule asked about from nearby as a sighting
+-- (admin panel: last seen), and with cargo take-out on the first take is not refused while the answer is on its way.
+Events.OnRefreshInventoryWindowContainers.Add(function(page, state)
+    if state ~= "end" then return end
+    for _, button in ipairs(page.backpacks or {}) do
+        local inv = button.inventory
+        local holder = inv and inv:getContainingItem()
+        if holder and holder:getFullType() == M.ITEM_LOADED then Info.get(holder:getID()) end
+        local items = inv and inv:getItems()
+        for i = 0, (items and items:size() or 0) - 1 do
+            local it = items:get(i)
+            if it:getFullType() == M.ITEM_LOADED then Info.get(it:getID()) end
+        end
+    end
+end)
+
 return Info

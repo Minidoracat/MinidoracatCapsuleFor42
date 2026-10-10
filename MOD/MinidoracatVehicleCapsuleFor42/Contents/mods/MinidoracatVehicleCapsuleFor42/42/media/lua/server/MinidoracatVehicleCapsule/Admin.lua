@@ -10,33 +10,6 @@ local Store, Unpack = M.Store, M.Unpack
 local Admin = {}
 M.Admin = Admin
 
--- The engine has no lookup by sqlId; the towing code scans the cell the same way (BaseVehicle.java:10346-10351).
--- Loaded vehicles only: a car in an unloaded chunk is not found, which is why unverified verdicts need `checked`.
--- With `script`, a car with that sqlId but another vehicle script does not count: vehicles.db reuses the sqlId of
--- deleted or crash-lost rows (crash-mp vcap-crashc1-1010d: the car thrown after the crash got the packed car's 60).
-function Admin.findLoadedVehicle(sqlId, script)
-    if type(sqlId) ~= "number" or sqlId < 0 then return nil end
-    local it = getCell():getVehicles():iterator()
-    while it:hasNext() do
-        local v = it:next()
-        if v:getSqlId() == sqlId and (script == nil or v:getScriptName() == script) then return v end
-    end
-    return nil
-end
-
--- Events that put a car somewhere. RESOLVED also names the car, but its x/y/z are where the admin stood
--- (vcap-admin-1010s restored the car at the admin's square after a "missing" verdict).
-local PLACES_CAR = { PACKED = true, UNPACKED = true, RESTORED = true }
-
--- The last history entry that placed a car: PACKED -> the original car, UNPACKED/RESTORED -> the spawned one.
-function Admin.recordedCar(snap)
-    local h = snap.history or {}
-    for i = #h, 1, -1 do
-        if PLACES_CAR[h[i].ev] and h[i].car ~= nil then return h[i] end
-    end
-    return {}
-end
-
 local function manifest(snap)
     local parts = {}
     for ft, n in pairs(snap.manifest or {}) do parts[#parts + 1] = ft .. "*" .. n end
@@ -51,8 +24,8 @@ local function done(snap, ok, why)
 end
 
 -- verdict "present": the recorded car is in the world. PACKED -> VOID (that pack never took effect); UNPACKED ->
---   settled (the spawned car is real; the guard then clears the capsule's cargo copy). A car the server cannot find
---   needs `checked` (an admin saw it on site).
+--   settled (the spawned car is real; its unpack is marked as known, and the guard then clears the capsule's cargo
+--   copy). A car the server cannot find needs `checked` (an admin saw it on site).
 -- verdict "missing": refused with CAR_EXISTS while the server has that car loaded; needs `checked` when the recorded
 --   spot is not loaded either. PACKED -> settled (restorable as usual); UNPACKED -> PACKED, settled (the player
 --   throws again: car and cargo come back).
@@ -64,8 +37,8 @@ function Admin.resolve(admin, capsuleId, verdict, note, checked)
     if not Store.uncertain(capsuleId, snap) or (snap.state ~= "PACKED" and snap.state ~= "UNPACKED") then
         return fail("NOT_UNCERTAIN")
     end
-    local e = Admin.recordedCar(snap)
-    local car = Admin.findLoadedVehicle(e.car, snap.script)
+    local e = Store.recordedCar(snap)
+    local car = Store.findLoadedVehicle(e.car, snap.script)
     local info = { ev = "RESOLVED", verdict = verdict, note = note, car = e.car }
     local to -- new state; nil when the verdict only marks the record settled
     if verdict == "present" then
@@ -80,7 +53,9 @@ function Admin.resolve(admin, capsuleId, verdict, note, checked)
     end
     if to then return done(snap, Store.setState(capsuleId, snap, to, admin, info, true)) end
     snap.settled = true
-    return done(snap, Store.event(capsuleId, snap, "RESOLVED", admin, info))
+    local ok, why = Store.event(capsuleId, snap, "RESOLVED", admin, info)
+    if ok and snap.state == "UNPACKED" then Store.mark(capsuleId) end
+    return done(snap, ok, why)
 end
 
 -- Spawns the recorded vehicle again at (x, y, z), without cargo (history lists it), for a PACKED record (uncertain
@@ -92,7 +67,7 @@ function Admin.restore(admin, capsuleId, x, y, z, note, checked)
     if not snap then return fail(why) end
     local uncertain = Store.uncertain(capsuleId, snap)
     if not (snap.state == "PACKED" or (snap.state == "UNPACKED" and uncertain)) then return fail("NOT_RESTORABLE") end
-    if Admin.findLoadedVehicle(Admin.recordedCar(snap).car, snap.script) then return fail("CAR_EXISTS") end
+    if Store.findLoadedVehicle(Store.recordedCar(snap).car, snap.script) then return fail("CAR_EXISTS") end
     if uncertain and not checked then return fail("CHECK_SITE") end
     local square = x and y and getCell():getGridSquare(x, y, z or 0)
     if not square then return fail("BLOCKED") end

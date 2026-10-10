@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 to 50 tiles. 0 means the capsule popping open does not attract zombies.",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Allow taking cargo out of capsules",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "When on, players can take cargo out of a loaded capsule without unpacking the vehicle. Items can only be taken out, never put in. A freshly packed capsule opens after about 5 seconds; a capsule left unconfirmed by a server crash stays locked.",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "Days to keep closed records",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "1 to 90 days. Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this. Packed and unconfirmed records are always kept: they are needed to restore a vehicle.\nRecords live on the server in Zomboid/Lua/MinidoracatVehicleCapsule/, one folder per world; back them up with the world save.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Empty capsules appear as loot",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Master switch: when off, none of the four locations below spawn empty capsules.\nOnly affects containers opened for the first time afterwards; containers already looted do not respawn.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Mechanic shops",

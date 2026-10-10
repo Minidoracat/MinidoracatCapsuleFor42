@@ -1,7 +1,8 @@
 -- Vehicle Capsule: server commands of the admin panel (records tab). Every command checks M.isAdmin itself
 -- (Capability.ManipulateVehicle, same as Admin.resolve/restore); a refused one is logged and answered NOT_ADMIN.
--- The panel never sends coordinates: restore uses the recorded spot, "go to" uses the coordinates the detail reply
--- carried. The loot tab needs no command: it sends sandbox options like the vanilla sandbox page.
+-- The panel never sends coordinates: restore uses the recorded spot, the two "go to" buttons use the coordinates
+-- the detail reply carried (recorded spot, last sighting). The loot tab needs no command: it sends sandbox options
+-- like the vanilla sandbox page.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Store"
@@ -45,12 +46,14 @@ function AdminCommands.adminDetail(player, args)
     end
     local manifest = {}
     for ft, n in pairs(snap.manifest or {}) do manifest[#manifest + 1] = { ft = ft, n = n } end
-    local e = Admin.recordedCar(snap)
+    local e = Store.recordedCar(snap)
+    local s = type(snap.seen) == "table" and snap.seen or nil
     return {
         ok = true, id = id, state = snap.state, settled = snap.settled == true, uncertain = Store.uncertain(id, snap),
         script = snap.script, name = snap.name, by = snap.packedBy, history = history, historyTotal = #h,
         manifest = manifest, x = e.x, y = e.y, z = e.z, car = e.car,
-        carLoaded = Admin.findLoadedVehicle(e.car, snap.script) ~= nil,
+        carLoaded = Store.findLoadedVehicle(e.car, snap.script) ~= nil,
+        seen = s and { t = s.t, where = s.where, by = s.by, x = s.x, y = s.y, z = s.z } or nil,
     }
 end
 
@@ -63,7 +66,7 @@ end
 function AdminCommands.adminRestore(player, args)
     local id = tonumber(args.id) or -1
     local snap = Store.read(id)
-    local e = snap and Admin.recordedCar(snap) or {}
+    local e = snap and Store.recordedCar(snap) or {}
     return Admin.restore(player, id, tonumber(e.x), tonumber(e.y), tonumber(e.z) or 0, note(args.note), flag(args.checked))
 end
 

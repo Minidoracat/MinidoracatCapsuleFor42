@@ -32,6 +32,7 @@ function Pack.pack(player, vehicle, opts)
     snap.state = "PACKED"
     snap.packedBy = player:getUsername()
     snap.history = { { t = getTimestampMs(), ev = "PACKED", by = snap.packedBy, x = x, y = y, z = z, car = car } }
+    snap.seen = { t = snap.history[1].t, where = "ground", x = x, y = y, z = z } -- the capsule drops where the car stood
     local ok, werr, path = Store.write(capsuleId, snap)
     if not ok then
         M.log("pack refused " .. tostring(werr) .. " " .. tostring(path or ""))

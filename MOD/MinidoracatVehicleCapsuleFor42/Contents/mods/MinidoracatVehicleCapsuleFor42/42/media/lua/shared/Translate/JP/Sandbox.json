@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 から 50 マス。0 にすると、カプセルが開く音でゾンビは寄ってきません。",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "カプセルから積み荷を取り出せる",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "オンにすると、車両を展開しなくても、車両の入ったカプセルから積み荷を取り出せます。取り出すだけで、入れることはできません。収納したばかりのカプセルは約 5 秒後から取り出せます。サーバークラッシュで未確認のカプセルは取り出せないままです。",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "終了した記録の保存日数",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "1〜90 日。展開済み・復元済み・無効のカプセルの記録は、最後の出来事からこの日数を過ぎると削除されます。収納中と未確認の記録は車両の復元に必要なので常に残ります。\n記録はサーバーの Zomboid/Lua/MinidoracatVehicleCapsule/ にワールドごとのフォルダで保存されます。ワールドのセーブと一緒にバックアップしてください。",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "空のカプセルが戦利品として出現",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "全体スイッチ：オフにすると、下の4か所すべてで空のカプセルが出現しなくなります。\n今後初めて開けるコンテナにのみ影響し、すでに漁ったコンテナには再出現しません。",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "自動車修理工場",

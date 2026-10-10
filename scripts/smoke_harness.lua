@@ -37,6 +37,13 @@ local quiet = false
 function print(...) if not quiet then realPrint(...) end end
 
 Events = setmetatable({}, { __index = function() return { Add = function() end } end })
+function getWorld() return { getWorld = function() return "harness world" end } end
+-- 全域 ModData（跟世界存檔一起存）：Store 的展開標記；ModData.tables 讓測試看得到、也能清掉模擬回溯
+ModData = { tables = {} }
+function ModData.getOrCreate(key)
+    ModData.tables[key] = ModData.tables[key] or {}
+    return ModData.tables[key]
+end
 
 -- 假物品／容器：只做 Store、Guard、Admin 用到的方法。AddItem 刻意不從舊容器移除（漏呼叫 Remove 會被抓到）
 local nextItemId = 1000
@@ -277,12 +284,16 @@ check(#dskip == 1, "循環參照在深度上限處截斷並記一條路徑")
 print("Store：寫後讀回、狀態只轉一次")
 local snap = { v = 1, state = "PACKED", settled = true, script = "Base.PickUpTruck", modData = nasty, history = {} }
 check(Store.write(42, snap) == true, "寫入並讀回一致")
-check(files["MinidoracatVehicleCapsule/packs/42.json"] ~= nil, "落在 packs/<id>.json")
+check(Store.dir() == "MinidoracatVehicleCapsule/MP_harness_world/" and files[Store.path(42, "a")] ~= nil
+    and files[Store.path(42, "a")]:find("\n42 {", 1, true) ~= nil, "落在這個世界的資料夾、42 號桶的 a 份（MP_<伺服器>）")
 local r = Store.read(42)
 check(r and diff(snap, r) == nil, "read 讀回與寫入相同")
 check(select(2, Store.read(43)) == "NO_SNAPSHOT", "沒有檔案回 NO_SNAPSHOT")
-files["MinidoracatVehicleCapsule/packs/44.json"] = "{broken"
-check(select(2, Store.read(44)) == "CORRUPT", "壞檔回 CORRUPT")
+files[Store.path(44, "a")] = "MVC1 1\n44 {broken\nEND 1 1" -- 桶檔完整，只有這一筆壞掉
+check(select(2, Store.read(44)) == "CORRUPT", "壞掉的一筆回 CORRUPT")
+Store.write(45, { state = "PACKED", settled = true, history = {} })
+check(Store.claim(45, player) ~= nil and Store.marked(45) and Store.release(45, Store.read(45), player, "x") == true
+    and not Store.marked(45), "claim 在 ModData 標記展開，生車失敗退回 PACKED 時拿掉標記")
 
 local claimed = Store.claim(42, player)
 check(claimed and claimed.state == "UNPACKED", "claim：PACKED -> UNPACKED")
@@ -318,7 +329,7 @@ corruptWrites = false
 check(c61 == nil and cwhy == "WRITE_FAILED", "claim 寫壞 -> WRITE_FAILED，不回快照")
 local ok2, why2, path2 = Store.write(62, { modData = { bad = function() end } })
 check(ok2 == nil and why2 == "MODDATA_UNSUPPORTED" and path2 == "modData.bad", "存不成 JSON -> MODDATA_UNSUPPORTED＋路徑")
-check(files["MinidoracatVehicleCapsule/packs/62.json"] == nil, "被拒時不留快照檔")
+check(files[Store.path(62, "a")] == nil and files[Store.path(62, "b")] == nil, "被拒時不寫桶檔")
 
 print("Store：狀態轉換表（只有表上的 5 條箭頭）")
 local STATES = { "PACKED", "UNPACKED", "RESTORED", "VOID" }
@@ -464,7 +475,7 @@ check(r406.ok and Store.isStale(Store.read(406)), "UNPACKED＋新車在 -> settl
 check(r407.why == "CHECK_SITE" and r407checked.ok, "紀錄位置沒載入：「車不在」要 checked")
 check(r408.why == "BAD_ARGS", "不認得的判定 BAD_ARGS")
 check(r409.ok, "同 sqlId 但車種不同（sqlId 被重用）不算紀錄的車")
-local placed = Admin.recordedCar({ history = {
+local placed = Store.recordedCar({ history = {
     { ev = "PACKED", x = 10, y = 10, z = 0, car = 7 },
     { ev = "RESOLVED", verdict = "missing", x = 20, y = 20, z = 0, car = 7 },
 } })
@@ -571,14 +582,16 @@ local function topLevel(type)
     for _, x in ipairs(owner.inv.list) do if x.type == type then n = n + 1 end end
     return n
 end
+-- { state, settled, cleared?, marked? }：marked＝世界存檔已知道這次展開（ModData 標記）
 local clearCases = {
-    { "UNPACKED", true, true }, { "VOID", nil, true },
+    { "UNPACKED", true, true, true }, { "VOID", nil, true },
     { "PACKED", nil, false }, { "UNPACKED", nil, false }, { "RESTORED", true, false }, { "PACKED", true, false },
 }
 quiet = true
 local clearResults = {}
 for _, c in ipairs(clearCases) do
     local cap = packedCapsule(c[1], c[2])
+    if c[4] then Store.mark(cap.id) end
     local empties = topLevel(M.ITEM_EMPTY)
     Guard.pass(owner)
     local gone = owner.inv:getItemWithIDRecursiv(cap.id) == nil
@@ -590,6 +603,7 @@ for _, c in ipairs(clearCases) do
     if not gone then owner.inv:Remove(cap) end
 end
 local stale = packedCapsule("UNPACKED", true)
+Store.mark(stale.id)
 local unpackRes = M.Unpack.unpack(owner, stale, nil, "N")
 local staleGone = owner.inv:getItemWithIDRecursiv(stale.id) == nil
 local cap, water, bag, pencil = packedCapsule("PACKED", true)
@@ -659,6 +673,41 @@ do -- 拿出模式（AllowCargoTakeOut）：主程式的 local 已接近 200 個
         check(water2.container == settling.inv and h2[#h2].ev == "CARGO_LOCK" and h2[#h2].why == "returned",
             "剛收好、還沒落盤的膠囊照樣放回（CARGO_LOCK returned）")
         check(only and off, "Rules.cargoOpen：只有已落盤的 PACKED，而且沙盒開著")
+    end)()
+end
+
+do -- 回溯判斷：主程式的 local 已接近 200 個上限，放進函式
+    (function()
+        print("Guard.stale：世界存檔比展開舊（沒有 ModData 標記）時，車在才清空，車不在交給管理員")
+        local function unpackedTo(car)
+            local c = packedCapsule("UNPACKED", true)
+            local s = Store.read(c.id)
+            s.history[#s.history + 1] = { ev = "UNPACKED", car = car, x = 1, y = 1, z = 0 }
+            Store.write(c.id, s)
+            return c
+        end
+        quiet = true
+        local lost = unpackedTo(4242) -- 車跟著世界回溯不見了
+        Guard.pass(owner)
+        local afterLost = Store.read(lost.id)
+        local keptLost = owner.inv:getItemWithIDRecursiv(lost.id) ~= nil
+        owner.inv:Remove(lost)
+        local here = unpackedTo(4343) -- 當機：車已寫進 vehicles.db，膠囊跟著玩家存檔回來
+        loadedCars[#loadedCars + 1] = fakeCar(4343)
+        Guard.pass(owner)
+        local hereGone = owner.inv:getItemWithIDRecursiv(here.id) == nil
+        local hh = Store.read(here.id).history
+        local thrown = unpackedTo(4444)
+        local res = M.Unpack.unpack(owner, thrown, nil, "N")
+        local thrownKept = owner.inv:getItemWithIDRecursiv(thrown.id) ~= nil
+        owner.inv:Remove(thrown)
+        local resolved = Admin.resolve(newPlayer("adm", true), thrown.id, "present", nil, true)
+        quiet = false
+        check(keptLost and afterLost.settled == nil and Store.uncertain(lost.id, afterLost)
+            and afterLost.history[#afterLost.history].ev == "SUSPECT", "車不在：膠囊不動，紀錄改回當機前未確認（SUSPECT）")
+        check(hereGone and hh[#hh].ev == "CLEARED" and Store.marked(here.id), "車在：清空重複的貨物並補上標記")
+        check(res.ok == false and res.why == "UNCERTAIN" and thrownKept, "丟出時遇到同樣情況：拒絕（UNCERTAIN），膠囊不動")
+        check(resolved.ok and Store.marked(thrown.id), "管理員判定「車在」後補上標記，下一輪照常清空")
     end)()
 end
 
@@ -838,16 +887,7 @@ check(refused == false and printed[1] and printed[1]:find("pack refused by=alice
     "沒有 intent 的收車被拒並記一行：" .. tostring(printed[1]))
 check(thrown == false, "膠囊不在背包裡的丟擲被拒")
 -- ===== Phase 4：索引分頁、查詢權限、管理指令、戰利品權重 =====
--- 新的假全域：packs/ 目錄列舉、原生沙盒選項、server->client 指令
-function listFilesInZomboidLuaDirectory(dir)
-    local prefix = dir:gsub("/$", "") .. "/"
-    local names = {}
-    for path in pairs(files) do
-        local rest = path:sub(1, #prefix) == prefix and path:sub(#prefix + 1)
-        if rest and not rest:find("/") then names[#names + 1] = rest end
-    end
-    return javaList(names)
-end
+-- 新的假全域：原生沙盒選項、server->client 指令
 local sandbox = {}
 function getSandboxOptions()
     return { getOptionByName = function(_, name)
@@ -859,8 +899,9 @@ end
 local sent = {}
 function sendServerCommand(...) sent[#sent + 1] = { ... } end
 
--- 把舊情境的快照清掉，Phase 4 從乾淨的 packs/ 開始
+-- 把舊情境的紀錄清掉，Phase 4 從空的桶開始（Store 對桶檔的快取一起清）
 for path in pairs(files) do files[path] = nil end
+Store._resetForTests()
 require "MinidoracatVehicleCapsule/Index"
 require "MinidoracatVehicleCapsule/Query"
 require "MinidoracatVehicleCapsule/AdminCommands"
@@ -920,28 +961,168 @@ quiet = false
 local worst = AdminCommands.handle(newPlayer("admin", true), "adminPage", { q = "", state = "ALL", page = 1 })
 check(#worst.rows == 50 and wireSize(worst) < 64 * 1024, "一頁 50 筆、欄位 120 字也只有 " .. wireSize(worst) .. " bytes（遠低於 1 MB）")
 
-print("Index：索引檔壞掉或漏筆時從 packs/ 重建，讀到檔案就跟上")
+print("Index：索引檔壞掉或落後時從桶重建，讀到紀錄就跟上")
 Index.flush(nowMs + 10000)
-check(files["MinidoracatVehicleCapsule/index.json"] ~= nil, "flush 寫出 index.json")
+check(files[Index.file()] ~= nil and Index.file() == Store.dir() .. "index.json", "flush 寫出這個世界的 index.json")
 Index._resetForTests()
 check(Index.page({}, 1).total == 125, "從 index.json 讀回 125 筆")
-files["MinidoracatVehicleCapsule/index.json"] = "{broken"
+files[Index.file()] = "{broken"
 Index._resetForTests()
 quiet = true
 local rebuilt = Index.page({}, 1).total
 quiet = false
-check(rebuilt == 125, "索引壞檔 -> 從 packs/ 重建 125 筆")
+check(rebuilt == 125, "索引壞檔 -> 從桶重建 125 筆")
 Index.flush(nowMs + 20000)
-files["MinidoracatVehicleCapsule/packs/70066.json"] = Json.encode({ state = "PACKED", settled = true, packedBy = "late",
-    history = { { t = base + 66, ev = "PACKED", by = "late" } } })
-files["MinidoracatVehicleCapsule/packs/70001.json"] = nil
+-- 索引沒跟上的寫入（寫完紀錄、下次 flush 之前當機）：先拔掉監聽器，模擬索引沒看到
+local listeners = Store.listeners
+Store.listeners = {}
+Store.write(70066, { state = "PACKED", settled = true, packedBy = "late", history = { { t = base + 66, ev = "PACKED", by = "late" } } })
+Store.drop({ 70001 })
+Store.listeners = listeners
 Index._resetForTests()
 check(Index.page({ q = "late" }, 1).total == 1 and Index.page({ q = "70001" }, 1).total == 0,
-    "索引沒有的檔案補進來、檔案不見的列拿掉")
+    "桶的代數和索引記的不同：重讀那個桶，補進新紀錄、拿掉不在的")
 local s70002 = Store.read(70002)
 s70002.state = "VOID"
 Store.write(70002, s70002)
 check(Index.page({ q = "70002" }, 1).rows[1].state == "VOID", "寫入後索引同步（VOID）")
+
+do -- 桶檔、保留天數、最後看到：主程式的 local 已接近 200 個上限，放進函式
+    (function()
+        print("Store：桶檔兩份輪流寫，寫到一半的那份被略過，兩份都不完整就不動")
+        local id = 999999
+        local b = Store.bucketOf(id)
+        local function headOf(side)
+            local t = files[Store.path(b, side)]
+            return t and tonumber(t:match("^MVC1 (%d+)"))
+        end
+        Store.write(id, { state = "PACKED", settled = true, note = "v1", history = {} })
+        local g1 = Store.gen(b)
+        local side1 = headOf("a") == g1 and "a" or "b"
+        Store.write(id, { state = "PACKED", settled = true, note = "v2", history = {} })
+        local side2 = headOf("a") == g1 + 1 and "a" or "b"
+        files[Store.path(b, side2)] = files[Store.path(b, side2)]:gsub("\nEND [^\n]*$", "") -- 寫到一半當機：沒有結尾
+        Store._resetForTests()
+        local back = Store.read(id)
+        local genBack = Store.gen(b)
+        Store.write(id, { state = "PACKED", settled = true, note = "v3\nEND 1 1", history = {} }) -- 換行要逸出：一筆一行
+        local v3 = Store.read(id)
+        local saveA, saveB = files[Store.path(b, "a")], files[Store.path(b, "b")]
+        files[Store.path(b, "a")], files[Store.path(b, "b")] = "MVC1 9\nbroken", "MVC1 8\nbroken"
+        Store._resetForTests()
+        quiet = true
+        local _, rwhy = Store.read(id)
+        local wok, wwhy = Store.write(id, { state = "PACKED", history = {} })
+        quiet = false
+        local untouched = files[Store.path(b, "a")] == "MVC1 9\nbroken" and files[Store.path(b, "b")] == "MVC1 8\nbroken"
+        files[Store.path(b, "a")], files[Store.path(b, "b")] = saveA, saveB
+        Store._resetForTests()
+        check(side1 ~= side2 and headOf(side1) == g1, "第二次寫進另一份、代數加一（" .. side1 .. " -> " .. side2 .. "）")
+        check(back and back.note == "v1" and genBack == g1, "比較新的那份沒寫完：改用上一份（v1）")
+        check(v3 and v3.note == "v3\nEND 1 1", "之後的寫入蓋掉沒寫完的那份；欄位裡的換行原樣讀回")
+        check(rwhy == "CORRUPT" and wok == nil and wwhy == "CORRUPT" and untouched, "兩份都不完整：讀寫都回 CORRUPT，檔案原樣留給管理員")
+        check(Store.bucketOf(-5) == 251 and Store.bucketOf(256 * 7 + 3) == 3, "負的編號也落在 0..255")
+
+        print("Index.prune：結束的紀錄超過保留天數就刪，收起中、未確認、還沒到期的留著")
+        local day = 86400000
+        local old = nowMs - 40 * day
+        local function rec(cid, state, settled, t)
+            Store.write(cid, { state = state, settled = settled, history = { { t = t, ev = state, by = "p" } } })
+        end
+        rec(990001, "UNPACKED", true, old)
+        rec(990002, "RESTORED", true, old)
+        rec(990003, "PACKED", true, old)
+        rec(990004, "UNPACKED", nil, old) -- 當機前未確認
+        rec(990006, "RESTORED", nil, old) -- 補回寫到一半當機：同樣未確認
+        rec(990005, "VOID", true, nowMs - day)
+        Store.mark(990001)
+        quiet = true
+        local done = Index.prune(nowMs, 30, 256)
+        quiet = false
+        check(done and select(2, Store.read(990001)) == "NO_SNAPSHOT" and select(2, Store.read(990002)) == "NO_SNAPSHOT",
+            "40 天前結束的（已展開、已補回）刪掉")
+        check(Store.read(990003) ~= nil and Store.read(990004) ~= nil and Store.read(990006) ~= nil and Store.read(990005) ~= nil,
+            "收起中、當機前未確認（展開或補回）、昨天才作廢的留著")
+        check(not Store.marked(990001) and Index.page({ q = "990001" }, 1).total == 0, "ModData 標記與索引列一起拿掉")
+        rec(990011, "UNPACKED", true, old)
+        rec(990012, "UNPACKED", true, old)
+        rec(990013, "UNPACKED", true, old)
+        quiet = true
+        local first = Index.prune(nowMs, 30, 2)
+        local second = Index.prune(nowMs, 30, 2)
+        quiet = false
+        check(first == false and second == true and Index.page({ q = "99001" }, 1).total == 0,
+            "一次最多兩個桶，剩下的下一輪再刪")
+
+        print("Index：收起中又 7 天沒人看到的膠囊")
+        Store.write(990021, { state = "PACKED", settled = true, history = { { t = nowMs - 10 * day, ev = "PACKED", by = "u" } } })
+        Store.write(990022, { state = "PACKED", settled = true, seen = { t = nowMs - day, where = "ground", x = 1, y = 2, z = 0 },
+            history = { { t = nowMs - 10 * day, ev = "PACKED", by = "u" } } })
+        local unseen = Index.page({ q = "99002", state = "UNSEEN" }, 1)
+        check(unseen.total == 1 and unseen.rows[1].id == 990021 and unseen.counts.UNSEEN == 1,
+            "10 天前收、之後沒被看到的算；昨天才看到的不算")
+        local detail = AdminCommands.handle(newPlayer("admin", true), "adminDetail", { id = 990022 })
+        check(detail.seen and detail.seen.where == "ground" and detail.seen.x == 1, "管理面板明細帶最後看到的位置")
+
+        print("Store.seen：同一人同一處一小時內只寫一次；換人、換地方、地上的膠囊換格或過一小時才再寫；不記時間軸、不叫客戶端丟快取")
+        Store.write(990031, { state = "PACKED", settled = true, history = { { t = nowMs, ev = "PACKED", by = "s" } } })
+        local writes, sentBefore = 0, #sent
+        local function count(cid, _, written, q) if cid == 990031 and written and q then writes = writes + 1 end end
+        Store.listeners[#Store.listeners + 1] = count
+        Store.seen(990031, { where = "player", by = "amy", x = 1, y = 1, z = 0 })
+        Store.seen(990031, { where = "player", by = "amy", x = 2, y = 2, z = 0 })
+        Store.seen(990031, { where = "player", by = "ben", x = 2, y = 2, z = 0 })
+        nowMs = nowMs + Store.SEEN_MS
+        Store.seen(990031, { where = "player", by = "ben", x = 3, y = 3, z = 0 })
+        local byPlayer = writes
+        Store.seen(990031, { where = "ground", x = 5, y = 5, z = 0 })
+        Store.seen(990031, { where = "ground", x = 5, y = 5, z = 0 })
+        Store.seen(990031, { where = "ground", x = 6, y = 5, z = 0 })
+        Store.listeners[#Store.listeners] = nil
+        local s = Store.read(990031)
+        check(byPlayer == 3, "身上：寫了 3 次（第一次、換人、過一小時），走動不算")
+        check(writes == 5 and s.seen.where == "ground" and s.seen.x == 6 and s.seen.by == nil and #s.history == 1,
+            "地上：放下算一次、同一格不再寫、被移到隔壁格再寫")
+        check(#sent == sentBefore, "看到不算改變：沒有 queryChanged")
+        local amy = newPlayer("amy", false)
+        local held2 = instanceItem(M.ITEM_LOADED)
+        amy.inv:AddItem(held2)
+        local at = Query.near(amy, held2.id)
+        check(at and at.where == "player" and at.by == "amy" and at.x == 100 and at.y == 200, "Query.near 回傳在誰身上、站在哪")
+
+        print("Store.dir：單機一個存檔一個資料夾（SP_<模式>_<存檔>），名稱裡的特殊字元換成底線")
+        local realIsServer, realGetCore, realGetWorld = isServer, getCore, getWorld
+        isServer = function() return false end
+        getCore = function() return { getGameMode = function() return "Apocalypse" end } end
+        getWorld = function() return { getWorld = function() return "10-10-2026_12-00/x" end } end
+        Store._resetForTests()
+        local spDir = Store.dir()
+        isServer, getCore, getWorld = realIsServer, realGetCore, realGetWorld
+        Store._resetForTests()
+        check(spDir == "MinidoracatVehicleCapsule/SP_Apocalypse_10-10-2026_12-00_x/" and Store.dir() ~= spDir, "單機：" .. spDir)
+
+        print("Store：紀錄再多檔案數也固定（256 桶 × 兩份 + index.json）；刪紀錄是改寫桶，不會多出檔案")
+        local many = {}
+        for i = 1, 1200 do
+            many[i] = 5000000 + i
+            Store.write(many[i], { state = "VOID", settled = true, history = {} })
+        end
+        Index.flush(nowMs + 3600000)
+        local prefix = Store.dir()
+        local function fileCount()
+            local n = 0
+            for path in pairs(files) do
+                if path:sub(1, #prefix) == prefix then n = n + 1 end
+            end
+            return n
+        end
+        local full = fileCount()
+        local gone = Store.drop(many)
+        check(full == 2 * Store.BUCKETS + 1, "寫了 1200 筆：" .. full .. " 個檔")
+        check(#gone == 1200 and fileCount() == full and select(2, Store.read(5000001)) == "NO_SNAPSHOT",
+            "刪掉 1200 筆：紀錄不在了，檔案數不變")
+    end)()
+end
 
 print("Query：一般玩家只能查身上或附近的膠囊，管理員都能查")
 local bob = newPlayer("bob", false)
@@ -1067,7 +1248,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
     for _, lang in ipairs({ "EN", "FR", "RU" }) do
         local t = ui(lang)
         for k, s in pairs(t) do
-            if k:find("^" .. P .. "Why_") or k == P .. "Restored" or k == P .. "WentTo" then
+            if k:find("^" .. P .. "Why_") or k == P .. "Restored" or k == P .. "WentTo" or k == P .. "WentToSeen" then
                 msgs = msgs + 1
                 for _, w in ipairs({ DW, 160 }) do
                     local lines = Kit.lines(s, w, 3)
@@ -1095,13 +1276,13 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
         and items[5].flowRow == 2 and items[5].flowX == 0, "按鈕列放不下就換到下一列、比欄還寬的自成一列（rows=" .. rows .. "）")
     local ru = ui("RU")
     local btns = {}
-    for _, key in ipairs({ "GoTo", "Restore", "VerdictPresent", "VerdictMissing" }) do
+    for _, key in ipairs({ "GoTo", "GoSeen", "Restore", "VerdictPresent", "VerdictMissing" }) do
         btns[#btns + 1] = { width = width(ru[P .. key]) + 20 }
     end
     Kit.flow(btns, DW, 8)
     inside = true
     for _, b in ipairs(btns) do inside = inside and b.flowX + b.width <= DW end
-    check(inside, "RU 四顆詳情按鈕都在詳情欄內")
+    check(inside, "RU 五顆詳情按鈕都在詳情欄內")
 end
 uiLayout()
 

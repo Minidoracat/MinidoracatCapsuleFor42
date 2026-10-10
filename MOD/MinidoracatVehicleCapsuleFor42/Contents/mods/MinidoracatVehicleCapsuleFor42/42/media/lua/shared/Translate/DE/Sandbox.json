@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "0 bis 50 Kacheln. 0 bedeutet, dass das Aufploppen der Kapsel keine Zombies anlockt.",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Ladung aus Kapseln herausnehmen erlauben",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Wenn aktiv, können Spieler Ladung aus einer Kapsel mit Fahrzeug herausnehmen, ohne es zu entpacken. Man kann nur herausnehmen, nichts hineinlegen. Eine frisch gepackte Kapsel öffnet sich nach etwa 5 Sekunden; eine wegen eines Serverabsturzes unbestätigte Kapsel bleibt gesperrt.",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "Tage für abgeschlossene Einträge",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "1 bis 90 Tage. Einträge entpackter, wiederhergestellter oder annullierter Kapseln werden gelöscht, wenn ihr letztes Ereignis älter ist. Einträge eingepackter und unbestätigter Kapseln bleiben immer: Sie werden zum Wiederherstellen eines Fahrzeugs gebraucht.\nDie Einträge liegen auf dem Server in Zomboid/Lua/MinidoracatVehicleCapsule/, ein Ordner pro Welt; sichere sie zusammen mit dem Weltspielstand.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Leere Kapseln als Beute",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Hauptschalter: Wenn aus, erscheinen an keinem der vier Orte unten leere Kapseln.\nBetrifft nur Behälter, die danach zum ersten Mal geöffnet werden; bereits geplünderte Behälter werden nicht neu befüllt.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Autowerkstätten",

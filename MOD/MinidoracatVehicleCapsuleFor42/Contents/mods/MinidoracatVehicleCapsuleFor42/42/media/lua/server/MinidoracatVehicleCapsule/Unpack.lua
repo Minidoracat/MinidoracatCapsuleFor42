@@ -95,14 +95,14 @@ function Unpack.spawn(snap, square, dir, opts, capsule)
 end
 
 -- Returns { ok = true, vehicleId, sqlId, returned, script, ... } or { ok = false, why }. A capsule whose record is
--- stale (its cargo is a second copy) is replaced by an empty one: why = "CLEARED". An empty capsule goes back to the
--- player when SandboxVars ReturnEmptyCapsule is on (returned = true).
+-- stale (its cargo is a second copy) is replaced by an empty one: why = "CLEARED"; when the world save is older than
+-- that unpack and its car is not loaded, an admin checks first: why = "UNCERTAIN" (Guard.stale). An empty capsule
+-- goes back to the player when SandboxVars ReturnEmptyCapsule is on (returned = true).
 function Unpack.unpack(player, capsule, square, dir, opts)
     local capsuleId = capsule:getID()
     local snap, why, stale = Store.claim(capsuleId, player)
     if why == "STALE" then
-        Guard.clear(player, capsule, capsuleId, stale, "unpack")
-        return { ok = false, why = "CLEARED" }
+        return { ok = false, why = Guard.stale(player, capsule, capsuleId, stale, "unpack") and "CLEARED" or "UNCERTAIN" }
     end
     if not snap then return { ok = false, why = why } end
     local vehicle, cargo = Unpack.spawn(snap, square, dir, opts, capsule)

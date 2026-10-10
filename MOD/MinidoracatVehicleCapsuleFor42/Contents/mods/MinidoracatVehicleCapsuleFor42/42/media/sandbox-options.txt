@@ -20,6 +20,10 @@ option MinidoracatVehicleCapsule.ZombieSoundRadius
 option MinidoracatVehicleCapsule.AllowCargoTakeOut
 {type = boolean, default = false, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_AllowCargoTakeOut,}
 
+/* 已結束的紀錄（已展開且落盤、已補回、作廢）最後一筆事件超過幾天就從紀錄檔刪掉（Index.prune）；收起中與當機前未確認的永遠保留 */
+option MinidoracatVehicleCapsule.RecordRetentionDays
+{type = integer, min = 1, max = 90, default = 30, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_RecordRetentionDays,}
+
 /* ===== MinidoracatVehicleCapsuleLoot：戰利品（四個地點各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
 
 option MinidoracatVehicleCapsule.LootEnabled

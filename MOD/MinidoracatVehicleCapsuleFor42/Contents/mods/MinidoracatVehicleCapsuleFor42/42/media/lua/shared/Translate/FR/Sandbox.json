@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "De 0 à 50 cases. 0 signifie que le son de la capsule qui s'ouvre n'attire pas les zombies.",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Autoriser à sortir le chargement des capsules",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Si activé, les joueurs peuvent sortir le chargement d'une capsule contenant un véhicule sans le déployer. On peut seulement sortir des objets, pas en remettre. Une capsule tout juste rangée s'ouvre après environ 5 secondes ; une capsule non confirmée à cause d'un crash du serveur reste verrouillée.",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "Jours de conservation des enregistrements clos",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "De 1 à 90 jours. Les enregistrements des capsules déployées, restaurées ou annulées sont supprimés quand leur dernier événement dépasse ce délai. Ceux des capsules rangées ou non confirmées sont toujours gardés : ils servent à restaurer un véhicule.\nLes enregistrements sont sur le serveur dans Zomboid/Lua/MinidoracatVehicleCapsule/, un dossier par monde ; sauvegardez-les avec la partie.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Des capsules vides apparaissent dans le butin",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Interrupteur général : si désactivé, aucun des quatre lieux ci-dessous ne génère de capsules vides.\nN'affecte que les conteneurs ouverts pour la première fois ensuite ; les conteneurs déjà fouillés ne se remplissent pas.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Ateliers de réparation auto",

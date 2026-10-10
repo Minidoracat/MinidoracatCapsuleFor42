@@ -2,12 +2,15 @@
 --   * Store.settleDue every tick. OnTick stops on an empty dedicated server with PauseEmpty; OnTickEvenPaused fires
 --     at the top of IngameState.updateInternal, before the pause check (IngameState.java:1347 vs 1517-1520).
 --   * Every PASS_MS, for loaded capsules in online players' inventories (any depth) and on the ground around them:
---     a stale record (UNPACKED and settled, or VOID) means the cargo is a second copy -> replace with an empty capsule;
---     otherwise sealed cargo that left the capsule is put back when the player carries it (cargo lock). Vanilla item
---     transfers are pure Java (ItemTransactionPacket -> TransactionManager.isConsistent/Transaction.update, no Lua
---     hook on the source), so the server can only undo them, not refuse them.
+--     a stale record (UNPACKED and settled, or VOID) means the cargo is a second copy -> replace with an empty capsule
+--     (Guard.stale: an unpack newer than the world save is cleared only when its car is loaded, else an admin
+--     checks); otherwise sealed cargo that left the capsule is put back when the player carries it (cargo lock).
+--     Vanilla item transfers are pure Java (ItemTransactionPacket -> TransactionManager.isConsistent/
+--     Transaction.update, no Lua hook on the source), so the server can only undo them, not refuse them.
+--     Each capsule's sighting is noted (Store.seen).
 --   * Sandbox AllowCargoTakeOut and a confirmed PACKED record (Rules.cargoOpen): cargo that left stays out; the
 --     record drops it (sealed, manifest) so the tooltip, the preview and the admin panel list what is still inside.
+--   * Record retention (Index.prune) right after start, then every PRUNE_MS.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Rules"
@@ -19,6 +22,8 @@ M.Guard = Guard
 
 Guard.PASS_MS = 1000
 Guard.GROUND_RANGE = 2 -- squares around each player searched for capsules on the ground
+Guard.PRUNE_MS = 3600000 -- record retention runs right after start, then hourly
+Guard.PRUNE_BUCKETS = 8  -- buckets rewritten per pass while a retention backlog lasts
 
 -- "full.Type*n,..." of everything inside inv (any depth), for logs and history.
 local function listing(inv)
@@ -65,6 +70,22 @@ function Guard.clear(player, capsule, capsuleId, snap, why)
     local items = listing(capsule:getInventory())
     replaceWithEmpty(player, capsule)
     Store.event(capsuleId, snap, "CLEARED", player, { why = why, items = items })
+end
+
+-- A stale record seen with its capsule. An unpack the world save does not know yet (no ModData mark: the world went
+-- back to an older save, by a crash or a rollback) clears only when its spawned car is loaded here; otherwise the
+-- car may have gone back with the world and the cargo is the only copy: an admin checks (Store.suspect).
+-- Returns true when the capsule was cleared.
+function Guard.stale(player, capsule, capsuleId, snap, why)
+    if snap.state == "UNPACKED" and not Store.marked(capsuleId) then
+        if not Store.findLoadedVehicle(Store.recordedCar(snap).car, snap.script) then
+            Store.suspect(capsuleId, snap, player)
+            return false
+        end
+        Store.mark(capsuleId)
+    end
+    Guard.clear(player, capsule, capsuleId, snap, why)
+    return true
 end
 
 local function idsIn(inv, set)
@@ -151,7 +172,7 @@ function Guard.check(player, capsule)
     if not st then return end
     if Store.isStale(st) then
         local snap = Store.read(capsuleId)
-        if snap and Store.isStale(snap) then Guard.clear(player, capsule, capsuleId, snap, "scan") end
+        if snap and Store.isStale(snap) then Guard.stale(player, capsule, capsuleId, snap, "scan") end
         return
     end
     if M.Rules.cargoOpen(st) then
@@ -177,12 +198,22 @@ local function groundCapsules(player, out)
     return out
 end
 
+-- Every loaded capsule on the player (any depth) and on the ground around them: checked, and its sighting noted
+-- (where the admin panel's "go to the last sighting" leads).
 function Guard.pass(player)
+    local px, py, pz = math.floor(player:getX()), math.floor(player:getY()), math.floor(player:getZ())
+    local held = { where = "player", by = player:getUsername(), x = px, y = py, z = pz }
     local found = player:getInventory():getAllTypeRecurse(M.ITEM_LOADED)
-    local list = {}
-    for i = 0, found:size() - 1 do list[#list + 1] = found:get(i) end
-    groundCapsules(player, list)
-    for _, capsule in ipairs(list) do Guard.check(player, capsule) end
+    for i = 0, found:size() - 1 do
+        local capsule = found:get(i)
+        Guard.check(player, capsule)
+        Store.seen(capsule:getID(), held)
+    end
+    for _, capsule in ipairs(groundCapsules(player, {})) do
+        Guard.check(player, capsule)
+        local sq = capsule:getWorldItem() and capsule:getWorldItem():getSquare()
+        if sq then Store.seen(capsule:getID(), { where = "ground", x = sq:getX(), y = sq:getY(), z = sq:getZ() }) end
+    end
 end
 
 local function players()
@@ -199,7 +230,12 @@ local function players()
     return out
 end
 
-local nextPass = 0
+local function retentionDays()
+    local d = math.floor(tonumber(M.Rules.sandbox().RecordRetentionDays) or 30)
+    return math.max(1, math.min(90, d))
+end
+
+local nextPass, nextPrune = 0, 0
 function Guard.tick()
     local now = getTimestampMs()
     Store.settleDue(now)
@@ -208,6 +244,13 @@ function Guard.tick()
     for _, p in ipairs(players()) do
         local ok, err = pcall(Guard.pass, p)
         if not ok then M.log("guard pass failed: " .. tostring(err)) end
+    end
+    -- retention (Index.prune): needs the index module, loaded with the other server files
+    local Index = M.Index
+    if Index and now >= nextPrune then
+        local ok, done = pcall(Index.prune, now, retentionDays(), Guard.PRUNE_BUCKETS)
+        if not ok then M.log("record retention failed: " .. tostring(done)) end
+        if not ok or done then nextPrune = now + Guard.PRUNE_MS end
     end
 end
 Events.OnTickEvenPaused.Add(Guard.tick)

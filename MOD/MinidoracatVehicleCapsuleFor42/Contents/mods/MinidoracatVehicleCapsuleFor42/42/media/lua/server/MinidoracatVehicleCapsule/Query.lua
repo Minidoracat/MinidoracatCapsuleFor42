@@ -1,8 +1,8 @@
 -- Vehicle Capsule: capsule summaries for the tooltip and the 3D preview (server authority).
--- The capsule item only carries its id; the vehicle, its condition and the cargo list come from the snapshot file.
+-- The capsule item only carries its id; the vehicle, its condition and the cargo list come from its record (Store).
 -- Replies are raw data (script, parts, manifest, history times): the client words them in the player's language.
 -- A regular player may only ask about capsules on them or within LOOK_RANGE (ground, containers, vehicle parts);
--- admins (Capability.ManipulateVehicle) about any. When a snapshot is written every client drops its cached copy.
+-- admins (Capability.ManipulateVehicle) about any. When a record is written every client drops its cached copy.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Store"
@@ -19,40 +19,45 @@ local function inContainer(c, capsuleId)
     return c ~= nil and c:getItemWithIDRecursiv(capsuleId) ~= nil
 end
 
--- True when the capsule is on the player or near enough to hover in the loot window.
+-- Where the capsule is when it is on the player or near enough to hover in the loot window, as a sighting for
+-- Store.seen: { where = "player" | "ground" | "container" | "vehicle", by, x, y, z }; nil when it is not.
 function Query.near(player, capsuleId)
-    if inContainer(player:getInventory(), capsuleId) then return true end
-    local cell, r = getCell(), Query.LOOK_RANGE
     local px, py, pz = math.floor(player:getX()), math.floor(player:getY()), math.floor(player:getZ())
+    if inContainer(player:getInventory(), capsuleId) then
+        return { where = "player", by = player:getUsername(), x = px, y = py, z = pz }
+    end
+    local cell, r = getCell(), Query.LOOK_RANGE
     for dx = -r, r do
         for dy = -r, r do
             local sq = cell:getGridSquare(px + dx, py + dy, pz)
             if sq then
+                local at = { x = px + dx, y = py + dy, z = pz }
                 local wobs = sq:getWorldObjects()
                 for i = 0, wobs:size() - 1 do
                     local it = wobs:get(i):getItem()
-                    if it and (it:getID() == capsuleId
-                        or (instanceof(it, "InventoryContainer") and inContainer(it:getInventory(), capsuleId))) then
-                        return true
+                    if it and it:getID() == capsuleId then at.where = "ground"; return at end
+                    if it and instanceof(it, "InventoryContainer") and inContainer(it:getInventory(), capsuleId) then
+                        at.where = "container"
+                        return at
                     end
                 end
                 local objs = sq:getObjects()
                 for i = 0, objs:size() - 1 do
                     local o = objs:get(i)
                     for k = 0, o:getContainerCount() - 1 do
-                        if inContainer(o:getContainerByIndex(k), capsuleId) then return true end
+                        if inContainer(o:getContainerByIndex(k), capsuleId) then at.where = "container"; return at end
                     end
                 end
                 local v = sq:getVehicleContainer()
                 if v then
                     for k = 0, v:getPartCount() - 1 do
-                        if inContainer(v:getPartByIndex(k):getItemContainer(), capsuleId) then return true end
+                        if inContainer(v:getPartByIndex(k):getItemContainer(), capsuleId) then at.where = "vehicle"; return at end
                     end
                 end
             end
         end
     end
-    return false
+    return nil
 end
 
 -- Compact snapshot for display. parts: { id, c = condition, i = item, ic = item condition, u = uses, a = amount }.
@@ -73,7 +78,8 @@ function Query.summary(capsuleId, snap)
     }
 end
 
--- Answers each id: summary, or { ok = false, id, why = "FAR" | "NO_SNAPSHOT" | "CORRUPT" }.
+-- Answers each id: summary, or { ok = false, id, why = "FAR" | "NO_SNAPSHOT" | "CORRUPT" }. A capsule near the
+-- player is a sighting (Store.seen), also when an admin asks.
 function Query.query(player, ids)
     local admin = M.isAdmin(player)
     local out = {}
@@ -81,11 +87,13 @@ function Query.query(player, ids)
     for i = 1, math.min(#ids, Query.MAX_IDS) do
         local id = tonumber(ids[i])
         if id then
-            if not admin and not Query.near(player, id) then
+            local at = Query.near(player, id)
+            if not admin and not at then
                 out[#out + 1] = { ok = false, id = id, why = "FAR" }
             else
                 local snap, why = Store.read(id)
                 out[#out + 1] = snap and Query.summary(id, snap) or { ok = false, id = id, why = why }
+                if snap and at then Store.seen(id, at) end
             end
         end
     end
@@ -107,10 +115,11 @@ Events.OnClientCommand.Add(function(module, command, player, args)
     sendServerCommand(player, M.MODULE, "query", res)
 end)
 
--- A written snapshot changed what clients may have cached (state, settled). SP has no clients to tell: the client
--- cache there is cleared by the same listener through M.QueryChanged (client Info.lua).
-Store.listeners[#Store.listeners + 1] = function(capsuleId, _, written)
-    if not written then return end
+-- A written record changed what clients may have cached (state, settled). Quiet writes (a sighting) change nothing
+-- they show. SP has no clients to tell: the client cache there is cleared by the same listener through
+-- M.QueryChanged (client Info.lua).
+Store.listeners[#Store.listeners + 1] = function(capsuleId, _, written, quiet)
+    if not written or quiet then return end
     if isServer() then
         sendServerCommand(M.MODULE, "queryChanged", { id = capsuleId })
     elseif M.QueryChanged then

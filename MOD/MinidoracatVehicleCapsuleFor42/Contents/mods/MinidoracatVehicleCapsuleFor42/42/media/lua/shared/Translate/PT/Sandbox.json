@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "De 0 a 50 quadrados. 0 significa que o som da cápsula abrindo não atrai zumbis.",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Permitir tirar a carga das cápsulas",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Se ativado, os jogadores podem tirar a carga de uma cápsula com veículo sem liberá-lo. Só dá para tirar, não para colocar. Uma cápsula recém-guardada abre depois de uns 5 segundos; uma cápsula não confirmada por uma queda do servidor continua bloqueada.",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "Dias para manter registros encerrados",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "De 1 a 90 dias. Registros de cápsulas liberadas, restauradas ou anuladas são apagados quando o último evento passa desse prazo. Registros guardados e não confirmados ficam sempre: são necessários para restaurar um veículo.\nOs registros ficam no servidor em Zomboid/Lua/MinidoracatVehicleCapsule/, uma pasta por mundo; faça backup junto com o save do mundo.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Cápsulas vazias aparecem como itens",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Chave geral: se desativado, nenhum dos quatro locais abaixo gera cápsulas vazias.\nSó afeta contêineres abertos pela primeira vez depois disso; contêineres já saqueados não são reabastecidos.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Oficinas mecânicas",

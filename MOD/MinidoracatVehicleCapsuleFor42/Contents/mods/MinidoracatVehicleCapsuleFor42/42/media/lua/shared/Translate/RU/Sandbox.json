@@ -12,6 +12,8 @@
     "Sandbox_MinidoracatVehicleCapsule_ZombieSoundRadius_tooltip": "От 0 до 50 клеток. 0 - звук открытия капсулы не привлекает зомби.",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut": "Разрешить доставать груз из капсул",
     "Sandbox_MinidoracatVehicleCapsule_AllowCargoTakeOut_tooltip": "Если включено, игроки могут доставать груз из капсулы с транспортом, не распаковывая его. Груз можно только доставать, класть внутрь нельзя. Только что упакованная капсула открывается примерно через 5 секунд; капсула, не подтверждённая из-за сбоя сервера, остаётся закрытой.",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays": "Сколько дней хранить закрытые записи",
+    "Sandbox_MinidoracatVehicleCapsule_RecordRetentionDays_tooltip": "От 1 до 90 дней. Записи распакованных, восстановленных и аннулированных капсул удаляются, когда их последнее событие старше этого срока. Записи упакованных и неподтверждённых капсул хранятся всегда: они нужны для восстановления транспорта.\nЗаписи лежат на сервере в Zomboid/Lua/MinidoracatVehicleCapsule/, по папке на мир; делайте их резервную копию вместе с сохранением мира.",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled": "Пустые капсулы встречаются в добыче",
     "Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip": "Главный переключатель: если выключено, ни в одном из четырёх мест ниже пустые капсулы не появятся.\nВлияет только на контейнеры, впервые открытые после этого; уже обысканные контейнеры не пополняются.",
     "Sandbox_MinidoracatVehicleCapsule_LootMechanic": "Автомастерские",

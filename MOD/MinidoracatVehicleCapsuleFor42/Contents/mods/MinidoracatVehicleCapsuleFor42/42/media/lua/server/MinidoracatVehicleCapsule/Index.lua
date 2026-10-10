@@ -1,9 +1,10 @@
--- Vehicle Capsule: admin index over the snapshot files, Zomboid/Lua/MinidoracatVehicleCapsule/index.json.
--- One row per capsule (state, vehicle, players, times, recorded spot); the admin panel pages through it 50 rows at a
--- time so a server with thousands of records never sends more than one page (sendServerCommand caps a packet at ~1 MB).
--- The rows follow every Store read and write (Store.listeners), so a row the index missed (crash between the snapshot
--- write and the next flush) heals the first time its file is read; on load, files the index does not know are read in.
--- The index is derived data: a missing or broken file is rebuilt from packs/.
+-- Vehicle Capsule: admin index over the records, <Store.dir>/index.json. One row per capsule (state, vehicle,
+-- players, times, recorded spot, last sighting); the admin panel pages through it 50 rows at a time so a server never
+-- sends more than one page (sendServerCommand caps a packet at ~1 MB).
+-- The rows follow every Store read and write (Store.listeners). index.json also keeps each bucket's generation: on
+-- load only buckets whose files moved on since the last flush are read again (a crash between a record write and
+-- the next flush). The index is derived data: a missing or broken file is rebuilt from every bucket.
+-- Retention (Index.prune): closed records older than the sandbox RecordRetentionDays leave their buckets.
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Json"
@@ -13,14 +14,17 @@ local Json, Store = M.Json, M.Store
 local Index = {}
 M.Index = Index
 
-Index.FILE = "MinidoracatVehicleCapsule/index.json"
 Index.PAGE_SIZE = 50
 Index.FLUSH_MS = 1000
+Index.UNSEEN_MS = 7 * 86400000 -- the "not seen for a week" filter: packed capsules nobody has been near
 Index.STATES = { "PACKED", "UNPACKED", "RESTORED", "VOID" }
 
 local rows       -- capsuleId -> row; nil until loaded
+local gens       -- bucket -> generation the rows reflect
 local order      -- capsule ids, newest pack first; nil when it has to be rebuilt
 local dirty, lastFlush = false, nil
+
+function Index.file() return Store.dir() .. "index.json" end
 
 -- Stable iterative merge sort (the family gate bans the recursive built-in sort: Kahlua depth limits on big inputs).
 local function msort(a, less)
@@ -47,18 +51,11 @@ local function msort(a, less)
 end
 Index.sort = msort
 
--- The last history entry that names a car (same rule as Admin.recordedCar; Admin requires Unpack, the index must not).
-local function recorded(h)
-    for i = #h, 1, -1 do
-        if h[i].car ~= nil then return h[i] end
-    end
-    return {}
-end
-
 -- Plain row from a snapshot. `who` is every player name in the history, lower case, comma separated, for search.
+-- st: last sighting, or the first event while the capsule has not been seen since.
 function Index.row(capsuleId, snap)
     local h = type(snap.history) == "table" and snap.history or {}
-    local first, last, e = h[1] or {}, h[#h] or {}, recorded(h)
+    local first, last, e = h[1] or {}, h[#h] or {}, Store.recordedCar(snap)
     local names, seen = {}, {}
     local function add(n)
         n = type(n) == "string" and string.lower(n) or nil
@@ -66,15 +63,17 @@ function Index.row(capsuleId, snap)
     end
     add(snap.packedBy)
     for _, ev in ipairs(h) do add(ev.by) end
+    local sight = type(snap.seen) == "table" and snap.seen or {}
     return {
         id = capsuleId, state = snap.state, settled = snap.settled == true,
         script = snap.script, name = snap.name, by = snap.packedBy,
         t = tonumber(first.t) or 0, lt = tonumber(last.t) or 0, ev = last.ev,
         x = e.x, y = e.y, z = e.z, who = table.concat(names, ","),
+        st = tonumber(sight.t) or tonumber(first.t) or 0,
     }
 end
 
-local FIELDS = { "state", "settled", "script", "name", "by", "t", "lt", "ev", "x", "y", "z", "who" }
+local FIELDS = { "state", "settled", "script", "name", "by", "t", "lt", "ev", "x", "y", "z", "who", "st" }
 local function same(a, b)
     for _, k in ipairs(FIELDS) do
         if a[k] ~= b[k] then return false end
@@ -82,10 +81,15 @@ local function same(a, b)
     return true
 end
 
--- Stores the row of a snapshot just read or written (Store listener). Marks the file for the next flush.
+-- Stores the row of a record just read or written (Store listener) and, after a write, the bucket's new generation.
 -- Loads first: a write that lands before anyone opened the panel must not leave index.json with the old state.
-function Index.put(capsuleId, snap)
+function Index.put(capsuleId, snap, written)
     Index.load()
+    if written then
+        local b = Store.bucketOf(capsuleId)
+        gens[b] = Store.gen(b)
+        dirty = true
+    end
     local row = Index.row(capsuleId, snap)
     local old = rows[capsuleId]
     if old and same(old, row) then return end
@@ -106,49 +110,97 @@ local function readText(path)
     return table.concat(lines, "\n")
 end
 
--- Reads index.json, then reconciles it with packs/: unknown files are read (Store.read -> Index.put), rows without a
--- file are dropped. A missing or broken index therefore rebuilds itself from every file.
+-- Rows of bucket b from its records (the bucket moved on since index.json was written, or there is no index).
+-- Stale rows are collected first and removed after the traversal.
+local function reload(b)
+    local recs, gen = Store.records(b)
+    if not recs then return false end
+    local stale = {}
+    for id in pairs(rows) do
+        if Store.bucketOf(id) == b and recs[id] == nil then stale[#stale + 1] = id end
+    end
+    for _, id in ipairs(stale) do rows[id] = nil end
+    for id, snap in pairs(recs) do rows[id] = Index.row(id, snap) end
+    gens[b] = gen
+    return true
+end
+
+-- Reads index.json, then compares each bucket's generation (file headers) with the one the rows were built from and
+-- reads the buckets that differ. A missing or broken index therefore rebuilds itself from every bucket.
 function Index.load()
     if rows then return end
-    local text = readText(Index.FILE)
+    local text = readText(Index.file())
     local data = text and Json.decode(text)
-    rows = {}
-    if type(data) == "table" and type(data.rows) == "table" then
+    rows, gens = {}, {}
+    if type(data) == "table" and type(data.rows) == "table" and type(data.gens) == "table" then
         for id, row in pairs(data.rows) do
             if type(id) == "number" and type(row) == "table" then rows[id] = row end
         end
-    elseif text then
-        M.log("index unreadable, rebuilding from snapshot files")
-    end
-    local names = listFilesInZomboidLuaDirectory(Store.DIR)
-    local seen, missing = {}, {}
-    for i = 0, (names and names:size() or 0) - 1 do
-        local id = tonumber(string.match(names:get(i), "^(%-?%d+)%.json$"))
-        if id then
-            seen[id] = true
-            if not rows[id] then missing[#missing + 1] = id end
+        for b, g in pairs(data.gens) do
+            if type(b) == "number" and type(g) == "number" then gens[b] = g end
         end
+    elseif text then
+        M.log("index unreadable, rebuilding from the record buckets")
     end
-    for id in pairs(rows) do
-        if not seen[id] then rows[id] = nil; dirty = true end
+    local reloaded = 0
+    for b = 0, Store.BUCKETS - 1 do
+        if Store.headGen(b) ~= (gens[b] or 0) and reload(b) then reloaded = reloaded + 1 end
     end
-    for _, id in ipairs(missing) do Store.read(id) end -- Store.read -> listener -> Index.put
-    if #missing > 0 then M.log("index added " .. #missing .. " record(s) from snapshot files") end
+    if reloaded > 0 then
+        dirty = true
+        M.log("index read " .. reloaded .. " bucket(s) again")
+    end
     order = nil
 end
 
 -- Writes index.json when something changed and FLUSH_MS has passed. Derived data: a failed write only means the next
--- start reconciles more files.
+-- start reads more buckets.
 function Index.flush(now)
     if not dirty or not rows then return end
     if lastFlush and now >= lastFlush and now - lastFlush < Index.FLUSH_MS then return end
     lastFlush = now
-    local text = Json.encode({ v = 1, rows = rows })
-    local w = text and getFileWriter(Index.FILE, true, false)
+    local text = Json.encode({ v = 2, rows = rows, gens = gens })
+    local w = text and getFileWriter(Index.file(), true, false)
     if not w then return end
     w:write(text)
     w:close()
     dirty = false
+end
+
+-- Closed records (unpacked and settled, restored, void) whose last event is older than `days`: dropped, at most
+-- maxBuckets buckets per call so a long backlog is spread over ticks. Packed and uncertain records always stay:
+-- they are the only way to restore a vehicle. Returns true when nothing is left to drop.
+function Index.prune(now, days, maxBuckets)
+    Index.load()
+    local cutoff = now - days * 86400000
+    local byBucket, count, more = {}, 0, false
+    for id, row in pairs(rows) do
+        local closed = row.state ~= "PACKED" and not Index.uncertain(row)
+        if closed and (row.lt or 0) < cutoff then
+            local b = Store.bucketOf(id)
+            if byBucket[b] then
+                byBucket[b][#byBucket[b] + 1] = id
+            elseif count < maxBuckets then
+                byBucket[b], count = { id }, count + 1
+            else
+                more = true
+            end
+        end
+    end
+    local dropped = 0
+    for b, ids in pairs(byBucket) do
+        local gone = Store.drop(ids)
+        for _, id in ipairs(gone) do rows[id] = nil end
+        gens[b] = Store.gen(b)
+        dropped = dropped + #gone
+    end
+    if dropped > 0 then
+        order, dirty = nil, true
+        local line = M.LOG_PREFIX .. "PRUNED " .. dropped .. " closed record(s) older than " .. days .. " days"
+        writeLog("VehicleCapsule", line)
+        print(line)
+    end
+    return not more
 end
 
 local function newestFirst(a, b)
@@ -171,6 +223,11 @@ function Index.uncertain(row)
     return Store.uncertain(row.id, row)
 end
 
+-- A packed capsule nobody has been near for UNSEEN_MS: maybe lost (or stored somewhere nobody visits).
+function Index.unseen(row, now)
+    return row.state == "PACKED" and now - (row.st or 0) > Index.UNSEEN_MS
+end
+
 local function trim(s)
     s = string.gsub(tostring(s or ""), "^%s+", "")
     return string.lower((string.gsub(s, "%s+$", "")))
@@ -182,26 +239,28 @@ local function matches(row, q)
     return string.find(tostring(row.id), q, 1, true) ~= nil or string.find(row.who or "", q, 1, true) ~= nil
 end
 
--- filter = { q = "text", state = "ALL" | "PACKED" | "UNPACKED" | "RESTORED" | "VOID" | "UNCERTAIN" }; page from 1.
--- Returns { rows, total, page, pages, counts = { ALL, PACKED, ..., UNCERTAIN } } where counts cover the search
--- result before the state filter. Rows are copies with `uncertain` filled in.
+-- filter = { q = "text", state = "ALL" | "PACKED" | "UNPACKED" | "RESTORED" | "VOID" | "UNCERTAIN" | "UNSEEN" };
+-- page from 1. Returns { rows, total, page, pages, counts = { ALL, PACKED, ..., UNCERTAIN, UNSEEN } } where counts
+-- cover the search result before the state filter. Rows are copies with `uncertain` filled in.
 function Index.page(filter, page, size)
     Index.load()
     filter = type(filter) == "table" and filter or {}
     size = size or Index.PAGE_SIZE
     local q = trim(filter.q)
     local state = filter.state or "ALL"
-    local counts = { ALL = 0, UNCERTAIN = 0 }
+    local now = getTimestampMs()
+    local counts = { ALL = 0, UNCERTAIN = 0, UNSEEN = 0 }
     for _, s in ipairs(Index.STATES) do counts[s] = 0 end
     local hits = {}
     for _, id in ipairs(sorted()) do
         local row = rows[id]
         if row and matches(row, q) then
-            local unc = Index.uncertain(row)
+            local unc, gone = Index.uncertain(row), Index.unseen(row, now)
             counts.ALL = counts.ALL + 1
             if counts[row.state] then counts[row.state] = counts[row.state] + 1 end
             if unc then counts.UNCERTAIN = counts.UNCERTAIN + 1 end
-            if state == "ALL" or (state == "UNCERTAIN" and unc) or row.state == state then
+            if gone then counts.UNSEEN = counts.UNSEEN + 1 end
+            if state == "ALL" or (state == "UNCERTAIN" and unc) or (state == "UNSEEN" and gone) or row.state == state then
                 hits[#hits + 1] = row
             end
         end
@@ -212,14 +271,14 @@ function Index.page(filter, page, size)
     for i = (page - 1) * size + 1, math.min(#hits, page * size) do
         local r = hits[i]
         out[#out + 1] = { id = r.id, state = r.state, uncertain = Index.uncertain(r), name = r.name, script = r.script,
-            by = r.by, t = r.t, lt = r.lt, ev = r.ev }
+            by = r.by, t = r.t, lt = r.lt, ev = r.ev, st = r.st }
     end
     return { rows = out, total = #hits, page = page, pages = pages, counts = counts }
 end
 
 -- Test hook: forget everything in memory (the next call loads index.json again).
 function Index._resetForTests()
-    rows, order, dirty, lastFlush = nil, nil, false, nil
+    rows, gens, order, dirty, lastFlush = nil, nil, nil, false, nil
 end
 
 Store.listeners[#Store.listeners + 1] = Index.put
