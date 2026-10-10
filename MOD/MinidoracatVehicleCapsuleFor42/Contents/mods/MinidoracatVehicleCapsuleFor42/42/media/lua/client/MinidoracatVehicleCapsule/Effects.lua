@@ -1,6 +1,7 @@
 -- Vehicle Capsule (client): draw the effects the server announces (server/MinidoracatVehicleCapsule/Fx.lua).
 --   pack / unpack: cartoon smoke (8 frames, 150 ms each), a ~0.2 s flash and a local sound.
---   flight: the capsule flies from the thrower to the landing point in 0.5 s, then lies there until the pop.
+--   flight: the capsule flies from the thrower to the landing point in 0.5 s whatever the distance, with a whoosh at
+--   the thrower (one clip fits every throw), then lies there until the pop.
 -- Drawn over the world in screen space (isoToScreenX/Y + UIManager.DrawTexture); nothing touches the world, so no
 -- zombie reacts (the server's addSound is the only sound zombies hear). Timing is wall clock, not frames.
 require "MinidoracatVehicleCapsule/Core"
@@ -11,7 +12,7 @@ M.Effects = Effects
 local FRAME_MS, FRAMES = 150, 8
 local FLIGHT_MS, REST_MS = 500, 1500
 local SMOKE_PX, CAPSULE_PX, ARC_PX = 384, 40, 90
-local SOUNDS = { pack = "VehicleCapsulePack", unpack = "VehicleCapsulePop" }
+local SOUNDS = { pack = "VehicleCapsulePack", unpack = "VehicleCapsulePop", flight = "VehicleCapsuleThrow" }
 local smoke, capsule
 
 local function textures()
@@ -44,6 +45,9 @@ function Effects.play(args)
         local x, y, z = math.floor(fx.x), math.floor(fx.y), math.floor(fx.z)
         getCell():addLamppost(IsoLightSource.new(x, y, z, 1, 0.95, 0.8, 8, 6))
         getSoundManager():PlayWorldSoundImpl(SOUNDS[fx.kind] or SOUNDS.unpack, false, x, y, z, 0, 20, 1, false)
+    else
+        getSoundManager():PlayWorldSoundImpl(SOUNDS.flight, false, math.floor(fx.x0), math.floor(fx.y0), math.floor(fx.z0),
+            0, 20, 1, false)
     end
     Effects.active[args.id] = fx
 end

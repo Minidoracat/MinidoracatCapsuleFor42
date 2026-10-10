@@ -39,9 +39,10 @@ SR = 44100
 #   Pack 7：持續的吸入咻聲 0.8 s → 停 0.2 s → 啵，有聲 1.07 s，頻譜重心 2.1 kHz（不刺耳）。
 #     第 3 輪使用者試聽後改選 v2:K3（神燈式旋轉吸入 → 塞上瓶塞的悶響）。
 #   Button 4：按下「喀」→ 0.2 s 後彈回「嚓」，有聲 0.26 s；第 3 輪使用者試聽後維持。
-#   Throw：第 3 輪新增（丟出膠囊的咻聲），候選在 sfx-v3，等使用者選。
+#   Throw v3:T1：使用者試聽第 3 輪後選定（ElevenLabs 滑哨咻聲，約 1.4 kHz 往下劃到 0.5 kHz，0.59 s）；膠囊固定飛 500 ms，
+#     所以一條聲音配所有距離。
 SPEC = {
-    "VehicleCapsuleThrow": ((0.3, 0.8), None),
+    "VehicleCapsuleThrow": ((0.3, 0.8), "v3:T1"),
     "VehicleCapsulePop": ((0.25, 1.6), 12),
     "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
     "VehicleCapsuleButton": ((0.15, 0.5), 4),

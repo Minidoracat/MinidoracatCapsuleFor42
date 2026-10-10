@@ -7,6 +7,16 @@ module Base
         Category Item like the vanilla throwables in sounds_throwable.txt; file clip like sounds_zombie_voice_tutorial.txt.
         Sound files must exist when the mod loads: files written at runtime never play.
     */
+    sound VehicleCapsuleThrow
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrow.ogg,
+            distanceMax = 20,
+        }
+    }
+
     sound VehicleCapsulePop
     {
         category = Item,
