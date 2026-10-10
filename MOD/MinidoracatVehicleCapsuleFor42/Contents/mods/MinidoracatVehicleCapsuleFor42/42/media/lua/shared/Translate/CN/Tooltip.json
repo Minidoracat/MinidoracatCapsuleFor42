@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "货物",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "没有",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 件",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1：%2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 个零件",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "还有 %1 种",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "收车者"

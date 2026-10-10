@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "화물",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "없음",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1개",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1: %2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "부품 %1개",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "외 %1종",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "넣은 사람"

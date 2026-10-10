@@ -13,6 +13,7 @@
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Info"
 require "MinidoracatVehicleCapsule/UIKit"
+require "MinidoracatVehicleCapsule/ThrowCursor"
 require "PZAPI/ModOptions"
 local M = MinidoracatVehicleCapsule
 local Info, Kit = M.Info, M.UIKit
@@ -163,9 +164,11 @@ local function cargoText(manifest)
     return U("CargoList", table.concat(parts, ", "))
 end
 
--- "Last seen: 10/10 18:40 · on Bob (10763, 9775, 0)": where the server last saw the capsule (Store.seen).
+-- "Last seen: 10/10 18:40 · on Bob (10763, 9775, 0)": where the server last saw the capsule (Store.seen). In an
+-- Economy trade it is in Economy's hands (Trade.escrow), with no square to go to.
 local function seenText(s)
     if type(s) ~= "table" then return U("SeenNone") end
+    if s.where == "economy" then return U("SeenLine", Info.date(s.t), U("SeenEconomy", tostring(s.by or "-"))) end
     local spot = "(" .. tostring(s.x or "-") .. ", " .. tostring(s.y or "-") .. ", " .. tostring(s.z or 0) .. ")"
     local place
     if s.where == "player" then place = U("SeenPlayer", tostring(s.by or "-"), spot)
@@ -332,9 +335,10 @@ function Win:buildRecords(p)
     self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
     self.seenBtn = btn("GoSeen", "normal", function(t) t:goSeen() end)
     self.restoreBtn = btn("Restore", "primary", function(t) t:confirmRestore() end)
+    self.pickBtn = btn("RestorePick", "normal", function(t) t:pickRestore() end)
     self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
     self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
-    local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
+    local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.pickBtn, self.presentBtn, self.missingBtn }
     local btnRows = Kit.flow(actions, dw, GAP)
     local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + btnRows * (CH + GAP) + FH
     local tlH = math.max(FH * 4, listH - (dy - y) - bottomBlock)
@@ -421,6 +425,7 @@ function Win:refreshButtons()
     self.gotoBtn:setEnabled(ok and d.x ~= nil)
     self.seenBtn:setEnabled(ok and type(d.seen) == "table" and d.seen.x ~= nil)
     self.restoreBtn:setEnabled(restorable == true)
+    self.pickBtn:setEnabled(restorable == true)
     self.presentBtn:setVisible(undecided == true)
     self.missingBtn:setVisible(undecided == true)
     self.prevBtn:setEnabled(self.page > 1 and not self.loading)
@@ -560,17 +565,34 @@ function Win:act(cmd, args)
     Panel.send(cmd, args)
 end
 
-function Win:confirmRestore()
+-- args: the picked spot (pickRestore), or nil for the recorded one. x, y: where the dialog says the car comes back.
+function Win:confirmRestore(args, x, y)
     local d = self.detail
     if not d then return end
-    local args = { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
+    args = args or { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
     if not (Kit.CAPS.dialog and UI.Dialog) then return self:act("adminRestore", args) end
     self.dialog = UI.Dialog.show({ title = U("Restore"), text = U("RestoreConfirm", Info.carName(d.script, d.name),
-        tostring(d.x), tostring(d.y)), theme = theme, confirmText = U("Restore"), cancelText = U("Cancel"),
+        tostring(x or d.x), tostring(y or d.y)), theme = theme, confirmText = U("Restore"), cancelText = U("Cancel"),
         onResult = function(ok)
             self.dialog = nil
             if ok then self:act("adminRestore", args) end
         end })
+end
+
+-- "Restore at a spot": the panel steps aside while the admin places the vehicle with the ground cursor (green where
+-- it fits, facing away from them), then comes back for the confirmation and the server's answer.
+function Win:pickRestore()
+    local d, player = self.detail, getSpecificPlayer(0)
+    if not (d and d.ok and player) then return end
+    local args = { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
+    self.win:setVisible(false)
+    M.ThrowCursor.openRestore(player, d.script, function(x, y, z, dir)
+        self.win:setVisible(true)
+        self.win:bringToTop()
+        if x == nil then return end
+        args.x, args.y, args.z, args.dir = x, y, z, dir
+        self:confirmRestore(args, x, y)
+    end)
 end
 
 function Win:resolve(verdict)

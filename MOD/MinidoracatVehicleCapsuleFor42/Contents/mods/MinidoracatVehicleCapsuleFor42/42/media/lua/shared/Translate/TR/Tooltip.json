@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "Yük",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "Yok",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 eşya",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1: %2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 parça",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "ve %1 tür daha",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Koyan"

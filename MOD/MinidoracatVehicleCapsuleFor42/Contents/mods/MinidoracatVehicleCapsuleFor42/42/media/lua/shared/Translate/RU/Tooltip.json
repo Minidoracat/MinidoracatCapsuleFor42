@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "Груз",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "Нет",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 шт.",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1: %2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 шт.",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "и ещё видов: %1",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Упаковал"

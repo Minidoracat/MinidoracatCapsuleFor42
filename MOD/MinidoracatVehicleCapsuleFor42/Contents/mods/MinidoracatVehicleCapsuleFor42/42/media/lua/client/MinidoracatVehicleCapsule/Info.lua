@@ -3,6 +3,7 @@
 -- A cached summary is dropped when the server writes that snapshot (queryChanged), so the next hover asks again.
 -- Text is built in the player's language from raw data: vehicle and part names from the scripts, not the server.
 require "MinidoracatVehicleCapsule/Core"
+require "MinidoracatVehicleCapsule/Condition"
 local M = MinidoracatVehicleCapsule
 local Info = {}
 M.Info = Info
@@ -118,37 +119,6 @@ local function num1(v)
     return (string.gsub(s, "%.0$", ""))
 end
 
--- Vanilla parts that hold an item: a slot without one is missing. Parts not listed here and holding an item are
--- extras from a vehicle mod (KI5 bull bars, armor): listed as modifications.
-local SLOT_PREFIX = { "Door", "EngineDoor", "TrunkDoor", "Window", "Windshield", "Tire", "Brake", "Suspension", "Seat",
-    "Battery", "GasTank", "Muffler", "Headlight", "TruckBed", "Radio" }
-local FIXED = { Engine = true, GloveBox = true, Heater = true, PassengerCompartment = true, TrunkDoorOpened = true,
-    TruckBedOpen = true, lightbar = true }
-local BODY_PREFIX = { "Door", "EngineDoor", "TrunkDoor", "Window", "Windshield" }
-
-local function startsWithAny(id, list)
-    for _, p in ipairs(list) do
-        if string.sub(id, 1, #p) == p then return true end
-    end
-    return false
-end
-Info.isSlot = function(id) return startsWithAny(id, SLOT_PREFIX) end
-
--- VehiclePart.getNumberByCondition (VehiclePart.java:335-339): a gas tank holds less when damaged.
-local function byCondition(number, cond)
-    cond = cond + 20 * (100 - cond) / 100
-    return math.floor(math.max(5, number * cond / 100) * 100 + 0.5) / 100
-end
-
-local capacityOf = {}
-local function maxCapacity(fullType)
-    if capacityOf[fullType] == nil then
-        local item = instanceItem(fullType)
-        capacityOf[fullType] = item and item:getMaxCapacity() or -1
-    end
-    return capacityOf[fullType]
-end
-
 -- Insertion sort for short lists (cargo kinds, part names); the family gate bans the built-in sort.
 local function isort(a, less)
     for i = 2, #a do
@@ -163,25 +133,11 @@ Info.isort = isort
 -- Numbers and names for one summary, computed once per reply.
 function Info.details(r)
     if r.d then return r.d end
-    local d = { missing = {}, mods = {}, cargo = {}, cargoN = 0 }
-    local bodySum, bodyN = 0, 0
-    for _, p in ipairs(r.parts or {}) do
-        local id = tostring(p.id)
-        if id == "Engine" then d.engine = p.c end
-        if id == "Battery" and p.i and p.u then d.battery = math.floor(p.u * 100 + 0.5) end
-        if id == "GasTank" and p.i then
-            d.fuel = p.a
-            local cap = maxCapacity(p.i)
-            if cap and cap > 0 then d.fuelCap = math.floor(byCondition(cap, p.ic or 100)) end
-        end
-        if p.i and startsWithAny(id, BODY_PREFIX) then bodySum, bodyN = bodySum + (p.c or 0), bodyN + 1 end
-        if not p.i and startsWithAny(id, SLOT_PREFIX) then
-            d.missing[#d.missing + 1] = Info.partName(id)
-        elseif p.i and not FIXED[id] and not startsWithAny(id, SLOT_PREFIX) then
-            d.mods[#d.mods + 1] = Info.itemName(p.i)
-        end
-    end
-    if bodyN > 0 then d.body = math.floor(bodySum / bodyN + 0.5) end
+    local c = M.Condition.of(r.parts)
+    local d = { engine = c.engine, body = c.body, battery = c.battery, fuel = c.fuel, fuelCap = c.fuelCap,
+        missing = {}, mods = {}, cargo = {}, cargoN = 0 }
+    for i, id in ipairs(c.missing) do d.missing[i] = Info.partName(id) end
+    for i, fullType in ipairs(c.mods) do d.mods[i] = Info.itemName(fullType) end
     local byName = function(a, b) return a < b end
     isort(d.missing, byName)
     isort(d.mods, byName)
@@ -263,6 +219,53 @@ function Info.rows(r, full)
     if r.by then add("PackedBy", tostring(r.by)) end
     return rows
 end
+
+-- Lines Minidoracat Economy shows under a listed or auctioned capsule (server Trade.view): the vehicle in this
+-- player's language and the numbers the tooltip shows.
+function Info.viewLines(v)
+    local out = {}
+    if type(v) ~= "table" then return out end
+    local function add(label, value) out[#out + 1] = T("Row", T(label), value) end
+    add("Vehicle", Info.carName(v.script, v.name))
+    if v.engine or v.body then
+        add("Condition", T("EngineBody", v.engine and tostring(v.engine) or "-", v.body and tostring(v.body) or "-"))
+    end
+    if v.fuel then
+        add("Fuel", v.fuelCap and T("FuelOf", num1(v.fuel), tostring(v.fuelCap)) or T("FuelL", num1(v.fuel)))
+    end
+    if v.battery then add("Battery", T("Percent", tostring(v.battery))) end
+    add("Missing", T("MissingCount", tostring(tonumber(v.missing) or 0)))
+    local n = tonumber(v.cargo) or 0
+    add("Cargo", n > 0 and T("CargoCount", tostring(n)) or T("CargoNone"))
+    return out
+end
+
+-- Why Economy will not take this capsule now (server Trade.check detail). A cargo item's reason is Economy's own
+-- wording for that rule.
+function Info.refusalText(d)
+    local code = type(d) == "table" and tostring(d.code) or "OTHER"
+    if code == "CARGO" then
+        local why = tostring(d.why)
+        local reason = getTextOrNull("IGUI_MinidoracatEconomy_Market_Reason_" .. why)
+            or getTextOrNull("IGUI_MinidoracatEconomy_Market_Reason_not_whitelisted_" .. why) or why
+        return getText("IGUI_MinidoracatVehicleCapsule_Trade_CARGO", Info.itemName(d.type), reason)
+    end
+    if code == "TOO_MANY" then
+        return getText("IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY", tostring(d.n), tostring(d.max))
+    end
+    return getTextOrNull("IGUI_MinidoracatVehicleCapsule_Trade_" .. code) or getText("IGUI_MinidoracatVehicleCapsule_Trade_OTHER")
+end
+
+-- Minidoracat Economy's client facade (API rev 6, uniqueItemViews) is complete once every client file has loaded.
+-- Older Economy keeps loaded capsules off its market: nothing to register.
+Events.OnGameStart.Add(function()
+    local api = MinidoracatEconomy and MinidoracatEconomy.v1
+    local caps = api and api.CAPABILITIES
+    if not (type(caps) == "table" and caps.uniqueItemViews == true and type(api.registerItemView) == "function"
+        and type(api.registerRefusalText) == "function") then return end
+    api.registerItemView(M.ITEM_LOADED, function(view) return Info.viewLines(view) end)
+    api.registerRefusalText(M.ITEM_LOADED, function(detail) return Info.refusalText(detail) end)
+end)
 
 -- Capsules shown in the inventory and loot windows (a capsule's own container, or a capsule lying in a shown
 -- container): their summaries are asked for now. The server counts a capsule asked about from nearby as a sighting

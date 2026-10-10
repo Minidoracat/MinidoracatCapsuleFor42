@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "Carga",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "Nenhuma",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 itens",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1: %2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 peças",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "e mais %1 tipos",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Guardada por"

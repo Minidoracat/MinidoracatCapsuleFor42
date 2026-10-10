@@ -85,6 +85,7 @@ local function newItem(fullType, isContainer)
     nextItemId = nextItemId + 1
     local it = { id = nextItemId, type = fullType }
     function it:getID() return self.id end
+    function it:setID(n) self.id = n end
     function it:getFullType() return self.type end
     function it:getContainer() return self.container end
     function it:getWorldItem() return nil end
@@ -1230,6 +1231,193 @@ check(Loot.signature(Loot.wanted()) ~= Loot.signature((function() sandbox.LootEn
     "設定改了簽章就不同（觸發重排）")
 sandbox = {}
 
+print("Admin.restore：指定位置（方向、車身範圍）、交易中的膠囊不能補")
+do (function()
+    local adm = newPlayer("admin", true)
+    local savedClear, savedSpawn = M.Footprint.clear, M.Unpack.spawn
+    local gotDir, blocked = nil, nil
+    M.Footprint.clear = function() return blocked end
+    M.Unpack.spawn = function(_, _, dir)
+        gotDir = dir
+        local s = { getX = function() return 30 end, getY = function() return 40 end, getZ = function() return 0 end }
+        return { getSquare = function() return s end, getSqlId = function() return 77 end, getId = function() return 8 end }, {}
+    end
+    loadedSquares["30,40"] = {}
+    local function packed(id, extra)
+        local s = { state = "PACKED", settled = true, script = "Base.PickUpTruck",
+            history = { { t = 1, ev = "PACKED", car = 3, x = 1, y = 2, z = 0 } } }
+        for k, v in pairs(extra or {}) do s[k] = v end
+        Store.write(id, s)
+    end
+    quiet = true
+    packed(71001)
+    blocked = "VEHICLE"
+    local rBlocked = AdminCommands.handle(adm, "adminRestore", { id = 71001, x = 30, y = 40, z = 0, dir = "E" })
+    local stillPacked = Store.read(71001).state
+    blocked = nil
+    local rBad = AdminCommands.handle(adm, "adminRestore", { id = 71001, x = 30, y = 40, z = 0, dir = "NE" })
+    local rOk = AdminCommands.handle(adm, "adminRestore", { id = 71001, x = 30.7, y = 40.2, z = 0, dir = "E" })
+    local after, dirOk = Store.read(71001), gotDir
+    packed(71002, { escrow = { active = true, cargo = {} } })
+    local rTrade = AdminCommands.handle(adm, "adminRestore", { id = 71002 })
+    packed(71003, { escrow = { cargo = { { id = 5, s = { type = "Base.Axe" } } } } })
+    local rDone = AdminCommands.handle(adm, "adminRestore", { id = 71003, x = 30, y = 40, z = 0, dir = "S" })
+    quiet = false
+    check(rBlocked.why == "PICK_BLOCKED" and stillPacked == "PACKED", "指定位置被擋 -> PICK_BLOCKED，紀錄不動")
+    check(rBad.why == "BAD_SPOT", "方向不是東南西北 -> BAD_SPOT")
+    check(rOk.ok and dirOk == "E" and after.state == "RESTORED" and after.history[#after.history].x == 30,
+        "指定位置補回：照選的方向生車、紀錄 RESTORED")
+    check(rTrade.why == "IN_TRADE", "交易中的膠囊（escrow.active）不能補 -> IN_TRADE")
+    check(rDone.ok and gotDir == "S" and Store.read(71003).escrow == nil, "交易結束後留下的貨物副本在補回時清掉")
+    M.Footprint.clear, M.Unpack.spawn = savedClear, savedSpawn
+end)() end
+
+print("Trade：Economy 交易（檢查、交出時把貨物存進紀錄、交回時改回原編號）")
+do (function()
+    local refuse, initHook = {}, nil
+    local function keyRing(it)
+        it.keys = {}
+        function it:getKeys() return javaList(self.keys) end
+        function it:addKey(k) self.keys[#self.keys + 1] = k end
+        return it
+    end
+    local eco = {
+        API_MAJOR = 1, API_REVISION = 6, CAPABILITIES = { uniqueItemTypes = true, blockItemType = true },
+        snapshotItem = function(it, opts)
+            if refuse[it.type] then return nil, refuse[it.type] end
+            return { type = it.type, cond = it.cond, contents = opts and opts.contents }
+        end,
+        rebuildItem = function(s)
+            local it = instanceItem(s.type)
+            it.cond = s.cond
+            if s.type == "Base.KeyRing" then keyRing(it) end
+            return it
+        end,
+        detachParts = function(w, container)
+            local n = #w.parts
+            for _, p in ipairs(w.parts) do container:AddItem(p) end
+            w.parts = {}
+            return n
+        end,
+    }
+    MinidoracatEconomy = { v1 = eco }
+    require "MinidoracatVehicleCapsule/Trade"
+    local Trade = M.Trade
+    local seller, buyer = newPlayer("seller", false), newPlayer("buyer", false)
+    local cap = instanceItem(M.ITEM_LOADED)
+    local water, rifle, scope = newItem("Base.WaterBottle"), newItem("Base.HuntingRifle"), newItem("Base.x2Scope")
+    water.cond = 7
+    rifle.parts = { scope }
+    function rifle:getAllWeaponParts() return javaList(self.parts) end
+    local bag, can = instanceItem("Base.Bag_Schoolbag"), newItem("Base.TinnedBeans")
+    bag.inv:AddItem(can)
+    local ring, key = keyRing(newItem("Base.KeyRing")), newItem("Base.Key1")
+    ring:addKey(key)
+    for _, it in ipairs({ water, rifle, bag, ring }) do cap.inv:AddItem(it) end
+    function cap:getUnequippedWeight() return 12.5 end
+    local id = cap.id
+    local function record(extra)
+        local s = { state = "PACKED", settled = true, script = "Base.PickUpTruck", name = "Truck",
+            parts = { Engine = { cond = 63 }, Battery = { cond = 100, item = "Base.CarBattery1", uses = 0.37 },
+                DoorFrontLeft = { cond = 80, item = "Base.FrontCarDoor1" }, TireFrontLeft = { cond = 0 } },
+            cargo = { [water.id] = "TruckBed", [rifle.id] = "SeatFrontLeft", [bag.id] = "TruckBed", [ring.id] = "GloveBox" },
+            manifest = { ["Base.WaterBottle"] = 1, ["Base.HuntingRifle"] = 1, ["Base.Bag_Schoolbag"] = 1, ["Base.KeyRing"] = 1 },
+            sealed = { water.id, rifle.id, bag.id, can.id, ring.id }, history = { { t = 1, ev = "PACKED" } } }
+        for k, v in pairs(extra or {}) do s[k] = v end
+        Store.write(id, s)
+    end
+    quiet = true
+    local noRec = select(2, Trade.check(instanceItem(M.ITEM_LOADED)))
+    record({ state = "UNPACKED" })
+    local notPacked = select(2, Trade.check(cap))
+    record({ settled = false })
+    local uncertain = select(2, Trade.check(cap))
+    Store.schedule(id)
+    local notReady = select(2, Trade.check(cap))
+    Store.settle(id)
+    record()
+    refuse["Base.TinnedBeans"] = "perishable"
+    local cargoBad = select(2, Trade.check(cap))
+    refuse["Base.TinnedBeans"] = nil
+    Trade.MAX_CARGO = 3
+    local tooMany = select(2, Trade.check(cap))
+    Trade.MAX_CARGO = 300
+    local okCheck = Trade.check(cap)
+    local ext = Trade.escrow(cap, seller, "market", "L-1")
+    local held = Store.read(id)
+    local inTrade = select(2, Trade.check(cap))
+    quiet = false
+    check(noRec.code == "NO_RECORD" and notPacked.code == "NOT_PACKED" and uncertain.code == "UNCERTAIN"
+        and notReady.code == "NOT_READY", "沒有紀錄、已展開、當機前未確認、剛收好都擋，各回自己的原因")
+    check(cargoBad.code == "CARGO" and cargoBad.type == "Base.TinnedBeans" and cargoBad.why == "perishable",
+        "背包裡一件 Economy 帶不走的貨物（罐頭腐壞）也擋，回物品與 Economy 的原因")
+    check(tooMany.code == "TOO_MANY" and tooMany.n == 7, "貨物件數含背包內容、鑰匙圈上的鑰匙、槍上配件（7 件）")
+    check(okCheck == true and ext and ext.capsuleId == id and ext.weight == 12.5, "能交易：ext 帶膠囊編號與含貨物的重量")
+    local v = ext and ext.view or {}
+    check(v.script == "Base.PickUpTruck" and v.engine == 63 and v.battery == 37 and v.body == 80 and v.missing == 1
+        and v.cargo == 5, "上架車況：引擎 63、電瓶 37、車身 80、缺件 1、貨物 5 件（含拆下的瞄準鏡）")
+    check(cap.inv:getItemWithIDRecursiv(scope.id) ~= nil and held.cargo[scope.id] == "SeatFrontLeft"
+        and held.manifest["Base.x2Scope"] == 1, "槍上配件先拆進膠囊，跟著槍回原本的車上位置")
+    local tree = held.escrow and held.escrow.cargo or {}
+    local byId = {}
+    for _, n in ipairs(tree) do byId[n.id] = n end
+    check(held.escrow and held.escrow.active == true and #tree == 5 and byId[bag.id].c[1].id == can.id
+        and byId[ring.id].k == "keys" and byId[ring.id].c[1].id == key.id and byId[water.id].s.contents == true,
+        "交出時貨物（含背包內容、鑰匙圈的鑰匙）照原編號存進紀錄")
+    check(held.seen.where == "economy" and held.seen.by == "seller" and held.history[#held.history].ev == "ESCROW",
+        "最後看到改成經濟系統，歷史記 ESCROW")
+    check(inTrade.code == "IN_TRADE", "交易中同一個編號的膠囊再被拿來交易 -> IN_TRADE")
+    quiet = true
+    local fresh = instanceItem(M.ITEM_LOADED)
+    local freshId = fresh.id
+    Trade.rebuilt(ext, fresh, buyer, { kind = "buy", ref = "L-1" })
+    local got = Store.read(id)
+    local again = instanceItem(M.ITEM_LOADED)
+    Trade.rebuilt(ext, again, buyer, { kind = "claim", ref = "M-9" })
+    local orphan = instanceItem(M.ITEM_LOADED)
+    local orphanId = orphan.id
+    Trade.rebuilt({ capsuleId = 99999999 }, orphan, buyer, {})
+    quiet = false
+    local w2 = fresh.inv:getItemWithIDRecursiv(water.id)
+    local b2 = fresh.inv:getItemWithIDRecursiv(bag.id)
+    local r2 = fresh.inv:getItemWithIDRecursiv(ring.id)
+    check(freshId ~= id and fresh.id == id, "Economy 做的新膠囊拿回原本的編號")
+    check(#fresh.inv.list == 5 and w2 and w2.cond == 7 and b2 and b2.inv:getItemWithIDRecursiv(can.id)
+        and r2 and #r2.keys == 1 and r2.keys[1].id == key.id and fresh.inv:getItemWithIDRecursiv(scope.id),
+        "貨物照樹狀重建（背包內容、鑰匙圈的鑰匙），每件都是原編號、狀態照快照")
+    check(got.state == "PACKED" and got.escrow.active == nil and got.history[#got.history].ev == "TRADED"
+        and got.history[#got.history].why == "buy L-1" and got.history[#got.history].by == "buyer",
+        "交回後紀錄仍是收起中、交易結束，歷史記 TRADED（買方、通道與編號）")
+    check(again.id == id and #again.inv.list == 5, "當機回溯後 Economy 再交一次：一樣拿回原編號與整批貨物")
+    check(orphan.id == orphanId and #orphan.inv.list == 0, "找不到紀錄的 ext 不動新物品")
+    local claimed = Store.claim(id, buyer)
+    check(claimed and claimed.escrow == nil and Store.read(id).escrow == nil, "展開時清掉紀錄裡的貨物副本")
+    record({ escrow = { active = true, cargo = {} } })
+    quiet = true
+    Trade.aborted({ capsuleId = id }, seller, "L-2")
+    quiet = false
+    local ab = Store.read(id)
+    check(ab.escrow == nil and ab.history[#ab.history].ev == "ESCROW_ABORTED", "Economy 中途放棄：清掉交易標記，歷史記一筆")
+    local savedEv = Events.OnInitGlobalModData
+    Events.OnInitGlobalModData = { Add = function(fn) initHook = fn end }
+    require "MinidoracatVehicleCapsule/Economy"
+    Events.OnInitGlobalModData = savedEv
+    local calls = {}
+    eco.registerUniqueItemType = function(t, mod, h) calls[#calls + 1] = "unique:" .. t .. ":" .. mod; return h == Trade.handler end
+    eco.blockItemType = function(t) calls[#calls + 1] = "block:" .. t; return true end
+    quiet = true
+    initHook()
+    eco.registerUniqueItemType = function() calls[#calls + 1] = "refused"; return false, "taken" end
+    initHook()
+    eco.API_REVISION = 5
+    initHook()
+    quiet = false
+    local L = M.ITEM_LOADED
+    check(table.concat(calls, ",") == "unique:" .. L .. ":" .. M.MOD_ID .. ",refused,block:" .. L .. ",block:" .. L,
+        "rev 6 註冊成可交易；被拒或只有 rev 5 時退回 blockItemType（" .. table.concat(calls, ",") .. "）")
+    MinidoracatEconomy = nil
+end)() end
+
 -- ===== 介面版面：管理面板訊息依欄寬換行、詳情按鈕列放不下就換列（真框架 Text.wrap／fit，實際譯文）=====
 print("UI：訊息換行不超出欄寬、行數有上限；按鈕列換列不出欄")
 local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個上限
@@ -1293,13 +1481,13 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
         and items[5].flowRow == 2 and items[5].flowX == 0, "按鈕列放不下就換到下一列、比欄還寬的自成一列（rows=" .. rows .. "）")
     local ru = ui("RU")
     local btns = {}
-    for _, key in ipairs({ "GoTo", "GoSeen", "Restore", "VerdictPresent", "VerdictMissing" }) do
+    for _, key in ipairs({ "GoTo", "GoSeen", "Restore", "RestorePick", "VerdictPresent", "VerdictMissing" }) do
         btns[#btns + 1] = { width = width(ru[P .. key]) + 20 }
     end
     Kit.flow(btns, DW, 8)
     inside = true
     for _, b in ipairs(btns) do inside = inside and b.flowX + b.width <= DW end
-    check(inside, "RU 五顆詳情按鈕都在詳情欄內")
+    check(inside, "RU 六顆詳情按鈕都在詳情欄內")
 end
 uiLayout()
 

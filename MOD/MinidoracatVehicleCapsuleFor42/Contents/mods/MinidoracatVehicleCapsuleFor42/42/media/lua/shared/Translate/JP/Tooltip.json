@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "積み荷",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "なし",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 個",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1：%2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 個の部品",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "ほか %1 種類",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "収納した人"

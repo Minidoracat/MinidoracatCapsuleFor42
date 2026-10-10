@@ -23,6 +23,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Cargo": "Ladung",
     "Tooltip_MinidoracatVehicleCapsule_CargoNone": "Keine",
     "Tooltip_MinidoracatVehicleCapsule_CargoCount": "%1 Gegenstände",
+    "Tooltip_MinidoracatVehicleCapsule_Row": "%1: %2",
+    "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 Teile",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "und %1 weitere Arten",
     "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Eingepackt von"

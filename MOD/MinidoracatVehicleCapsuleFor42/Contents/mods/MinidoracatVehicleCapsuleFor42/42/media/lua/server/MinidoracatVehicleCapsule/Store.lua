@@ -479,6 +479,7 @@ function Store.claim(capsuleId, player)
     end
     snap.state = "UNPACKED"
     snap.settled = nil
+    snap.escrow = nil -- an Economy trade's cargo copy (Trade.lua) ends with the capsule
     local ok, werr = Store.write(capsuleId, snap)
     if not ok then return nil, werr end
     Store.schedule(capsuleId)
