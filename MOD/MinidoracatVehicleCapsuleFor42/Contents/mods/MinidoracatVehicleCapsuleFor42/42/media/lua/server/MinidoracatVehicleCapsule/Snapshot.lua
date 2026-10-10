@@ -235,6 +235,22 @@ local function transmitAll(vehicle)
     end
 end
 
+-- First field Snapshot.restore needs that is missing or malformed, or nil. Unpack.spawn checks it before spawning,
+-- so a truncated or hand-edited record fails cleanly instead of throwing after the vehicle already exists.
+function Snapshot.missing(snap)
+    if type(snap.script) ~= "string" then return "script" end
+    if type(snap.keyId) ~= "number" then return "keyId" end
+    if type(snap.rust) ~= "number" then return "rust" end
+    if type(snap.parts) ~= "table" then return "parts" end
+    for _, k in ipairs({ "hsv", "engine" }) do
+        local t = snap[k]
+        if type(t) ~= "table" or type(t[1]) ~= "number" or type(t[2]) ~= "number" or type(t[3]) ~= "number" then
+            return k
+        end
+    end
+    return nil
+end
+
 -- Writes the snapshot onto a freshly spawned vehicle in the same tick (before its first full update).
 -- Part containers are emptied (spawn loot, random glovebox key); restoreCargo refills them.
 -- opts.transmit: also flag every transmit* afterwards (test knob; the first full update already carries all).

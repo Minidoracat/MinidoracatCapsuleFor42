@@ -465,6 +465,23 @@ check(r407.why == "CHECK_SITE" and r407checked.ok, "紀錄位置沒載入：「�
 check(r408.why == "BAD_ARGS", "不認得的判定 BAD_ARGS")
 check(r409.ok, "同 sqlId 但車種不同（sqlId 被重用）不算紀錄的車")
 
+print("Unpack.spawn：快照缺欄位時不生車（CORRUPT）")
+local spawnedCount = 0
+local savedAdd = addVehicleDebug
+addVehicleDebug = function() spawnedCount = spawnedCount + 1; return nil end
+local fullSnap = { script = "Base.PickUpTruck", keyId = 1, rust = 0, parts = {}, hsv = { 0.1, 0.2, 0.3 }, engine = { 50, 40, 60 } }
+check(M.Snapshot.missing(fullSnap) == nil, "完整的快照沒有缺欄位")
+local brokenHsv = Json.copy(fullSnap); brokenHsv.hsv = { 0.1, 0.2 }
+local noEngine = Json.copy(fullSnap); noEngine.engine = nil
+local noKey = Json.copy(fullSnap); noKey.keyId = nil
+check(M.Snapshot.missing(brokenHsv) == "hsv" and M.Snapshot.missing(noEngine) == "engine"
+    and M.Snapshot.missing(noKey) == "keyId", "缺 hsv／engine／keyId 各自指出欄位")
+quiet = true
+local v1, why1 = M.Unpack.spawn(brokenHsv, {}, "N")
+quiet = false
+check(v1 == nil and why1 == "CORRUPT" and spawnedCount == 0, "缺欄位的快照回 CORRUPT，而且沒有呼叫 addVehicleDebug")
+addVehicleDebug = savedAdd
+
 print("Admin.restore：可補的狀態、CAR_EXISTS、checked、先改 RESTORED 再生車")
 local spawnFails, restoringId, fileAtSpawn = false, nil, {}
 M.Unpack.spawn = function(s)

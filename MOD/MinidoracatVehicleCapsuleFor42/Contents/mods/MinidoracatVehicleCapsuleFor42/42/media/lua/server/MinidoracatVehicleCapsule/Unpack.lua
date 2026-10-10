@@ -60,9 +60,14 @@ end
 -- into the part containers; without (admin restore) the containers stay empty.
 -- opts.transmit: flag every transmit* after the restore (test knob).
 -- opts.persist (default true): queue a vehicles.db UPDATE right away; addVehicleDebug INSERTed the random spawn state.
--- Returns vehicle, cargo { home, other, ground } or nil, why ("SCRIPT_MISSING" / "BLOCKED").
+-- Returns vehicle, cargo { home, other, ground } or nil, why ("CORRUPT" / "SCRIPT_MISSING" / "BLOCKED").
 function Unpack.spawn(snap, square, dir, opts, capsule)
     opts = opts or {}
+    local bad = Snapshot.missing(snap)
+    if bad then
+        M.log("snapshot missing " .. bad .. ", not spawning")
+        return nil, "CORRUPT"
+    end
     if not getScriptManager():getVehicle(snap.script) then return nil, "SCRIPT_MISSING" end
     if not square then return nil, "BLOCKED" end
     spawning = true
