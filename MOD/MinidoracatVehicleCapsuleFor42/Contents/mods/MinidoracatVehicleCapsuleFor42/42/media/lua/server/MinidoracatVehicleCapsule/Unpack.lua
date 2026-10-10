@@ -3,6 +3,7 @@
 -- Unpack.spawn is the one place that builds a vehicle from a snapshot (also used by Admin.restore).
 if isClient() then return end
 require "MinidoracatVehicleCapsule/Core"
+require "MinidoracatVehicleCapsule/Rules"
 require "MinidoracatVehicleCapsule/Store"
 require "MinidoracatVehicleCapsule/Snapshot"
 require "MinidoracatVehicleCapsule/Guard"
@@ -79,8 +80,9 @@ function Unpack.spawn(snap, square, dir, opts, capsule)
     return vehicle, cargo
 end
 
--- Returns { ok = true, vehicleId, sqlId, ... } or { ok = false, why }. A capsule whose record is stale (its cargo is
--- a second copy) is replaced by an empty one: why = "CLEARED".
+-- Returns { ok = true, vehicleId, sqlId, returned, script, ... } or { ok = false, why }. A capsule whose record is
+-- stale (its cargo is a second copy) is replaced by an empty one: why = "CLEARED". An empty capsule goes back to the
+-- player when SandboxVars ReturnEmptyCapsule is on (returned = true).
 function Unpack.unpack(player, capsule, square, dir, opts)
     local capsuleId = capsule:getID()
     local snap, why, stale = Store.claim(capsuleId, player)
@@ -96,7 +98,7 @@ function Unpack.unpack(player, capsule, square, dir, opts)
     end
     removeCapsule(player, capsule)
     local inv = player:getInventory()
-    local empty = instanceItem(M.ITEM_EMPTY)
+    local empty = M.Rules.sandbox().ReturnEmptyCapsule ~= false and instanceItem(M.ITEM_EMPTY)
     if empty then
         inv:AddItem(empty)
         sendAddItemToContainer(inv, empty)
@@ -107,7 +109,8 @@ function Unpack.unpack(player, capsule, square, dir, opts)
     return {
         ok = true, capsuleId = capsuleId, vehicleId = vehicle:getId(), sqlId = vehicle:getSqlId(),
         x = x, y = y, z = z, keyId = vehicle:getKeyId(), skin = vehicle:getSkinIndex(),
-        home = cargo.home, other = cargo.other, ground = cargo.ground,
+        home = cargo.home, other = cargo.other, ground = cargo.ground, returned = empty ~= nil and empty ~= false,
+        script = snap.script,
     }
 end
 
