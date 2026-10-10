@@ -256,10 +256,10 @@ function Info.refusalText(d)
     return getTextOrNull("IGUI_MinidoracatVehicleCapsule_Trade_" .. code) or getText("IGUI_MinidoracatVehicleCapsule_Trade_OTHER")
 end
 
--- Minidoracat Economy's client facade (API rev 6, uniqueItemViews) is complete once every client file has loaded.
--- Older Economy keeps loaded capsules off its market: nothing to register.
+-- Minidoracat Economy's client facade (MinidoracatEconomy.v1.Client, rev 5 uniqueItemViews) is complete once every
+-- client file has loaded. Older Economy keeps loaded capsules off its market: nothing to register.
 Events.OnGameStart.Add(function()
-    local api = MinidoracatEconomy and MinidoracatEconomy.v1
+    local api = MinidoracatEconomy and MinidoracatEconomy.v1 and MinidoracatEconomy.v1.Client
     local caps = api and api.CAPABILITIES
     if not (type(caps) == "table" and caps.uniqueItemViews == true and type(api.registerItemView) == "function"
         and type(api.registerRefusalText) == "function") then return end

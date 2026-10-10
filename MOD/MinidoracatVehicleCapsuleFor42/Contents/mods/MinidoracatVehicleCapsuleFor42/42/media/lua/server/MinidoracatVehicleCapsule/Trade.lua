@@ -39,10 +39,23 @@ local function weaponParts(it)
     return parts and parts:size() > 0 and parts or nil
 end
 
+-- The capsule Economy handed over is in the world again (Guard sees it with a player, or its holder offers it again):
+-- the trade is over. Economy may build a capsule more than once and keep only one of them (a buyer asked to confirm
+-- mail delivery, a claim the backpack cannot take), so rebuilt cannot tell when the capsule left Economy; this can.
+function Trade.landed(capsuleId, player)
+    local snap = Store.read(capsuleId)
+    local e = snap and type(snap.escrow) == "table" and snap.escrow
+    if not (e and e.active) then return end
+    e.active = nil
+    local last = type(e.last) == "table" and e.last or {}
+    Store.event(capsuleId, snap, "TRADED", player, { why = tostring(last.kind) .. " " .. tostring(last.ref) })
+end
+
 -- true, or false plus the detail the seller's client words (Info.refusalText). Economy asks when it lists the
 -- seller's items and again right before it takes the capsule (escrow). Cargo is tried with the same codec call the
--- escrow makes; weapon parts count as items of their own (they are taken off first).
-function Trade.check(item)
+-- escrow makes; weapon parts count as items of their own (they are taken off first). A capsule still marked as in a
+-- trade is out of it: its holder is offering it.
+function Trade.check(item, player)
     local eco = economy()
     if not eco then return false, { code = "OTHER" } end
     local id = item:getID()
@@ -50,7 +63,7 @@ function Trade.check(item)
     if not snap then return false, { code = "NO_RECORD" } end
     if snap.state ~= "PACKED" then return false, { code = "NOT_PACKED" } end
     if snap.settled ~= true then return false, { code = Store.uncertain(id, snap) and "UNCERTAIN" or "NOT_READY" } end
-    if type(snap.escrow) == "table" and snap.escrow.active then return false, { code = "IN_TRADE" } end
+    if type(snap.escrow) == "table" and snap.escrow.active then Trade.landed(id, player) end
     local n, bad = 0, nil
     local function try(it)
         n = n + 1
@@ -152,7 +165,7 @@ end
 
 -- Economy takes the capsule (listed or put up for auction) in this tick. Returns ext, or nil plus a refusal detail.
 function Trade.escrow(item, player, channel, ref)
-    local ok, detail = Trade.check(item)
+    local ok, detail = Trade.check(item, player)
     if not ok then return nil, detail end
     local eco, id = economy(), item:getID()
     local snap = Store.read(id)
@@ -170,7 +183,9 @@ function Trade.escrow(item, player, channel, ref)
 end
 
 -- Economy built a capsule from its snapshot to hand over (buyer, auction winner, the seller on a cancel or an expiry):
--- the record's id and cargo go back into it before Economy puts it anywhere.
+-- the record's id and cargo go into it before Economy puts it anywhere. Economy may build more than once for one
+-- delivery and drop the extra item, so this only fills the item and notes which delivery it was; the trade ends when
+-- the capsule shows up in the world (Trade.landed).
 function Trade.rebuilt(ext, item, player, ctx)
     local id = type(ext) == "table" and tonumber(ext.capsuleId)
     local snap = id and Store.read(id)
@@ -182,10 +197,10 @@ function Trade.rebuilt(ext, item, player, ctx)
     item:setID(id)
     local lost = {}
     refill(item:getInventory(), snap.escrow.cargo or {}, economy(), lost)
-    snap.escrow.active = nil
+    if #lost > 0 then M.log("TRADE_LOST capsule=" .. id .. " to=" .. to .. " items=" .. table.concat(lost, ",")) end
     ctx = type(ctx) == "table" and ctx or {}
-    Store.event(id, snap, "TRADED", player, { why = tostring(ctx.kind) .. " " .. tostring(ctx.ref),
-        items = #lost > 0 and table.concat(lost, ",") or nil })
+    snap.escrow.last = { kind = ctx.kind, ref = ctx.ref, to = to, t = getTimestampMs() }
+    Store.write(id, snap, true)
 end
 
 -- Economy stopped after escrow returned (the capsule stayed with the seller).
@@ -198,7 +213,7 @@ function Trade.aborted(ext, player, ref)
 end
 
 Trade.handler = {
-    check = function(item) return Trade.check(item) end,
+    check = function(item, player) return Trade.check(item, player) end,
     escrow = Trade.escrow,
     rebuilt = Trade.rebuilt,
     aborted = Trade.aborted,

@@ -165,7 +165,8 @@ local function sync(player, capsule, capsuleId, sealed)
 end
 
 -- One loaded capsule seen by a pass: clear it when stale, otherwise keep its cargo inside, or follow what was taken
--- when the server lets cargo out.
+-- when the server lets cargo out. A capsule out of an Economy trade ends that trade (Trade.landed; Trade.lua is
+-- loaded whenever a record is in a trade, it put it there).
 function Guard.check(player, capsule)
     local capsuleId = capsule:getID()
     local st = Store.status(capsuleId)
@@ -175,6 +176,7 @@ function Guard.check(player, capsule)
         if snap and Store.isStale(snap) then Guard.stale(player, capsule, capsuleId, snap, "scan") end
         return
     end
+    if st.trade and M.Trade then M.Trade.landed(capsuleId, player) end
     if M.Rules.cargoOpen(st) then
         sync(player, capsule, capsuleId, st.sealed)
     else

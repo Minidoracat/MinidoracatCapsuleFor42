@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "In dieser Kapsel steckt kein Fahrzeug mehr; sie kann nicht gehandelt werden.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Der Eintrag dieser Kapsel ist nicht bestätigt (kurz vor einem Serverabsturz verpackt). Ein Admin muss ihn zuerst prüfen.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "Eine gerade verpackte Kapsel kann erst nach ein paar Sekunden gehandelt werden.",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "Diese Kapsel ist bereits im Handel.",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "\"%1\" in der Kapsel kann nicht gehandelt werden: %2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "Die Kapsel enthält %1 Ladungsgegenstände, mehr als die Grenze von %2. Pack sie aus und nimm zuerst etwas heraus.",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "Diese Kapsel kann gerade nicht gehandelt werden.",

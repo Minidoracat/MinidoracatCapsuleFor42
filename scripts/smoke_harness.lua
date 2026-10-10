@@ -1345,7 +1345,6 @@ do (function()
     local okCheck = Trade.check(cap)
     local ext = Trade.escrow(cap, seller, "market", "L-1")
     local held = Store.read(id)
-    local inTrade = select(2, Trade.check(cap))
     quiet = false
     check(noRec.code == "NO_RECORD" and notPacked.code == "NOT_PACKED" and uncertain.code == "UNCERTAIN"
         and notReady.code == "NOT_READY", "沒有紀錄、已展開、當機前未確認、剛收好都擋，各回自己的原因")
@@ -1366,14 +1365,21 @@ do (function()
         "交出時貨物（含背包內容、鑰匙圈的鑰匙）照原編號存進紀錄")
     check(held.seen.where == "economy" and held.seen.by == "seller" and held.history[#held.history].ev == "ESCROW",
         "最後看到改成經濟系統，歷史記 ESCROW")
-    check(inTrade.code == "IN_TRADE", "交易中同一個編號的膠囊再被拿來交易 -> IN_TRADE")
     quiet = true
     local fresh = instanceItem(M.ITEM_LOADED)
     local freshId = fresh.id
-    Trade.rebuilt(ext, fresh, buyer, { kind = "buy", ref = "L-1" })
+    Trade.rebuilt(ext, fresh, buyer, { kind = "market", ref = "L-1" })
+    local dropped = instanceItem(M.ITEM_LOADED) -- Economy builds again for the same delivery and keeps one item
+    Trade.rebuilt(ext, dropped, buyer, { kind = "market", ref = "L-1" })
+    local built = Store.read(id)
+    Guard.check(buyer, fresh)
     local got = Store.read(id)
+    local traded = 0
+    for _, e in ipairs(got.history) do if e.ev == "TRADED" then traded = traded + 1 end end
+    Guard.check(buyer, fresh)
+    local offered = Trade.check(fresh, buyer)
     local again = instanceItem(M.ITEM_LOADED)
-    Trade.rebuilt(ext, again, buyer, { kind = "claim", ref = "M-9" })
+    Trade.rebuilt(ext, again, buyer, { kind = "market", ref = "M-9" })
     local orphan = instanceItem(M.ITEM_LOADED)
     local orphanId = orphan.id
     Trade.rebuilt({ capsuleId = 99999999 }, orphan, buyer, {})
@@ -1381,13 +1387,16 @@ do (function()
     local w2 = fresh.inv:getItemWithIDRecursiv(water.id)
     local b2 = fresh.inv:getItemWithIDRecursiv(bag.id)
     local r2 = fresh.inv:getItemWithIDRecursiv(ring.id)
-    check(freshId ~= id and fresh.id == id, "Economy 做的新膠囊拿回原本的編號")
+    check(freshId ~= id and fresh.id == id and dropped.id == id, "Economy 做的新膠囊拿回原本的編號（每次重做都一樣）")
     check(#fresh.inv.list == 5 and w2 and w2.cond == 7 and b2 and b2.inv:getItemWithIDRecursiv(can.id)
         and r2 and #r2.keys == 1 and r2.keys[1].id == key.id and fresh.inv:getItemWithIDRecursiv(scope.id),
         "貨物照樹狀重建（背包內容、鑰匙圈的鑰匙），每件都是原編號、狀態照快照")
+    check(built.escrow.active == true and built.escrow.last.to == "buyer" and built.history[#built.history].ev == "ESCROW",
+        "Economy 做好新膠囊還不算交出（可能被丟掉重做）：仍是交易中、不記 TRADED")
     check(got.state == "PACKED" and got.escrow.active == nil and got.history[#got.history].ev == "TRADED"
-        and got.history[#got.history].why == "buy L-1" and got.history[#got.history].by == "buyer",
-        "交回後紀錄仍是收起中、交易結束，歷史記 TRADED（買方、通道與編號）")
+        and got.history[#got.history].why == "market L-1" and got.history[#got.history].by == "buyer" and traded == 1,
+        "膠囊出現在玩家身上（Guard 看到）才算交出：交易結束、記一筆 TRADED（通道與編號）")
+    check(offered == true and #Store.read(id).history == #got.history, "交出後再看到或再拿來上架不再記 TRADED，可以再交易")
     check(again.id == id and #again.inv.list == 5, "當機回溯後 Economy 再交一次：一樣拿回原編號與整批貨物")
     check(orphan.id == orphanId and #orphan.inv.list == 0, "找不到紀錄的 ext 不動新物品")
     local claimed = Store.claim(id, buyer)

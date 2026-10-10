@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "This capsule no longer holds a vehicle and cannot be traded.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "This capsule's record is not confirmed (packed just before a server crash). An admin has to check it first.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "A capsule that was just packed can be traded after a few seconds.",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "This capsule is already in a trade.",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "\"%1\" in the capsule cannot be traded: %2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "The capsule holds %1 cargo items, more than the limit of %2. Unpack it and take some out first.",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "This capsule cannot be traded right now.",

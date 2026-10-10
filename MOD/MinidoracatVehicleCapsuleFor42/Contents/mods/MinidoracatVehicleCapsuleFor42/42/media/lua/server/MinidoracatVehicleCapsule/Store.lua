@@ -184,7 +184,8 @@ end
 Store.listeners = {}
 
 local function remember(capsuleId, snap, written, quiet)
-    status[capsuleId] = { state = snap.state, settled = snap.settled == true, sealed = snap.sealed, seen = snap.seen }
+    status[capsuleId] = { state = snap.state, settled = snap.settled == true, sealed = snap.sealed, seen = snap.seen,
+        trade = type(snap.escrow) == "table" and snap.escrow.active == true }
     for _, fn in ipairs(Store.listeners) do
         local ok, err = pcall(fn, capsuleId, snap, written, quiet)
         if not ok then M.log("store listener failed: " .. tostring(err)) end

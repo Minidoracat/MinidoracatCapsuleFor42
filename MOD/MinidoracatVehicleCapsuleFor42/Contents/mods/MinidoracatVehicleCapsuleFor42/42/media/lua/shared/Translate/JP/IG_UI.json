@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "このカプセルにはもう車両が入っていないため、取引できません。",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "このカプセルの記録はまだ確定していません（サーバーのクラッシュ直前に収納）。先に管理者が判定してください。",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "収納したばかりのカプセルは、数秒たってから取引できます。",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "このカプセルはすでに取引中です。",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "カプセル内の「%1」は取引できません：%2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "カプセルの積み荷は %1 個で、上限の %2 個を超えています。先に展開して一部を取り出してください。",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "このカプセルは今は取引できません。",

@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Bu kapsülde artık araç yok, satılamaz.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Bu kapsülün kaydı onaylanmadı (sunucu çökmeden hemen önce paketlendi). Önce bir yönetici kontrol etmeli.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "Yeni paketlenen bir kapsül birkaç saniye sonra satılabilir.",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "Bu kapsül zaten satışta.",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "Kapsüldeki \"%1\" satılamaz: %2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "Kapsülde %1 yük eşyası var, %2 sınırını aşıyor. Önce açıp bir kısmını çıkar.",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "Bu kapsül şu anda satılamaz.",

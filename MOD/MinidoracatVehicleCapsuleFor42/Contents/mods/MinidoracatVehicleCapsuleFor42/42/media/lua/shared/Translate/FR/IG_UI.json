@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Cette capsule ne contient plus de véhicule et ne peut pas être échangée.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "L'enregistrement de cette capsule n'est pas confirmé (rangée juste avant un plantage du serveur). Un admin doit d'abord le vérifier.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "Une capsule tout juste rangée peut être échangée après quelques secondes.",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "Cette capsule est déjà dans un échange.",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "« %1 » dans la capsule ne peut pas être échangé : %2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "La capsule contient %1 objets de chargement, plus que la limite de %2. Déployez-la et retirez-en d'abord quelques-uns.",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "Cette capsule ne peut pas être échangée pour le moment.",

@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "這顆膠囊裡已經沒有車了，不能交易。",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "這顆膠囊的紀錄還沒確認（伺服器當機前收的車），請管理員先判定。",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "剛收好的膠囊要等幾秒才能交易。",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "這顆膠囊已經在交易中。",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "膠囊裡的「%1」不能交易：%2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "膠囊裡有 %1 件貨物，超過上限 %2 件，先展開拿出一些。",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "這顆膠囊現在不能交易。",

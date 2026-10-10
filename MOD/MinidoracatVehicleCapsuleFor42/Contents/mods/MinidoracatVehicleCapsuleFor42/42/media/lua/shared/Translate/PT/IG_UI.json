@@ -25,7 +25,6 @@
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Esta cápsula não guarda mais um veículo e não pode ser negociada.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "O registro desta cápsula não foi confirmado (guardada logo antes de uma queda do servidor). Um admin precisa verificá-lo primeiro.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_READY": "Uma cápsula recém-guardada pode ser negociada após alguns segundos.",
-    "IGUI_MinidoracatVehicleCapsule_Trade_IN_TRADE": "Esta cápsula já está em uma negociação.",
     "IGUI_MinidoracatVehicleCapsule_Trade_CARGO": "\"%1\" dentro da cápsula não pode ser negociado: %2",
     "IGUI_MinidoracatVehicleCapsule_Trade_TOO_MANY": "A cápsula tem %1 itens de carga, mais que o limite de %2. Abra-a e tire alguns primeiro.",
     "IGUI_MinidoracatVehicleCapsule_Trade_OTHER": "Esta cápsula não pode ser negociada agora.",
