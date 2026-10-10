@@ -9,6 +9,8 @@ M.Info = Info
 
 Info.RETRY_MS = 3000 -- an unanswered request is sent again after this (the server drops requests that come too fast)
 Info.CARGO_LINES = 4 -- cargo kinds listed before "N more"
+Info.MODS_TIP = 3   -- modification parts named in the tooltip before "N more"
+Info.MODS_FULL = 6  -- ... and in the preview list
 
 local cache = {}     -- capsuleId -> reply ({ ok = true, ... } or { ok = false, why })
 local asked = {}     -- capsuleId -> ms of the pending request
@@ -228,7 +230,17 @@ function Info.rows(r, full)
     end
     if d.battery then add("Battery", T("Percent", tostring(d.battery))) end
     if #d.missing > 0 then add("Missing", joinNames(d.missing)) end
-    if #d.mods > 0 then add("Mods", joinNames(d.mods)) end
+    if #d.mods > 0 then
+        -- KI5 trucks carry a dozen or more extra parts: list a few, count the rest (cargo must stay visible)
+        local cap = full and Info.MODS_FULL or Info.MODS_TIP
+        if #d.mods <= cap then
+            add("Mods", joinNames(d.mods))
+        else
+            local some = {}
+            for i = 1, cap do some[i] = d.mods[i] end
+            add("Mods", joinNames(some) .. ", " .. T("CargoMore", tostring(#d.mods - cap)))
+        end
+    end
     if d.cargoN == 0 then
         add("Cargo", T("CargoNone"))
     else

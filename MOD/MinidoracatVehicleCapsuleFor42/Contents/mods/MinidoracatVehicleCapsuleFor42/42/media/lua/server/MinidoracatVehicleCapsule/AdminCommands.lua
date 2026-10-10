@@ -82,7 +82,7 @@ function AdminCommands.handle(player, command, args)
         res = { ok = false, why = "ERROR" }
     end
     res.id = res.id or tonumber(args.id)
-    if command == "adminResolve" or command == "adminRestore" then
+    if command ~= "adminPage" then
         M.log(command .. " by " .. player:getUsername() .. " capsule=" .. tostring(args.id) .. " -> ok="
             .. tostring(res.ok) .. " why=" .. tostring(res.why))
     end
@@ -92,7 +92,9 @@ end
 Events.OnClientCommand.Add(function(module, command, player, args)
     if module ~= M.MODULE or not player then return end
     local res = AdminCommands.handle(player, command, args)
-    if res then sendServerCommand(player, M.MODULE, command, res) end
+    if not res then return end
+    local ok, err = pcall(sendServerCommand, player, M.MODULE, command, res)
+    if not ok then M.log(command .. " reply failed: " .. tostring(err)) end
 end)
 
 return AdminCommands
