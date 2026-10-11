@@ -11,7 +11,7 @@ M.PACK_RANGE = 8 -- tiles between player and vehicle (pack) or player and capsul
 -- an effect (Fx.broadcast args.style). id gives the rest: items Capsule<id> / LoadedCapsule<id>
 -- (scripts/MinidoracatVehicleCapsule_items.txt), icons Item_MinidoracatVehicleCapsule<id>[Loaded].png
 -- (scripts/assets/build_capsule.py), sandbox Type<id> (packing with it allowed) and Type<id>Loot (in loot), the
--- look-and-sound line UI_MinidoracatVehicleCapsule_TypeLook_<id>. Look and sounds (client/Effects.lua): smoke =
+-- look-and-sound line Tooltip_MinidoracatVehicleCapsule_Look_<id>. Look and sounds (client/Effects.lua): smoke =
 -- texture name prefix of the frames <prefix>1.png .. <prefix><frames>.png (cartoon: scripts/assets/build_smoke.py, the
 -- others design_smoke.py), px = drawn size at zoom 1, anchor = share of that size above the ground point, flash =
 -- light colour; throw / pop / pack / button = sound script names (media/scripts/MinidoracatVehicleCapsule_sounds.txt,

@@ -4,6 +4,7 @@
 -- Text is built in the player's language from raw data: vehicle and part names from the scripts, not the server.
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Condition"
+require "ISUI/ISInventoryPane"
 local M = MinidoracatVehicleCapsule
 local Info = {}
 M.Info = Info
@@ -300,7 +301,7 @@ end
 -- Capsules shown in the inventory and loot windows (a capsule's own container, or a capsule lying in a shown
 -- container): their summaries are asked for now and they get their names. The server counts a capsule asked about
 -- from nearby as a sighting (admin panel: last seen), and with cargo take-out on the first take is not refused while
--- the answer is on its way.
+-- the answer is on its way. The pane hook below covers what reaches a window without this full refresh.
 Events.OnRefreshInventoryWindowContainers.Add(function(page, state)
     if state ~= "end" then return end
     for _, button in ipairs(page.backpacks or {}) do
@@ -314,5 +315,18 @@ Events.OnRefreshInventoryWindowContainers.Add(function(page, state)
         end
     end
 end)
+
+-- A capsule that reaches a shown container without a window refresh only marks the pane dirty: a copy the server
+-- sends (an admin's give, an Economy purchase, a transfer it finishes) or one put in by code. Named before the pane
+-- lists it (ISInventoryPane:renderdetails refreshes a dirty container while the window is open).
+local refreshContainer = ISInventoryPane.refreshContainer
+function ISInventoryPane:refreshContainer()
+    local items = self.inventory and self.inventory:getItems()
+    for i = 0, (items and items:size() or 0) - 1 do
+        local it = items:get(i)
+        if M.isLoaded(it) then rename(it) end
+    end
+    return refreshContainer(self)
+end
 
 return Info
