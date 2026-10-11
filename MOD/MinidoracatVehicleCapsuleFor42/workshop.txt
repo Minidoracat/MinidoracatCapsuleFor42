@@ -1,5 +1,5 @@
 version=1
-title=Minidoracat Vehicle Capsule for B42
+title=[B42] Minidoracat Vehicle Capsule
 description=[h1]🚗 Minidoracat Vehicle Capsule for B42[/h1]
 description=[h3]By Minidoracat[/h3]
 description=
