@@ -23,7 +23,7 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 - **取得方式**：戰利品（修車廠、汽車用品店、加油站修車區、住家車庫，四個地點各自開關與權重，管理面板也能改）、管理員發放、經濟中心上架。
 - **特效不影響殭屍**：煙霧與閃光只畫在畫面上；聲音預設不引殭屍，可用沙盒調範圍。
 
-完整玩家說明見 Steam 說明串稿 [`STEAM_DISCUSSION_guide.md`](STEAM_DISCUSSION_guide.md)（英文 [`STEAM_DISCUSSION_guide_EN.md`](STEAM_DISCUSSION_guide_EN.md)）。
+完整玩家說明見 Steam 指南稿源 [`STEAM_GUIDE.md`](STEAM_GUIDE.md)（英文 [`STEAM_GUIDE_EN.md`](STEAM_GUIDE_EN.md)）；首發後簡介會連到 Steam 指南。
 
 設計稿：[`docs/design/vehicle-capsule-plan.html`](docs/design/vehicle-capsule-plan.html)（`.packed.html` 是內嵌素材的單檔版）
 

@@ -10,7 +10,7 @@
 [*] [b]必裝：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701]Minidoracat UI Library[/url]
 [*] [b]選裝：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279]Minidoracat Vehicle Manager[/url]（綁定的車只有車主和被分享「拖曳」權限的人能收）
 [*] [b]選裝：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125]Minidoracat Economy[/url]（管理員可以在經濟中心上架空膠囊；裝了車的膠囊也能連貨物上架或拍賣，上架頁列出車況）
-[*] [b]中途加入／移除：[/b]可加入；移除前請先看說明串，收在膠囊裡的車會跟著膠囊消失，裝回後只有車補得回
+[*] [b]中途加入／移除：[/b]可加入；移除前請先看完整說明，收在膠囊裡的車會跟著膠囊消失，裝回後只有車補得回
 [*] [b]介面語言：[/b]繁體中文、简体中文、English、日本語、한국어、Русский、Español、Português、Türkçe、Français、Polski、Deutsch（翻譯有問題請回報）
 [/list]
 
