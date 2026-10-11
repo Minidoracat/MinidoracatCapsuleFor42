@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<meta charset="utf-8">
+<title>七種車輛膠囊設計稿</title>
+<link rel="stylesheet" href="htmlplan.css">
+<script src="htmlplan.js" defer></script>
+<style data-mock-shared>
+  .pz { font: 13px/1.45 "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", system-ui, sans-serif; color: #fff; background: #4f5a45; padding: 10px; border-radius: 8px; }
+  .pz * { box-sizing: border-box; }
+  .pz img { display: block; }
+  .px { image-rendering: pixelated; }
+  .mut { color: #b8b8b8; }
+  .sm { font-size: 12px; }
+  .ok { color: #7ccf7a; } .bad { color: #f08a7e; } .warn { color: #ffd966; }
+  .lu { display: grid; gap: 4px; }
+  .lh, .lr { display: grid; grid-template-columns: 64px 64px 48px 1fr; gap: 8px; align-items: center; }
+  .lh { font-size: 12px; color: #d0d0d0; text-align: center; }
+  .lh span:last-child { text-align: start; }
+  .lr { background: rgba(0,0,0,.28); border-radius: 6px; padding: 2px 6px 2px 2px; }
+  .lr b { font-size: 13.5px; }
+  .win { background: #0a0b0d; border: 1px solid #666; border-radius: 6px; overflow: hidden; }
+  .win .tb { display: flex; align-items: center; gap: 8px; padding: 4px 6px 4px 10px; background: #1f2023; font-weight: 600; }
+  .win .tb .x { margin-inline-start: auto; width: 24px; text-align: center; font-weight: 400; }
+  .win .bd { padding: 8px; display: grid; gap: 6px; }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid #666; }
+  .tab { padding: 3px 9px; font-size: 12.5px; color: #b8b8b8; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; }
+  .tab.on { color: #fff; border-color: #666; background: rgba(255,255,255,.08); font-weight: 600; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 26px; padding: 0 7px; border: 1px solid #777; border-radius: 6px; background: rgba(255,255,255,.06); color: #fff; font-size: 12px; white-space: nowrap; }
+  .btn.pri { background: #ffd966; border-color: #ffd966; color: #1a1405; font-weight: 600; }
+  .tg { width: 30px; height: 16px; border-radius: 8px; background: #3a3a3a; border: 1px solid #8a8a8a; position: relative; }
+  .tg::after { content: ""; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: #cfcfcf; }
+  .tg.on { background: #ffd966; border-color: #ffd966; } .tg.on::after { left: 16px; background: #fff; }
+  .tg.dis { opacity: .35; }
+  .tt { display: grid; gap: 0; position: relative; padding-inline-end: 9px; }
+  .tt .th, .tt .tr { display: grid; grid-template-columns: 32px 1fr 32px 36px 44px 38px; gap: 5px; align-items: center; }
+  .tt .th { font-size: 11.5px; color: #d0d0d0; padding-bottom: 3px; border-bottom: 1px solid rgba(255,255,255,.14); }
+  .tt .tr { padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .tt .nm { font-weight: 600; font-size: 12.5px; line-height: 1.25; }
+  .tt .ds { font-size: 11px; color: #b8b8b8; line-height: 1.25; }
+  .tt .tr.off .nm { color: #a3a3a3; }
+  .sbar { position: absolute; top: 24px; bottom: 2px; right: 0; width: 4px; border-radius: 2px; background: rgba(255,255,255,.12); }
+  .sbar i { display: block; height: 64%; border-radius: 2px; background: #9a9a9a; }
+  .note { font-size: 11.5px; color: #c8c8c8; }
+  .ft2 { display: flex; justify-content: flex-end; gap: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.14); }
+  .row2 { display: flex; align-items: flex-start; }
+  .ctx { background: rgba(26,26,26,.95); border: 1px solid rgba(255,255,255,.2); font-size: 13px; flex: none; }
+  .ctx div { padding: 4px 12px; white-space: nowrap; display: flex; gap: 14px; justify-content: space-between; }
+  .ctx .on { background: #4d4d4d; }
+  .ctx .na { color: #8f8f8f; }
+  .tip { background: #000; border: 1px solid #666; padding: 7px 10px; font-size: 12.5px; line-height: 1.55; margin-top: 6px; }
+  .tip .h { font-weight: 600; margin-bottom: 3px; font-size: 13px; }
+  .tip .g { margin-top: 5px; }
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 1px 12px; margin: 0; }
+  .kv dt { color: #b8b8b8; } .kv dd { margin: 0; }
+  .inv { background: #0a0b0d; border: 1px solid #666; border-radius: 6px; padding: 4px 0; }
+  .ir { display: grid; grid-template-columns: 32px 1fr; gap: 8px; align-items: center; font-size: 13px; padding: 3px 8px; }
+  .cap { font-size: 11.5px; color: #d0d0d0; margin: 6px 0 2px; }
+  .cap:first-child { margin-top: 0; }
+  .sg { display: grid; grid-template-columns: 52px repeat(4, 1fr); gap: 3px; font-size: 12.5px; text-align: center; }
+  .sg > span { padding: 4px 0; background: rgba(0,0,0,.3); border-radius: 4px; }
+  .sg .hd { background: none; color: #d0d0d0; font-size: 12px; }
+  .sg .k { text-align: start; padding-inline-start: 4px; background: none; font-weight: 600; }
+  .sg .nw { background: #ffd966; color: #1a1405; font-weight: 700; }
+  .fx { display: grid; gap: 6px; font-size: 12.5px; }
+  .fx .grp { font-weight: 600; margin-top: 4px; }
+  .fx .it { display: grid; grid-template-columns: 18px 1fr; gap: 4px; }
+  .dg { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; justify-items: center; font-size: 11px; text-align: center; }
+  .dg img { width: 40px; height: 40px; }
+</style>
+<body>
+
+<header>
+  <h1>七種車輛膠囊：物品、音效與管理開關</h1>
+  <doc-changes new="33" changed="109" deleted="4"></doc-changes>
+  <details class="thread"><summary>為什麼 · 1 則需求</summary>
+    <doc-quote via="prompt" from="使用者">我認為可以做成七種吧，讓管理員選擇要開啟哪一種的使用或者上架，或者戰利品開關等等 音效也是都不同，請先幫我設計 UIUX 和物品等等</doc-quote>
+  </details>
+</header>
+
+<main>
+<doc-plan>
+
+<!-- ═════ 1 物品 ═════ -->
+<doc-claim id="items">
+  <p>七種膠囊是七組物品，外觀、煙霧、音效各不相同。</p>
+  <doc-mock frame="none" w="360" caption="圖示是概念稿：用現有圖示重新上色。正式圖示由 build_capsule.py 照同一組顏色和花紋產生。"><template>
+<div class="pz"><div class="lu">
+  <div class="lh"><span>空膠囊</span><span>裝了車</span><span>煙霧</span><span>款式</span></div>
+  <div class="lr" data-ref="cartoon"><img class="px" src="types/Cartoon-empty.png" width="64" height="64" alt=""><img class="px" src="types/Cartoon-loaded.png" width="64" height="64" alt=""><img src="types/Cartoon-smoke.png" width="48" height="48" alt=""><div><b>卡通膠囊</b><div class="sm mut">白色卡通煙霧，卡通音效</div><div class="sm mut">橘・素色帶</div></div></div>
+  <div class="lr"><img class="px" src="types/Real-empty.png" width="64" height="64" alt=""><img class="px" src="types/Real-loaded.png" width="64" height="64" alt=""><img src="types/Real-smoke.png" width="48" height="48" alt=""><div><b>寫實膠囊</b><div class="sm mut">灰色煙霧，機械與氣壓聲</div><div class="sm mut">橄欖綠・雙線</div></div></div>
+  <div class="lr"><img class="px" src="types/Dust-empty.png" width="64" height="64" alt=""><img class="px" src="types/Dust-loaded.png" width="64" height="64" alt=""><img src="types/Dust-smoke.png" width="48" height="48" alt=""><div><b>塵土膠囊</b><div class="sm mut">塵土貼地炸開，重物落地聲</div><div class="sm mut">土黃・上下雙色</div></div></div>
+  <div class="lr"><img class="px" src="types/Steam-empty.png" width="64" height="64" alt=""><img class="px" src="types/Steam-loaded.png" width="64" height="64" alt=""><img src="types/Steam-smoke.png" width="48" height="48" alt=""><div><b>蒸汽膠囊</b><div class="sm mut">白色蒸氣，蒸汽噴發聲</div><div class="sm mut">鋼藍・鉚釘</div></div></div>
+  <div class="lr"><img class="px" src="types/SciFi-empty.png" width="64" height="64" alt=""><img class="px" src="types/SciFi-loaded.png" width="64" height="64" alt=""><img src="types/SciFi-smoke.png" width="48" height="48" alt=""><div><b>科幻膠囊</b><div class="sm mut">光柱與地面光環，能量聲</div><div class="sm mut">青・光帶</div></div></div>
+  <div class="lr"><img class="px" src="types/Magic-empty.png" width="64" height="64" alt=""><img class="px" src="types/Magic-loaded.png" width="64" height="64" alt=""><img src="types/Magic-smoke.png" width="48" height="48" alt=""><div><b>魔法膠囊</b><div class="sm mut">淡紫煙霧與星芒，魔法聲</div><div class="sm mut">紫・星點</div></div></div>
+  <div class="lr" data-ref="shock"><img class="px" src="types/Shock-empty.png" width="64" height="64" alt=""><img class="px" src="types/Shock-loaded.png" width="64" height="64" alt=""><img src="types/Shock-smoke.png" width="48" height="48" alt=""><div><b>衝擊膠囊</b><div class="sm mut">白光與地面衝擊波，煙霧彈聲</div><div class="sm mut">黃・警示斜紋</div></div></div>
+</div></div></template>
+    <doc-pin ref="cartoon" title="現在的膠囊變成卡通款" anchor="tr">煙霧和音效照舊。端蓋改成橘色。</doc-pin>
+    <doc-pin ref="shock" title="端蓋顏色＝款式；色帶＝裝了車" anchor="br">空膠囊只有端蓋有顏色。裝了車才多一條有花紋的色帶。</doc-pin>
+  </doc-mock>
+  <doc-ask id="kinds">
+    <p>七種只差外觀和音效，還是也差功能？</p>
+    <label><input type="radio" name="kinds" value="look" checked> 只差外觀、煙霧和音效 <small>收車條件、時間、重量七種都一樣</small></label>
+    <label><input type="radio" name="kinds" value="perks"> 另外加小差異 <small>例如收車時間、膠囊重量；要另外平衡，商店價格也要分級</small></label>
+  </doc-ask>
+  <div data-if="kinds=perks"><doc-note tone="warn"><strong>要多一份數值表</strong> 我會補一個主張，列出每種的收車時間與重量，並寫出建議售價。</doc-note></div>
+
+  <doc-claim>
+    <p>色盲玩家也分得出：每種有自己的色帶花紋。</p>
+    <doc-mock frame="none" w="360" caption="下排是紅綠色盲（deuteranopia）模擬。顏色撞在一起時，花紋仍然不同。"><template>
+<div class="pz">
+  <div class="cap">一般</div>
+  <div class="dg"><div><img class="px" src="types/Cartoon-loaded.png" alt=""></div><div><img class="px" src="types/Real-loaded.png" alt=""></div><div><img class="px" src="types/Dust-loaded.png" alt=""></div><div><img class="px" src="types/Steam-loaded.png" alt=""></div><div><img class="px" src="types/SciFi-loaded.png" alt=""></div><div><img class="px" src="types/Magic-loaded.png" alt=""></div><div><img class="px" src="types/Shock-loaded.png" alt=""></div></div>
+  <div class="cap" data-ref="deut">紅綠色盲模擬</div>
+  <div class="dg"><div><img class="px" src="types/Cartoon-loaded-deut.png" alt=""></div><div><img class="px" src="types/Real-loaded-deut.png" alt=""></div><div><img class="px" src="types/Dust-loaded-deut.png" alt=""></div><div><img class="px" src="types/Steam-loaded-deut.png" alt=""></div><div><img class="px" src="types/SciFi-loaded-deut.png" alt=""></div><div><img class="px" src="types/Magic-loaded-deut.png" alt=""></div><div><img class="px" src="types/Shock-loaded-deut.png" alt=""></div></div>
+  <div class="dg" style="margin-top:4px"><span>素色</span><span>雙線</span><span>雙色</span><span>鉚釘</span><span>光帶</span><span>星點</span><span>斜紋</span></div>
+</div></template>
+      <doc-pin ref="deut" title="卡通、寫實、塵土同色" anchor="r">三款都變成橄欖色，靠素色、雙線、雙色分開。蒸汽和魔法同樣靠鉚釘和星點分開。</doc-pin>
+    </doc-mock>
+    <doc-note tone="info">名稱和提示框都寫出款式，所以圖示認不出來時，文字仍然認得出來。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>物品名稱用「款式＋膠囊」，裝車後再接車名。</p>
+    <doc-mock frame="none" w="360" caption="背包裡的實際大小：圖示 32 px。"><template>
+<div class="pz"><div class="inv">
+  <div class="ir"><img class="px" src="types/Cartoon-empty.png" width="32" height="32" alt=""><span>卡通膠囊</span></div>
+  <div class="ir"><img class="px" src="types/Steam-empty.png" width="32" height="32" alt=""><span>蒸汽膠囊</span></div>
+  <div class="ir" data-ref="loaded"><img class="px" src="types/Steam-loaded.png" width="32" height="32" alt=""><span>蒸汽膠囊：騎士·D6</span></div>
+  <div class="ir"><img class="px" src="types/Magic-loaded.png" width="32" height="32" alt=""><span>魔法膠囊：富蘭克林·瓦盧林</span></div>
+</div></div></template>
+      <doc-pin ref="loaded" title="款式在前，車名在後" anchor="r">同款式的膠囊在背包裡排在一起。</doc-pin>
+    </doc-mock>
+    <doc-draft id="names" label="中文與英文名稱（可以直接改）">
+<script type="text/plain">
+卡通膠囊｜Cartoon Capsule
+寫實膠囊｜Realistic Capsule
+塵土膠囊｜Dust Capsule
+蒸汽膠囊｜Steam Capsule
+科幻膠囊｜Sci-fi Capsule
+魔法膠囊｜Magic Capsule
+衝擊膠囊｜Shockwave Capsule
+裝車後：蒸汽膠囊：騎士·D6｜Steam Capsule: Chevalier D6
+</script>
+    </doc-draft>
+    <doc-note tone="info">其他 10 種語言沿用現有效果選項的譯名，再接上各自的「膠囊」。簡中由繁中轉換後逐條複核。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>28 段音效全部不同：要補錄 5 段。</p>
+    <doc-mock frame="none" w="360" caption="● 沿用現有音效　✚ 新錄。新錄的 5 格現在和寫實或塵土共用同一段。"><template>
+<div class="pz"><div class="sg">
+  <span class="hd"></span><span class="hd">丟出</span><span class="hd">彈開</span><span class="hd">收車</span><span class="hd">按鈕</span>
+  <span class="k">卡通</span><span>●</span><span>●</span><span>●</span><span>●</span>
+  <span class="k">寫實</span><span>●</span><span>●</span><span>●</span><span>●</span>
+  <span class="k">塵土</span><span>●</span><span>●</span><span>●</span><span class="nw">✚</span>
+  <span class="k">蒸汽</span><span class="nw" data-ref="steam">✚</span><span>●</span><span>●</span><span>●</span>
+  <span class="k">科幻</span><span>●</span><span>●</span><span>●</span><span>●</span>
+  <span class="k">魔法</span><span>●</span><span>●</span><span>●</span><span>●</span>
+  <span class="k">衝擊</span><span class="nw">✚</span><span>●</span><span class="nw">✚</span><span class="nw" data-ref="shockbtn">✚</span>
+</div></div></template>
+      <doc-pin ref="steam" title="蒸汽的丟出：現在用寫實那段" anchor="r">改錄短促的洩氣嘶聲。</doc-pin>
+      <doc-pin ref="shockbtn" title="衝擊三段都新錄" anchor="br">丟出、收車、按鈕現在借用寫實和塵土。改錄電擊與充能系的聲音。</doc-pin>
+    </doc-mock>
+    <doc-ask id="sfx">
+      <p>新音效怎麼定稿？</p>
+      <label><input type="radio" name="sfx" value="five" checked> 只補缺的 5 段 <small>我先挑一版，你在試聽頁換掉不喜歡的</small></label>
+      <label><input type="radio" name="sfx" value="all"> 28 段全部由你挑 <small>每段 4 個候選；現有 23 段當初是依長度與音色自動挑的</small></label>
+    </doc-ask>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 2 管理 ═════ -->
+<doc-claim id="types-tab">
+  <p>管理員在「種類」分頁逐種開關使用與戰利品。</p>
+  <doc-mock frame="none" w="360" caption="範例狀態：魔法不進戰利品，衝擊已停用。"><template>
+<div class="pz"><div class="win">
+  <div class="tb">車輛膠囊管理<span class="x">×</span></div>
+  <div class="bd">
+    <div class="tabs"><span class="tab">紀錄</span><span class="tab">設定</span><span class="tab on">種類</span><span class="tab">戰利品</span></div>
+    <div class="tt" data-ref="scroll">
+      <div class="th"><span></span><span>款式</span><span>使用</span><span>戰利品</span><span data-ref="shop">商店</span><span></span></div>
+      <div class="tr"><img class="px" src="types/Cartoon-empty.png" width="32" height="32" alt=""><div><div class="nm">卡通膠囊</div><div class="ds">白色卡通煙霧</div></div><span class="tg on"></span><span class="tg on"></span><span class="btn">上架…</span><span class="btn" data-ref="preview">預覽</span></div>
+      <div class="tr"><img class="px" src="types/Real-empty.png" width="32" height="32" alt=""><div><div class="nm">寫實膠囊</div><div class="ds">灰色煙霧</div></div><span class="tg on"></span><span class="tg on"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="tr"><img class="px" src="types/Dust-empty.png" width="32" height="32" alt=""><div><div class="nm">塵土膠囊</div><div class="ds">塵土貼地炸開</div></div><span class="tg on"></span><span class="tg on"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="tr"><img class="px" src="types/Steam-empty.png" width="32" height="32" alt=""><div><div class="nm">蒸汽膠囊</div><div class="ds">白色蒸氣</div></div><span class="tg on"></span><span class="tg on"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="tr"><img class="px" src="types/SciFi-empty.png" width="32" height="32" alt=""><div><div class="nm">科幻膠囊</div><div class="ds">光柱與光環</div></div><span class="tg on"></span><span class="tg on"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="tr"><img class="px" src="types/Magic-empty.png" width="32" height="32" alt=""><div><div class="nm">魔法膠囊</div><div class="ds">淡紫煙霧與星芒</div></div><span class="tg on"></span><span class="tg" data-ref="loot"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="tr off"><img class="px" src="types/Shock-empty.png" width="32" height="32" alt=""><div><div class="nm">衝擊膠囊</div><div class="ds">已停用：不能收車</div></div><span class="tg" data-ref="use"></span><span class="tg dis"></span><span class="btn">上架…</span><span class="btn">預覽</span></div>
+      <div class="sbar"><i></i></div>
+    </div>
+    <div class="note">戰利品由開著的 5 種平分。地點和比重在「戰利品」分頁。</div>
+    <div class="ft2" data-ref="apply"><span class="btn">取消變更</span><span class="btn pri">套用</span></div>
+  </div>
+</div></div></template>
+    <doc-pin ref="use" title="關掉只擋收車" anchor="l">已裝車的照樣能丟出展開。</doc-pin>
+    <doc-pin ref="loot" title="關掉就不進戰利品" anchor="tr">使用照常；商店照常。</doc-pin>
+    <doc-pin ref="shop" title="「上架…」開經濟中心的商品草稿" anchor="tr">價格在經濟中心設。沒裝 Economy 時這欄的鈕停用。</doc-pin>
+    <doc-pin ref="preview" title="只有你看得到" anchor="tr">在你身旁丟一次這種膠囊。還沒套用也能先看。</doc-pin>
+    <doc-pin ref="apply" title="套用列固定在底部" anchor="bl">七列放在捲動區裡，矮螢幕也按得到「套用」。</doc-pin>
+  </doc-mock>
+  <doc-ask id="defaults">
+    <p>新伺服器預設開哪些種類？</p>
+    <label><input type="radio" name="defaults" value="all" checked> 七種全開，戰利品平分</label>
+    <label><input type="radio" name="defaults" value="cartoon"> 只開卡通 <small>其他六種由管理員自己開</small></label>
+    <label><input type="radio" name="defaults" value="rare"> 七種都能用，只有卡通、寫實進戰利品 <small>其他五種靠商店或管理員發放</small></label>
+  </doc-ask>
+
+  <doc-claim>
+    <p>停用一種只擋收車，已裝車的照樣能展開。</p>
+    <doc-mock frame="none" w="360"><template>
+<div class="pz"><div class="fx">
+  <div class="grp">關掉「使用」</div>
+  <div class="it"><span class="bad">✗</span><span>收車：子選單裡那一種變灰，提示框寫出原因。</span></div>
+  <div class="it" data-ref="keep"><span class="ok">✓</span><span>丟出、按按鈕：照常。車不會被關在膠囊裡。</span></div>
+  <div class="it"><span class="ok">✓</span><span>展開後歸還的空膠囊：還是同一種。</span></div>
+  <div class="it"><span class="bad">✗</span><span>戰利品：不再出現。</span></div>
+  <div class="it"><span class="warn">!</span><span>商店：照常賣，要到經濟中心下架。</span></div>
+  <div class="grp">關掉「戰利品」</div>
+  <div class="it"><span class="bad">✗</span><span>戰利品：不再出現。</span></div>
+  <div class="it"><span class="ok">✓</span><span>其他照常。</span></div>
+</div></div></template>
+      <doc-pin ref="keep" title="伺服器端也照這張表檢查" anchor="tr">收車指令會檢查款式有沒有停用；丟出和按按鈕不檢查。</doc-pin>
+    </doc-mock>
+  </doc-claim>
+
+  <doc-claim>
+    <p>地點的戰利品總量不變，由開著的種類平分。</p>
+    <doc-code title="Loot.lua · sketch" lang="lua" start="36" hl="43,55">
+<script type="text/plain">
+-- { [table] = { [item] = weight } }. A place's weight is split evenly over
+-- the enabled types, so switching types never changes how often one turns up.
+function Loot.wanted()
+    local out = {}
+    if Loot.option("LootEnabled", true) == false then return out end
+    local items = {}
+    for _, t in ipairs(M.TYPES) do
+        local on = Loot.option("Type" .. t.id, true) ~= false
+        if on and Loot.option("Type" .. t.id .. "Loot", true) ~= false then
+            items[#items + 1] = t.empty
+        end
+    end
+    if #items == 0 then return out end
+    for _, p in ipairs(Loot.PLACES) do
+        local w = tonumber(Loot.option(p[2], p[4])) or p[4]
+        if Loot.option(p[1], p[3]) ~= false and w > 0 then
+            for _, tbl in ipairs(p[5]) do
+                out[tbl] = out[tbl] or {}
+                for _, it in ipairs(items) do
+                    out[tbl][it] = (out[tbl][it] or 0) + w / #items
+                end
+            end
+        end
+    end
+    return out
+end
+</script>
+      <doc-pin line="43" title="停用的種類自動不進戰利品"></doc-pin>
+      <doc-pin line="55" title="w / #items：總量不變" tone="ok">修車廠 0.5，開 5 種，每種 0.1。</doc-pin>
+    </doc-code>
+  </doc-claim>
+
+  <doc-claim>
+    <p>「上架…」把那種空膠囊送到經濟中心的草稿。</p>
+    <doc-calls title="上架" caption="經濟中心擁有商品目錄和價格；膠囊這邊只開草稿。">
+<script type="text/plain">
++ **Win:buildTypes**(p)                              @ media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:619   -- 新的「種類」分頁
++   **Win:onListInShop**(t)                          @ media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:619   -- 每列的「上架…」
++     openAdminShop(MOD_ID, { t.empty })             @ media/lua/client/MinidoracatEconomy/ECClient.lua:1378           -- 已在賣的會被略過
+?     **shopListing**(t.empty)                       @ media/lua/client/MinidoracatEconomy/ECClient.lua:1382           -- 選 b 才加：唯讀，販售中與價格
+
+~ Trade.check(item, player)                          @ media/lua/server/MinidoracatVehicleCapsule/Trade.lua:58
+?   **Rules.typeTradeable**(t)                       @ media/lua/shared/MinidoracatVehicleCapsule/Rules.lua:81         -- 選 c 才加：逐種關市場與拍賣
+</script>
+    </doc-calls>
+    <doc-ask id="shop">
+      <p>「上架」要做到哪裡？</p>
+      <label><input type="radio" name="shop" value="draft" checked> 只送商品草稿 <small>價格與上下架都在經濟中心</small></label>
+      <label><input type="radio" name="shop" value="status"> 再在種類表顯示販售狀態與價格 <small>Economy 要加一個唯讀 API，兩個 repo 一起改</small></label>
+      <label><input type="radio" name="shop" value="market"> 再讓裝車膠囊可以逐種關掉市場與拍賣</label>
+      <label><input type="radio" name="shop" value="both"> b 和 c 都要</label>
+    </doc-ask>
+    <div data-if="shop=status"><doc-note tone="info"><strong>好處</strong> 停用的種類若還在販售，種類表會標出來，提醒管理員去下架。</doc-note></div>
+    <div data-if="shop=both"><doc-note tone="info"><strong>好處</strong> 停用的種類若還在販售，種類表會標出來，提醒管理員去下架。</doc-note></div>
+    <doc-claim at="media/lua/client/MinidoracatVehicleCapsule/AdminPanel.lua:619">
+      <p><b>AdminPanel.lua:619</b> · onListInShop()</p>
+      <doc-code title="AdminPanel.lua · sketch" lang="lua">
+<script type="text/plain">
+-- The row's "List..." button. Economy opens its shop page with this capsule as a
+-- new SKU draft (types it already sells are skipped). The price is set in Economy.
+function Win:onListInShop(t)
+    local eco = MinidoracatEconomy and MinidoracatEconomy.v1
+    local api = eco and eco.Client
+    if not (api and api.CAPABILITIES and api.CAPABILITIES.shopAdd) then
+        return -- the button is disabled then
+    end
+    local ok, why = api.openAdminShop(M.MOD_ID, { t.empty })
+    if not ok then self:setMessage(U("ShopOpenFailed_" .. tostring(why)), true) end
+end
+</script>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+
+  <doc-claim>
+    <p>七種的開關存成沙盒選項，效果樣式選項拿掉。</p>
+    <doc-schema id="sandbox" lang="txt" diff title="media/sandbox-options.txt" caption="綠色是新增，紅色是拿掉。七種各兩個，共 14 個，放在新頁面「膠囊種類」。「...」是照現有命名的 translation 欄位。">
+<script type="text/plain">
+ option MinidoracatVehicleCapsule.ZombieSoundRadius
+ {type = integer, min = 0, max = 50, default = 0, page = MinidoracatVehicleCapsule, ...}
+-option MinidoracatVehicleCapsule.EffectStyle
+-{type = enum, numValues = 7, default = 1, page = MinidoracatVehicleCapsule, ...}
++option MinidoracatVehicleCapsule.TypeCartoon
++{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, ...}
++option MinidoracatVehicleCapsule.TypeCartoonLoot
++{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, ...}
++/* ... 12 more: Real, Dust, Steam, SciFi, Magic, Shock */
+</script>
+    </doc-schema>
+    <doc-note tone="info">效果樣式還沒發布過，所以直接拿掉，不需要轉換舊存檔。整個 MOD 也還沒發布，物品可以直接改名。</doc-note>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 3 玩家 ═════ -->
+<doc-claim id="player">
+  <p>收車時，玩家從子選單選要用哪一種膠囊。</p>
+  <doc-mock frame="none" w="360"><template>
+<div class="pz">
+  <div class="row2">
+    <div class="ctx"><div>進入車輛</div><div>車輛機械</div><div class="on">收進膠囊<span>▸</span></div><div>拖曳</div></div>
+    <div class="ctx" data-ref="sub"><div>卡通膠囊<span>×2</span></div><div class="on">蒸汽膠囊<span>×1</span></div><div class="na" data-ref="off">衝擊膠囊<span>×1</span></div></div>
+  </div>
+  <div class="tip">
+    <div class="h">收進蒸汽膠囊</div>
+    <div><span class="ok">✓</span> 你有這台車的鑰匙</div>
+    <div><span class="ok">✓</span> 引擎已熄火，車上沒有人</div>
+    <div class="g">車上 3 件物品會一起收進膠囊。需要 10 秒。</div>
+  </div>
+</div></template>
+    <doc-pin ref="sub" title="同一種合成一列" anchor="tr">數字是背包裡有幾顆。</doc-pin>
+    <doc-pin ref="off" title="停用的變灰，不用紅字" anchor="br">移上去時，提示框寫出「管理員停用了衝擊膠囊」。</doc-pin>
+  </doc-mock>
+
+  <doc-claim>
+    <p>只帶一種時不出子選單，提示框寫出用哪種。</p>
+    <doc-mock frame="none" w="360"><template>
+<div class="pz">
+  <div class="ctx" style="display:inline-block"><div>進入車輛</div><div class="on">收進膠囊</div><div>拖曳</div></div>
+  <div class="tip">
+    <div class="h">收進膠囊</div>
+    <div><span class="ok">✓</span> 你有這台車的鑰匙</div>
+    <div><span class="ok">✓</span> 引擎已熄火，車上沒有人</div>
+    <div data-ref="row"><span class="ok">✓</span> 背包裡有空膠囊：蒸汽膠囊</div>
+    <div class="g">車上 3 件物品會一起收進膠囊。需要 10 秒。</div>
+  </div>
+</div></template>
+      <doc-pin ref="row" title="原本的第三列多寫款式" anchor="r">一顆都沒有：「背包裡沒有空膠囊」。全都停用：「背包裡的膠囊都被管理員停用了」。</doc-pin>
+    </doc-mock>
+  </doc-claim>
+
+  <doc-claim>
+    <p>空膠囊提示框寫出款式；停用的寫出原因。</p>
+    <doc-mock frame="none" w="360"><template>
+<div class="pz">
+  <div class="tip" style="margin-top:0">
+    <div class="h">蒸汽膠囊</div>
+    <dl class="kv"><dt>款式</dt><dd data-ref="kind">蒸汽：白色蒸氣，蒸汽噴發聲</dd></dl>
+    <div class="g mut">空膠囊。站在停著的車旁，從車輛選單收進膠囊。</div>
+  </div>
+  <div class="tip">
+    <div class="h">衝擊膠囊</div>
+    <dl class="kv"><dt>款式</dt><dd>衝擊：白光與地面衝擊波，煙霧彈聲</dd></dl>
+    <div class="g warn" data-ref="warn">! 管理員停用了這種膠囊，現在不能收車。</div>
+  </div>
+</div></template>
+      <doc-pin ref="kind" title="款式列：裝了車的也有" anchor="tr">放在車種列上面。</doc-pin>
+      <doc-pin ref="warn" title="驚嘆號加文字，不只靠顏色" anchor="br"></doc-pin>
+    </doc-mock>
+  </doc-claim>
+
+  <doc-claim>
+    <p>膠囊名稱在每位玩家畫面上都是他的語言。</p>
+    <doc-mock frame="none" w="360" caption="同一顆膠囊，在兩個不同語言的用戶端。"><template>
+<div class="pz">
+  <div class="cap">中文用戶端</div>
+  <div class="inv"><div class="ir"><img class="px" src="types/Steam-loaded.png" width="32" height="32" alt=""><span>蒸汽膠囊：騎士·D6</span></div></div>
+  <div class="cap">English client</div>
+  <div class="inv" data-ref="en"><div class="ir"><img class="px" src="types/Steam-loaded.png" width="32" height="32" alt=""><span>Steam Capsule: Chevalier D6</span></div></div>
+</div></template>
+      <doc-pin ref="en" title="名稱在看的人那邊組" anchor="br">款式名和車名都從紀錄查，用這台用戶端的語言。</doc-pin>
+    </doc-mock>
+    <doc-note tone="warn"><strong>現在的問題</strong> 收車那台用戶端的語言會寫死在物品名稱裡。英文玩家收的車，中文玩家看到的標題是「Vehicle Capsule: Chevalier D6」，下面各列卻是中文。改完後伺服器不再存名稱。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>全服看到的煙霧和音效，跟著那顆膠囊的款式。</p>
+    <doc-calls title="款式跟著特效廣播" caption="伺服器知道是哪一顆膠囊，所以由它把款式放進廣播。">
+<script type="text/plain">
+~ Pack.pack(player, vehicle, opts)                    @ media/lua/server/MinidoracatVehicleCapsule/Pack.lua:63          -- 用的那顆空膠囊
+~   Fx.broadcast("pack", { ..., style = t.index })    @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:15
+
+~ fly(action)                                         @ media/lua/server/MinidoracatVehicleCapsule/PlayerCommands.lua:116
+~   Fx.broadcast("flight", { ..., style = t.index })  @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:15
+
+~ Throw.land(p)                                       @ media/lua/server/MinidoracatVehicleCapsule/Throw.lua:78
+~   Fx.broadcast("unpack", { ..., style = t.index })  @ media/lua/server/MinidoracatVehicleCapsule/Fx.lua:15
+
+~ Effects.play(args)                                  @ media/lua/client/MinidoracatVehicleCapsule/Effects.lua:73       -- M.TYPES[args.style]
+-   Effects.style()                                   @ media/lua/client/MinidoracatVehicleCapsule/Effects.lua:53       -- 不再讀沙盒
+</script>
+    </doc-calls>
+    <doc-claim at="media/lua/client/MinidoracatVehicleCapsule/Effects.lua:73">
+      <p><b>Effects.lua:73</b> · Effects.play()</p>
+      <doc-code diff file="media/lua/client/MinidoracatVehicleCapsule/Effects.lua" lang="lua" start="73">
+<script type="text/plain">
+ function Effects.play(args)
+     if not args.id or Effects.active[args.id] then return end -- split screen: one copy per message
+-    local st = Effects.STYLES[args.style] or Effects.style()
++    local st = M.TYPES[args.style] or M.TYPES[1]
+</script>
+        <doc-pin line="75" title="管理面板的預覽也走這裡" tone="info">預覽本來就帶 style。</doc-pin>
+      </doc-code>
+    </doc-claim>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ 4 審查 ═════ -->
+<doc-claim id="review">
+  <p>現有介面審查判定 Block，這次改版一起修好。</p>
+  <ol>
+    <li><b>HIGH・顏色</b> 管理面板半透明，說明字對比只有 3.76–4.44:1。改：視窗不透明（<code>opaque = true</code>）。</li>
+    <li><b>HIGH・顏色</b> 收車選單和落點游標的提示框半透明，紅色原因列 3.35–4.21:1。改：提示框底色不透明。</li>
+    <li><b>HIGH・字體排印</b> 選項說明只畫第一段的兩行，其餘截掉。改：完整換行；逐項說明放進 tooltip。</li>
+    <li><b>HIGH・無障礙</b> 滑桿和 chip 沒有焦點名稱，用鍵盤或手把時沒有說明。改：加 <code>_focusLabel</code> 和 <code>_focusGroup</code>。</li>
+    <li><b>HIGH・版面</b> 選項不能捲動；視窗矮於 727 px 時「套用」被裁掉。改：選項放進捲動區，套用列固定在底部。</li>
+    <li><b>HIGH・顏色</b> 沒權限的選項用紅字，滑鼠移上去只剩 1.09:1。改：拿掉 badColor，原因留在提示框。</li>
+    <li><b>MEDIUM・無障礙</b> 伺服器拒絕收車的通知 3 秒就消失。改：換成要按「知道了」的對話框。</li>
+    <li><b>LOW・文字</b> 英文等語系用「change(s)」拼複數。改：「Changes sent: %1.」這種句型。</li>
+    <li><b>LOW・文字</b> 中文提示框用半形逗號列舉改裝。改：分隔符走翻譯鍵，中文用「、」。</li>
+  </ol>
+  <doc-note tone="warn"><strong>審查沒驗證的</strong> 沒有實際用鍵盤或手把走一遍，也沒在 1280×720 實際渲染。改完不透明後，對比要再量一次。這三項放進實作後的 E2E。</doc-note>
+
+  <doc-claim>
+    <p>管理面板半透明，背後的字疊在說明上。</p>
+    <doc-shot src="types/before-panel-fr.jpg" caption="現況（法文、多人模式）：背後角色視窗的「Poids」「Type de barbe」「Modifier」透過來，和選項說明疊在一起。"></doc-shot>
+    <doc-note tone="ok"><strong>改法</strong> 第 1、3、5 項一起改：不透明、完整說明、捲動區加固定套用列。新的<a href="#types-tab">「種類」分頁</a>照這三點畫。</doc-note>
+  </doc-claim>
+
+  <doc-claim>
+    <p>沒權限的選項懸停時，紅字幾乎看不見。</p>
+    <doc-shot src="types/before-menu-nokey.jpg" caption="現況：選項紅字壓在灰底上；提示框背後角色視窗的字也透過來。"></doc-shot>
+    <doc-note tone="ok"><strong>改法</strong> 第 2、6 項一起改。新的<a href="#player">收車子選單</a>不用紅字，停用和沒權限的原因都寫在不透明的提示框裡。</doc-note>
+  </doc-claim>
+</doc-claim>
+
+<!-- ═════ shared ═════ -->
+<doc-claim aux="shared">
+  <p>共用：一張 M.TYPES 表定義七種膠囊。</p>
+  <doc-schema id="types" lang="lua" title="shared/MinidoracatVehicleCapsule/Core.lua · M.TYPES" caption="物品、圖示、沙盒鍵都從 id 推出來；煙霧和音效欄位從 Effects.STYLES 搬過來。">
+<script type="text/plain">
+-- id gives the rest: items Capsule<id> / LoadedCapsule<id>,
+-- icons Item_MinidoracatVehicleCapsule<id>[Loaded].png, sandbox Type<id> / Type<id>Loot
+M.TYPES = {
+    { id = "Cartoon", smoke = "smoke_", frames = 8, frameMs = 150, px = 384,
+      anchor = 0.7, flash = { 1, 0.95, 0.8 },
+      throw = "VehicleCapsuleThrow", pop = "VehicleCapsulePop",
+      pack = "VehicleCapsulePack", button = "VehicleCapsuleButton" },
+    { id = "Steam", smoke = "smoke_S3_", frames = 12, frameMs = 85, px = 480,
+      anchor = 0.7, flash = { 0.9, 0.95, 1 },
+      throw = "VehicleCapsuleThrowSteam", pop = "VehicleCapsulePopSteam",
+      pack = "VehicleCapsulePackSteam", button = "VehicleCapsuleButtonSwitch" },
+    -- ... 5 more: Real, Dust, SciFi, Magic, Shock
+}
+M.TYPE_OF = {} -- full type -> row, the empty and the loaded item alike
+function M.typeOf(item) return M.TYPE_OF[item:getFullType()] end
+function M.isLoaded(item)
+    local t = M.typeOf(item)
+    return t ~= nil and item:getFullType() == t.loaded
+end
+</script>
+  </doc-schema>
+  <doc-note tone="info">現在 15 個檔案裡有 26 處直接比對 <code>ITEM_EMPTY</code>、<code>ITEM_LOADED</code>，全部改走 <code>M.typeOf</code> 和 <code>M.isLoaded</code>。經濟中心的註冊從 1 次變 7 次，每種裝車膠囊各一次。</doc-note>
+</doc-claim>
+
+<doc-claim aux="scope">
+  <p>不變：收車條件、紀錄與補回、經濟交易流程。</p>
+  <ul>
+    <li>收車條件、收車時間、權限（含 Vehicle Manager）七種都一樣。</li>
+    <li>紀錄、補回車輛、當機判定、貨物鎖不分款式。</li>
+    <li>裝車膠囊在市場與拍賣的交易流程照舊，只是註冊 7 次。</li>
+    <li>戰利品的四個地點、開關和比重照舊。</li>
+    <li>殭屍聽到的範圍仍是一個全服設定，不分款式。</li>
+    <li>煙霧貼圖沿用現有七套，不重畫。</li>
+  </ul>
+</doc-claim>
+
+</doc-plan>
+</main>
+</body>
+</html>
