@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "カプセルに収納",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "カプセルを投げる",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "ボタンを押す"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "ボタンを押す",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

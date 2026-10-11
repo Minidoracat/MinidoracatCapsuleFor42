@@ -24,7 +24,7 @@ function ISPressCapsuleAction:start()
     self.character:SetVariable("LootPosition", "Low")
     if not isServer() then
         local c = self.character
-        local sound = M.Effects and M.Effects.style().button or "VehicleCapsuleButton" -- client/Effects.lua
+        local sound = (M.typeOf(self.item) or M.TYPES[1]).button -- the capsule's own type (Core M.TYPES)
         getSoundManager():PlayWorldSoundImpl(sound, false, math.floor(c:getX()), math.floor(c:getY()),
             math.floor(c:getZ()), 0, 10, 1, false)
     end

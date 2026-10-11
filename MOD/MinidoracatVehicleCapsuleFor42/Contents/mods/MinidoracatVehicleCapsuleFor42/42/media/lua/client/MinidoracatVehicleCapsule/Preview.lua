@@ -22,7 +22,7 @@ end
 -- Context menu entry; needs the framework (the window is a UI.Window).
 local function onFill(playerNum, context, items)
     for _, item in ipairs(ISInventoryPane.getActualItems(items)) do
-        if item:getFullType() == M.ITEM_LOADED and not M.inCapsule(item) then
+        if M.isLoaded(item) and not M.inCapsule(item) then
             local option = context:addOption(U("Preview"), item:getID(), Preview.open)
             if not Kit.ok then
                 option.notAvailable = true

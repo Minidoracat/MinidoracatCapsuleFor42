@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "부품 %1개",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "외 %1종",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "넣은 사람"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "넣은 사람",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "종류",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! 관리자가 이 종류를 비활성화했습니다. 지금은 차량을 넣을 수 없습니다",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "하얀 카툰풍 연기와 카툰 효과음",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "회색 연기, 기계음과 공기압 소리",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "땅을 따라 퍼지는 흙먼지, 무거운 착지음",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "하얀 증기, 증기가 뿜어지는 소리",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "빛기둥과 바닥의 빛 고리, 에너지 소리",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "연보라 연기와 반짝이는 별, 마법 소리",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "하얀 섬광과 바닥을 퍼지는 충격파, 연막탄 소리"
 }

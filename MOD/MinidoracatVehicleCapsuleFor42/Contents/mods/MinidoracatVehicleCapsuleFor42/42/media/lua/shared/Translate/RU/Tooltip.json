@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 шт.",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "и ещё видов: %1",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Упаковал"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Упаковал",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "Тип",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! Администратор отключил этот тип: сейчас им нельзя упаковать транспорт",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "Белый мультяшный дым и мультяшные звуки",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Серый дым, звуки механики и сжатого воздуха",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "Облако пыли у земли, тяжёлый удар",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "Белый пар, выброс пара",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "Столб света и световое кольцо на земле, звуки энергии",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "Лавандовый дым с искрами, волшебные звуки",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "Белая вспышка и ударная волна по земле, звук дымовой гранаты"
 }

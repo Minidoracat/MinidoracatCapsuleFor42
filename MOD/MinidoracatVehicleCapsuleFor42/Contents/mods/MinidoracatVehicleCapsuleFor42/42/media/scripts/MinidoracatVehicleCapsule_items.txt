@@ -5,29 +5,166 @@ module MinidoracatVehicleCapsule
         Base
     }
 
-    /* Empty capsule. Icon and models come from scripts/assets/build_capsule.py (MinidoracatVehicleCapsule_models.txt). */
-    item Capsule
+    /* One empty and one loaded capsule per type, in the order of M.TYPES (shared/MinidoracatVehicleCapsule/Core.lua).
+       The types differ only in looks and sounds. Icons and models come from scripts/assets/build_capsule.py
+       (MinidoracatVehicleCapsule_models.txt). */
+
+    item CapsuleCartoon
     {
         DisplayCategory = Tool,
         ItemType = base:normal,
         Weight = 0.2,
-        Icon = MinidoracatVehicleCapsule,
-        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsule,
-        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleHand,
+        Icon = MinidoracatVehicleCapsuleCartoon,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleCartoon,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleCartoonHand,
     }
 
-    /* Capsule holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
+    item CapsuleReal
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleReal,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleReal,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleRealHand,
+    }
+
+    item CapsuleDust
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleDust,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleDust,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleDustHand,
+    }
+
+    item CapsuleSteam
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleSteam,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSteam,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSteamHand,
+    }
+
+    item CapsuleSciFi
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleSciFi,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSciFi,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSciFiHand,
+    }
+
+    item CapsuleMagic
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleMagic,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleMagic,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleMagicHand,
+    }
+
+    item CapsuleShock
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleShock,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleShock,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleShockHand,
+    }
+
+    /* Capsules holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
        MaxItemSize keeps players from putting anything in; the server adds cargo with AddItem, which skips the check.
        Container, not Tool: Minidoracat Economy rebuilds traded items with a new item ID (the record key), and its
-       default and production whitelists leave Container out; server/Economy.lua also blocks the type (API rev 5). */
-    item LoadedCapsule
+       default and production whitelists leave Container out; server/Economy.lua registers each type with Economy
+       (API rev 6) or blocks it (rev 5). */
+
+    item LoadedCapsuleCartoon
     {
         DisplayCategory = Container,
         ItemType = base:container,
         Weight = 0.2,
-        Icon = MinidoracatVehicleCapsuleLoaded,
-        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleLoaded,
-        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleLoadedHand,
+        Icon = MinidoracatVehicleCapsuleCartoonLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleCartoonLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleCartoonLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleReal
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleRealLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleRealLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleRealLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleDust
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleDustLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleDustLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleDustLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleSteam
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleSteamLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSteamLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSteamLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleSciFi
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleSciFiLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSciFiLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleSciFiLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleMagic
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleMagicLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleMagicLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleMagicLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleShock
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatVehicleCapsuleShockLoaded,
+        WorldStaticModel = MinidoracatVehicleCapsule.VehicleCapsuleShockLoaded,
+        StaticModel = MinidoracatVehicleCapsule.VehicleCapsuleShockLoadedHand,
         Capacity = 1,
         MaxItemSize = 0.01,
     }

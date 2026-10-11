@@ -7,10 +7,12 @@
       --python D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/capsule_blender.py -- \
       D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-model/config.json
 
-config.json 必須提供 repo、media、out、review、atlas（含 empty/loaded/size/rects）。
-產物：media/models_X/WorldItems/MinidoracatVehicleCapsule.fbx、兩張 512px 世界物品貼圖
-所對應的 icon_empty.png/icon_loaded.png（外層腳本會安裝至 media/textures/），以及 review
-中的 model_*.png、side_neg_y.png、side_pos_y.png、ground_*.png、fbx_verify.txt。座標為公尺，膠囊長軸沿 +X，原點在
+config.json 必須提供 repo、media、out、review、atlas（含 empty/loaded/icons/size/rects）。
+產物：media/models_X/WorldItems/MinidoracatVehicleCapsule.fbx（所有型號共用一個 mesh）、
+atlas.icons 每張 512px 貼圖各一張 out/icon_<atlas 檔名>.png（外層腳本會安裝至 media/textures/；
+有 emit 的再多一張無光照的 out/icon_<atlas 檔名>_emit.png 供外層疊上發光花紋），
+以及 review 中用 atlas.empty/loaded 算的 model_*.png、side_neg_y.png、side_pos_y.png、
+ground_*.png 與 fbx_verify.txt。座標為公尺，膠囊長軸沿 +X，原點在
 底面中心（最低 z=0）；圓周 32 段、半球 8 段。貼圖的文字只由外層 PIL 畫入，字型為
 Barlow-SemiBold.ttf（SIL Open Font License 1.1，全文在 scripts/assets/fonts/OFL-Barlow.txt）。
 """
@@ -292,14 +294,25 @@ def hide_all_meshes(visible):
             ob.hide_render = ob is not visible
 
 
-def render_icon(ob, out_path, ortho=0.095):
+# Colour management per icon variant.  The approved icons were rendered with
+# Blender's factory grade for the empty capsule and the model-preview grade for
+# the loaded one (darker body, so the band reads); keep both explicit.  The
+# emissive pass (glow/sparkle mask atlas) is unlit and ungraded so a white texel
+# stays white; the outer builder merges it with ImageChops.lighter.
+ICON_GRADE = {False: ("AgX", "None", 0.0), True: ("Standard", "Medium High Contrast", -1.25)}
+EMIT_GRADE = ("Standard", "None", 0.0)
+
+
+def render_icon(ob, out_path, loaded, emissive=False, ortho=0.095):
     sc = bpy.context.scene
     hide_all_meshes(ob)
+    vs = sc.view_settings
+    vs.view_transform, vs.look, vs.exposure = EMIT_GRADE if emissive else ICON_GRADE[loaded]
     sc.render.engine = "BLENDER_WORKBENCH"
-    sc.display.shading.light = "STUDIO"
+    sc.display.shading.light = "FLAT" if emissive else "STUDIO"
     sc.display.shading.color_type = "TEXTURE"
     sc.display.shading.show_shadows = False
-    sc.display.shading.show_cavity = True
+    sc.display.shading.show_cavity = not emissive
     sc.display.shading.cavity_type = "WORLD"
     sc.render.film_transparent = True
     sc.render.image_settings.file_format = "PNG"
@@ -549,12 +562,18 @@ def main():
     # Side views are human QA only; render them once with the empty atlas.
     set_texture(tex_node, str(empty_path))
     render_side_views(capsule, str(review / "side_neg_y.png"), str(review / "side_pos_y.png"))
-    # Render empty variant and loaded variant with exactly the same mesh/material.
+    # Previews use the empty/loaded pair; icons cover every atlas with the same mesh/material/camera.
     for loaded, tex_path, stem in ((False, empty_path, "empty"), (True, loaded_path, "loaded")):
         set_texture(tex_node, str(tex_path))
-        render_icon(capsule, str(out / f"icon_{stem}.png"))
         render_model(capsule, str(review / f"model_{stem}.png"), loaded=loaded)
         render_ground(capsule, str(review / f"ground_{stem}.png"))
+    for entry in atlas["icons"]:
+        stem = Path(entry["atlas"]).stem
+        set_texture(tex_node, entry["atlas"])
+        render_icon(capsule, str(out / f"icon_{stem}.png"), entry["loaded"])
+        if entry["emit"]:
+            set_texture(tex_node, entry["emit"])
+            render_icon(capsule, str(out / f"icon_{stem}_emit.png"), entry["loaded"], emissive=True)
     # Re-import must happen after all renders because it resets the factory scene.
     verify_fbx(str(fbx_path), capsule, str(review / "fbx_verify.txt"))
     print("BUILD OK", fbx_path)

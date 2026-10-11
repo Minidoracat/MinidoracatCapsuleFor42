@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "收進膠囊",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "丟出膠囊",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "按下按鈕"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "按下按鈕",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

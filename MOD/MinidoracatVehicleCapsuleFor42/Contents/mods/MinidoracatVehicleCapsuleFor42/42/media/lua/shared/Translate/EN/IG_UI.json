@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Vehicle Capsule: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Unpack the vehicle to get this out",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "You own this vehicle",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Only the owner or players they shared %1 with can pack this vehicle",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Anyone can pack vehicles on this server",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Engine off, nobody inside",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Turn the engine off and get everyone out",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Empty capsule in your inventory",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "You need an empty capsule in your inventory",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "%1 items in the vehicle go into the capsule with it. Takes %2 seconds.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "The vehicle was not packed",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "the server could not save the record, ask an admin",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "this vehicle has data a capsule can't keep",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "the record is damaged, ask an admin",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "error %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "error %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Empty capsule in your inventory: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "An admin switched %1 off; pack with another type",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Pack into %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "An admin switched this capsule type off; pack with another type"
 }

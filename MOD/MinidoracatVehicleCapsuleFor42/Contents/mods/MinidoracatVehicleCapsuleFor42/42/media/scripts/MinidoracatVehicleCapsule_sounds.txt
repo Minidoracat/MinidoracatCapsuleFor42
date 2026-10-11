@@ -1,10 +1,10 @@
 module Base
 {
     /*
-        Vehicle Capsule sound effects (ElevenLabs; prompts in scripts/assets/sfx.json and sfx_v2..v5.json, take
+        Vehicle Capsule sound effects (ElevenLabs; prompts in scripts/assets/sfx.json and sfx_v2..v6.json, take
         selection and loudness in scripts/assets/build_sfx.py). Play with getSoundManager():PlayWorldSoundImpl("<name>", ...).
-        The four without a suffix are the cartoon effect style; the others belong to the other styles of the sandbox
-        option EffectStyle (client/MinidoracatVehicleCapsule/Effects.lua STYLES names which style uses which).
+        Four per capsule type (throw, pop, pack, button), every one different; shared/MinidoracatVehicleCapsule/Core.lua
+        M.TYPES names which type uses which. The four without a suffix are the cartoon type.
         Keys parsed by GameSoundScript.java (category/is3D/master; clip file/distanceMax/volume).
         Category Item like the vanilla throwables in sounds_throwable.txt; file clip like sounds_zombie_voice_tutorial.txt.
         Sound files must exist when the mod loads: files written at runtime never play.
@@ -45,7 +45,7 @@ module Base
         clip
         {
             file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButton.ogg,
-            distanceMax = 10,
+            distanceMax = 20,
         }
     }
 
@@ -55,36 +55,6 @@ module Base
         clip
         {
             file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowReal.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsuleThrowReal2
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowReal2.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsuleThrowSci
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowSci.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsuleThrowMagic
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowMagic.ogg,
             distanceMax = 20,
         }
     }
@@ -99,62 +69,42 @@ module Base
         }
     }
 
-    sound VehicleCapsulePopHeavyDrop
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopHeavyDrop.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsulePopSteam
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSteam.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsulePopSci
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSci.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsulePopMagic
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopMagic.ogg,
-            distanceMax = 20,
-        }
-    }
-
-    sound VehicleCapsulePopSmokeGrenade
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSmokeGrenade.ogg,
-            distanceMax = 20,
-        }
-    }
-
     sound VehicleCapsulePackReal
     {
         category = Item,
         clip
         {
             file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePackReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleButtonReal
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleThrowReal2
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowReal2.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePopHeavyDrop
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopHeavyDrop.ogg,
             distanceMax = 20,
         }
     }
@@ -169,12 +119,72 @@ module Base
         }
     }
 
+    sound VehicleCapsuleButtonDust
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonDust.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleThrowSteam
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePopSteam
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
     sound VehicleCapsulePackSteam
     {
         category = Item,
         clip
         {
             file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePackSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleButtonSwitch
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonSwitch.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleThrowSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePopSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSci.ogg,
             distanceMax = 20,
         }
     }
@@ -189,6 +199,36 @@ module Base
         }
     }
 
+    sound VehicleCapsuleButtonSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleThrowMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePopMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
     sound VehicleCapsulePackMagic
     {
         category = Item,
@@ -199,43 +239,53 @@ module Base
         }
     }
 
-    sound VehicleCapsuleButtonReal
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonReal.ogg,
-            distanceMax = 10,
-        }
-    }
-
-    sound VehicleCapsuleButtonSwitch
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonSwitch.ogg,
-            distanceMax = 10,
-        }
-    }
-
-    sound VehicleCapsuleButtonSci
-    {
-        category = Item,
-        clip
-        {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonSci.ogg,
-            distanceMax = 10,
-        }
-    }
-
     sound VehicleCapsuleButtonMagic
     {
         category = Item,
         clip
         {
             file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonMagic.ogg,
-            distanceMax = 10,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleThrowShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleThrowShock.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePopSmokeGrenade
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSmokeGrenade.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsulePackShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePackShock.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound VehicleCapsuleButtonShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsuleButtonShock.ogg,
+            distanceMax = 20,
         }
     }
 }

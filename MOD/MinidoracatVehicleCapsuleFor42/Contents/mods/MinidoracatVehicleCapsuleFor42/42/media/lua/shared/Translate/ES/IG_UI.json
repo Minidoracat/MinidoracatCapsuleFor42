@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Cápsula de vehículo: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Despliega el vehículo para sacar esto",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Eres el dueño de este vehículo",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Solo el dueño o quien tenga el permiso «%1» compartido puede guardar este vehículo",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "En este servidor cualquiera puede guardar vehículos",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Motor apagado, nadie dentro",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Apaga el motor y haz que bajen todos",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Tienes una cápsula vacía en el inventario",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Necesitas una cápsula vacía en el inventario",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Los %1 objetos del vehículo entran en la cápsula con él. Tarda %2 segundos.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "El vehículo no se guardó",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "el servidor no pudo guardar el registro, pregunta a un administrador",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "este vehículo tiene datos que una cápsula no puede conservar",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "el registro está dañado, pregunta a un administrador",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "error %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "error %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Tienes una cápsula vacía en el inventario: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "Un administrador desactivó la %1; guarda el vehículo con otro tipo",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Guardar en %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Un administrador desactivó este tipo de cápsula; guarda el vehículo con otro tipo"
 }

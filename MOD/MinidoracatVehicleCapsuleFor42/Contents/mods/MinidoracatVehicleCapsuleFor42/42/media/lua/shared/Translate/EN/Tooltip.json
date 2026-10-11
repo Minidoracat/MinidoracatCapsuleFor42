@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 parts",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "and %1 more kinds",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Packed by"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Packed by",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "Type",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! An admin switched this type off: it cannot pack vehicles now",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "White cartoon smoke and cartoon sounds",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Grey smoke, mechanical and air pressure sounds",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "A dust burst along the ground, a heavy landing thud",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "White steam, a steam blast",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "A light column and a ring on the ground, energy sounds",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "Lavender smoke with sparkles, magic sounds",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "A white flash and a shockwave along the ground, a smoke grenade sound"
 }

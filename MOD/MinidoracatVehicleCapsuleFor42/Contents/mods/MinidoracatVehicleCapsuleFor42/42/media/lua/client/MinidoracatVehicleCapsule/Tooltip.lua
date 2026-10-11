@@ -3,6 +3,7 @@
 -- draw first, measures how far it drew and adds one box under it. Nothing is written in render: the summary comes
 -- from Info (requested once, cached), the lines are built once per summary.
 require "MinidoracatVehicleCapsule/Core"
+require "MinidoracatVehicleCapsule/Rules"
 require "MinidoracatVehicleCapsule/Info"
 require "ISUI/ISToolTipInv"
 local M = MinidoracatVehicleCapsule
@@ -12,7 +13,7 @@ local Tooltip = {}
 M.Tooltip = Tooltip
 
 local PAD, GAP = 5, 10
-local loading, emptyLines -- built on first use (translations are ready by then)
+local loading, empties -- built on first use (translations are ready by then); empties: "<type id><0|1>" -> rows
 
 local function ownSlots(self)
     local rect, border
@@ -79,15 +80,28 @@ local function appendBox(self, rows, bottom)
     end
 end
 
--- Rows for a capsule item, or nil for any other item. Built once per summary and kept on it.
+-- The "Type" row: the type's look and sounds in words, so the type never shows by colour alone.
+local function typeRow(t)
+    return { T("Type"), T("Look_" .. t.id) }
+end
+
+-- Rows for a capsule item, or nil for any other item. Built once per summary (empty capsules: per type and switch)
+-- and kept.
 function Tooltip.rows(item)
     if not item or not item.getFullType then return nil end -- ISToolTipInv also shows energy and fluid bars
-    local ft = item:getFullType()
-    if ft == M.ITEM_EMPTY then
-        emptyLines = emptyLines or { { "", T("Empty"), "muted" } }
-        return emptyLines
+    local t = M.typeOf(item)
+    if not t then return nil end
+    if M.isEmpty(item) then
+        local on = M.Rules.typeOn(t)
+        local key = t.id .. (on and "1" or "0")
+        empties = empties or {}
+        if not empties[key] then
+            local rows = { typeRow(t), { "", T("Empty"), "muted" } }
+            if not on then rows[#rows + 1] = { "", T("TypeOff"), "warn" } end -- the text starts with a "!" mark
+            empties[key] = rows
+        end
+        return empties[key]
     end
-    if ft ~= M.ITEM_LOADED then return nil end
     local r = Info.get(item:getID())
     if not r then
         loading = loading or { { "", T("Loading"), "muted" } }
@@ -100,9 +114,10 @@ function Tooltip.rows(item)
     else
         local status = Info.status(r)
         if status and r.state ~= "PACKED" then
-            rows = { { T("Vehicle"), Info.carName(r.script, r.name) }, { "", status, "warn" } }
+            rows = { typeRow(t), { T("Vehicle"), Info.carName(r.script, r.name) }, { "", status, "warn" } }
         else
             rows = Info.rows(r, false)
+            table.insert(rows, 1, typeRow(t))
             if status then rows[#rows + 1] = { "", status, "warn" } end
             rows[#rows + 1] = { "", T("PreviewHint"), "muted" }
         end

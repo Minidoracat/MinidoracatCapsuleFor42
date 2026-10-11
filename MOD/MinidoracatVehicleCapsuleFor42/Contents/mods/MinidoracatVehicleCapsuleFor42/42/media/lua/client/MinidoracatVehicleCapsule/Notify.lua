@@ -22,11 +22,12 @@ local function remember(kind, title, text)
     M.log("NOTIFY " .. kind .. " " .. tostring(title) .. " | " .. tostring(text))
 end
 
-function Notify.toast(title, text, bad)
+-- holdMs: how long it stays (framework default 3 s); failures the player must act on go to Notify.dialog instead.
+function Notify.toast(title, text, bad, holdMs)
     remember(bad and "toast-bad" or "toast", title, text)
     local UI = ui()
     if UI and UI.CAPABILITIES.toast then
-        UI.Toast.show({ title = title, message = text or title, maxLines = 4 })
+        UI.Toast.show({ title = title, message = text or title, maxLines = 4, holdMs = holdMs })
         return
     end
     local player = getPlayer()
@@ -40,7 +41,7 @@ function Notify.dialog(title, text)
     remember("dialog", title, text)
     local UI = ui()
     if UI and UI.CAPABILITIES.dialog then
-        Notify.current = UI.Dialog.show({ title = title, text = text, width = 420,
+        Notify.current = UI.Dialog.show({ title = title, text = text, width = 420, opaque = true,
             confirmText = getText("IGUI_MinidoracatVehicleCapsule_GotIt") })
         return
     end
@@ -106,13 +107,14 @@ function Handlers.capsuleInfo(args)
     if M.ThrowCursor then M.ThrowCursor.onInfo(args) end
 end
 
+-- A refused pack stays until the player closes it (a toast faded in 3 s while they looked elsewhere; review).
 function Handlers.packed(args)
     if args.ok then return end
     local text = Notify.reason(args.why)
     -- refused for permission: the same reason the menu row gives (VehicleManager's wording included)
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
-    Notify.toast(getText("IGUI_MinidoracatVehicleCapsule_PackFailed"), text, true)
+    Notify.dialog(getText("IGUI_MinidoracatVehicleCapsule_PackFailed"), text)
 end
 
 function Handlers.landed(args)
@@ -132,7 +134,7 @@ function Handlers.landed(args)
         Notify.dialog(getText("IGUI_MinidoracatVehicleCapsule_UsedTitle"),
             getText("IGUI_MinidoracatVehicleCapsule_UsedBody", stamp(args.t), state, tostring(args.capsuleId)))
     else
-        Notify.toast(getText("IGUI_MinidoracatVehicleCapsule_UnpackFailed"), Notify.reason(args.why), true)
+        Notify.dialog(getText("IGUI_MinidoracatVehicleCapsule_UnpackFailed"), Notify.reason(args.why))
     end
 end
 

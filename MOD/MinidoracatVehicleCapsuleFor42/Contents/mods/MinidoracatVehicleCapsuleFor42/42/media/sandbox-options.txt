@@ -1,6 +1,6 @@
 VERSION = 1,
 
-/* 車輛膠囊。選項鍵不可改名。戰利品頁的值也是管理面板「戰利品」分頁改的那一組（不另存設定）。 */
+/* 車輛膠囊。選項鍵不可改名。三頁的值也是管理面板「設定」「種類」「戰利品」分頁改的那一組（不另存設定）。 */
 
 /* ===== MinidoracatVehicleCapsule：一般 ===== */
 
@@ -16,10 +16,6 @@ option MinidoracatVehicleCapsule.PackPermission
 option MinidoracatVehicleCapsule.ZombieSoundRadius
 {type = integer, min = 0, max = 50, default = 0, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ZombieSoundRadius,}
 
-/* 收車、丟出與展開的煙霧和音效（client/Effects.lua 的 STYLES 依序）：1 卡通 2 寫實 3 塵土重落 4 蒸汽 5 科幻 6 魔法 7 衝擊環。只是畫面和聲音，每個客戶端自己畫，不影響殭屍 */
-option MinidoracatVehicleCapsule.EffectStyle
-{type = enum, numValues = 7, default = 1, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_EffectStyle,}
-
 /* 不用展開車也能從裝了車的膠囊拿出貨物（只能拿出，放不進去）。紀錄要已落盤：剛收好約 5 秒內、當機前未確認、已展開的膠囊照樣鎖住（Rules.cargoOpen） */
 option MinidoracatVehicleCapsule.AllowCargoTakeOut
 {type = boolean, default = false, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_AllowCargoTakeOut,}
@@ -27,6 +23,59 @@ option MinidoracatVehicleCapsule.AllowCargoTakeOut
 /* 已結束的紀錄（已展開且落盤、已補回、作廢）最後一筆事件超過幾天就從紀錄檔刪掉（Index.prune）；收起中與當機前未確認的永遠保留 */
 option MinidoracatVehicleCapsule.RecordRetentionDays
 {type = integer, min = 1, max = 90, default = 30, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_RecordRetentionDays,}
+
+/* ===== MinidoracatVehicleCapsuleTypes：膠囊種類（shared/Core.lua M.TYPES 依序；每種兩個：可以用來收車、出現在戰利品）。
+   關掉「使用」只擋收車：已裝車的照樣能丟出、按按鈕展開，也照樣還同一種空膠囊（Rules.typeOn）；戰利品要兩個都開才掉（Loot.items），
+   地點的權重由會掉的種類平分。預設七種全開（設計稿 vcap-types-1012 使用者裁定） ===== */
+
+/* 卡通 */
+option MinidoracatVehicleCapsule.TypeCartoon
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeCartoon,}
+
+option MinidoracatVehicleCapsule.TypeCartoonLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeCartoonLoot,}
+
+/* 寫實 */
+option MinidoracatVehicleCapsule.TypeReal
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeReal,}
+
+option MinidoracatVehicleCapsule.TypeRealLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeRealLoot,}
+
+/* 塵土 */
+option MinidoracatVehicleCapsule.TypeDust
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeDust,}
+
+option MinidoracatVehicleCapsule.TypeDustLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeDustLoot,}
+
+/* 蒸汽 */
+option MinidoracatVehicleCapsule.TypeSteam
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeSteam,}
+
+option MinidoracatVehicleCapsule.TypeSteamLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeSteamLoot,}
+
+/* 科幻 */
+option MinidoracatVehicleCapsule.TypeSciFi
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeSciFi,}
+
+option MinidoracatVehicleCapsule.TypeSciFiLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeSciFiLoot,}
+
+/* 魔法 */
+option MinidoracatVehicleCapsule.TypeMagic
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeMagic,}
+
+option MinidoracatVehicleCapsule.TypeMagicLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeMagicLoot,}
+
+/* 衝擊 */
+option MinidoracatVehicleCapsule.TypeShock
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeShock,}
+
+option MinidoracatVehicleCapsule.TypeShockLoot
+{type = boolean, default = true, page = MinidoracatVehicleCapsuleTypes, translation = MinidoracatVehicleCapsule_TypeShockLoot,}
 
 /* ===== MinidoracatVehicleCapsuleLoot：戰利品（四個地點各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
 

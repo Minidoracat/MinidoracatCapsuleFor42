@@ -13,8 +13,9 @@
 第 2–4 版候選（提示詞 scripts/assets/sfx_v2.json–sfx_v4.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
 temp/assets-review/sfx-v<N>/index.html）用 `v<N>:<ID>` 指定 temp/assets-review/sfx-v<N>/<Name>_<ID>.wav，例如：
     uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v4:P19
-第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）沒有 <Name>_<ID>.wav，
-`v5:<ID>` 直接讀 ElevenLabs 原始 take temp/assets-review/sfx-v5/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
+第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）與第 6 版（七種款式補錄的 5 段，
+scripts/assets/sfx_v6.json，試聽挑選頁 scripts/assets/pick_sfx.py）沒有 <Name>_<ID>.wav，`v5:<ID>`／`v6:<ID>` 直接讀
+ElevenLabs 原始 take temp/assets-review/sfx-v<N>/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
 整理：4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB（-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
 再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
 """
@@ -47,8 +48,8 @@ SPEC = {
     "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
     "VehicleCapsuleButton": ((0.15, 0.5), 4),
 }
-# 效果樣式（沙盒 EffectStyle，client/Effects.lua 的 STYLES；2026-10-12 使用者看過演示頁 fx-v1 後：「效果都很好，做成管理面板的
-# 選項」）：演示頁七個套組的預設選擇（同一句提示詞裡長度合格、頻譜重心最低的 take，沒人耳挑過）。名稱＝VehicleCapsule＋提示詞 id。
+# 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條；2026-10-12 使用者看過演示頁 fx-v1：「效果都很好」）：
+# 演示頁套組的預設選擇（同一句提示詞裡長度合格、頻譜重心最低的 take，沒人耳挑過）。名稱＝VehicleCapsule＋提示詞 id。
 THROW, POP, PACK, BUTTON = (0.25, 0.9), (0.3, 1.7), (0.4, 1.6), (0.06, 0.7)
 SPEC.update({
     "VehicleCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
@@ -71,8 +72,18 @@ SPEC.update({
     "VehicleCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
     "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_3"),
 })
-# 先過 SOFT 再整理響度：原檔頻譜重心超過 4 kHz、而且是容易刺耳的音色（閃光、電子音；design_fx.py 同一條規則）
-SOFTEN = {"VehicleCapsuleThrowSci", "VehicleCapsuleThrowMagic", "VehicleCapsulePackMagic"}
+# 七種款式（設計稿 vcap-types-1012；2026-10-12 使用者：「28 段全部由你挑」、卡通維持）：原本借用別款的 5 段新錄
+# （提示詞 scripts/assets/sfx_v6.json，`v6:<ID>` 讀 sfx-v6/raw）。暫選同一條規則（長度合格、頻譜重心最低），等使用者在
+# 試聽頁（scripts/assets/pick_sfx.py）挑完，連同其他 19 段一起換成使用者選的 take。
+SPEC.update({
+    "VehicleCapsuleThrowSteam": (THROW, "v6:ThrowSteam_1"),
+    "VehicleCapsuleThrowShock": (THROW, "v6:ThrowShock_3"),
+    "VehicleCapsulePackShock": (PACK, "v6:PackShock_3"),
+    "VehicleCapsuleButtonDust": (BUTTON, "v6:ButtonDust_1"),
+    "VehicleCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
+})
+# 先過 SOFT 再整理響度：原檔頻譜重心超過 4 kHz、而且是容易刺耳的音色（閃光、電子音；design_fx.py、pick_sfx.py 同一條規則）
+SOFTEN = {"VehicleCapsuleThrowSci", "VehicleCapsuleThrowMagic", "VehicleCapsulePackMagic", "VehicleCapsuleButtonShock"}
 SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
 TARGET_RMS_DB = -18.0
 # 第 4 輪使用者：「蹦的聲音可以大一點，要有炸開的感覺」，出車的蹦聲（每個效果樣式的 VehicleCapsulePop*）提高 4 dB。

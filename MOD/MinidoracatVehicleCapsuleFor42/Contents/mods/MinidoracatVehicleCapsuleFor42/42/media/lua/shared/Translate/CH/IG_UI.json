@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "車輛膠囊：%1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1：%2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "展開車才拿得到",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "你是車主",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "只有車主，或車主分享「%1」權限的人能收這台車",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "這台伺服器任何人都能收車",
     "IGUI_MinidoracatVehicleCapsule_Idle": "引擎已熄火，車上沒有人",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "先熄火，並讓車上的人下車",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "背包裡有空膠囊",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "背包裡要有一顆空膠囊",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "車上 %1 件物品會一起收進膠囊。需要 %2 秒。",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "沒有收進膠囊",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "伺服器無法寫入紀錄，請找管理員",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "這台車有膠囊存不了的資料",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "紀錄損毀，請找管理員",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "錯誤：%1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "錯誤：%1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "背包裡有空膠囊：%1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "管理員停用了%1，換一種膠囊再收",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "收進%1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "管理員停用了這種膠囊，換一種膠囊再收"
 }

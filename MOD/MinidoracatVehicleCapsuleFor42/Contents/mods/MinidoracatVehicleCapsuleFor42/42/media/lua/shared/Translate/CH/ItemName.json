@@ -1,4 +1,16 @@
 {
-    "MinidoracatVehicleCapsule.Capsule": "車輛膠囊",
-    "MinidoracatVehicleCapsule.LoadedCapsule": "車輛膠囊（已收車）"
+    "MinidoracatVehicleCapsule.CapsuleCartoon": "卡通膠囊",
+    "MinidoracatVehicleCapsule.CapsuleReal": "寫實膠囊",
+    "MinidoracatVehicleCapsule.CapsuleDust": "塵土膠囊",
+    "MinidoracatVehicleCapsule.CapsuleSteam": "蒸汽膠囊",
+    "MinidoracatVehicleCapsule.CapsuleSciFi": "科幻膠囊",
+    "MinidoracatVehicleCapsule.CapsuleMagic": "魔法膠囊",
+    "MinidoracatVehicleCapsule.CapsuleShock": "衝擊膠囊",
+    "MinidoracatVehicleCapsule.LoadedCapsuleCartoon": "卡通膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleReal": "寫實膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleDust": "塵土膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSteam": "蒸汽膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSciFi": "科幻膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleMagic": "魔法膠囊（已收車）",
+    "MinidoracatVehicleCapsule.LoadedCapsuleShock": "衝擊膠囊（已收車）"
 }

@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Fahrzeugkapsel: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Entpacke das Fahrzeug, um das herauszuholen",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Dir gehört dieses Fahrzeug",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Nur der Besitzer und Spieler, mit denen er „%1“ geteilt hat, können dieses Fahrzeug einpacken",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Auf diesem Server kann jeder Fahrzeuge einpacken",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Motor aus, niemand drin",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Stell den Motor ab und lass alle aussteigen",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Leere Kapsel im Inventar",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Du brauchst eine leere Kapsel im Inventar",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "%1 Gegenstände im Fahrzeug kommen mit in die Kapsel. Dauert %2 Sekunden.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "Das Fahrzeug wurde nicht eingepackt",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "der Server konnte den Eintrag nicht speichern, frag einen Admin",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "dieses Fahrzeug hat Daten, die eine Kapsel nicht behalten kann",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "der Eintrag ist beschädigt, frag einen Admin",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "Fehler %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "Fehler %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Leere Kapsel im Inventar: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "Ein Admin hat die %1 abgeschaltet; nimm zum Einpacken einen anderen Typ",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Einpacken: %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Ein Admin hat diesen Kapseltyp abgeschaltet; nimm zum Einpacken einen anderen Typ"
 }

@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "Kapsüle koy",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "Kapsülü fırlat",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "Düğmeye bas"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "Düğmeye bas",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

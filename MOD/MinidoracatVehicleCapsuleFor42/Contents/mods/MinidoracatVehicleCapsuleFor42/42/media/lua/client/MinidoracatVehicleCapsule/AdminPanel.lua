@@ -1,14 +1,16 @@
--- Vehicle Capsule (client): the admin panel, opened from the family Dock (MinidoracatUIFor42 rev 13).
+-- Vehicle Capsule (client): the admin panel, opened from the family Dock (MinidoracatUIFor42 rev 18).
 --   Records: search by capsule id or player, state chips (crash-uncertain and "not seen for a week" among them), one
 --     page of 50 rows from the server index, and the detail of the selected capsule: timeline, cargo list, last
 --     sighting, go to the recorded spot or to the last sighting, restore, and the verdicts "car is there, close" /
 --     "car is gone" for records a crash left uncertain.
 --     Every action is a server command (server/AdminCommands.lua) checked there; this file only shows replies.
---   Settings and Loot: every sandbox option of the mod (Settings: return an empty capsule, who can pack, the zombie
---     radius of the capsule sound, the effect style (with a preview played here only), taking cargo out, days to keep
---     closed records; Loot: the master switch and the four places with their weights). They are the sandbox options of
---     the vanilla sandbox pages and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771),
---     so the server checks Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
+--   Settings, Types and Loot: every sandbox option of the mod (Settings: return an empty capsule, who can pack, the
+--     zombie radius of the capsule sound, taking cargo out, days to keep closed records; Types: per capsule type the
+--     use and loot switches, "List..." into Minidoracat Economy's shop and a preview played here only; Loot: the
+--     master switch and the four places with their weights). They are the sandbox options of the vanilla sandbox pages
+--     and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the server checks
+--     Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
+--   The window is opaque (text over other windows stayed under 4.5:1; design vcap-types-1012 review).
 -- Entry: Dock (visible for admins, player option "show in the Dock"); without the Dock, the world context menu.
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Info"
@@ -101,7 +103,7 @@ function Panel.toggle()
     if w and w.win:getIsVisible() then w.win:close() else Panel.open() end
 end
 
-local dockIcon = "media/textures/Item_MinidoracatVehicleCapsuleLoaded.png"
+local dockIcon = "media/textures/Item_MinidoracatVehicleCapsuleCartoonLoaded.png"
 docked = Kit.ok and Kit.CAPS.dock == true and Kit.UI.Dock ~= nil and Kit.UI.Dock.register({
     id = "vehiclecapsule", order = 50, icon = dockIcon,
     label = function() return U("PanelTitle") end,
@@ -248,18 +250,21 @@ function Win.new()
     local w, h = math.min(980, sw - 40), math.min(720, sh - 40)
     self.w, self.h = w, h
     self.win = UI.Window.new({ x = math.floor((sw - w) / 2), y = math.floor((sh - h) / 2), width = w, height = h,
-        title = U("PanelTitle"), theme = theme, icon = "carPickup", onClose = function() end })
+        title = U("PanelTitle"), theme = theme, icon = "carPickup", opaque = true, onClose = function() end })
     local top = self.win:contentTop() + GAP
     self.tabs = UI.Tabs.new({ x = PAD, y = top, items = { { id = "records", label = U("TabRecords") },
-        { id = "settings", label = U("TabSettings") }, { id = "loot", label = U("TabLoot") } }, selected = "records",
+        { id = "settings", label = U("TabSettings") }, { id = "types", label = U("TabTypes") },
+        { id = "loot", label = U("TabLoot") } }, selected = "records",
         theme = theme, target = self, onSelect = function(target, id) target:showTab(id) end })
     self.win:addChild(self.tabs)
     local py = top + self.tabs.height + GAP
     self.records = newPane(self.win, 0, py, w, h - py)
     self.settings = newPane(self.win, 0, py, w, h - py)
+    self.types = newPane(self.win, 0, py, w, h - py)
     self.loot = newPane(self.win, 0, py, w, h - py)
     self:buildRecords(self.records)
     self:buildSettings(self.settings)
+    self:buildTypes(self.types)
     self:buildLoot(self.loot)
     self:showTab("records")
     return self
@@ -269,8 +274,10 @@ function Win:showTab(id)
     self.tab = id
     self.records:setVisible(id == "records")
     self.settings:setVisible(id == "settings")
+    self.types:setVisible(id == "types")
     self.loot:setVisible(id == "loot")
     if id == "settings" then self:loadSettings() end
+    if id == "types" then self:loadTypes() end
     if id == "loot" then self:loadLoot() end
 end
 
@@ -617,88 +624,56 @@ function Win:onAction(cmd, res)
     if self.pickedId then Panel.send("adminDetail", { id = self.pickedId }) end
 end
 
--- ------------------------------------------------ loot tab
+-- ------------------------------------------------ config tabs (settings, types, loot)
 
-Panel.PLACES = {
-    { "LootMechanic", "LootMechanicWeight" },
-    { "LootCarSupply", "LootCarSupplyWeight" },
-    { "LootGasStation", "LootGasStationWeight" },
-    { "LootGarage", "LootGarageWeight" },
-}
+-- The three sandbox tabs share one frame: the rows in a scroll area (UI.ScrollPanel, rev 16) over a fixed footer with
+-- "Discard", "Apply" and the status line, so Apply stays on screen however tall the rows get (French text reached
+-- y=687 of the 720-high window; review). body: a pane in the scroll area, under the controls, that draws the labels;
+-- its height sets the scroll height. A tab's fields carry its prefix: a set* field would shadow a Win method (setMsg).
+local FOOT = CH + GAP * 2
+
+local function newConfig(self, p, onDiscard, onApply)
+    local c = {}
+    c.scroll = UI.ScrollPanel.new({ x = 0, y = 0, width = p.width, height = p.height - FOOT, theme = theme })
+    p:addChild(c.scroll)
+    c.w = c.scroll:contentWidth()
+    c.body = newPane(c.scroll, 0, 0, c.w, 1)
+    local y = p.height - FOOT + GAP
+    c.discard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
+        onClick = onDiscard })
+    c.apply = UI.Button.new({ x = PAD + c.discard.width + GAP, y = y, height = CH, title = U("Apply"),
+        style = "primary", theme = theme, target = self, onClick = onApply })
+    p:addChild(c.discard)
+    p:addChild(c.apply)
+    c.msgX = c.apply:getX() + c.apply.width + GAP * 2
+    c.msgY = y + math.floor((CH - FH) / 2)
+    p.draw = function(el)
+        if c.msgFit then text(el, c.msgFit, c.msgX, c.msgY, c.msgToken or "accent") end
+    end
+    return c
+end
+
+-- The footer's status line, fitted here (draw does not allocate). nil clears it.
+local function setStatus(c, msg, token)
+    c.msgToken = token
+    c.msgFit = msg and fit(msg, c.w - c.msgX - PAD) or nil
+end
+
+-- Every paragraph of a text wrapped to w (a translation's "\n" starts a paragraph).
+local function paragraphs(s, w)
+    local out = {}
+    for para in string.gmatch(tostring(s) .. "\n", "([^\n]*)\n") do
+        if para ~= "" then
+            for _, line in ipairs(Kit.wrap(para, w)) do out[#out + 1] = line end
+        end
+    end
+    return out
+end
 
 local function option(key)
     local opts = getSandboxOptions()
     local o = opts and opts:getOptionByName("MinidoracatVehicleCapsule." .. key)
     return o and o:getValue()
-end
-
-local function fmtWeight(v) return string.format("%.1f", v) end
-
-function Win:buildLoot(p)
-    local w = p.width
-    local y = 0
-    self.lootRows = {}
-    self.master = UI.Checkbox.new({ x = PAD, y = y, width = w - PAD * 2, label = getText("Sandbox_MinidoracatVehicleCapsule_LootEnabled"),
-        theme = theme, target = self, onChange = function(t) t:lootChanged() end })
-    p:addChild(self.master)
-    y = y + CH + GAP * 2
-    local sliderW = 260
-    for i, pl in ipairs(Panel.PLACES) do
-        local box = UI.Checkbox.new({ x = PAD + 16, y = y, width = w - PAD * 2 - sliderW - 40,
-            label = getText("Sandbox_MinidoracatVehicleCapsule_" .. pl[1]), theme = theme, target = self,
-            onChange = function(t) t:lootChanged() end })
-        local slider = UI.Slider.new({ x = w - PAD - sliderW, y = y, width = sliderW, min = 0, max = 10, step = 0.1,
-            value = 0, theme = theme, format = fmtWeight, target = self, onChange = function(t) t:lootChanged() end })
-        p:addChild(box)
-        p:addChild(slider)
-        self.lootRows[i] = { box = box, slider = slider, y = y,
-            tables = getText("Sandbox_MinidoracatVehicleCapsule_" .. pl[1] .. "_tooltip") }
-        y = y + CH + FH + GAP
-    end
-    self.lootNoteY = y
-    y = y + FH * 2 + GAP
-    self.lootDiscard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
-        onClick = function(t) t:loadLoot() end })
-    self.lootApply = UI.Button.new({ x = PAD + self.lootDiscard.width + GAP, y = y, height = CH, title = U("Apply"),
-        style = "primary", theme = theme, target = self, onClick = function(t) t:applyLoot() end })
-    p:addChild(self.lootDiscard)
-    p:addChild(self.lootApply)
-    self.lootMsgY = y + CH + GAP
-    p.draw = function(el)
-        for _, r in ipairs(self.lootRows) do
-            text(el, fit(r.tables, el.width - PAD * 2 - 60), PAD + 56, r.y + CH, "textFaint")
-        end
-        local ny = self.lootNoteY
-        for _, line in ipairs(self.lootNote or {}) do
-            text(el, line, PAD, ny, "textMuted")
-            ny = ny + FH
-        end
-        if self.lootMsg then text(el, self.lootMsg, PAD, self.lootMsgY, self.lootMsgToken or "accent") end
-    end
-    self.lootNote = Kit.wrap(U("LootNote"), w - PAD * 2)
-end
-
--- Values the dialog started from (current native options) into the controls.
-function Win:loadLoot()
-    self.lootBase = { LootEnabled = option("LootEnabled") ~= false }
-    self.master:setChecked(self.lootBase.LootEnabled, true)
-    for i, pl in ipairs(Panel.PLACES) do
-        local on, wt = option(pl[1]) ~= false, tonumber(option(pl[2])) or 0
-        self.lootBase[pl[1]], self.lootBase[pl[2]] = on, wt
-        self.lootRows[i].box:setChecked(on, true)
-        self.lootRows[i].slider:setValue(wt, true)
-    end
-    self.lootMsg = nil
-    self:lootChanged()
-end
-
-function Win:lootDraft()
-    local d = { LootEnabled = self.master:getChecked() }
-    for i, pl in ipairs(Panel.PLACES) do
-        d[pl[1]] = self.lootRows[i].box:getChecked()
-        d[pl[2]] = self.lootRows[i].slider:getValue()
-    end
-    return d
 end
 
 -- Draft values that differ from the base: { { key, value } }. Numbers compare at one decimal (the weight sliders'
@@ -711,24 +686,6 @@ local function diff(draft, base)
         if differ then out[#out + 1] = { k, v } end
     end
     return out
-end
-
-function Win:lootChanges()
-    return diff(self:lootDraft(), self.lootBase)
-end
-
-function Win:lootChanged()
-    local allowed = Panel.canEditSandbox(getSpecificPlayer(0))
-    local n = #self:lootChanges()
-    local on = self.master:getChecked()
-    for _, r in ipairs(self.lootRows) do
-        r.box:setEnabled(on and allowed)
-        r.slider:setEnabled(on and allowed and r.box:getChecked())
-    end
-    self.master:setEnabled(allowed)
-    self.lootApply:setEnabled(allowed and n > 0)
-    self.lootDiscard:setEnabled(n > 0)
-    if not allowed then self.lootMsg, self.lootMsgToken = U("NoSandboxRight"), "errorText" end
 end
 
 -- Same path as the vanilla sandbox page: MP sends a full copy (the server checks Capability.SandboxOptions, saves
@@ -747,83 +704,358 @@ function Panel.applySandbox(changes)
     end
 end
 
+-- ------------------------------------------------ loot tab
+
+Panel.PLACES = {
+    { "LootMechanic", "LootMechanicWeight" },
+    { "LootCarSupply", "LootCarSupplyWeight" },
+    { "LootGasStation", "LootGasStationWeight" },
+    { "LootGarage", "LootGarageWeight" },
+}
+
+local function fmtWeight(v) return string.format("%.1f", v) end
+
+-- Weight sliders carry their name for keyboard and gamepad focus and their vanilla tooltip (the scale).
+function Win:buildLoot(p)
+    local c = newConfig(self, p, function(t) t:loadLoot() end, function(t) t:applyLoot() end)
+    self.lootCfg = c
+    local s, w = c.scroll, c.w
+    local y = GAP
+    self.lootRows = {}
+    self.master = UI.Checkbox.new({ x = PAD, y = y, width = w - PAD * 2, theme = theme, target = self,
+        label = getText("Sandbox_MinidoracatVehicleCapsule_LootEnabled"),
+        tooltip = getTextOrNull("Sandbox_MinidoracatVehicleCapsule_LootEnabled_tooltip"),
+        onChange = function(t) t:lootChanged() end })
+    s:addChild(self.master)
+    y = y + CH + GAP * 2
+    local sliderW = 260
+    for i, pl in ipairs(Panel.PLACES) do
+        local box = UI.Checkbox.new({ x = PAD + 16, y = y, width = w - PAD * 2 - sliderW - 40,
+            label = getText("Sandbox_MinidoracatVehicleCapsule_" .. pl[1]), theme = theme, target = self,
+            onChange = function(t) t:lootChanged() end })
+        local slider = UI.Slider.new({ x = w - PAD - sliderW, y = y, width = sliderW, min = 0, max = 10, step = 0.1,
+            value = 0, theme = theme, format = fmtWeight, target = self,
+            tooltip = getTextOrNull("Sandbox_MinidoracatVehicleCapsule_" .. pl[2] .. "_tooltip"),
+            onChange = function(t) t:lootChanged() end })
+        slider._focusLabel = getText("Sandbox_MinidoracatVehicleCapsule_" .. pl[2])
+        s:addChild(box)
+        s:addChild(slider)
+        local tables = paragraphs(getText("Sandbox_MinidoracatVehicleCapsule_" .. pl[1] .. "_tooltip"), w - PAD * 2 - 56)
+        self.lootRows[i] = { box = box, slider = slider, y = y, tables = tables }
+        y = y + CH + #tables * FH + GAP
+    end
+    self.lootNote = paragraphs(U("LootNote"), w - PAD * 2)
+    self.lootNoteY = y + GAP
+    c.body:setHeight(self.lootNoteY + #self.lootNote * FH + GAP)
+    c.body.draw = function(el)
+        for _, r in ipairs(self.lootRows) do
+            for k, line in ipairs(r.tables) do text(el, line, PAD + 56, r.y + CH + (k - 1) * FH, "textMuted") end
+        end
+        local ny = self.lootNoteY
+        for _, line in ipairs(self.lootNote) do
+            text(el, line, PAD, ny, "textMuted")
+            ny = ny + FH
+        end
+    end
+end
+
+-- Values the dialog started from (current native options) into the controls.
+function Win:loadLoot()
+    self.lootBase = { LootEnabled = option("LootEnabled") ~= false }
+    self.master:setChecked(self.lootBase.LootEnabled, true)
+    for i, pl in ipairs(Panel.PLACES) do
+        local on, wt = option(pl[1]) ~= false, tonumber(option(pl[2])) or 0
+        self.lootBase[pl[1]], self.lootBase[pl[2]] = on, wt
+        self.lootRows[i].box:setChecked(on, true)
+        self.lootRows[i].slider:setValue(wt, true)
+    end
+    setStatus(self.lootCfg, nil)
+    self:lootChanged()
+end
+
+function Win:lootDraft()
+    local d = { LootEnabled = self.master:getChecked() }
+    for i, pl in ipairs(Panel.PLACES) do
+        d[pl[1]] = self.lootRows[i].box:getChecked()
+        d[pl[2]] = self.lootRows[i].slider:getValue()
+    end
+    return d
+end
+
+function Win:lootChanges()
+    return diff(self:lootDraft(), self.lootBase)
+end
+
+function Win:lootChanged()
+    local allowed = Panel.canEditSandbox(getSpecificPlayer(0))
+    local n = #self:lootChanges()
+    local on = self.master:getChecked()
+    for _, r in ipairs(self.lootRows) do
+        r.box:setEnabled(on and allowed)
+        r.slider:setEnabled(on and allowed and r.box:getChecked())
+    end
+    self.master:setEnabled(allowed)
+    self.lootCfg.apply:setEnabled(allowed and n > 0)
+    self.lootCfg.discard:setEnabled(n > 0)
+    if not allowed then setStatus(self.lootCfg, U("NoSandboxRight"), "errorText") end
+end
+
 function Win:applyLoot()
     local changes = self:lootChanges()
     if #changes == 0 or not Panel.canEditSandbox(getSpecificPlayer(0)) then return end
     Panel.applySandbox(changes)
     self.lootBase = self:lootDraft()
-    self.lootMsg, self.lootMsgToken = U("LootApplied", tostring(#changes)), "accent"
+    setStatus(self.lootCfg, U("LootApplied", tostring(#changes)), "accent")
     self:lootChanged()
+end
+
+-- ------------------------------------------------ types tab
+
+-- Minidoracat Economy's client facade when it can open its shop page with drafts (rev 4 shopAdd), else nil.
+local function economyShop()
+    local api = MinidoracatEconomy and MinidoracatEconomy.v1 and MinidoracatEconomy.v1.Client
+    local caps = api and api.CAPABILITIES
+    if type(caps) == "table" and caps.shopAdd == true and type(api.openAdminShop) == "function" then return api end
+    return nil
+end
+
+local TOGGLE_W = 36 -- a MinidoracatUI Checkbox drawn without a label (Controls.lua TOGGLE_WIDTH)
+
+-- One row per capsule type (Core M.TYPES): its icon, name and look in words; the use and loot switches (sandbox
+-- Type<id>, Type<id>Loot; loot needs use); "List..." (Minidoracat Economy opens its shop page with this empty capsule
+-- as a new product draft, the price is set there) and "Preview". Columns are laid out from the right with the
+-- translated widths; the look wraps under the name. Every control is named "<type>: <column>" for focus.
+function Win:buildTypes(p)
+    local c = newConfig(self, p, function(t) t:loadTypes() end, function(t) t:applyTypes() end)
+    self.typ = c
+    local s, w = c.scroll, c.w
+    local shop = economyShop()
+    local heads = { use = U("TypeColUse"), loot = U("TypeColLoot") }
+    self.typRows = {}
+    for i, t in ipairs(M.TYPES) do
+        local name = Info.itemName(t.empty)
+        local row = { t = t, name = name, look = getText("Tooltip_MinidoracatVehicleCapsule_Look_" .. t.id),
+            icon = getTexture("media/textures/Item_MinidoracatVehicleCapsule" .. t.id .. ".png") }
+        row.use = UI.Checkbox.new({ width = TOGGLE_W, label = "", theme = theme, target = self, tooltip = U("TypeUseTip"),
+            onChange = function(o) o:typesChanged() end })
+        row.loot = UI.Checkbox.new({ width = TOGGLE_W, label = "", theme = theme, target = self,
+            tooltip = U("TypeLootTip"), onChange = function(o) o:typesChanged() end })
+        row.list = UI.Button.new({ height = CH, title = U("TypeList"), theme = theme, target = self,
+            tooltip = shop and U("TypeListTip") or U("TypeListNoEconomy"), onClick = function(o) o:listType(t) end })
+        row.preview = UI.Button.new({ height = CH, title = U("TypePreview"), theme = theme, target = self,
+            tooltip = U("TypePreviewTip"), onClick = function(o) o:previewType(t) end })
+        row.use._focusLabel = name .. sep() .. heads.use
+        row.loot._focusLabel = name .. sep() .. heads.loot
+        row.list._focusLabel = name .. sep() .. row.list.title
+        row.preview._focusLabel = name .. sep() .. row.preview.title
+        s:addChild(row.use)
+        s:addChild(row.loot)
+        s:addChild(row.list)
+        s:addChild(row.preview)
+        self.typRows[i] = row
+    end
+    local r1 = self.typRows[1]
+    local xPrev = w - PAD - r1.preview.width
+    local xList = xPrev - GAP - r1.list.width
+    local lootW = math.max(TOGGLE_W, Kit.measure(heads.loot))
+    local useW = math.max(TOGGLE_W, Kit.measure(heads.use))
+    local xLoot = xList - GAP * 2 - lootW
+    local xUse = xLoot - GAP * 2 - useW
+    local nameX = PAD + 32 + GAP
+    local nameW = math.max(40, xUse - GAP - nameX)
+    self.typHeadY = GAP
+    self.typHeads = {
+        { fit(U("TypeColName"), nameW), nameX },
+        { heads.use, xUse + math.floor((useW - Kit.measure(heads.use)) / 2) },
+        { heads.loot, xLoot + math.floor((lootW - Kit.measure(heads.loot)) / 2) },
+        { fit(U("TypeColShop"), w - PAD - xList), xList },
+    }
+    local y = GAP + FH + GAP
+    for _, row in ipairs(self.typRows) do
+        row.nameFit = fit(row.name, nameW)
+        row.lookLines = Kit.wrap(row.look, nameW)
+        row.offLines = Kit.wrap(U("TypeOffLine"), nameW)
+        local h = math.max(36, CH + 8, (1 + math.max(#row.lookLines, #row.offLines)) * FH + 8)
+        row.y, row.h = y, h
+        local cy, ty = y + math.floor((h - CH) / 2), y + math.floor((h - row.use.height) / 2)
+        row.use:setX(xUse + math.floor((useW - TOGGLE_W) / 2))
+        row.use:setY(ty)
+        row.loot:setX(xLoot + math.floor((lootW - TOGGLE_W) / 2))
+        row.loot:setY(ty)
+        row.list:setX(xList)
+        row.list:setY(cy)
+        row.preview:setX(xPrev)
+        row.preview:setY(cy)
+        y = y + h
+    end
+    self.typNoteY = y + GAP
+    self.typNote = {}
+    c.body:setHeight(self.typNoteY + FH * 3 + GAP)
+    c.body.draw = function(el)
+        for _, hd in ipairs(self.typHeads) do text(el, hd[1], hd[2], self.typHeadY, "textMuted") end
+        local b = COL.border
+        el:drawRect(PAD, self.typHeadY + FH + 3, w - PAD * 2, 1, b.a, b.r, b.g, b.b)
+        for _, row in ipairs(self.typRows) do
+            if row.icon then
+                el:drawTextureScaled(row.icon, PAD, row.y + math.floor((row.h - 32) / 2), 32, 32, row.on and 1 or 0.5,
+                    1, 1, 1)
+            end
+            local lines = row.on and row.lookLines or row.offLines
+            local ty = row.y + math.floor((row.h - FH * (1 + #lines)) / 2)
+            text(el, row.nameFit, nameX, ty, row.on and "text" or "textMuted")
+            for k, line in ipairs(lines) do text(el, line, nameX, ty + k * FH, row.on and "textMuted" or "warning") end
+        end
+        local ny = self.typNoteY
+        for _, line in ipairs(self.typNote) do
+            text(el, line, PAD, ny, "textMuted")
+            ny = ny + FH
+        end
+    end
+end
+
+function Win:loadTypes()
+    self.typBase = {}
+    for _, row in ipairs(self.typRows) do
+        local id = row.t.id
+        local use, loot = option("Type" .. id) ~= false, option("Type" .. id .. "Loot") ~= false
+        self.typBase["Type" .. id], self.typBase["Type" .. id .. "Loot"] = use, loot
+        row.use:setChecked(use, true)
+        row.loot:setChecked(loot, true)
+    end
+    setStatus(self.typ, nil)
+    self:typesChanged()
+end
+
+function Win:typesDraft()
+    local d = {}
+    for _, row in ipairs(self.typRows) do
+        d["Type" .. row.t.id] = row.use:getChecked()
+        d["Type" .. row.t.id .. "Loot"] = row.loot:getChecked()
+    end
+    return d
+end
+
+-- A switched-off type greys its loot switch (it never drops) and says what off means instead of its look.
+function Win:typesChanged()
+    local allowed = Panel.canEditSandbox(getSpecificPlayer(0))
+    local shop, dropping = economyShop() ~= nil, 0
+    for _, row in ipairs(self.typRows) do
+        row.on = row.use:getChecked()
+        row.use:setEnabled(allowed)
+        row.loot:setEnabled(allowed and row.on)
+        row.list:setEnabled(shop)
+        if row.on and row.loot:getChecked() then dropping = dropping + 1 end
+    end
+    self.typNote = paragraphs(dropping > 0 and U("TypesNote", tostring(dropping)) or U("TypesNoteNone"),
+        self.typ.w - PAD * 2)
+    local n = #diff(self:typesDraft(), self.typBase)
+    self.typ.apply:setEnabled(allowed and n > 0)
+    self.typ.discard:setEnabled(n > 0)
+    if not allowed then setStatus(self.typ, U("NoSandboxRight"), "errorText") end
+end
+
+function Win:applyTypes()
+    local changes = diff(self:typesDraft(), self.typBase)
+    if #changes == 0 or not Panel.canEditSandbox(getSpecificPlayer(0)) then return end
+    Panel.applySandbox(changes)
+    self.typBase = self:typesDraft()
+    setStatus(self.typ, U("SettingsApplied", tostring(#changes)), "accent")
+    self:typesChanged()
+end
+
+-- A capsule of this type thrown beside the admin, applied or not, on this client only (Effects.preview); the panel
+-- steps aside until the smoke is gone.
+function Win:previewType(t)
+    local p = getSpecificPlayer(0)
+    if not p then return end
+    self.win:setVisible(false)
+    M.Effects.preview(t.index, p, math.floor(p:getX()) + 4, math.floor(p:getY()), math.floor(p:getZ()), function()
+        self.win:setVisible(true)
+        self.win:bringToTop()
+    end)
+end
+
+-- "List...": Economy opens its admin shop page with this empty capsule as a new product draft (a type it already
+-- sells is skipped there); the admin sets the price and applies it in Economy.
+function Win:listType(t)
+    local api = economyShop()
+    if not api then return end
+    local ok, why = api.openAdminShop(M.MOD_ID, { t.empty })
+    if ok then
+        setStatus(self.typ, U("ShopOpened", Info.itemName(t.empty)), "accent")
+    else
+        setStatus(self.typ, getTextOrNull("UI_MinidoracatVehicleCapsule_ShopOpen_" .. tostring(why))
+            or U("ShopOpen_other"), "errorText")
+    end
 end
 
 -- ------------------------------------------------ settings tab
 
 -- The general sandbox page, in the order of sandbox-options.txt. kind: bool (checkbox), choice (one chip per value of
--- an enum option; preview: a button that plays the chosen effect style) or int (slider).
+-- an enum option) or int (slider).
 Panel.GENERAL = {
     { key = "ReturnEmptyCapsule", kind = "bool", default = true },
     { key = "PackPermission", kind = "choice", count = 3, default = 1 },
     { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
-    { key = "EffectStyle", kind = "choice", count = #M.Effects.STYLES, default = 1, preview = true },
     { key = "AllowCargoTakeOut", kind = "bool", default = false },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
 
 local function fmtInt(v) return tostring(math.floor(v + 0.5)) end
 
--- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and the first
--- paragraph of its vanilla tooltip, at most two lines, under it. Chips (and the preview button after them) sit right of
--- the label when they fit on its row; else the label (with the preview button at the right) keeps its row and the
--- chips flow on rows under it. Strings are computed here: draw does not allocate.
--- Fields are cfg*: a set* field would shadow the Win:set* methods (Win:setMsg) once assigned.
+-- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and its whole
+-- vanilla tooltip under it. A choice option shows the first paragraph there and gives each chip its own line as a
+-- tooltip (the vanilla tooltip lists the values in order). Chips sit right of the label when they fit on its row;
+-- else they flow on rows under it. Sliders and chips are named for keyboard and gamepad focus (_focusLabel; the chips
+-- of one option share a _focusGroup, FilterBar.lua:613-614). Strings are computed here: draw does not allocate.
 function Win:buildSettings(p)
-    local w = p.width
-    local y = 0
+    local c = newConfig(self, p, function(t) t:loadSettings() end, function(t) t:applySettings() end)
+    self.cfg = c
+    local s, w = c.scroll, c.w
+    local y = GAP
     local sliderW = 260
     self.cfgRows = {}
     for i, f in ipairs(Panel.GENERAL) do
         local label = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key)
+        local tip = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_tooltip")
         local row = { field = f, y = y }
         local controlX, extra = PAD, 0
         if f.kind == "bool" then
             row.box = UI.Checkbox.new({ x = PAD, y = y, width = w - PAD * 2, label = label, theme = theme, target = self,
                 onChange = function(t) t:settingsChanged() end })
-            p:addChild(row.box)
+            s:addChild(row.box)
         elseif f.kind == "int" then
             controlX = w - PAD - sliderW
             row.slider = UI.Slider.new({ x = controlX, y = y, width = sliderW, min = f.min, max = f.max, step = 1,
                 value = f.default, theme = theme, format = fmtInt, target = self,
                 onChange = function(t) t:settingsChanged() end })
-            p:addChild(row.slider)
+            row.slider._focusLabel = label
+            s:addChild(row.slider)
         else
+            local lines = {}
+            for para in string.gmatch(tip .. "\n", "([^\n]*)\n") do lines[#lines + 1] = para end
             row.chips = {}
             local need = 0
             for v = 1, f.count do
+                local own = lines[v + 1]
                 local b = UI.Button.new({ y = y, height = CH, style = "chip", theme = theme, target = self,
                     title = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_option" .. v),
-                    onClick = function(t) t:pickChoice(i, v) end })
-                p:addChild(b)
+                    tooltip = own ~= nil and own ~= "" and own or nil, onClick = function(t) t:pickChoice(i, v) end })
+                b._focusGroup, b._focusLabel = f.key, label
+                s:addChild(b)
                 row.chips[v] = b
                 need = need + b.width + (v > 1 and 6 or 0)
             end
-            local pv = 0
-            if f.preview then
-                row.preview = UI.Button.new({ y = y, height = CH, title = U("EffectPreview"), theme = theme,
-                    target = self, onClick = function(t) t:previewEffect(i) end })
-                p:addChild(row.preview)
-                pv = row.preview.width + GAP
-            end
-            if PAD + Kit.measure(label) + GAP + need + pv <= w - PAD then
-                controlX = w - PAD - need - pv
+            tip = lines[1]
+            if PAD + Kit.measure(label) + GAP + need <= w - PAD then
+                controlX = w - PAD - need
                 local x = controlX
                 for _, b in ipairs(row.chips) do
                     b:setX(x)
                     x = x + b.width + 6
                 end
-                if row.preview then row.preview:setX(x - 6 + GAP) end
             else
-                controlX = w - PAD - pv
-                if row.preview then row.preview:setX(w - PAD - row.preview.width) end
+                controlX = w - PAD
                 local rows = Kit.flow(row.chips, w - PAD * 2, 6)
                 for _, b in ipairs(row.chips) do
                     b:setX(PAD + b.flowX)
@@ -833,33 +1065,24 @@ function Win:buildSettings(p)
             end
         end
         if not row.box then row.label = fit(label, controlX - PAD - GAP) end
-        local tip = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_tooltip")
-        row.desc = Kit.lines(string.match(tip, "^[^\n]*") or tip, w - PAD * 2, 2)
+        row.desc = paragraphs(tip, w - PAD * 2)
         row.descY = y + CH + extra + 2
         y = y + CH + extra + #row.desc * FH + GAP * 2
         self.cfgRows[i] = row
     end
-    self.cfgNote = Kit.wrap(U("SettingsNote"), w - PAD * 2)
+    self.cfgNote = paragraphs(U("SettingsNote"), w - PAD * 2)
     self.cfgNoteY = y
-    y = y + #self.cfgNote * FH + GAP
-    self.cfgDiscard = UI.Button.new({ x = PAD, y = y, height = CH, title = U("Discard"), theme = theme, target = self,
-        onClick = function(t) t:loadSettings() end })
-    self.cfgApply = UI.Button.new({ x = PAD + self.cfgDiscard.width + GAP, y = y, height = CH, title = U("Apply"),
-        style = "primary", theme = theme, target = self, onClick = function(t) t:applySettings() end })
-    p:addChild(self.cfgDiscard)
-    p:addChild(self.cfgApply)
-    self.cfgMsgY = y + CH + GAP
-    p.draw = function(el)
+    c.body:setHeight(y + #self.cfgNote * FH + GAP)
+    c.body.draw = function(el)
         for _, r in ipairs(self.cfgRows) do
             if r.label then text(el, r.label, PAD, r.y + math.floor((CH - FH) / 2), "text") end
-            for k, line in ipairs(r.desc) do text(el, line, PAD, r.descY + (k - 1) * FH, "textFaint") end
+            for k, line in ipairs(r.desc) do text(el, line, PAD, r.descY + (k - 1) * FH, "textMuted") end
         end
         local ny = self.cfgNoteY
         for _, line in ipairs(self.cfgNote) do
             text(el, line, PAD, ny, "textMuted")
             ny = ny + FH
         end
-        if self.cfgMsg then text(el, self.cfgMsg, PAD, self.cfgMsgY, self.cfgMsgToken or "accent") end
     end
 end
 
@@ -871,19 +1094,6 @@ end
 function Win:pickChoice(i, v)
     self:showChoice(self.cfgRows[i], v)
     self:settingsChanged()
-end
-
--- The style chosen in row i (applied or not) plays beside the admin, on this client only (Effects.preview); the panel
--- steps aside until the smoke is gone.
-function Win:previewEffect(i)
-    local p = getSpecificPlayer(0)
-    if not p then return end
-    self.win:setVisible(false)
-    M.Effects.preview(self.cfgRows[i].choice, p, math.floor(p:getX()) + 4, math.floor(p:getY()), math.floor(p:getZ()),
-        function()
-            self.win:setVisible(true)
-            self.win:bringToTop()
-        end)
 end
 
 -- Current native option values into the controls; they are the base the changes are counted against.
@@ -901,7 +1111,7 @@ function Win:loadSettings()
         end
         self.cfgBase[f.key] = v
     end
-    self.cfgMsg = nil
+    setStatus(self.cfg, nil)
     self:settingsChanged()
 end
 
@@ -936,9 +1146,9 @@ function Win:settingsChanged()
         end
     end
     local n = #self:settingsChanges()
-    self.cfgApply:setEnabled(allowed and n > 0)
-    self.cfgDiscard:setEnabled(n > 0)
-    if not allowed then self.cfgMsg, self.cfgMsgToken = U("NoSandboxRight"), "errorText" end
+    self.cfg.apply:setEnabled(allowed and n > 0)
+    self.cfg.discard:setEnabled(n > 0)
+    if not allowed then setStatus(self.cfg, U("NoSandboxRight"), "errorText") end
 end
 
 function Win:applySettings()
@@ -946,7 +1156,7 @@ function Win:applySettings()
     if #changes == 0 or not Panel.canEditSandbox(getSpecificPlayer(0)) then return end
     Panel.applySandbox(changes)
     self.cfgBase = self:settingsDraft()
-    self.cfgMsg, self.cfgMsgToken = U("SettingsApplied", tostring(#changes)), "accent"
+    setStatus(self.cfg, U("SettingsApplied", tostring(#changes)), "accent")
     self:settingsChanged()
 end
 
@@ -967,6 +1177,7 @@ function Panel.open()
     w.win:setVisible(true)
     w.win:bringToTop()
     if w.tab == "settings" then w:loadSettings() end
+    if w.tab == "types" then w:loadTypes() end
     if w.tab == "loot" then w:loadLoot() end
     w:requestPage()
     return w

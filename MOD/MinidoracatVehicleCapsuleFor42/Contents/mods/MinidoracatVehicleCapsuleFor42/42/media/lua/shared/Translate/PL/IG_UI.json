@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Kapsuła na pojazd: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Rozpakuj pojazd, aby to wyjąć",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Jesteś właścicielem tego pojazdu",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Ten pojazd może spakować tylko właściciel lub osoba, której udostępnił uprawnienie „%1”",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Na tym serwerze każdy może pakować pojazdy",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Silnik wyłączony, nikogo w środku",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Wyłącz silnik i niech wszyscy wysiądą",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Pusta kapsuła w ekwipunku",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Potrzebujesz pustej kapsuły w ekwipunku",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Przedmioty w pojeździe (%1) trafią razem z nim do kapsuły. Zajmie to %2 s.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "Pojazd nie został spakowany",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "serwer nie mógł zapisać wpisu, zapytaj administratora",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "ten pojazd ma dane, których kapsuła nie może zachować",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "zapis jest uszkodzony, zapytaj administratora",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "błąd %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "błąd %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Pusta kapsuła w ekwipunku: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "%1: wyłączona przez administratora; spakuj do kapsuły innego typu",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Spakuj do: %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Administrator wyłączył ten typ kapsuły; spakuj do kapsuły innego typu"
 }

@@ -36,7 +36,7 @@ function CargoLock.open(container)
     if not takeOut() then return false end
     local holder = container and container:getContainingItem()
     while holder do
-        if holder:getFullType() == M.ITEM_LOADED then
+        if M.isLoaded(holder) then
             local id = holder:getID()
             local r = M.Info.get(id)
             if r then open[id] = r.ok == true and M.Rules.cargoOpen(r) end

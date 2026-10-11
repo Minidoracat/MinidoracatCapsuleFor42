@@ -55,6 +55,7 @@ function Throw.land(p)
     end
     local res
     local capsule = Unpack.findCapsule(player, p.capsuleId)
+    local t = capsule and M.typeOf(capsule) -- read now: a good unpack removes the capsule
     local sq = getCell():getGridSquare(p.x, p.y, p.z)
     if not capsule then
         res = { ok = false, why = "NO_CAPSULE" }
@@ -75,7 +76,7 @@ function Throw.land(p)
         if res.why == "BLOCKED" and p.mode == "throw" and sq then res.dropped = dropAt(player, capsule, sq) end
     end
     res.capsuleId, res.mode = p.capsuleId, p.mode
-    if res.ok then Fx.broadcast("unpack", { x = p.x, y = p.y, z = p.z }) end
+    if res.ok then Fx.broadcast("unpack", { x = p.x, y = p.y, z = p.z, style = t and t.index }) end
     M.log(string.format("LANDED capsule=%d by=%s mode=%s x=%d y=%d z=%d dir=%s ok=%s why=%s reason=%s dropped=%s",
         p.capsuleId, player:getUsername(), p.mode, p.x, p.y, p.z, tostring(p.dir), tostring(res.ok),
         tostring(res.why), tostring(res.reason), tostring(res.dropped)))

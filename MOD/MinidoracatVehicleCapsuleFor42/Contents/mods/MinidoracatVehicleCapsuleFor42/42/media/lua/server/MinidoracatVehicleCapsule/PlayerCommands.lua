@@ -70,14 +70,15 @@ end
 -- ---------------------------------------------------------------- client commands
 local Handlers = {}
 
--- args: kind ("pack" / "throw" / "press"), id (vehicle id for pack, capsule id otherwise), name (pack only).
+-- args: kind ("pack" / "throw" / "press"), id (vehicle id for pack, capsule id otherwise), type (pack only: the id of
+-- the capsule type to pack with, M.TYPES; Play.pack checks the player carries one and that it is enabled).
 function Handlers.intent(player, args)
     local id = tonumber(args.id)
     if not (KINDS[args.kind] and id) then return end
     local list = liveIntents(player) or {}
     Play.intents[player:getUsername()] = list
     if #list >= INTENTS_PER_PLAYER then table.remove(list, 1) end
-    list[#list + 1] = { kind = args.kind, id = id, name = Rules.cleanName(args.name), exp = now() + INTENT_TTL_MS }
+    list[#list + 1] = { kind = args.kind, id = id, type = M.TYPE_BY_ID[tostring(args.type)], exp = now() + INTENT_TTL_MS }
 end
 
 -- The vehicle script of a capsule the player holds or stands near (the landing cursor needs its size).
@@ -99,25 +100,26 @@ Events.OnClientCommand.Add(function(module, command, player, args)
 end)
 
 -- ---------------------------------------------------------------- action results (complete() on the server)
--- ISPackVehicleAction. localName: the SP client's name (MP takes it from the intent).
-function Play.pack(player, vehicle, localName)
+-- ISPackVehicleAction. typeId: the SP client's choice (MP takes it from the intent).
+function Play.pack(player, vehicle, typeId)
     local id = vehicle and vehicle:getId()
     local intent = Play.takeIntent(player, "pack", id)
     if not intent then return refuse(player, "pack", "NO_INTENT", id) end
-    local why = Rules.packWhyNot(player, vehicle)
-    local res = why and { ok = false, why = why, vehicleId = id } -- the client words a NOT_ALLOWED like its menu row
-        or M.Pack.pack(player, vehicle, { name = intent.name or Rules.cleanName(localName), empty = Rules.emptyCapsule(player) })
+    local t = intent.type or M.TYPE_BY_ID[tostring(typeId)]
+    local why = Rules.packWhyNot(player, vehicle, t)
+    local res = why and { ok = false, why = why, vehicleId = id, type = t and t.id } -- the client words NOT_ALLOWED
+        or M.Pack.pack(player, vehicle, { type = t, empty = Rules.emptyCapsule(player, t) }) -- like its menu row
     if not res.ok then refuse(player, "pack", tostring(res.why), id) end
     Play.send(player, "packed", res)
     return res.ok == true
 end
 
--- The capsule leaves the hand: every client nearby sees it fly.
+-- The capsule leaves the hand: every client nearby sees it fly, drawn and heard as its own type.
 local function fly(action)
-    local player = action.character
+    local player, t = action.character, M.typeOf(action.item)
     action.flightAt = now()
     Fx.broadcast("flight", { x0 = player:getX(), y0 = player:getY(), z0 = player:getZ(),
-        x = action.x, y = action.y, z = action.z })
+        x = action.x, y = action.y, z = action.z, style = t and t.index })
 end
 
 -- ISThrowCapsuleAction release (server / SP).
@@ -131,7 +133,7 @@ end
 function Play.throw(action)
     local player, item, x, y, z = action.character, action.item, action.x, action.y, action.z
     local id = item and item:getID()
-    if not (item and item:getFullType() == M.ITEM_LOADED and player:getInventory():containsID(id)) then
+    if not (item and M.isLoaded(item) and player:getInventory():containsID(id)) then
         return refuse(player, "throw", "NO_CAPSULE", id)
     end
     if not Play.takeIntent(player, "throw", id) then return refuse(player, "throw", "NO_INTENT", id) end
@@ -155,7 +157,7 @@ function Play.press(player, capsuleId, x, y, z)
     local capsule = M.Unpack.findCapsule(player, capsuleId)
     local wo = capsule and capsule:getWorldItem()
     local sq = wo and wo:getSquare()
-    if not (sq and capsule:getFullType() == M.ITEM_LOADED) then return refuse(player, "press", "NO_CAPSULE", capsuleId) end
+    if not (sq and M.isLoaded(capsule)) then return refuse(player, "press", "NO_CAPSULE", capsuleId) end
     local cx, cy = sq:getX() + 0.5, sq:getY() + 0.5
     local why = Footprint.reach(cx, cy, sq:getZ(), x, y, z, Rules.PRESS_RANGE + 0.5, false)
     if why then

@@ -15,6 +15,7 @@ Info.MODS_FULL = 6  -- ... and in the preview list
 
 local cache = {}     -- capsuleId -> reply ({ ok = true, ... } or { ok = false, why })
 local asked = {}     -- capsuleId -> ms of the pending request
+local waiting = {}   -- capsuleId -> true: shown in a window before its summary came (named when it comes)
 Info.listeners = {}  -- fn(capsuleId) when a summary arrives or is dropped (the preview window)
 
 local function T(key, a, b, c)
@@ -35,6 +36,10 @@ local function store(reply)
     if not id then return end
     cache[id], asked[id] = reply, nil
     notify(id)
+    if waiting[id] then
+        waiting[id] = nil
+        ISInventoryPage.renderDirty = true -- the windows refresh once; the hook below names the capsule
+    end
 end
 
 -- Forgets a summary (the server wrote that snapshot). Also called directly in SP (server/Query.lua listener).
@@ -161,8 +166,11 @@ function Info.details(r)
     return d
 end
 
+-- Lists in the tooltip: the separator is a translation key ("、" in Chinese), since Lua source stays ASCII.
+local listSep
 local function joinNames(list)
-    return table.concat(list, ", ")
+    listSep = listSep or T("ListSep")
+    return table.concat(list, listSep)
 end
 
 -- Status text for a capsule that cannot be unpacked (or nil): unpacked, restored, void, crash-uncertain.
@@ -202,7 +210,7 @@ function Info.rows(r, full)
         else
             local some = {}
             for i = 1, cap do some[i] = d.mods[i] end
-            add("Mods", joinNames(some) .. ", " .. T("CargoMore", tostring(#d.mods - cap)))
+            add("Mods", joinNames(some) .. (listSep or T("ListSep")) .. T("CargoMore", tostring(#d.mods - cap)))
         end
     end
     if d.cargoN == 0 then
@@ -263,23 +271,46 @@ Events.OnGameStart.Add(function()
     local caps = api and api.CAPABILITIES
     if not (type(caps) == "table" and caps.uniqueItemViews == true and type(api.registerItemView) == "function"
         and type(api.registerRefusalText) == "function") then return end
-    api.registerItemView(M.ITEM_LOADED, function(view) return Info.viewLines(view) end)
-    api.registerRefusalText(M.ITEM_LOADED, function(detail) return Info.refusalText(detail) end)
+    for _, t in ipairs(M.TYPES) do
+        api.registerItemView(t.loaded, function(view) return Info.viewLines(view) end)
+        api.registerRefusalText(t.loaded, function(detail) return Info.refusalText(detail) end)
+    end
 end)
 
+-- A loaded capsule's name in this player's language, "<type>: <vehicle>" (IG_UI LoadedName), from its record; nil
+-- while there is none. The server leaves the script's name on the item (Pack.lua), so no packing client's language
+-- sticks to it; each client renames its own copy.
+function Info.capsuleName(item, r)
+    local t = M.typeOf(item)
+    if not (t and type(r) == "table" and r.ok and r.script) then return nil end
+    return getText("IGUI_MinidoracatVehicleCapsule_LoadedName", Info.itemName(t.empty), Info.carName(r.script, r.name))
+end
+
+local function rename(item)
+    local id = item:getID()
+    local r = Info.get(id)
+    if r == nil then
+        waiting[id] = true
+        return
+    end
+    local name = Info.capsuleName(item, r)
+    if name and item:getName() ~= name then item:setName(name) end
+end
+
 -- Capsules shown in the inventory and loot windows (a capsule's own container, or a capsule lying in a shown
--- container): their summaries are asked for now. The server counts a capsule asked about from nearby as a sighting
--- (admin panel: last seen), and with cargo take-out on the first take is not refused while the answer is on its way.
+-- container): their summaries are asked for now and they get their names. The server counts a capsule asked about
+-- from nearby as a sighting (admin panel: last seen), and with cargo take-out on the first take is not refused while
+-- the answer is on its way.
 Events.OnRefreshInventoryWindowContainers.Add(function(page, state)
     if state ~= "end" then return end
     for _, button in ipairs(page.backpacks or {}) do
         local inv = button.inventory
         local holder = inv and inv:getContainingItem()
-        if holder and holder:getFullType() == M.ITEM_LOADED then Info.get(holder:getID()) end
+        if holder and M.isLoaded(holder) then rename(holder) end
         local items = inv and inv:getItems()
         for i = 0, (items and items:size() or 0) - 1 do
             local it = items:get(i)
-            if it:getFullType() == M.ITEM_LOADED then Info.get(it:getID()) end
+            if M.isLoaded(it) then rename(it) end
         end
     end
 end)

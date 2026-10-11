@@ -154,6 +154,8 @@ function Cursor:renderTooltip(square)
         self.tooltip:addToUIManager()
         self.tooltip.followMouse = not self.joypad
         self.tooltip.maxLineWidth = 1000
+        self.tooltip.backgroundColor.a = 1 -- opaque under the vanilla 0.7 layer: the red reason row stays readable
+        -- over the world (3.35:1 before, design vcap-types-1012 review); addToolTip resets it for the next user
     end
     self.tooltip.description = text
     if self.joypad and square then

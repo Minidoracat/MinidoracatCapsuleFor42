@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 个零件",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "还有 %1 种",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "收车者"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "收车者",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "款式",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "！管理员停用了这种胶囊，现在不能收车",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": "、",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "白色卡通烟雾与卡通音效",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "灰色烟雾，机械与气压声",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "尘土贴地炸开，重物落地声",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "白色蒸汽，蒸汽喷发声",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "光柱与地面光环，能量声",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "淡紫色烟雾与星芒，魔法声",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "一闪白光与地面冲击波，烟雾弹声"
 }

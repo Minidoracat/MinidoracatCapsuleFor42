@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "車両カプセル：%1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1：%2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "車両を展開しないと取り出せません",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "あなたはこの車両の所有者です",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "この車両を収納できるのは、所有者と「%1」の権限を共有された人だけです",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "このサーバーでは誰でも車両を収納できます",
     "IGUI_MinidoracatVehicleCapsule_Idle": "エンジン停止、車内は無人",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "エンジンを止めて、全員を降ろしてください",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "インベントリに空のカプセルがあります",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "インベントリに空のカプセルが必要です",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "車内のアイテム %1 個も一緒にカプセルに収納されます。所要時間は %2 秒です。",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "車両を収納できませんでした",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "サーバーが記録を保存できませんでした。管理者に連絡してください",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "この車両にはカプセルに保存できないデータがあります",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "記録が破損しています。管理者に連絡してください",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "エラー：%1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "エラー：%1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "インベントリに空のカプセルがあります：%1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "管理者が%1を無効にしました。別の種類で収納してください",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "%1に収納",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "管理者がこの種類のカプセルを無効にしました。別の種類で収納してください"
 }

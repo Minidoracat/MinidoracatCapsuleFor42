@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Транспортная капсула: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Распакуйте транспорт, чтобы достать это",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Вы владелец этого транспорта",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Упаковать этот транспорт может только владелец или тот, кому он открыл доступ «%1»",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "На этом сервере упаковывать транспорт может любой",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Двигатель заглушён, внутри никого",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Заглушите двигатель и высадите всех",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "В инвентаре есть пустая капсула",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Нужна пустая капсула в инвентаре",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Предметы в транспорте (%1 шт.) попадут в капсулу вместе с ним. Займёт %2 сек.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "Транспорт не упакован",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "сервер не смог сохранить запись, обратитесь к администратору",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "у этого транспорта есть данные, которые капсула не может сохранить",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "запись повреждена, обратитесь к администратору",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "ошибка %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "ошибка %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "В инвентаре есть пустая капсула: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "«%1» отключена администратором; упакуйте в капсулу другого типа",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Упаковать: %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Администратор отключил этот тип капсул; упакуйте в капсулу другого типа"
 }

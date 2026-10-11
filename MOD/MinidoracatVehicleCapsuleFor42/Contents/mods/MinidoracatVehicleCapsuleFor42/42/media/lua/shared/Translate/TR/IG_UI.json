@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Araç Kapsülü: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Bunu almak için aracı kapsülden çıkar",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Bu aracın sahibisin",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Bu aracı yalnızca sahibi veya sahibinin “%1” iznini paylaştığı kişiler kapsüle koyabilir",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Bu sunucuda araçları herkes kapsüle koyabilir",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Motor kapalı, içeride kimse yok",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Motoru kapat ve herkesi araçtan indir",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Envanterinde boş kapsül var",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Envanterinde boş bir kapsül olmalı",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Araçtaki %1 eşya da onunla birlikte kapsüle girer. %2 saniye sürer.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "Araç kapsüle konmadı",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "sunucu kaydı yazamadı, bir yöneticiye sor",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "bu araçta kapsülün saklayamayacağı veriler var",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "kayıt bozuk, bir yöneticiye sor",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "hata %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "hata %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Envanterinde boş kapsül var: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "%1 bir yönetici tarafından kapatıldı; başka bir türle kapsüle koy",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "%1 içine koy",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Bir yönetici bu kapsül türünü kapattı; başka bir türle kapsüle koy"
 }

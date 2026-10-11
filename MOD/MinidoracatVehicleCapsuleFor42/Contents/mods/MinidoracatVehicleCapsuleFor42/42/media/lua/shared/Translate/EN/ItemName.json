@@ -1,4 +1,16 @@
 {
-    "MinidoracatVehicleCapsule.Capsule": "Vehicle Capsule",
-    "MinidoracatVehicleCapsule.LoadedCapsule": "Vehicle Capsule (Loaded)"
+    "MinidoracatVehicleCapsule.CapsuleCartoon": "Cartoon Capsule",
+    "MinidoracatVehicleCapsule.CapsuleReal": "Realistic Capsule",
+    "MinidoracatVehicleCapsule.CapsuleDust": "Dust Capsule",
+    "MinidoracatVehicleCapsule.CapsuleSteam": "Steam Capsule",
+    "MinidoracatVehicleCapsule.CapsuleSciFi": "Sci-fi Capsule",
+    "MinidoracatVehicleCapsule.CapsuleMagic": "Magic Capsule",
+    "MinidoracatVehicleCapsule.CapsuleShock": "Shockwave Capsule",
+    "MinidoracatVehicleCapsule.LoadedCapsuleCartoon": "Cartoon Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleReal": "Realistic Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleDust": "Dust Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSteam": "Steam Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSciFi": "Sci-fi Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleMagic": "Magic Capsule (Loaded)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleShock": "Shockwave Capsule (Loaded)"
 }

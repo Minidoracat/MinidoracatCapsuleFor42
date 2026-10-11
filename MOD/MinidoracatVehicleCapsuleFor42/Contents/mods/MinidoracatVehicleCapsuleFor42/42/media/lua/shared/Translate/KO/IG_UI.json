@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "차량 캡슐: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "차량을 꺼내야 가져갈 수 있습니다",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "이 차량의 소유자입니다",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "소유자 또는 소유자가 '%1' 권한을 공유한 사람만 이 차량을 넣을 수 있습니다",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "이 서버에서는 누구나 차량을 넣을 수 있습니다",
     "IGUI_MinidoracatVehicleCapsule_Idle": "시동이 꺼져 있고 탑승자가 없습니다",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "시동을 끄고 모두 내리게 하십시오",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "인벤토리에 빈 캡슐이 있습니다",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "인벤토리에 빈 캡슐이 필요합니다",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "차량 안의 물품 %1개도 함께 캡슐에 들어갑니다. %2초가 걸립니다.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "차량을 넣지 못했습니다",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "서버가 기록을 저장하지 못했습니다. 관리자에게 문의하십시오",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "이 차량에는 캡슐에 저장할 수 없는 데이터가 있습니다",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "기록이 손상되었습니다. 관리자에게 문의하십시오",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "오류 %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "오류 %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "인벤토리에 빈 캡슐이 있습니다: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "관리자가 %1을 비활성화했습니다. 다른 종류로 넣으십시오",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "%1에 넣기",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "관리자가 이 종류의 캡슐을 비활성화했습니다. 다른 종류로 넣으십시오"
 }

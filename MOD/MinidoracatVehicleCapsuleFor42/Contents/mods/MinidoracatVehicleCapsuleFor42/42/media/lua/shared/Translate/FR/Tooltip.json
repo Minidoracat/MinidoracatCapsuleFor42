@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 pièces",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "et %1 autres types",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Rangée par"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Rangée par",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "Type",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! Un admin a désactivé ce type : elle ne peut plus ranger de véhicule pour l'instant",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "Fumée blanche et sons de dessin animé",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Fumée grise, sons mécaniques et d'air comprimé",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "Un nuage de poussière au ras du sol, un choc lourd",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "Vapeur blanche, un jet de vapeur",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "Une colonne de lumière et un anneau au sol, des sons d'énergie",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "Fumée lavande et étincelles, des sons magiques",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "Un éclair blanc et une onde de choc au sol, le son d'une grenade fumigène"
 }

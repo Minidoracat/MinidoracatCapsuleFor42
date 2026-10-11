@@ -8,7 +8,6 @@ M.Rules = Rules
 Rules.PACK_SECONDS = 10
 Rules.THROW_RANGE = 8 -- tiles from the thrower to the landing point
 Rules.PRESS_RANGE = 3 -- tiles from a capsule on the ground to the landing point
-Rules.NAME_MAX = 64
 
 function Rules.sandbox()
     return SandboxVars and SandboxVars.MinidoracatVehicleCapsule or {}
@@ -47,7 +46,11 @@ function Rules.vehicleWhyNot(player, vehicle)
     if vehicle:isEngineRunning() then return "ENGINE_RUNNING" end
     for i = 0, vehicle:getPartCount() - 1 do
         local inv = vehicle:getPartByIndex(i):getItemContainer()
-        if inv and inv:containsTypeRecurse(M.ITEM_LOADED) then return "CAPSULE_INSIDE" end
+        if inv then
+            for _, t in ipairs(M.TYPES) do
+                if inv:containsTypeRecurse(t.loaded) then return "CAPSULE_INSIDE" end
+            end
+        end
     end
     return nil
 end
@@ -78,8 +81,25 @@ function Rules.mayPack(player, vehicle)
     return key, "KEY"
 end
 
-function Rules.emptyCapsule(player)
-    return player:getInventory():getFirstTypeRecurse(M.ITEM_EMPTY)
+-- Sandbox Type<id>: whether players may pack with this type. Off only stops packing; loaded capsules of the type are
+-- still thrown and pressed, so no vehicle is ever shut in a capsule (design vcap-types-1012).
+function Rules.typeOn(t)
+    return t ~= nil and Rules.sandbox()["Type" .. t.id] ~= false
+end
+
+-- The player's first empty capsule of type t (any depth in the inventory), or nil.
+function Rules.emptyCapsule(player, t)
+    return t and player:getInventory():getFirstTypeRecurse(t.empty)
+end
+
+-- Every type the player has empty capsules of, in M.TYPES order: { { type, n, on }, ... } (the pack menu).
+function Rules.emptyTypes(player)
+    local inv, out = player:getInventory(), {}
+    for _, t in ipairs(M.TYPES) do
+        local n = inv:getCountTypeRecurse(t.empty)
+        if n > 0 then out[#out + 1] = { type = t, n = n, on = Rules.typeOn(t) } end
+    end
+    return out
 end
 
 local function countIn(inv)
@@ -102,24 +122,14 @@ function Rules.cargoCount(vehicle)
     return n
 end
 
--- Everything the server checks before a player's pack, or nil.
-function Rules.packWhyNot(player, vehicle)
+-- Everything the server checks before a player's pack with a capsule of type t, or nil.
+function Rules.packWhyNot(player, vehicle, t)
     local why = Rules.vehicleWhyNot(player, vehicle)
     if why then return why end
     if not Rules.mayPack(player, vehicle) then return "NOT_ALLOWED" end
-    if not Rules.emptyCapsule(player) then return "NO_CAPSULE" end
+    if not Rules.emptyCapsule(player, t) then return "NO_CAPSULE" end
+    if not Rules.typeOn(t) then return "TYPE_OFF" end
     return nil
-end
-
--- The capsule name a client composed in its own language: no control characters, no [ ] (item name markup) and
--- no < > (rich-text tags in tooltips), trimmed, at most NAME_MAX UTF-16 units. nil when nothing usable is left.
-function Rules.cleanName(name)
-    if type(name) ~= "string" then return nil end
-    name = string.gsub(name, "[%c%[%]<>]", "")
-    name = string.match(name, "^%s*(.-)%s*$")
-    if #name > Rules.NAME_MAX then name = string.sub(name, 1, Rules.NAME_MAX) end
-    if name == "" then return nil end
-    return name
 end
 
 return Rules

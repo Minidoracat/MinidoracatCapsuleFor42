@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Cápsula de Veículo: %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1: %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Libere o veículo para pegar isto",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Você é o dono deste veículo",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Só o dono ou quem recebeu a permissão “%1” pode guardar este veículo",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Neste servidor, qualquer um pode guardar veículos",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Motor desligado, ninguém dentro",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Desligue o motor e tire todos de dentro",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Cápsula vazia no inventário",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Você precisa de uma cápsula vazia no inventário",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Os %1 itens do veículo vão para a cápsula com ele. Leva %2 segundos.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "O veículo não foi guardado",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "o servidor não conseguiu salvar o registro, fale com um administrador",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "este veículo tem dados que uma cápsula não consegue guardar",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "o registro está corrompido, fale com um administrador",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "erro %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "erro %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Cápsula vazia no inventário: %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "Um administrador desativou a %1; guarde com outro tipo",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Guardar na %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Um administrador desativou este tipo de cápsula; guarde com outro tipo"
 }

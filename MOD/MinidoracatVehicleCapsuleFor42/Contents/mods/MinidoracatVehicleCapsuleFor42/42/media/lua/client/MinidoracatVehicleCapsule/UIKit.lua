@@ -1,7 +1,8 @@
 -- Vehicle Capsule (client): the family UI framework (MinidoracatUIFor42, require= in mod.info) for the preview
--- window and the admin panel. Needs API rev 13 (Dock; chip buttons and Text.fit are rev 11, Slider rev 9) with the
--- window, controls and virtualList capabilities. Without it Kit.ok is false: the windows do not open and the entry
--- points say so (fail-soft, no half-built UI), the tooltip does not need it.
+-- window and the admin panel. Needs API rev 18 (opaque windows; ScrollPanel is rev 16, Dock rev 13, chip buttons and
+-- Text.fit rev 11, Slider rev 9) with the window, controls, virtualList, scrollPanel and opaqueWindow capabilities.
+-- Without it Kit.ok is false: the windows do not open and the entry points say so (fail-soft, no half-built UI), the
+-- tooltip does not need it.
 require "MinidoracatVehicleCapsule/Core"
 local M = MinidoracatVehicleCapsule
 local Kit = {}
@@ -14,13 +15,15 @@ pcall(require, "MinidoracatUI/Widgets/Controls")
 pcall(require, "MinidoracatUI/Widgets/Window")
 pcall(require, "MinidoracatUI/Widgets/Toast")
 pcall(require, "MinidoracatUI/Widgets/Dock")
+pcall(require, "MinidoracatUI/Widgets/ScrollPanel")
 local UI = MinidoracatUI and MinidoracatUI.v1
 local CAPS = UI and UI.CAPABILITIES
 Kit.UI, Kit.CAPS = UI, CAPS
-Kit.ok = UI ~= nil and UI.API_MAJOR == 1 and UI.API_REVISION >= 13 and CAPS.window == true and CAPS.controls == true
-    and CAPS.virtualList == true and CAPS.slider == true and UI.Text ~= nil and type(UI.Text.fit) == "function"
+Kit.ok = UI ~= nil and UI.API_MAJOR == 1 and UI.API_REVISION >= 18 and CAPS.window == true and CAPS.controls == true
+    and CAPS.virtualList == true and CAPS.slider == true and CAPS.scrollPanel == true and CAPS.opaqueWindow == true
+    and UI.Text ~= nil and type(UI.Text.fit) == "function"
 if not Kit.ok then
-    M.log("preview and admin panel need MinidoracatUIFor42 API rev 13, found rev "
+    M.log("preview and admin panel need MinidoracatUIFor42 API rev 18, found rev "
         .. tostring(UI and UI.API_REVISION))
     return Kit
 end

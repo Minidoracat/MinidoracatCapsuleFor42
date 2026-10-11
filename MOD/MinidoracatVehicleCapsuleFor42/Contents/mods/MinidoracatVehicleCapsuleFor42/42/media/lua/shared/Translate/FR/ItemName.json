@@ -1,4 +1,16 @@
 {
-    "MinidoracatVehicleCapsule.Capsule": "Capsule de véhicule",
-    "MinidoracatVehicleCapsule.LoadedCapsule": "Capsule de véhicule (chargée)"
+    "MinidoracatVehicleCapsule.CapsuleCartoon": "Capsule dessin animé",
+    "MinidoracatVehicleCapsule.CapsuleReal": "Capsule réaliste",
+    "MinidoracatVehicleCapsule.CapsuleDust": "Capsule poussière",
+    "MinidoracatVehicleCapsule.CapsuleSteam": "Capsule vapeur",
+    "MinidoracatVehicleCapsule.CapsuleSciFi": "Capsule futuriste",
+    "MinidoracatVehicleCapsule.CapsuleMagic": "Capsule magique",
+    "MinidoracatVehicleCapsule.CapsuleShock": "Capsule onde de choc",
+    "MinidoracatVehicleCapsule.LoadedCapsuleCartoon": "Capsule dessin animé (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleReal": "Capsule réaliste (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleDust": "Capsule poussière (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSteam": "Capsule vapeur (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSciFi": "Capsule futuriste (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleMagic": "Capsule magique (chargée)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleShock": "Capsule onde de choc (chargée)"
 }

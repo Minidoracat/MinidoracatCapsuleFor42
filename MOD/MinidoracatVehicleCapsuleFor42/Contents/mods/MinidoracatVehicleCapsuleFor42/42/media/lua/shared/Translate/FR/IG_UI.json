@@ -1,5 +1,5 @@
 {
-    "IGUI_MinidoracatVehicleCapsule_LoadedName": "Capsule de véhicule : %1",
+    "IGUI_MinidoracatVehicleCapsule_LoadedName": "%1 : %2",
     "IGUI_MinidoracatVehicleCapsule_CargoLocked": "Déployez le véhicule pour récupérer ceci",
     "IGUI_MinidoracatVehicleCapsule_PermOwner": "Vous êtes le propriétaire de ce véhicule",
     "IGUI_MinidoracatVehicleCapsule_PermOwnerNo": "Seuls le propriétaire et les joueurs à qui il a partagé « %1 » peuvent ranger ce véhicule",
@@ -11,7 +11,6 @@
     "IGUI_MinidoracatVehicleCapsule_PermAny": "Sur ce serveur, tout le monde peut ranger des véhicules",
     "IGUI_MinidoracatVehicleCapsule_Idle": "Moteur coupé, personne à bord",
     "IGUI_MinidoracatVehicleCapsule_IdleNo": "Coupez le moteur et faites descendre tout le monde",
-    "IGUI_MinidoracatVehicleCapsule_HasCapsule": "Capsule vide dans l'inventaire",
     "IGUI_MinidoracatVehicleCapsule_HasCapsuleNo": "Il vous faut une capsule vide dans l'inventaire",
     "IGUI_MinidoracatVehicleCapsule_PackInfo": "Les %1 objets du véhicule entrent dans la capsule avec lui. Durée : %2 secondes.",
     "IGUI_MinidoracatVehicleCapsule_PackFailed": "Le véhicule n'a pas été rangé",
@@ -68,5 +67,9 @@
     "IGUI_MinidoracatVehicleCapsule_Why_WRITE_FAILED": "le serveur n'a pas pu enregistrer l'historique, demandez à un admin",
     "IGUI_MinidoracatVehicleCapsule_Why_MODDATA_UNSUPPORTED": "ce véhicule contient des données qu'une capsule ne peut pas conserver",
     "IGUI_MinidoracatVehicleCapsule_Why_CORRUPT": "l'historique est endommagé, demandez à un admin",
-    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "erreur %1"
+    "IGUI_MinidoracatVehicleCapsule_Why_OTHER": "erreur %1",
+    "IGUI_MinidoracatVehicleCapsule_HasCapsuleKind": "Capsule vide dans l'inventaire : %1",
+    "IGUI_MinidoracatVehicleCapsule_TypeOffRow": "Un admin a désactivé la %1 ; rangez le véhicule avec un autre type",
+    "IGUI_MinidoracatVehicleCapsule_PackInto": "Ranger dans la %1",
+    "IGUI_MinidoracatVehicleCapsule_Why_TYPE_OFF": "Un admin a désactivé ce type de capsule ; rangez le véhicule avec un autre type"
 }

@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "Guardar en cápsula",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "Lanzar cápsula",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "Pulsar el botón"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "Pulsar el botón",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

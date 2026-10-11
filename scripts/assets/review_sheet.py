@@ -31,7 +31,7 @@ def main():
     W = 1600
     renders = [Image.open(os.path.join(REVIEW, f"model_{k}.png")).convert("RGBA") for k in ("empty", "loaded")]
     ground = [Image.open(os.path.join(REVIEW, f"ground_{k}.png")).convert("RGBA") for k in ("empty", "loaded")]
-    icons = [Image.open(os.path.join(TEX, f"Item_MinidoracatVehicleCapsule{s}.png")).convert("RGBA") for s in ("", "Loaded")]
+    icons = [Image.open(os.path.join(TEX, f"Item_MinidoracatVehicleCapsule{s}.png")).convert("RGBA") for s in ("Cartoon", "CartoonLoaded")]
     smoke = [Image.open(os.path.join(TEX, "MinidoracatVehicleCapsule", f"smoke_{i}.png")).convert("RGBA") for i in range(1, 9)]
     sheet = Image.new("RGB", (W, 1460), BG)
     d = ImageDraw.Draw(sheet)

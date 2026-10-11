@@ -1,4 +1,16 @@
 {
-    "MinidoracatVehicleCapsule.Capsule": "Araç Kapsülü",
-    "MinidoracatVehicleCapsule.LoadedCapsule": "Araç Kapsülü (Dolu)"
+    "MinidoracatVehicleCapsule.CapsuleCartoon": "Çizgi Film Kapsülü",
+    "MinidoracatVehicleCapsule.CapsuleReal": "Gerçekçi Kapsül",
+    "MinidoracatVehicleCapsule.CapsuleDust": "Toz Kapsülü",
+    "MinidoracatVehicleCapsule.CapsuleSteam": "Buhar Kapsülü",
+    "MinidoracatVehicleCapsule.CapsuleSciFi": "Bilim Kurgu Kapsülü",
+    "MinidoracatVehicleCapsule.CapsuleMagic": "Büyü Kapsülü",
+    "MinidoracatVehicleCapsule.CapsuleShock": "Şok Dalgası Kapsülü",
+    "MinidoracatVehicleCapsule.LoadedCapsuleCartoon": "Çizgi Film Kapsülü (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleReal": "Gerçekçi Kapsül (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleDust": "Toz Kapsülü (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSteam": "Buhar Kapsülü (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleSciFi": "Bilim Kurgu Kapsülü (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleMagic": "Büyü Kapsülü (Dolu)",
+    "MinidoracatVehicleCapsule.LoadedCapsuleShock": "Şok Dalgası Kapsülü (Dolu)"
 }

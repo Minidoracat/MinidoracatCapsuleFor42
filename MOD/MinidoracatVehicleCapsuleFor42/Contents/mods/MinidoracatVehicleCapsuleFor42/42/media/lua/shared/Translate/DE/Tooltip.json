@@ -27,5 +27,15 @@
     "Tooltip_MinidoracatVehicleCapsule_MissingCount": "%1 Teile",
     "Tooltip_MinidoracatVehicleCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatVehicleCapsule_CargoMore": "und %1 weitere Arten",
-    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Eingepackt von"
+    "Tooltip_MinidoracatVehicleCapsule_PackedBy": "Eingepackt von",
+    "Tooltip_MinidoracatVehicleCapsule_Type": "Typ",
+    "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! Ein Admin hat diesen Typ abgeschaltet: Damit lassen sich gerade keine Fahrzeuge einpacken",
+    "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "Weißer Cartoon-Rauch und Cartoon-Geräusche",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Grauer Rauch, Mechanik- und Druckluftgeräusche",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "Eine Staubwolke am Boden, ein schwerer Aufprall",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "Weißer Dampf, ein Dampfstoß",
+    "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "Eine Lichtsäule und ein Lichtring am Boden, Energiegeräusche",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "Lavendelfarbener Rauch mit Funkeln, magische Klänge",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "Ein weißer Blitz und eine Druckwelle am Boden, das Geräusch einer Rauchgranate"
 }

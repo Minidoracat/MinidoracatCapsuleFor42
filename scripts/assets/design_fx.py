@@ -440,7 +440,7 @@ def main():
     scenes, calib, shots = load_bg(a.bg)
     calib_compare(calib, shots, next(s for s in smoke if s["id"] == "C0"))
     sounds = build_sounds()
-    shutil.copyfile(os.path.join(MOD_MEDIA, "textures", "Item_MinidoracatVehicleCapsuleLoaded.png"),
+    shutil.copyfile(os.path.join(MOD_MEDIA, "textures", "Item_MinidoracatVehicleCapsuleCartoonLoaded.png"),
                     os.path.join(OUT, "capsule.png"))
     presets = []
     for name, sm, snd in PRESETS:

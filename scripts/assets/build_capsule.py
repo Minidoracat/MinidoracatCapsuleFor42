@@ -4,25 +4,28 @@
 # ///
 """Vehicle Capsule 的可重跑外層產線。
 
-用途：用固定 seed 的 PIL 直接畫兩張 512 x 512 RGB atlas，呼叫
-``capsule_blender.py`` 建立共用 FBX、圖示原圖與預覽，再依 Knox Pass
-``icon()`` 流程縮成 PZ 的 32 x 32 物品圖示。
+用途：用固定 seed 的 PIL 直接畫 7 種膠囊（TYPES）各一組空／裝車 512 x 512 RGB
+atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖示原圖與預覽，
+再依 Knox Pass ``icon()`` 流程縮成 PZ 的 32 x 32 物品圖示。
 
 用法（在 repo 根目錄執行）：
     uv run scripts/assets/build_capsule.py
     uv run scripts/assets/build_capsule.py --blender "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe"
 
-產物：
+產物（<Id> 依序為 Cartoon、Real、Dust、Steam、SciFi、Magic、Shock）：
     D:/github/MinidoracatVehicleCapsuleFor42/MOD/MinidoracatVehicleCapsuleFor42/
       Contents/mods/MinidoracatVehicleCapsuleFor42/42/media/models_X/WorldItems/
-        MinidoracatVehicleCapsule.fbx
-      .../media/textures/WorldItems/MinidoracatVehicleCapsule.png
-      .../media/textures/WorldItems/MinidoracatVehicleCapsuleLoaded.png
-      .../media/textures/Item_MinidoracatVehicleCapsule.png
-      .../media/textures/Item_MinidoracatVehicleCapsuleLoaded.png
+        MinidoracatVehicleCapsule.fbx（7 種共用）
+      .../media/textures/WorldItems/MinidoracatVehicleCapsule<Id>.png
+      .../media/textures/WorldItems/MinidoracatVehicleCapsule<Id>Loaded.png
+      .../media/textures/Item_MinidoracatVehicleCapsule<Id>.png
+      .../media/textures/Item_MinidoracatVehicleCapsule<Id>Loaded.png
+    舊的無 <Id> 檔名（MinidoracatVehicleCapsule[Loaded].png 兩組）每次執行都會刪掉。
     D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/
       model_empty.png, model_loaded.png, side_neg_y.png, side_pos_y.png,
-      ground_empty.png, ground_loaded.png, icons_4x.png, fbx_verify.txt
+      ground_empty.png, ground_loaded.png（以上用 Cartoon），fbx_verify.txt,
+      types_icons_4x.png（14 張圖示 1x/4x＋綠色盲模擬列）,
+      types_vs_concept.png（與 docs/design/types/ 概念圖並排）
 
 座標慣例：Blender 單位是公尺；膠囊平躺在地面，長軸沿 +X，原點是底面
 中心（最低點 z=0，x/y 置中）。512 atlas 的 cylinder 矩形是圓周展開
@@ -47,7 +50,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 
 REPO = Path("D:/github/MinidoracatVehicleCapsuleFor42")
@@ -65,7 +68,24 @@ SEED = 4207
 BODY = (230, 228, 223)          # #e6e4df，暖白霧面
 INK = (58, 59, 62)              # #3a3b3e
 SEAM = (58, 59, 62)
-ORANGE = (232, 116, 42)         # #E8742A
+# 7 種膠囊：(id, 主色 hex, 裝車環帶花紋, atlas 用色)。主色染在 +X（按鈕端）端蓋與環帶上。
+# atlas 用色 = (端蓋色, 環帶色)，None 表示兩者都用主色。Real／Steam／Magic 的貼圖色比概念
+# hex 亮（HSV 明度放大，色相不變），是為了補 3D 光照與 icon() 對比：32px 成品端蓋＋環帶的
+# 平均相對亮度 L（linear Rec.709，取飽和度 > 0.3 的像素）要落在概念圖 L 的 ±15%。
+# 端蓋同時影響空／裝車，裝車圖示的調色較暗，所以 Steam／Magic 的環帶比端蓋再亮一些。
+# 成品/概念 L 比（調整前 → 後）：
+#   Real   空 0.39 → 1.03、裝車 0.43 → 1.02（端蓋、環帶 x1.45）
+#   Steam  空 0.82 → 1.00、裝車 0.58 → 0.96（端蓋 x1.1、環帶 x1.4）
+#   Magic  空 1.04 → 1.04、裝車 0.70 → 0.88（端蓋 = hex、環帶 x1.4，V 封頂後降飽和）
+TYPES = (
+    ("Cartoon", (232, 116, 42), "solid", None),     # #E8742A
+    ("Real", (110, 123, 59), "double", ((159, 178, 86), (159, 178, 86))),   # #6E7B3B
+    ("Dust", (169, 128, 72), "twotone", None),      # #A98048
+    ("Steam", (79, 127, 176), "rivets", ((87, 140, 194), (111, 178, 246))),  # #4F7FB0
+    ("SciFi", (46, 197, 232), "glow", None),        # #2EC5E8
+    ("Magic", (154, 90, 214), "sparkle", ((154, 90, 214), (194, 129, 255))),  # #9A5AD6
+    ("Shock", (242, 194, 48), "hazard", None),      # #F2C230
+)
 STEEL_DARK = (141, 145, 150)    # #8d9196
 STEEL_LIGHT = (185, 188, 192)   # #b9bcc0
 
@@ -78,6 +98,13 @@ ATLAS_RECTS = {
     "seam": [400, 408, 432, 440],
     "button_side": [448, 408, 480, 440],
 }
+# 單一型號時期的檔名；Cartoon 改用 <Id> 檔名後每次建置都刪掉。
+OLD_FILES = (
+    MEDIA / "textures/WorldItems/MinidoracatVehicleCapsule.png",
+    MEDIA / "textures/WorldItems/MinidoracatVehicleCapsuleLoaded.png",
+    MEDIA / "textures/Item_MinidoracatVehicleCapsule.png",
+    MEDIA / "textures/Item_MinidoracatVehicleCapsuleLoaded.png",
+)
 
 
 def _rgb_noise(im: Image.Image, rect: tuple[int, int, int, int], seed: int, amount: int = 3) -> None:
@@ -165,7 +192,8 @@ def _draw_side_badge(im: Image.Image, center: tuple[int, int], seed: int,
     im.alpha_composite(rotated, (x, y))
 
 
-def _radial_cap(im: Image.Image, rect: tuple[int, int, int, int], seed: int) -> None:
+def _radial_cap(im: Image.Image, rect: tuple[int, int, int, int], seed: int,
+                base: tuple[int, int, int] = BODY) -> None:
     x0, y0, x1, y1 = rect
     px = im.load()
     cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
@@ -175,11 +203,59 @@ def _radial_cap(im: Image.Image, rect: tuple[int, int, int, int], seed: int) -> 
         for x in range(x0, x1):
             rr = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5 / maxr
             shade = int(max(-2, min(2, (0.5 - rr) * 3 + rng.choice((-1, 0, 0, 1)))))
-            px[x, y] = tuple(max(0, min(255, c + shade)) for c in BODY)
+            px[x, y] = tuple(max(0, min(255, c + shade)) for c in base)
 
 
-def draw_atlas(path: Path, loaded: bool) -> None:
-    """畫一張不透明 512 RGB atlas。"""
+# 這兩種花紋在圖示上是「發光」的：比 loaded 調色下的白殼還亮（概念圖如此）。
+# 圖示另算一張只有花紋的無光照 pass，再以 lighter 疊回（見 capsule_blender.render_icon）。
+EMISSIVE = ("glow", "sparkle")
+
+
+def _band_overlay(hi: Image.Image, band: tuple[int, int, int, int], cyl: tuple[int, int, int, int],
+                  pattern: str) -> Image.Image:
+    """在 SS 倍解析的 atlas 上畫環帶的細節花紋（之後整張 LANCZOS 縮小 = 反鋸齒）。
+
+    先畫進環帶大小的 patch 再貼回，花紋不會溢出環帶。圓周方向的間距一律
+    以整個 cylinder 寬（u 0..1）均分，u=0/1 接縫處花紋連續。回傳 patch。
+    """
+    x0, y0 = band[0] * SS, band[1] * SS
+    w, h = (band[2] + 1) * SS - x0, (band[3] + 1) * SS - y0
+    circ = (cyl[2] - cyl[0]) * SS  # 圓周 u 0..1 的像素寬
+    u0 = cyl[0] * SS - x0  # u=0 在 patch 座標的位置
+    mid = h / 2
+    patch = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(patch)
+    if pattern == "rivets":
+        p, r = circ / 12, 8 * SS
+        for k in range(12):
+            cx = u0 + (k + 0.5) * p
+            d.ellipse((cx - r, mid - r, cx + r, mid + r), fill=(28, 34, 44, 255))
+    elif pattern == "glow":
+        d.rectangle((0, mid - 6 * SS, w, mid + 6 * SS), fill=(236, 252, 255, 255))
+    elif pattern == "sparkle":
+        rng = random.Random(SEED + 31)
+        p, a, b = circ / 16, 13 * SS, 3 * SS
+        for k in range(16):
+            cx = u0 + (k + rng.uniform(0.3, 0.7)) * p
+            cy = h * rng.uniform(0.15, 0.85)
+            d.polygon([(cx, cy - a), (cx + b, cy - b), (cx + a, cy), (cx + b, cy + b),
+                       (cx, cy + a), (cx - b, cy + b), (cx - a, cy), (cx - b, cy - b)], fill=(255, 251, 238, 255))
+    elif pattern == "hazard":
+        p = circ / 14
+        for k in range(-int(h / p) - 2, 16):
+            sx = u0 + k * p
+            d.polygon([(sx, h), (sx + p / 2, h), (sx + p / 2 + h, 0), (sx + h, 0)], fill=(32, 30, 26, 255))
+    hi.alpha_composite(patch, (x0, y0))
+    return patch
+
+
+def draw_atlas(path: Path, loaded: bool, ctype: tuple) -> Path | None:
+    """畫一張不透明 512 RGB atlas；ctype 是 TYPES 的一列。
+
+    發光花紋另寫一張黑底、只有花紋的 emit atlas 到 MODEL_TMP（不進 MOD），回傳其路徑。
+    """
+    _, colour, pattern, atlas_colours = ctype
+    cap_colour, band_colour = atlas_colours or (colour, colour)
     im = Image.new("RGB", (ATLAS_SIZE, ATLAS_SIZE), BODY)
     d = ImageDraw.Draw(im)
     cyl = tuple(ATLAS_RECTS["cylinder"])
@@ -189,20 +265,34 @@ def draw_atlas(path: Path, loaded: bool) -> None:
     _rgb_noise(im, cyl, SEED, 2)
     _body_marks(d, cyl, SEED + 1)
     _radial_cap(im, cap_m, SEED + 2)
-    _radial_cap(im, cap_p, SEED + 3)
+    _radial_cap(im, cap_p, SEED + 3, cap_colour)
     _body_marks(d, cap_m, SEED + 4)
     _body_marks(d, cap_p, SEED + 5)
 
-    # 裝車版只多這條中段橘色環帶（沿圓周全寬），其餘像素來源相同。
+    # 裝車版多一條中段環帶（沿圓周全寬）；double／twotone 在 1x 就能畫，
+    # 其餘花紋在高解析 pass 畫。
+    band = (cyl[0] + 1, cyl[1] + 72, cyl[2] - 1, cyl[1] + 140)
     if loaded:
-        band = (cyl[0] + 1, cyl[1] + 72, cyl[2] - 1, cyl[1] + 140)
-        d.rectangle(band, fill=ORANGE)
+        d.rectangle(band, fill=band_colour)
+        if pattern == "double":
+            third = (band[3] - band[1]) / 3
+            d.rectangle((band[0], round(band[1] + third), band[2], round(band[3] - third)), fill=BODY)
+        elif pattern == "twotone":
+            # v 向 +X（按鈕端），後半段明度 x0.62。
+            dark = tuple(round(c * 0.62) for c in band_colour)
+            d.rectangle((band[0], (band[1] + band[3] + 1) // 2, band[2], band[3]), fill=dark)
         _rgb_noise(im, band, SEED + 17, 2)
         _body_marks(d, band, SEED + 18)
 
     # cylinder 是 u＝圓周、v＝+X；兩個徽記放在 u=.25/.75 的 ±Y 外側，
-    # 放在橘帶之外，避免環帶蓋掉徽記與 07。高解析畫完再 LANCZOS 縮小。
+    # 放在環帶之外，避免環帶蓋掉徽記與 07。高解析畫完再 LANCZOS 縮小。
     hi = im.resize((ATLAS_SIZE * SS, ATLAS_SIZE * SS), Image.Resampling.NEAREST).convert("RGBA")
+    emit = None
+    if loaded:
+        patch = _band_overlay(hi, band, cyl, pattern)
+        if pattern in EMISSIVE:
+            emit = Image.new("RGB", hi.size, (0, 0, 0))
+            emit.paste(patch, (band[0] * SS, band[1] * SS), patch)
     cy = (cyl[1] + 194) * SS
     # u=.25 是 +Y；u=.75 是 -Y。兩側的圓柱 UV 方向不同，不能共用
     # 同一張旋轉後的 patch。
@@ -233,9 +323,15 @@ def draw_atlas(path: Path, loaded: bool) -> None:
         x0, y0, x1, y1 = ATLAS_RECTS[key]
         d.rectangle((x0, y0, x1, y1), fill=col)
     im.save(path, format="PNG")
+    if emit is None:
+        return None
+    emit_path = MODEL_TMP / f"emit_{path.stem}.png"
+    emit.resize((ATLAS_SIZE, ATLAS_SIZE), Image.Resampling.LANCZOS).save(emit_path, format="PNG")
+    return emit_path
 
 
-def make_config(empty_atlas: Path, loaded_atlas: Path, out: Path, review: Path, blender: Path) -> Path:
+def make_config(atlases: list[tuple[Path, bool, Path | None]], out: Path, review: Path, blender: Path) -> Path:
+    """atlases：(atlas, loaded, emit atlas) 依 TYPES 順序空／裝車交錯；預覽算圖用第一組（Cartoon）。"""
     MODEL_TMP.mkdir(parents=True, exist_ok=True)
     config = {
         "repo": str(REPO),
@@ -244,8 +340,9 @@ def make_config(empty_atlas: Path, loaded_atlas: Path, out: Path, review: Path, 
         "review": str(review),
         "blender": str(blender),
         "atlas": {
-            "empty": str(empty_atlas),
-            "loaded": str(loaded_atlas),
+            "empty": str(atlases[0][0]),
+            "loaded": str(atlases[1][0]),
+            "icons": [{"atlas": str(p), "loaded": loaded, "emit": emit and str(emit)} for p, loaded, emit in atlases],
             "size": ATLAS_SIZE,
             **ATLAS_RECTS,
         },
@@ -295,17 +392,67 @@ def icon(src: Path, dst: Path) -> None:
     out.save(dst, format="PNG")
 
 
-def make_icon_review(empty: Path, loaded: Path, dst: Path) -> None:
-    """將兩張 32 px 圖示與 NEAREST 4x 版本上下排列，便於人工比較。"""
-    a, b = Image.open(empty).convert("RGBA"), Image.open(loaded).convert("RGBA")
-    canvas = Image.new("RGBA", (320, 160), (45, 46, 49, 255))
-    # 1x row：兩張並排；4x row：兩張各 128 px 並排。
-    canvas.alpha_composite(a, (72, 12))
-    canvas.alpha_composite(b, (216, 12))
-    canvas.alpha_composite(a.resize((128, 128), Image.Resampling.NEAREST), (16, 28))
-    canvas.alpha_composite(b.resize((128, 128), Image.Resampling.NEAREST), (176, 28))
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(dst, format="PNG")
+# Machado, Oliveira & Fernandes 2009，deuteranopia severity 1.0；作用在 linear RGB。
+DEUTERANOPIA = ((0.367322, 0.860646, -0.227968),
+                (0.280085, 0.672501, 0.047413),
+                (-0.011820, 0.042940, 0.968881))
+_TO_LINEAR = [c / 255 / 12.92 if c <= 10 else ((c / 255 + 0.055) / 1.055) ** 2.4 for c in range(256)]
+
+
+def _to_srgb(v: float) -> int:
+    v = min(1.0, max(0.0, v))
+    return round(255 * (v * 12.92 if v <= 0.0031308 else 1.055 * v ** (1 / 2.4) - 0.055))
+
+
+def deuteranopia(im: Image.Image) -> Image.Image:
+    out = im.convert("RGBA")
+    px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, a = px[x, y]
+            lin = (_TO_LINEAR[r], _TO_LINEAR[g], _TO_LINEAR[b])
+            px[x, y] = tuple(_to_srgb(sum(m * c for m, c in zip(row, lin))) for row in DEUTERANOPIA) + (a,)
+    return out
+
+
+def make_type_reviews(icons: list[Path]) -> None:
+    """types_icons_4x.png：14 張圖示 1x／4x＋裝車版綠色盲模擬；
+    types_vs_concept.png：每種的概念圖與成品（空、裝車、綠色盲）4x 並排。"""
+    bg, ink = (45, 46, 49, 255), (225, 225, 225, 255)
+    font = ImageFont.truetype(str(FONT_BOLD), 18)
+    big = lambda im: im.resize((128, 128), Image.Resampling.NEAREST)  # noqa: E731
+    final = {t[0]: [Image.open(p).convert("RGBA") for p in icons[i * 2:i * 2 + 2]] for i, t in enumerate(TYPES)}
+
+    col = 148
+    sheet = Image.new("RGBA", (16 + col * len(TYPES), 36 + 48 + 3 * 140 + 24), bg)
+    d = ImageDraw.Draw(sheet)
+    for c, (tid, _, pattern, _) in enumerate(TYPES):
+        x = 16 + c * col
+        empty, loaded = final[tid]
+        deut = deuteranopia(loaded)
+        d.text((x, 10), f"{tid} ({pattern})", font=font, fill=ink)
+        for k, im in enumerate((empty, loaded, deut)):  # 1x：空、裝車、裝車綠色盲
+            sheet.alpha_composite(im, (x + k * 44, 40))
+        for r, im in enumerate((empty, loaded, deut)):  # 4x 三列，同順序
+            sheet.alpha_composite(big(im), (x, 84 + r * 140))
+    d.text((16, sheet.height - 22), "rows 4x: empty / loaded / loaded deuteranopia (Machado 2009, sev 1, linear RGB)",
+           font=font, fill=ink)
+    sheet.save(REVIEW / "types_icons_4x.png", format="PNG")
+
+    concept_dir = REPO / "docs/design/types"
+    heads = ("concept empty", "final empty", "concept loaded", "final loaded", "concept deut", "final deut")
+    sheet = Image.new("RGBA", (120 + 140 * len(heads), 36 + 140 * len(TYPES)), bg)
+    d = ImageDraw.Draw(sheet)
+    for k, head in enumerate(heads):
+        d.text((120 + k * 140, 10), head, font=font, fill=ink)
+    for r, (tid, *_) in enumerate(TYPES):
+        y = 36 + r * 140
+        empty, loaded = final[tid]
+        concept = [Image.open(concept_dir / f"{tid}-{s}.png").convert("RGBA") for s in ("empty", "loaded", "loaded-deut")]
+        d.text((12, y + 54), tid, font=font, fill=ink)
+        for k, im in enumerate((concept[0], empty, concept[1], loaded, concept[2], deuteranopia(loaded))):
+            sheet.alpha_composite(big(im), (120 + k * 140, y))
+    sheet.save(REVIEW / "types_vs_concept.png", format="PNG")
 
 
 def _check_png(path: Path, size: tuple[int, int], mode: str | None = None) -> Image.Image:
@@ -319,13 +466,11 @@ def _check_png(path: Path, size: tuple[int, int], mode: str | None = None) -> Im
     return im
 
 
-def validate_outputs(empty_atlas: Path, loaded_atlas: Path, empty_icon: Path, loaded_icon: Path, fbx: Path) -> None:
-    images = [
-        _check_png(empty_atlas, (ATLAS_SIZE, ATLAS_SIZE), "RGB"),
-        _check_png(loaded_atlas, (ATLAS_SIZE, ATLAS_SIZE), "RGB"),
-        _check_png(empty_icon, (32, 32), "RGBA"),
-        _check_png(loaded_icon, (32, 32), "RGBA"),
-    ]
+def validate_outputs(atlases: list[Path], icons: list[Path], fbx: Path) -> None:
+    if len(atlases) != 2 * len(TYPES) or len(icons) != 2 * len(TYPES):
+        raise AssertionError(f"atlas／圖示數量錯誤：{len(atlases)}／{len(icons)}")
+    images = [_check_png(p, (ATLAS_SIZE, ATLAS_SIZE), "RGB") for p in atlases]
+    images += [_check_png(p, (32, 32), "RGBA") for p in icons]
     # PNG metadata 不得偷偷帶入品牌／文字；畫面文字只由上方固定的 "07" 繪製。
     forbidden_text = ("capsule corporation", "hoi-poi", "七龍珠")
     for im in images:
@@ -333,14 +478,17 @@ def validate_outputs(empty_atlas: Path, loaded_atlas: Path, empty_icon: Path, lo
         assert not any(word in metadata for word in forbidden_text), "PNG metadata 含禁止文字"
     for p in (fbx, REVIEW / "fbx_verify.txt", REVIEW / "model_empty.png", REVIEW / "model_loaded.png",
               REVIEW / "side_neg_y.png", REVIEW / "side_pos_y.png", REVIEW / "ground_empty.png",
-              REVIEW / "ground_loaded.png", REVIEW / "icons_4x.png"):
+              REVIEW / "ground_loaded.png", REVIEW / "types_icons_4x.png", REVIEW / "types_vs_concept.png"):
         if not p.is_file() or p.stat().st_size == 0:
             raise AssertionError(f"缺少或空白產物：{p}")
     _check_png(REVIEW / "model_empty.png", (1024, 768))
     _check_png(REVIEW / "model_loaded.png", (1024, 768))
     _check_png(REVIEW / "side_neg_y.png", (800, 400))
     _check_png(REVIEW / "side_pos_y.png", (800, 400))
-    # 不允許 MOD 產生 Blender 暫存檔；本產線只寫一個 FBX 與四張指定 PNG。
+    stale = [p for p in OLD_FILES if p.exists()]
+    if stale:
+        raise AssertionError(f"舊檔名仍在：{stale}")
+    # 不允許 MOD 產生 Blender 暫存檔；本產線只寫一個 FBX 與 28 張指定 PNG。
     forbidden = [p for p in MEDIA.rglob("*") if p.is_file() and p.suffix.lower() in {".blend", ".blend1"}]
     if forbidden:
         raise AssertionError(f"MOD 內不應有 Blender 暫存檔：{forbidden}")
@@ -365,11 +513,12 @@ def run(args: argparse.Namespace) -> None:
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
 
-    empty_atlas = texture_dir / "MinidoracatVehicleCapsule.png"
-    loaded_atlas = texture_dir / "MinidoracatVehicleCapsuleLoaded.png"
-    draw_atlas(empty_atlas, loaded=False)
-    draw_atlas(loaded_atlas, loaded=True)
-    config = make_config(empty_atlas, loaded_atlas, out, REVIEW, blender)
+    atlases = []
+    for ctype in TYPES:
+        for loaded in (False, True):
+            path = texture_dir / f"MinidoracatVehicleCapsule{ctype[0]}{'Loaded' if loaded else ''}.png"
+            atlases.append((path, loaded, draw_atlas(path, loaded, ctype)))
+    config = make_config(atlases, out, REVIEW, blender)
 
     cmd = [str(blender), "-b", "--factory-startup", "--python", str(BLENDER_SCRIPT), "--", str(config)]
     print("blender ->", " ".join(cmd))
@@ -381,17 +530,26 @@ def run(args: argparse.Namespace) -> None:
     if proc.returncode != 0:
         raise RuntimeError(f"Blender 產線失敗（exit {proc.returncode}）")
 
-    # child 端以 config out/icon_*.png 產出 256px 透明算圖，這裡縮成 MOD 物品圖示。
-    _check_png(out / "icon_empty.png", (256, 256))
-    _check_png(out / "icon_loaded.png", (256, 256))
-    icon(empty_icon := out / "icon_empty.png", MEDIA / "textures/Item_MinidoracatVehicleCapsule.png")
-    icon(loaded_icon := out / "icon_loaded.png", MEDIA / "textures/Item_MinidoracatVehicleCapsuleLoaded.png")
-    make_icon_review(MEDIA / "textures/Item_MinidoracatVehicleCapsule.png",
-                     MEDIA / "textures/Item_MinidoracatVehicleCapsuleLoaded.png", REVIEW / "icons_4x.png")
+    # child 端每張 atlas 產出 out/icon_<atlas stem>.png（256px 透明算圖），發光花紋另有
+    # icon_<stem>_emit.png（無光照、只有花紋）；以 lighter 疊回後縮成 MOD 物品圖示。
+    icons = []
+    for atlas, _, emit in atlases:
+        src = out / f"icon_{atlas.stem}.png"
+        _check_png(src, (256, 256))
+        if emit:
+            lit = Image.open(src).convert("RGBA")
+            glow = Image.open(out / f"icon_{atlas.stem}_emit.png").convert("RGB")
+            merged = ImageChops.lighter(lit.convert("RGB"), glow)
+            merged.putalpha(lit.getchannel("A"))
+            merged.save(src, format="PNG")
+        icons.append(dst := MEDIA / f"textures/Item_{atlas.stem}.png")
+        icon(src, dst)
+    for old in OLD_FILES:
+        old.unlink(missing_ok=True)
+    make_type_reviews(icons)
 
     fbx = model_dir / "MinidoracatVehicleCapsule.fbx"
-    validate_outputs(empty_atlas, loaded_atlas, MEDIA / "textures/Item_MinidoracatVehicleCapsule.png",
-                     MEDIA / "textures/Item_MinidoracatVehicleCapsuleLoaded.png", fbx)
+    validate_outputs([a for a, _, _ in atlases], icons, fbx)
     print("BUILD OK ->", MEDIA)
     print("review ->", REVIEW)
 

@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "캡슐에 넣기",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "캡슐 던지기",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "버튼 누르기"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "버튼 누르기",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

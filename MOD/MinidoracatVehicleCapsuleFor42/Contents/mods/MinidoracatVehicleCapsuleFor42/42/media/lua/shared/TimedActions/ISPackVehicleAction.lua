@@ -27,7 +27,7 @@ function ISPackVehicleAction:start()
 end
 
 function ISPackVehicleAction:complete()
-    return M.Play.pack(self.character, self.vehicle, self.capsuleName)
+    return M.Play.pack(self.character, self.vehicle, self.typeId)
 end
 
 function ISPackVehicleAction:getDuration()
@@ -35,7 +35,8 @@ function ISPackVehicleAction:getDuration()
     return M.Rules.PACK_SECONDS * 50 -- 1 unit = 20 ms (NetTimedAction.getDuration)
 end
 
--- MP: the server rebuilds the action from these parameters (NetTimedAction.java:36-55); capsuleName is SP only.
+-- MP: the server rebuilds the action from these parameters (NetTimedAction.java:36-55); typeId (the capsule type picked
+-- in the menu) is SP only, MP sends it with the intent.
 function ISPackVehicleAction:new(character, vehicle)
     local o = ISBaseTimedAction.new(self, character)
     o.vehicle = vehicle

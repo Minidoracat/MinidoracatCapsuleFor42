@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "Ranger dans la capsule",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "Lancer la capsule",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "Appuyer sur le bouton"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "Appuyer sur le bouton",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

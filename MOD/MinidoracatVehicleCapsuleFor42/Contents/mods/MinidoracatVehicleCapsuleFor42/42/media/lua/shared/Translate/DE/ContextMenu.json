@@ -1,5 +1,6 @@
 {
     "ContextMenu_MinidoracatVehicleCapsule_Pack": "In Kapsel packen",
     "ContextMenu_MinidoracatVehicleCapsule_Throw": "Kapsel werfen",
-    "ContextMenu_MinidoracatVehicleCapsule_Press": "Knopf drücken"
+    "ContextMenu_MinidoracatVehicleCapsule_Press": "Knopf drücken",
+    "ContextMenu_MinidoracatVehicleCapsule_PackKind": "%1 ×%2"
 }

@@ -24,7 +24,7 @@ local function side()
 end
 
 function ISThrowCapsuleAction:isValid()
-    return self.item ~= nil and self.item:getFullType() == M.ITEM_LOADED
+    return self.item ~= nil and M.isLoaded(self.item)
         and self.character:getInventory():containsID(self.item:getID())
 end
 

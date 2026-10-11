@@ -68,6 +68,8 @@ local function newContainer(holder)
             if r then return r end
         end
     end
+    function c:getCountTypeRecurse(t) return self:getAllTypeRecurse(t):size() end
+    function c:getFirstTypeRecurse(t) return self:getAllTypeRecurse(t):get(0) end
     function c:getAllTypeRecurse(t)
         local out = {}
         local function walk(cc)
@@ -97,7 +99,7 @@ local function newItem(fullType, isContainer)
 end
 function instanceof(o, cls) return cls == "InventoryContainer" and type(o) == "table" and o.inv ~= nil end
 function instanceItem(t)
-    return newItem(t, t == "MinidoracatVehicleCapsule.LoadedCapsule" or t == "Base.Bag_Schoolbag")
+    return newItem(t, t:find("^MinidoracatVehicleCapsule%.LoadedCapsule") ~= nil or t == "Base.Bag_Schoolbag")
 end
 function sendAddItemToContainer() end
 function sendRemoveItemFromContainer() end
@@ -567,8 +569,8 @@ check(r509.why == "BLOCKED" and Store.read(509).state == "PACKED", "補回位置
 
 print("Guard：清空規則（哪些狀態清、哪些不動）與貨物鎖")
 local owner = newPlayer("owner", false)
-local function packedCapsule(state, settled)
-    local cap = instanceItem(M.ITEM_LOADED)
+local function packedCapsule(state, settled, loaded)
+    local cap = instanceItem(loaded or M.TYPES[1].loaded)
     local water, bag, pencil = newItem("Base.WaterBottle"), newItem("Base.Bag_Schoolbag", true), newItem("Base.Pencil")
     cap.inv:AddItem(water)
     cap.inv:AddItem(bag)
@@ -593,15 +595,23 @@ local clearResults = {}
 for _, c in ipairs(clearCases) do
     local cap = packedCapsule(c[1], c[2])
     if c[4] then Store.mark(cap.id) end
-    local empties = topLevel(M.ITEM_EMPTY)
+    local empties = topLevel(M.TYPES[1].empty)
     Guard.pass(owner)
     local gone = owner.inv:getItemWithIDRecursiv(cap.id) == nil
     local h = Store.read(cap.id).history
-    local cleared = gone and topLevel(M.ITEM_EMPTY) == empties + 1 and h[#h].ev == "CLEARED"
+    local cleared = gone and topLevel(M.TYPES[1].empty) == empties + 1 and h[#h].ev == "CLEARED"
         and h[#h].items:find("Base.Pencil*1", 1, true) ~= nil
     clearResults[#clearResults + 1] = { (c[3] and cleared) or (not c[3] and not gone and h[#h].ev ~= "CLEARED"),
         c[1] .. (c[2] and "+settled" or "+unsettled") .. (c[3] and " -> 換成空膠囊、記 CLEARED 與貨物" or " -> 不動") }
     if not gone then owner.inv:Remove(cap) end
+end
+do -- same type back: a cleared steam capsule becomes an empty steam capsule (checked with the others below)
+    local steam = M.TYPE_BY_ID.Steam
+    local steamCap = packedCapsule("VOID", nil, steam.loaded)
+    local before = topLevel(steam.empty)
+    Guard.pass(owner)
+    clearResults[#clearResults + 1] = { owner.inv:getItemWithIDRecursiv(steamCap.id) == nil
+        and topLevel(steam.empty) == before + 1, "清空時換成同一種空膠囊（蒸汽換蒸汽）" }
 end
 local stale = packedCapsule("UNPACKED", true)
 Store.mark(stale.id)
@@ -805,11 +815,27 @@ check(Footprint.reach(10.5, 10.5, 0, 15, 10, 0, 8, true) == "NO_SIGHT", "視線�
 check(Footprint.reach(10.5, 10.5, 0, 12, 10, 0, 3, false) == nil, "按按鈕不看視線，只看 3 格內")
 losBlocked = false
 
-print("Rules：膠囊名稱、收車權限")
-check(Rules.cleanName("  Vehicle Capsule: [b]Car\n\1<RGB:1,0,0>  ") == "Vehicle Capsule: bCarRGB:1,0,0",
-    "清掉控制字元、[ ]、< >，去頭尾空白：" .. tostring(Rules.cleanName("  Vehicle Capsule: [b]Car\n\1<RGB:1,0,0>  ")))
-check(#Rules.cleanName(string.rep("a", 200)) == Rules.NAME_MAX, "名稱最長 64")
-check(Rules.cleanName(" \n ") == nil and Rules.cleanName(nil) == nil and Rules.cleanName(5) == nil, "空的或不是字串：退回伺服器組字")
+print("Rules：膠囊種類、收車權限")
+do
+    local T1, T4, T6 = M.TYPES[1], M.TYPE_BY_ID.Steam, M.TYPE_BY_ID.Magic
+    local kp = newPlayer("kinds", false)
+    kp.inv:AddItem(instanceItem(T4.empty))
+    kp.inv:AddItem(instanceItem(T4.empty))
+    kp.inv:AddItem(instanceItem(T1.empty))
+    SandboxVars = { MinidoracatVehicleCapsule = { TypeSteam = false } }
+    local kinds = Rules.emptyTypes(kp)
+    check(#kinds == 2 and kinds[1].type == T1 and kinds[1].n == 1 and kinds[1].on and kinds[2].type == T4
+        and kinds[2].n == 2 and not kinds[2].on, "emptyTypes：照 M.TYPES 順序列出帶著的款式、數量與是否啟用")
+    check(Rules.typeOn(T1) and not Rules.typeOn(T4) and not Rules.typeOn(nil), "typeOn：沙盒 Type<id> 關掉才算停用")
+    local savedV, savedM = Rules.vehicleWhyNot, Rules.mayPack
+    Rules.vehicleWhyNot, Rules.mayPack = function() return nil end, function() return true end
+    check(Rules.packWhyNot(kp, {}, T4) == "TYPE_OFF" and Rules.packWhyNot(kp, {}, T6) == "NO_CAPSULE"
+        and Rules.packWhyNot(kp, {}, nil) == "NO_CAPSULE" and Rules.packWhyNot(kp, {}, T1) == nil,
+        "packWhyNot：停用的款式 TYPE_OFF、沒帶的或沒指定 NO_CAPSULE、帶著且啟用的放行")
+    Rules.vehicleWhyNot, Rules.mayPack = savedV, savedM
+    SandboxVars = nil
+    check(Rules.typeOn(T4), "沒有沙盒值＝啟用（預設七種全開）")
+end
 local car = { keyId = 4242, ignition = false }
 function car:getKeyId() return self.keyId end
 function car:isKeysInIgnition() return self.ignition end
@@ -866,11 +892,16 @@ end
 
 print("Play：身分只認 OnClientCommand 的連線（intent）")
 local alice, bob = newPlayer("alice", false), newPlayer("bob", false)
-clientCommand(M.MODULE, "intent", alice, { kind = "pack", id = 77, name = "[x]Car\n" })
+clientCommand(M.MODULE, "intent", alice, { kind = "pack", id = 77, type = "Steam" })
 clientCommand(M.MODULE, "intent", alice, { kind = "nuke", id = 77 })
+clientCommand(M.MODULE, "intent", alice, { kind = "pack", id = 78, type = "Rocket" })
 check(Play.takeIntent(bob, "pack", 77) == nil, "別人的 intent 不能拿來用（bob 冒充 alice 的車）")
 local it = Play.takeIntent(alice, "pack", 77)
-check(it ~= nil and it.name == "xCar", "同一連線的 intent 可用，名稱已清理：" .. tostring(it and it.name))
+check(it ~= nil and it.type == M.TYPE_BY_ID.Steam, "同一連線的 intent 可用，帶著要用的款式：" .. tostring(it and it.type and it.type.id))
+do
+    local it78 = Play.takeIntent(alice, "pack", 78)
+    check(it78 ~= nil and it78.type == nil, "不認得的款式不帶（Play.pack 回 NO_CAPSULE）")
+end
 check(Play.takeIntent(alice, "pack", 77) == nil, "intent 用一次就沒了")
 check(Play.takeIntent(alice, "nuke", 77) == nil, "不認得的種類不收")
 clientCommand(M.MODULE, "intent", alice, { kind = "throw", id = 9 })
@@ -882,7 +913,7 @@ alice.inv.containsID = function() return false end
 print = function(s) printed[#printed + 1] = tostring(s) end
 local refused = Play.pack(alice, { getId = function() return 77 end }, "local")
 local thrown = Play.throw({ character = alice, item = { getID = function() return 5 end,
-    getFullType = function() return M.ITEM_LOADED end }, x = 1, y = 1, z = 0 })
+    getFullType = function() return M.TYPES[1].loaded end }, x = 1, y = 1, z = 0 })
 print = savedPrint
 check(refused == false and printed[1] and printed[1]:find("pack refused by=alice why=NO_INTENT", 1, true) ~= nil,
     "沒有 intent 的收車被拒並記一行：" .. tostring(printed[1]))
@@ -898,7 +929,7 @@ do -- 動作瞬間完成（管理員作弊）時沒有放手事件：complete �
         alice.inv.containsID = function() return true end
         clientCommand(M.MODULE, "intent", alice, { kind = "throw", id = 5 })
         local ok = Play.throw({ character = alice, item = { getID = function() return 5 end,
-            getFullType = function() return M.ITEM_LOADED end }, x = 1, y = 1, z = 0 })
+            getFullType = function() return M.TYPES[1].loaded end }, x = 1, y = 1, z = 0 })
         Fx.broadcast, Fp.reach, Th.schedule = saved[1], saved[2], saved[3]
         check(ok == true and kinds[1] == "flight" and at == nowMs + Th.FLIGHT_MS,
             "沒有放手事件時 complete 先送飛行特效、FLIGHT_MS 後落地（" .. tostring(kinds[1]) .. "）")
@@ -1103,7 +1134,7 @@ do -- 桶檔、保留天數、最後看到：主程式的 local 已接近 200 �
             "地上：放下算一次、同一格不再寫、被移到隔壁格再寫")
         check(#sent == sentBefore, "看到不算改變：沒有 queryChanged")
         local amy = newPlayer("amy", false)
-        local held2 = instanceItem(M.ITEM_LOADED)
+        local held2 = instanceItem(M.TYPES[1].loaded)
         amy.inv:AddItem(held2)
         local at = Query.near(amy, held2.id)
         check(at and at.where == "player" and at.by == "amy" and at.x == 100 and at.y == 200, "Query.near 回傳在誰身上、站在哪")
@@ -1144,14 +1175,14 @@ end
 
 print("Query：一般玩家只能查身上或附近的膠囊，管理員都能查")
 local bob = newPlayer("bob", false)
-local held = instanceItem(M.ITEM_LOADED)
+local held = instanceItem(M.TYPES[1].loaded)
 bob.inv:AddItem(held)
 Store.write(held.id, { state = "PACKED", settled = true, script = "Base.PickUpTruck", packedBy = "bob", skin = 2,
     parts = { GasTank = { cond = 90, item = "Base.NormalGasTank", icond = 90, amount = 12.5 }, DoorRearRight = { cond = 0 } },
     manifest = { ["Base.WaterBottle"] = 6 }, history = { { t = base, ev = "PACKED", by = "bob", car = 1 } } })
-local groundCap = instanceItem(M.ITEM_LOADED)
+local groundCap = instanceItem(M.TYPES[1].loaded)
 Store.write(groundCap.id, { state = "UNPACKED", settled = true, history = { { t = base, ev = "PACKED" }, { t = base + 5, ev = "UNPACKED", by = "ann" } } })
-local farCap = instanceItem(M.ITEM_LOADED)
+local farCap = instanceItem(M.TYPES[1].loaded)
 Store.write(farCap.id, { state = "PACKED", settled = true, history = {} })
 local function emptyList() return javaList({}) end
 loadedSquares["102,201"] = {
@@ -1198,20 +1229,24 @@ quiet = false
 check(table.concat(refused, ",") == "NOT_ADMIN,NOT_ADMIN,NOT_ADMIN,NOT_ADMIN", "四個管理指令對一般玩家都拒絕：" .. table.concat(refused, ","))
 check(det.ok and #det.history == 100 and det.historyTotal == 130 and det.history[100].t == base + 130, "歷史只送最新 100 筆，另回總數")
 
-print("Loot：開關與權重照沙盒寫進表，重排不疊加，其他物品保留")
+print("Loot：開關與權重照沙盒寫進表，會掉的款式平分、總量不變，重排不疊加，其他物品保留")
 local function fakeList()
     return { MechanicShelfTools = { items = { "Base.Wrench", 4 } }, CrateMechanics = { items = { "Base.Jack", 2 } },
         CarSupplyTools = { items = {} }, GasStorageMechanics = { items = { "Base.Funnel", 1 } }, GarageMechanics = { items = {} } }
 end
+-- Total capsule weight in a table (all types), and how many capsule entries it has.
 local function weightIn(list, t)
-    local items, w = list[t].items, nil
-    for i = 1, #items, 2 do if items[i] == Loot.ITEM then w = (w or 0) + items[i + 1] end end
-    return w
+    local items, w, n = list[t].items, nil, 0
+    for i = 1, #items, 2 do
+        if Loot.ITEMS[items[i]] then w, n = (w or 0) + items[i + 1], n + 1 end
+    end
+    return w and math.floor(w * 1000 + 0.5) / 1000, n
 end
 local L = fakeList()
 Loot.apply(L, Loot.wanted())
 check(weightIn(L, "MechanicShelfTools") == 0.5 and weightIn(L, "CrateMechanics") == 0.5 and weightIn(L, "CarSupplyTools") == 0.5
     and weightIn(L, "GasStorageMechanics") == 0.3 and weightIn(L, "GarageMechanics") == nil, "沒設沙盒＝預設值（住家車庫預設關）")
+check(select(2, weightIn(L, "MechanicShelfTools")) == #M.TYPES, "預設七種全開：每張表七筆，總量仍是地點的權重")
 sandbox = { LootEnabled = true, LootMechanic = true, LootMechanicWeight = 2.5, LootCarSupply = false, LootCarSupplyWeight = 9,
     LootGasStation = true, LootGasStationWeight = 0, LootGarage = true, LootGarageWeight = 1.2 }
 Loot.apply(L, Loot.wanted())
@@ -1222,6 +1257,18 @@ check(weightIn(L, "GasStorageMechanics") == nil, "權重 0 的加油站不出現
 check(weightIn(L, "GarageMechanics") == 1.2, "打開的住家車庫 1.2")
 check(L.MechanicShelfTools.items[1] == "Base.Wrench" and L.MechanicShelfTools.items[2] == 4 and L.GasStorageMechanics.items[1] == "Base.Funnel"
     and #L.GasStorageMechanics.items == 2, "原版物品原樣保留")
+sandbox.TypeMagicLoot, sandbox.TypeShock = false, false
+Loot.apply(L, Loot.wanted())
+do
+    local w5, n5 = weightIn(L, "MechanicShelfTools")
+    local dropped = false
+    for i = 1, #L.MechanicShelfTools.items, 2 do
+        local ft = L.MechanicShelfTools.items[i]
+        if ft == M.TYPE_BY_ID.Magic.empty or ft == M.TYPE_BY_ID.Shock.empty then dropped = true end
+    end
+    check(w5 == 2.5 and n5 == #M.TYPES - 2 and not dropped,
+        "魔法關戰利品、衝擊停用：兩種都不掉，剩下的平分 2.5（" .. tostring(n5) .. " 筆，共 " .. tostring(w5) .. "）")
+end
 sandbox.LootEnabled = false
 Loot.apply(L, Loot.wanted())
 local any = false
@@ -1307,7 +1354,7 @@ do (function()
     require "MinidoracatVehicleCapsule/Trade"
     local Trade = M.Trade
     local seller, buyer = newPlayer("seller", false), newPlayer("buyer", false)
-    local cap = instanceItem(M.ITEM_LOADED)
+    local cap = instanceItem(M.TYPES[1].loaded)
     local water, rifle, scope = newItem("Base.WaterBottle"), newItem("Base.HuntingRifle"), newItem("Base.x2Scope")
     water.cond = 7
     rifle.parts = { scope }
@@ -1330,7 +1377,7 @@ do (function()
         Store.write(id, s)
     end
     quiet = true
-    local noRec = select(2, Trade.check(instanceItem(M.ITEM_LOADED)))
+    local noRec = select(2, Trade.check(instanceItem(M.TYPES[1].loaded)))
     record({ state = "UNPACKED" })
     local notPacked = select(2, Trade.check(cap))
     record({ settled = false })
@@ -1369,10 +1416,10 @@ do (function()
     check(held.seen.where == "economy" and held.seen.by == "seller" and held.history[#held.history].ev == "ESCROW",
         "最後看到改成經濟系統，歷史記 ESCROW")
     quiet = true
-    local fresh = instanceItem(M.ITEM_LOADED)
+    local fresh = instanceItem(M.TYPES[1].loaded)
     local freshId = fresh.id
     Trade.rebuilt(ext, fresh, buyer, { kind = "market", ref = "L-1" })
-    local dropped = instanceItem(M.ITEM_LOADED) -- Economy builds again for the same delivery and keeps one item
+    local dropped = instanceItem(M.TYPES[1].loaded) -- Economy builds again for the same delivery and keeps one item
     Trade.rebuilt(ext, dropped, buyer, { kind = "market", ref = "L-1" })
     local built = Store.read(id)
     Guard.check(buyer, fresh)
@@ -1381,9 +1428,9 @@ do (function()
     for _, e in ipairs(got.history) do if e.ev == "TRADED" then traded = traded + 1 end end
     Guard.check(buyer, fresh)
     local offered = Trade.check(fresh, buyer)
-    local again = instanceItem(M.ITEM_LOADED)
+    local again = instanceItem(M.TYPES[1].loaded)
     Trade.rebuilt(ext, again, buyer, { kind = "market", ref = "M-9" })
-    local orphan = instanceItem(M.ITEM_LOADED)
+    local orphan = instanceItem(M.TYPES[1].loaded)
     local orphanId = orphan.id
     Trade.rebuilt({ capsuleId = 99999999 }, orphan, buyer, {})
     quiet = false
@@ -1424,9 +1471,15 @@ do (function()
     eco.API_REVISION = 5
     initHook()
     quiet = false
-    local L = M.ITEM_LOADED
-    check(table.concat(calls, ",") == "unique:" .. L .. ":" .. M.MOD_ID .. ",refused,block:" .. L .. ",block:" .. L,
-        "rev 6 註冊成可交易；被拒或只有 rev 5 時退回 blockItemType（" .. table.concat(calls, ",") .. "）")
+    local want = {}
+    for _, t in ipairs(M.TYPES) do want[#want + 1] = "unique:" .. t.loaded .. ":" .. M.MOD_ID end
+    for _, t in ipairs(M.TYPES) do
+        want[#want + 1] = "refused"
+        want[#want + 1] = "block:" .. t.loaded
+    end
+    for _, t in ipairs(M.TYPES) do want[#want + 1] = "block:" .. t.loaded end
+    check(table.concat(calls, ",") == table.concat(want, ","),
+        "rev 6 七種各註冊一次；被拒或只有 rev 5 時每種退回 blockItemType（" .. #calls .. " 次呼叫）")
     MinidoracatEconomy = nil
 end)() end
 
@@ -1450,6 +1503,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
     dofile(MUI .. "TextWrap.lua")
     local caps = MinidoracatUI.v1.CAPABILITIES
     caps.window, caps.controls, caps.virtualList, caps.slider = true, true, true, true -- widget 檔要遊戲 UI 類別；這裡只驗文字與排版
+    caps.scrollPanel, caps.opaqueWindow = true, true
     require "MinidoracatVehicleCapsule/UIKit"
     local Kit = M.UIKit
     check(Kit.ok and caps.textWrap == true, "UIKit 接上框架（含 Text.wrap）")
@@ -1503,8 +1557,8 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
 end
 uiLayout()
 
-print("Effects：效果樣式（沙盒 EffectStyle）的翻譯、音效與煙霧幀都對得上")
-local function effectStyles() -- 獨立函式：主程式的 local 已接近 200 個上限
+print("Types：七種膠囊的物品、模型、圖示、音效（全部不同）、煙霧幀、沙盒與 12 種語言都對得上")
+local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200 個上限
     local base = MEDIA .. "/.."
     local function read(path)
         local f = io.open(path, "rb")
@@ -1514,47 +1568,62 @@ local function effectStyles() -- 獨立函式：主程式的 local 已接近 200
         return s
     end
     local function exists(path) return read(path) ~= nil end
-    require "MinidoracatVehicleCapsule/Effects"
-    local E = M.Effects
-    local n = #E.STYLES
-    local values = tonumber(read(base .. "/sandbox-options.txt"):match(
-        "option MinidoracatVehicleCapsule%.EffectStyle%s*{[^}]-numValues%s*=%s*(%d+)"))
-    check(values == n, "沙盒 EffectStyle 的 numValues（" .. tostring(values) .. "）＝樣式數（" .. n .. "）")
-    local names, missing = {}, {}
-    for _, lang in ipairs({ "CH", "CN", "DE", "EN", "ES", "FR", "JP", "KO", "PL", "PTBR", "RU", "TR" }) do
-        local t = M.Json.decode(read(MEDIA .. "/shared/Translate/" .. lang .. "/Sandbox.json"))
-        for i = 1, n + 1 do
-            local has = t["Sandbox_MinidoracatVehicleCapsule_EffectStyle_option" .. i] ~= nil
-            if has ~= (i <= n) then missing[#missing + 1] = lang .. ":option" .. i end
-        end
+    local items = read(base .. "/scripts/MinidoracatVehicleCapsule_items.txt")
+    local models = read(base .. "/scripts/MinidoracatVehicleCapsule_models.txt")
+    local sandboxTxt = read(base .. "/sandbox-options.txt")
+    local sounds, used, bad = {}, {}, {}
+    for name, file in read(base .. "/scripts/MinidoracatVehicleCapsule_sounds.txt"):gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do
+        sounds[name] = file
     end
-    check(#missing == 0, "12 種語言各有 " .. n .. " 個樣式名稱、沒有多的（" .. table.concat(missing, ",") .. "）")
-    local script = read(base .. "/scripts/MinidoracatVehicleCapsule_sounds.txt")
-    for name, file in script:gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do names[name] = file end
-    local bad = {}
-    for _, st in ipairs(E.STYLES) do
+    for _, t in ipairs(M.TYPES) do
+        local id = t.id
+        if not items:find("item Capsule" .. id .. "%s*{[^}]-Icon = MinidoracatVehicleCapsule" .. id .. ",") then bad[#bad + 1] = id .. ".empty item" end
+        if not items:find("item LoadedCapsule" .. id .. "%s*{[^}]-Icon = MinidoracatVehicleCapsule" .. id .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
+        for _, suffix in ipairs({ "", "Loaded", "Hand", "LoadedHand" }) do
+            if not models:find("model VehicleCapsule" .. id .. suffix .. "%s*{") then bad[#bad + 1] = id .. ".model" .. suffix end
+        end
+        for _, png in ipairs({ "textures/Item_MinidoracatVehicleCapsule" .. id .. ".png", "textures/Item_MinidoracatVehicleCapsule" .. id .. "Loaded.png",
+            "textures/WorldItems/MinidoracatVehicleCapsule" .. id .. ".png", "textures/WorldItems/MinidoracatVehicleCapsule" .. id .. "Loaded.png" }) do
+            if not exists(base .. "/" .. png) then bad[#bad + 1] = png end
+        end
         for _, k in ipairs({ "throw", "pop", "pack", "button" }) do
-            local file = names[st[k]]
-            if not (file and exists(base .. "/../" .. file)) then bad[#bad + 1] = st.id .. "." .. k .. "=" .. tostring(st[k]) end
+            local file = sounds[t[k]]
+            if not (file and exists(base .. "/../" .. file)) then bad[#bad + 1] = id .. "." .. k .. "=" .. tostring(t[k]) end
+            if used[t[k]] then bad[#bad + 1] = id .. "." .. k .. " shares " .. used[t[k]] end
+            used[t[k]] = id .. "." .. k
         end
-        for i = 1, st.frames + 1 do
-            local has = exists(base .. "/textures/MinidoracatVehicleCapsule/" .. st.smoke .. i .. ".png")
-            if has ~= (i <= st.frames) then bad[#bad + 1] = st.id .. " frame " .. i end
+        for i = 1, t.frames + 1 do
+            local has = exists(base .. "/textures/MinidoracatVehicleCapsule/" .. t.smoke .. i .. ".png")
+            if has ~= (i <= t.frames) then bad[#bad + 1] = id .. " frame " .. i end
+        end
+        for _, opt in ipairs({ "Type" .. id, "Type" .. id .. "Loot" }) do
+            if not sandboxTxt:find("option MinidoracatVehicleCapsule%." .. opt .. "%s*{[^}]-page = MinidoracatVehicleCapsuleTypes") then
+                bad[#bad + 1] = "sandbox " .. opt
+            end
         end
     end
-    check(#bad == 0, "每個樣式的四個音效都在 sound script 且檔案存在、煙霧幀數＝檔案數（" .. table.concat(bad, ",") .. "）")
-    local saved = SandboxVars
-    SandboxVars = { MinidoracatVehicleCapsule = { EffectStyle = 5 } }
-    local five = E.style()
-    SandboxVars.MinidoracatVehicleCapsule.EffectStyle = 99
-    local unknown = E.style()
-    SandboxVars = nil
-    local none = E.style()
-    SandboxVars = saved
-    check(five == E.STYLES[5] and unknown == E.STYLES[1] and none == E.STYLES[1],
-        "Effects.style()：沙盒值對應樣式；未知值或沒有沙盒時用卡通")
+    check(#bad == 0, "每種都有兩個物品、四個模型、四張圖、四段音效（28 段互不共用、檔案都在）、煙霧幀、兩個沙盒選項（"
+        .. table.concat(bad, ",") .. "）")
+    check(not sandboxTxt:find("EffectStyle", 1, true), "沙盒不再有 EffectStyle")
+    local missing = {}
+    for _, lang in ipairs({ "CH", "CN", "DE", "EN", "ES", "FR", "JP", "KO", "PL", "PTBR", "RU", "TR" }) do
+        local dir = MEDIA .. "/shared/Translate/" .. lang .. "/"
+        local itemNames = M.Json.decode(read(dir .. "ItemName.json"))
+        local sb = M.Json.decode(read(dir .. "Sandbox.json"))
+        local tip = M.Json.decode(read(dir .. "Tooltip.json"))
+        for _, t in ipairs(M.TYPES) do
+            for _, k in ipairs({ t.empty, t.loaded }) do if not itemNames[k] then missing[#missing + 1] = lang .. ":" .. k end end
+            for _, k in ipairs({ "Type" .. t.id, "Type" .. t.id .. "_tooltip", "Type" .. t.id .. "Loot", "Type" .. t.id .. "Loot_tooltip" }) do
+                if not sb["Sandbox_MinidoracatVehicleCapsule_" .. k] then missing[#missing + 1] = lang .. ":" .. k end
+            end
+            if not tip["Tooltip_MinidoracatVehicleCapsule_Look_" .. t.id] then missing[#missing + 1] = lang .. ":Look_" .. t.id end
+        end
+        for k in pairs(sb) do if k:find("EffectStyle", 1, true) then missing[#missing + 1] = lang .. ":" .. k .. "(old)" end end
+    end
+    check(#missing == 0, "12 種語言都有七種的物品名、沙盒選項與效果說明，沒有舊的 EffectStyle（"
+        .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
-effectStyles()
+capsuleTypes()
 
 print()
 if failures > 0 then

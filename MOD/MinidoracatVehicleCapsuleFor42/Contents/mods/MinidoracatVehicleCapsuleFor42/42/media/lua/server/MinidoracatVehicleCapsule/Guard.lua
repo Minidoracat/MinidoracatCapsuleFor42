@@ -43,9 +43,10 @@ local function listing(inv)
 end
 Guard.listing = listing
 
--- Puts an empty capsule where `capsule` is (same container, or the same square) and deletes it with its cargo.
+-- Puts an empty capsule of the same type where `capsule` is (same container, or the same square) and deletes it with
+-- its cargo.
 local function replaceWithEmpty(player, capsule)
-    local empty = instanceItem(M.ITEM_EMPTY)
+    local empty = instanceItem((M.typeOf(capsule) or M.TYPES[1]).empty)
     local wo = capsule:getWorldItem()
     if wo and wo:getSquare() then
         local sq = wo:getSquare()
@@ -193,7 +194,7 @@ local function groundCapsules(player, out)
             local objs = sq and sq:getWorldObjects()
             for i = 0, (objs and objs:size() or 0) - 1 do
                 local it = objs:get(i):getItem()
-                if it and it:getFullType() == M.ITEM_LOADED then out[#out + 1] = it end
+                if it and M.isLoaded(it) then out[#out + 1] = it end
             end
         end
     end
@@ -205,11 +206,14 @@ end
 function Guard.pass(player)
     local px, py, pz = math.floor(player:getX()), math.floor(player:getY()), math.floor(player:getZ())
     local held = { where = "player", by = player:getUsername(), x = px, y = py, z = pz }
-    local found = player:getInventory():getAllTypeRecurse(M.ITEM_LOADED)
-    for i = 0, found:size() - 1 do
-        local capsule = found:get(i)
-        Guard.check(player, capsule)
-        Store.seen(capsule:getID(), held)
+    local inv = player:getInventory()
+    for _, t in ipairs(M.TYPES) do
+        local found = inv:getAllTypeRecurse(t.loaded)
+        for i = 0, found:size() - 1 do
+            local capsule = found:get(i)
+            Guard.check(player, capsule)
+            Store.seen(capsule:getID(), held)
+        end
     end
     for _, capsule in ipairs(groundCapsules(player, {})) do
         Guard.check(player, capsule)

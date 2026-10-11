@@ -1,8 +1,10 @@
 -- Vehicle Capsule (client): context menu entries.
---   * "Pack into capsule" at the end of the vanilla outside-vehicle menu, with a tooltip that checks each
---     requirement (permission, engine off and nobody inside, an empty capsule) and says how to fix it; greyed out
---     until all pass. Without permission it stays clickable, drawn red like an unavailable option, and a click shows
---     the reason in a toast. The server checks again in complete() (PlayerCommands.lua).
+--   * "Pack into capsule" at the end of the vanilla outside-vehicle menu. With empty capsules of two or more types it
+--     opens a submenu, one entry per type ("Steam Capsule x2"); with one type or none it is a single entry. Each entry
+--     has a tooltip that checks every requirement (permission, engine off and nobody inside, a capsule of an enabled
+--     type) and says how to fix it; greyed out until all pass. Without permission it stays clickable with a minus
+--     icon, and a click shows the reason in a toast; no red text (it drops to 1.09:1 on the hover highlight, design
+--     vcap-types-1012 review). The tooltip background is opaque. The server checks again in complete().
 --   * A loaded capsule: "Throw capsule" when the player carries it, "Press the button" when it lies on the ground
 --     (inventory/loot window and world right click). Both open the landing cursor (ThrowCursor.lua).
 require "MinidoracatVehicleCapsule/Rules"
@@ -19,57 +21,85 @@ local function tr(key, ...) return getText("IGUI_MinidoracatVehicleCapsule_" .. 
 
 local IDLE = { OCCUPIED = true, ENGINE_RUNNING = true }
 
--- Tooltip rows for packing this vehicle; returns ok (every row passes), rich text, may (permission), permission text.
-function Menu.packTooltip(player, vehicle)
+local MISS_ICON = "media/ui/Moodle_internal_minus_red.png" -- the tooltip's own mark for a failed row (Notify.row)
+
+local function typeName(t) return M.Info.itemName(t.empty) end
+
+-- Tooltip rows for packing this vehicle with a capsule of type t (nil: the player carries none). single: the only
+-- entry, so a passing capsule row names the type. Returns ok (every row passes), rich text, may (permission),
+-- permission text.
+function Menu.packTooltip(player, vehicle, t, single)
     local may, permText = Notify.permission(player, vehicle)
     local idle = not vehicle:isEngineRunning() and not Rules.occupied(vehicle)
-    local capsule = Rules.emptyCapsule(player) ~= nil
     local other = Rules.vehicleWhyNot(player, vehicle)
     if IDLE[other] then other = nil end
-    local text = Notify.row(may, permText)
-        .. Notify.row(idle, tr(idle and "Idle" or "IdleNo"))
-        .. Notify.row(capsule, tr(capsule and "HasCapsule" or "HasCapsuleNo"))
+    local text = Notify.row(may, permText) .. Notify.row(idle, tr(idle and "Idle" or "IdleNo"))
+    local capsule = t ~= nil and Rules.typeOn(t)
+    if not t then
+        text = text .. Notify.row(false, tr("HasCapsuleNo"))
+    elseif not capsule then
+        text = text .. Notify.row(false, tr("TypeOffRow", typeName(t)))
+    elseif single then
+        text = text .. Notify.row(true, tr("HasCapsuleKind", typeName(t)))
+    end
     if other then text = text .. Notify.row(false, Notify.reason(other)) end
     text = text .. " <RGB:1,1,1> <LINE> " .. tr("PackInfo", Rules.cargoCount(vehicle), Rules.PACK_SECONDS)
     return may and idle and capsule and other == nil, text, may, permText
 end
 
--- Clicked without permission: the reason as a toast.
+-- Clicked without permission: the reason as a toast, kept up long enough to read (review: 3 s was too short).
 function Menu.onDenied(text)
-    Notify.toast(Notify.reason("NOT_ALLOWED"), text, true)
+    Notify.toast(Notify.reason("NOT_ALLOWED"), text, true, 8000)
 end
 
-function Menu.capsuleName(vehicle)
-    return tr("LoadedName", ISVehicleMenu.getVehicleDisplayName(vehicle))
-end
-
--- Walks next to the vehicle, tells the server who asks (with the capsule name in this client's language) and packs.
-function Menu.onPack(player, vehicle)
-    local name = Menu.capsuleName(vehicle)
+-- Walks next to the vehicle, tells the server who asks and with which capsule type, and packs.
+function Menu.onPack(player, vehicle, t)
     if player:DistToSquared(vehicle) > 9 then ISTimedActionQueue.add(ISPathFindAction:pathToVehicleAdjacent(player, vehicle)) end
     if isClient() then
-        sendClientCommand(player, M.MODULE, "intent", { kind = "pack", id = vehicle:getId(), name = name })
+        sendClientCommand(player, M.MODULE, "intent", { kind = "pack", id = vehicle:getId(), type = t.id })
     end
     local action = ISPackVehicleAction:new(player, vehicle)
-    action.capsuleName = name -- SP: complete() runs on this very object
+    action.typeId = t.id -- SP: complete() runs on this very object
     ISTimedActionQueue.add(action)
     return action
+end
+
+local function addPackOption(menu, player, vehicle, t, label, title, single)
+    local ok, text, may, permText = Menu.packTooltip(player, vehicle, t, single)
+    local option
+    if may then
+        option = menu:addOption(label, player, Menu.onPack, vehicle, t)
+        option.notAvailable = not ok
+    else
+        option = menu:addOption(label, permText, Menu.onDenied)
+        option.iconTexture = getTexture(MISS_ICON)
+    end
+    local tip = ISWorldObjectContextMenu.addToolTip()
+    tip:setName(title)
+    tip.description = text
+    tip.maxLineWidth = 420 -- keeps a long "how to fix" row on the line of its mark
+    tip.backgroundColor.a = 1 -- opaque under the vanilla 0.7 layer; ISToolTip:reset puts it back for the pool
+    option.toolTip = tip
+    return option
 end
 
 function Menu.addPack(playerNum, context, vehicle)
     local player = getSpecificPlayer(playerNum)
     if not player or player:getVehicle() then return end
     local label = getText("ContextMenu_MinidoracatVehicleCapsule_Pack")
-    local ok, text, may, permText = Menu.packTooltip(player, vehicle)
-    local option = may and context:addOption(label, player, Menu.onPack, vehicle)
-        or context:addOption(label, permText, Menu.onDenied)
-    local tip = ISWorldObjectContextMenu.addToolTip()
-    tip:setName(label)
-    tip.description = text
-    tip.maxLineWidth = 420 -- keeps a long "how to fix" row on the line of its mark
-    option.toolTip = tip
-    if may then option.notAvailable = not ok else option.badColor = true end -- badColor: red but clickable
-    return option
+    local kinds = Rules.emptyTypes(player)
+    if #kinds < 2 then
+        return addPackOption(context, player, vehicle, kinds[1] and kinds[1].type, label, label, true)
+    end
+    local parent = context:addOption(label)
+    local sub = ISContextMenu:getNew(context)
+    context:addSubMenu(parent, sub)
+    for _, k in ipairs(kinds) do
+        local name = typeName(k.type)
+        addPackOption(sub, player, vehicle, k.type, getText("ContextMenu_MinidoracatVehicleCapsule_PackKind", name, k.n),
+            tr("PackInto", name), false)
+    end
+    return parent
 end
 
 local fillOutside = ISVehicleMenu.FillMenuOutsideVehicle
@@ -110,7 +140,7 @@ Events.OnFillInventoryObjectContextMenu.Add(function(playerNum, context, items)
     local player = getSpecificPlayer(playerNum)
     if not player then return end
     for _, item in ipairs(ISInventoryPane.getActualItems(items)) do
-        if item:getFullType() == M.ITEM_LOADED and not M.inCapsule(item) then
+        if M.isLoaded(item) and not M.inCapsule(item) then
             addCapsule(context, player, item)
             return
         end
@@ -129,7 +159,7 @@ Events.OnFillWorldObjectContextMenu.Add(function(playerNum, context, worldobject
             local wos = sq:getWorldObjects()
             for i = 0, wos:size() - 1 do
                 local item = wos:get(i):getItem()
-                if item and item:getFullType() == M.ITEM_LOADED then
+                if item and M.isLoaded(item) then
                     addCapsule(context, player, item)
                     return
                 end
