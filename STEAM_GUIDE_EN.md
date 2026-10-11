@@ -16,10 +16,18 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [/olist]
 === 🧰 Getting capsules
 [list]
-[*] [b]Loot[/b]: empty capsules show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Servers can toggle each location and tune its weight; see "Sandbox options and defaults".
-[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule[/b]) to sell it.
+[*] [b]Loot[/b]: all seven kinds of empty capsule show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Each location's share is split evenly over the types that are on. Servers can toggle each location and tune its weight; see "Sandbox options and defaults".
+[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule<Type>[/b], for example CapsuleCartoon) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule in the Economy Center.
 [*] [b]Loaded capsules[/b]: can be listed or auctioned too; see "Trading vehicles in the Economy Center".
 [*] [b]From admins[/b]: hand out empty capsules with the vanilla item list or the /additem command.
+[/list]
+[h3]Seven capsule types[/h3]
+[list]
+[*] [b]Types[/b]: Cartoon, Realistic, Dust, Steam, Sci-fi, Magic and Shockwave. The end cap color tells the type; a loaded capsule adds a patterned band.
+[*] [b]Same function[/b]: requirements, time, permission and records are the same; only the look, the smoke and the four sounds (throw, pop, pack, button) differ.
+[*] [b]Everyone sees the same type[/b]: the type you pack with is the smoke nearby players see when packing, throwing and unpacking.
+[*] [b]After unpacking[/b]: the empty capsule you get back is the same type.
+[*] [b]A type an admin switched off[/b]: can't pack vehicles any more; loaded ones still throw and unpack with the button. Its empty capsule's tooltip says so.
 [/list]
 === 🧰 Packing a vehicle
 [h3]Menu and requirements[/h3]
@@ -30,16 +38,17 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [list]
 [*] Engine off
 [*] Nobody inside
-[*] An empty capsule in your inventory (bags count)
+[*] An empty capsule in your inventory (bags count) of a type an admin has not switched off
 [*] Permission to pack this vehicle (see "Who can pack")
 [/list]
 [*] [b]Can't be packed[/b]: a vehicle that is towing or being towed, has animals in its trailer, or holds another loaded capsule; the menu tells you why.
+[*] [b]Choosing a type[/b]: with empty capsules of two or more types, "Pack into Capsule" opens a submenu with one entry per type (for example "Steam Capsule ×1"); the tooltip title says "Pack into Steam Capsule".
 [/list]
 [h3]Who can pack[/h3]
 [list]
 [*] [b]Vehicles claimed in Minidoracat Vehicle Manager[/b]: only the owner and players the owner shared Tow with can pack (a share with everyone never includes Tow).
 [*] [b]Admins and claimed vehicles[/b]: must first turn on override in the Admin tab of the fleet window.
-[*] [b]Without permission[/b]: the menu row says why, and clicking it shows a notification.
+[*] [b]Without permission[/b]: the option has a minus mark, the tooltip row says why, and clicking it shows a notification.
 [*] [b]Other vehicles[/b] (no Vehicle Manager, or not claimed): the sandbox option "Who can pack vehicles" decides. By default it is anyone carrying this vehicle's key (in the inventory or in the ignition); it can be changed to anyone or admins only.
 [*] [b]Admins[/b]: not limited by this sandbox option and can always pack these.
 [/list]
@@ -48,9 +57,9 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Time[/b]: about 10 seconds.
 [*] [b]The server checks again[/b]: permission, passengers and towing; it only packs when everything passes, saves the vehicle and its cargo first and removes the vehicle from the world last.
 [*] [b]Key[/b]: a key left in the ignition moves to your inventory.
-[*] [b]Afterwards[/b]: the empty capsule is used up and a capsule named after the vehicle drops where the vehicle stood.
-[*] [b]Capsule name[/b]: in the game language of the player who packed it.
-[*] [b]Effects[/b]: nearby players see smoke and a flash and hear a sound. The server picks the style with the sandbox option "Pack and unpack effect" (Cartoon, Realistic, Dust, Steam, Sci-fi, Magic, Shockwave).
+[*] [b]Afterwards[/b]: the empty capsule you used becomes a loaded capsule of the same type and drops where the vehicle stood.
+[*] [b]Capsule name[/b]: "Type: vehicle", for example "Steam Capsule: Chevalier D6"; every player sees it in their own game language once the inventory or loot window lists it.
+[*] [b]Effects[/b]: nearby players see that type's smoke and flash and hear its sound.
 [/list]
 [h3]What is saved[/h3]
 [list]
@@ -72,7 +81,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [h3]Landing[/h3]
 [list]
 [*] [b]Unpacking[/b]: the capsule whooshes to the spot, lands with a pop, smoke and a flash, and the vehicle appears as it was with its cargo back on board; the screen says "Unpacked: <vehicle>".
-[*] [b]Empty capsule back[/b]: with the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule goes back into your inventory, ready for the next vehicle.
+[*] [b]Empty capsule back[/b]: with the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule of the same type goes back into your inventory, ready for the next vehicle.
 [*] [b]Ownership[/b]: with Vehicle Manager installed, the unpacked vehicle is reattached to its original claim: the owner and the shared list stay the same and the old key still opens the doors.
 [*] [b]While packed[/b]: the fleet window shows "Claimed - not here right now"; Vehicle Manager's inactivity release still counts, so an owner who stays offline too long loses the claim just as with a parked vehicle.
 [*] [b]Zombies are not affected[/b]: the smoke and flash are drawn on screen only, so zombies don't lose track of you; the capsule's pop doesn't attract zombies by default (servers can turn that on in the sandbox options).
@@ -118,10 +127,10 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [/list]
 === 🧰 Already-unpacked capsules
 [list]
-[*] [b]Unpacks only once[/b]: after a normal unpack the loaded capsule is gone (replaced by an empty one when the option is on).
+[*] [b]Unpacks only once[/b]: after a normal unpack the loaded capsule is gone (replaced by an empty one of the same type when the option is on).
 [*] [b]An unpacked capsule turns up again[/b] (the server rolled back to a save from before the unpack, or an admin already restored the vehicle): its tooltip shows its state, and throwing it shows "This capsule was already unpacked" with the record and the capsule number.
 [*] [b]Vehicle missing[/b]: give the number to an admin; they can see where the capsule went.
-[*] [b]Cargo still inside[/b]: it is a second copy; once the server knows the vehicle is in the world, it swaps the capsule for an empty one.
+[*] [b]Cargo still inside[/b]: it is a second copy; once the server knows the vehicle is in the world, it swaps the capsule for an empty one of the same type.
 [*] [b]Rollback and no vehicle found[/b]: if the server rolled back to a save from before the unpack and the vehicle can't be found nearby, the capsule is put on hold for an admin instead (see "Unconfirmed after a crash"); its cargo is not cleared.
 [*] [b]"This capsule needs an admin"[/b]: the server stopped before the capsule's last change was saved. Give the number to an admin (see "Unconfirmed after a crash").
 [/list]
@@ -129,10 +138,10 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [h3]Tooltip[/h3]
 [list]
 [*] [b]Where[/b]: hover a capsule and an extra box appears under the vanilla tooltip.
-[*] [b]It lists[/b]: the vehicle name, type, paint, condition (engine and body), fuel, battery, missing parts, mods, cargo (count and the first items) and who packed it.
+[*] [b]It lists[/b]: the type (look and sounds), the vehicle name, type, paint, condition (engine and body), fuel, battery, missing parts, mods, cargo (count and the first items) and who packed it.
 [*] [b]Loading[/b]: the data comes from the server, so it says "Reading vehicle condition..." for a moment.
 [*] [b]Capsules on the ground[/b]: walk closer to see the details.
-[*] [b]Other states[/b]: an empty capsule tells you how to pack; already unpacked, restored by an admin, unconfirmed after a crash, or data missing on this server are all spelled out.
+[*] [b]Other states[/b]: an empty capsule tells you its type and how to pack, with a "!" line when an admin switched its type off; already unpacked, restored by an admin, unconfirmed after a crash, or data missing on this server are all spelled out.
 [/list]
 [h3]3D preview[/h3]
 [list]
@@ -156,19 +165,28 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]What packing can't fix[/b]: vehicles being driven and vehicles that aren't packed cost the same as before, and the moment a vehicle is unpacked may hitch briefly.
 [/list]
 === ⚙️ Sandbox options and defaults
-The options are on the sandbox pages "Minidoracat Vehicle Capsule" and "Minidoracat Vehicle Capsule - Loot"; the admin panel's "Settings" and "Loot" tabs edit these same options.
+The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat Vehicle Capsule - Types" and "Minidoracat Vehicle Capsule - Loot"; the admin panel's "Settings", "Types" and "Loot" tabs edit these same options.
 [h3]Minidoracat Vehicle Capsule[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
-[tr][td]Return an empty capsule after unpacking[/td][td]On[/td][td]After a capsule unpacks, an empty capsule goes back into the thrower's inventory[/td][/tr]
+[tr][td]Return an empty capsule after unpacking[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory[/td][/tr]
 [tr][td]Who can pack vehicles[/td][td]Key holders[/td][td]The key in the inventory or in the ignition; can be set to "Anyone" or "Admins only"[/td][/tr]
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
-[tr][td]Pack and unpack effect[/td][td]Cartoon[/td][td]The smoke and sounds when packing, throwing and unpacking, 7 styles; looks and sound only[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
 [tr][td]Days to keep closed records[/td][td]30 days (1–90)[/td][td]Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this; packed and unconfirmed records are always kept[/td][/tr]
 [/table]
 [list]
 [*] [b]Who can pack vehicles[/b]: admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead (the owner and players with Tow shared) and this option covers unclaimed vehicles.
+[/list]
+[h3]Minidoracat Vehicle Capsule - Types[/h3]
+[table]
+[tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
+[tr][td]<Type>: can pack[/td][td]On[/td][td]Off: players can't pack vehicles with this type; loaded ones still throw or unpack with the button, and the empty capsule given back is the same type[/td][/tr]
+[tr][td]<Type>: in loot[/td][td]On[/td][td]Whether this empty capsule turns up in loot; never while "can pack" is off[/td][/tr]
+[/table]
+[list]
+[*] [b]Two per type[/b]: one pair each for Cartoon, Realistic, Dust, Steam, Sci-fi, Magic and Shockwave.
+[*] [b]Loot shared evenly[/b]: each location's weight is split over the types that are on; the total stays the same.
 [/list]
 [h3]Minidoracat Vehicle Capsule - Loot[/h3]
 [table]
@@ -201,12 +219,14 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule" and "Minidora
 [*] [b]Not seen for 7 days[/b]: packed capsules nobody has been near for over 7 days; they may be forgotten somewhere or lost.
 [*] [b]Everything is logged[/b]: every pack, unpack, refusal, restore and verdict is written to the capsule records and the server log.
 [/list]
-[h3]Settings and Loot[/h3]
+[h3]Settings, Types and Loot[/h3]
 [list]
-[*] [b]Settings[/b]: every sandbox option of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, the pack and unpack effect, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press "Apply".
-[*] [b]Previewing an effect[/b]: pick a style and press "Preview": the panel steps aside and a capsule in that style is thrown beside you, seen by you only. It works before you press "Apply" too.
+[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
+[*] [b]Types[/b]: one row per capsule type with its "Use" (packing) and "Loot" switches.
+[*] [b]Preview[/b]: press a row's "Preview": the panel steps aside and a capsule of that type is thrown beside you, seen by you only. It works before you press "Apply" too.
+[*] [b]List...[/b]: with Minidoracat Economy installed, opens a product draft for that empty capsule on the Economy Center's shop page; set the price there. A type already on sale is skipped.
 [*] [b]Loot[/b]: the on/off switch and weight of each of the four locations; after "Apply", newly opened containers follow the new settings right away.
-[*] [b]Permission[/b]: these are the same values as the vanilla sandbox options; both tabs need the right to change sandbox settings.
+[*] [b]Permission[/b]: these are the same values as the vanilla sandbox options; changing them needs the right to change sandbox settings.
 [/list]
 === ⚙️ Restoring a vehicle
 [list]
@@ -255,8 +275,8 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === ⚙️ Recommended setup
 [list]
-[*] [b]With Minidoracat Cleaner[/b]: add [b]MinidoracatVehicleCapsule.LoadedCapsule[/b] to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up.
-[*] [b]Other ground-cleanup mods[/b]: please exclude this item there too.
+[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up: [b]MinidoracatVehicleCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic and LoadedCapsuleShock (each with the MinidoracatVehicleCapsule. prefix).
+[*] [b]Other ground-cleanup mods[/b]: please exclude these seven items there too.
 [*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatVehicleCapsule/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
 [*] [b]If that folder is deleted[/b]: packed vehicles can't be restored.
 [*] [b]Back up and restore together[/b]: with the world save; if only the world save is restored, an admin has to check the already-unpacked capsules one by one.
@@ -269,7 +289,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [*] [b]Where it unpacks[/b]: not indoors; a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle within about 3 tiles of the capsule.
 [*] [b]Vehicle mod removed[/b]: capsules holding its vehicles can't unpack (the tooltip says the server doesn't have this vehicle type); they work again once the vehicle mod is back.
 [*] [b]Economy Center[/b]: loaded capsules can only be listed or auctioned: buy requests can't take them and the shop doesn't buy them, and a capsule whose cargo holds something the Economy Center can't carry has to be unpacked first. A recent Minidoracat Economy is needed; older versions refuse loaded capsules.
-[*] [b]Capsule name[/b]: in the game language of the player who packed it, and doesn't change for other players; the tooltip and preview use your own language.
+[*] [b]Capsule name[/b]: "Type: vehicle" appears once the inventory or loot window lists the capsule; Economy Center lists title it with the item's own name (for example "Steam Capsule (Loaded)") and put the vehicle on the next line.
 [*] [b]Restoring[/b]: brings back the vehicle, not the cargo; the server only finds vehicles that are loaded nearby, so check on site before deciding.
 [*] [b]"Last seen"[/b]: only records the moment the server saw the capsule: one in a container or vehicle updates when someone opens that container, and who took it afterwards or where it went is not known.
 [*] [b]After unpacking[/b]: this mod doesn't track the vehicle; use Vehicle Manager for owners and locations.
