@@ -1,4 +1,4 @@
-[h1]🚗 Minidoracat Vehicle Capsule for B42[/h1]
+[h1]🚗 Minidoracat Vehicle Capsule[/h1]
 [h3]By Minidoracat[/h3]
 
 [hr][/hr]
@@ -7,7 +7,7 @@ Pack a parked vehicle into a capsule and throw it to bring the vehicle back, wit
 
 [h2]📦 Requirements[/h2]
 [list]
-[*] [b]Required:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701]Minidoracat UI Library for B42[/url]
+[*] [b]Required:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701]Minidoracat UI Library[/url]
 [*] [b]Optional:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279]Minidoracat Vehicle Manager[/url] (a claimed vehicle can only be packed by its owner and players they shared Tow with)
 [*] [b]Optional:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125]Minidoracat Economy[/url] (admins can list empty capsules in the Economy Center; loaded capsules can be listed or auctioned with their cargo, and the listing shows the vehicle's condition)
 [*] [b]Add/remove mid-save:[/b] safe to add; read the guide before removing it: packed vehicles vanish with their capsules, and after reinstalling only the vehicles can be restored

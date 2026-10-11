@@ -1,4 +1,4 @@
-# Minidoracat Vehicle Capsule for B42
+# Minidoracat Vehicle Capsule
 
 把停著的車收進膠囊，丟出去就展開，改裝、車況與貨物一起保存；收起來的車不在世界上，KI5 這類吃效能的車也能收起來減輕負擔。單人與多人皆可用。
 
@@ -6,7 +6,7 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 
 ## 需要
 
-- [Minidoracat UI Library for B42](https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701)（必裝：3D 預覽與管理面板）
+- [Minidoracat UI Library](https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701)（必裝：3D 預覽與管理面板）
 - [Minidoracat Vehicle Manager](https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279)（選用：綁定的車只有車主和被分享「拖曳」權限的人能收，展開後車主不變）
 - [Minidoracat Economy](https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125)（選用：管理員把空膠囊上架到經濟中心販售，不需要整合程式）
 
