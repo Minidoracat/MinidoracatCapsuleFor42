@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Verdict enregistré.",
     "UI_MinidoracatVehicleCapsule_Discard": "Annuler les modifications",
     "UI_MinidoracatVehicleCapsule_Apply": "Appliquer",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Aperçu",
     "UI_MinidoracatVehicleCapsule_LootNote": "N'affecte que les conteneurs ouverts pour la première fois ensuite ; les conteneurs déjà fouillés ne se remplissent pas. Les valeurs vont directement dans les tables de butin d'origine.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Il vous faut la permission des options du bac à sable pour modifier ces réglages.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "%1 modification(s) envoyée(s). Le serveur met à jour les tables de butin en moins d'une seconde.",

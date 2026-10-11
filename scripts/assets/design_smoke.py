@@ -2,10 +2,12 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow", "scipy"]
 # ///
-"""Procedural, non-cartoon smoke / burst styles for the vehicle capsule pack/unpack effect (design review only).
+"""Procedural, non-cartoon smoke / burst styles for the vehicle capsule pack/unpack effect (the sandbox EffectStyle
+choices, client/Effects.lua STYLES).
 
 Usage (repo root):
-    uv run scripts/assets/design_smoke.py
+    uv run scripts/assets/design_smoke.py            # review images only
+    uv run scripts/assets/design_smoke.py --write    # also the S* frames into the MOD (smoke_<ID>_<n>.png)
 Output: temp/assets-review/fx-v1/smoke/
     styles.json                      metadata (C0 first, then S1..S6)
     <ID>/<ID>_01.png .. <ID>_NN.png  RGBA straight alpha, transparent background, 4-px zero-alpha border
@@ -20,6 +22,7 @@ anchor (ground point): x right, y down; the game draws the square texture at w =
 import json
 import os
 import shutil
+import sys
 
 import numpy as np
 from PIL import Image
@@ -550,7 +553,26 @@ def qa(sid, frames, frame_ms, px, anchor, bg, d):
 
 # ---------------------------------------------------------------- main
 
+def install():
+    """--write: the S* frames into the MOD as smoke_<ID>_<n>.png (client/Effects.lua STYLES; C0 stays smoke_<n>.png from
+    build_smoke.py). Old smoke_S*_*.png go first, so a style that lost frames leaves none behind."""
+    dst = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
+                       "42", "media", "textures", "MinidoracatVehicleCapsule")
+    for f in os.listdir(dst):
+        if f.startswith("smoke_S") and f.endswith(".png"):
+            os.remove(os.path.join(dst, f))
+    n = 0
+    for sid, *_ in STYLES:
+        d = os.path.join(OUT, sid)
+        for f in sorted(os.listdir(d)):
+            if f.startswith(sid + "_") and f[len(sid) + 1:-4].isdigit():
+                shutil.copyfile(os.path.join(d, f), os.path.join(dst, f"smoke_{sid}_{int(f[len(sid) + 1:-4])}.png"))
+                n += 1
+    print(f"-> {n} frames into {os.path.relpath(dst, REPO)}")
+
+
 def main():
+    write = "--write" in sys.argv[1:]
     if os.path.isdir(OUT):
         shutil.rmtree(OUT)
     bg = Image.open(BG).convert("RGBA")
@@ -588,6 +610,8 @@ def main():
     with open(os.path.join(OUT, "styles.json"), "w", encoding="utf-8") as fh:
         json.dump(meta, fh, ensure_ascii=False, indent=2)
     print(f"-> {os.path.relpath(OUT, REPO)}")
+    if write:
+        install()
 
 
 if __name__ == "__main__":

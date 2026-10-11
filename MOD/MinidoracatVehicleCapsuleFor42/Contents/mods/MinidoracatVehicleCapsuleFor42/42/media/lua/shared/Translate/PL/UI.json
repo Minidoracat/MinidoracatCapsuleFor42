@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Werdykt zapisany.",
     "UI_MinidoracatVehicleCapsule_Discard": "Odrzuć zmiany",
     "UI_MinidoracatVehicleCapsule_Apply": "Zastosuj",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Podgląd",
     "UI_MinidoracatVehicleCapsule_LootNote": "Dotyczy tylko pojemników otwartych po raz pierwszy od tej pory; już przeszukane pojemniki się nie odnawiają. Liczby trafiają wprost do oryginalnych tabel przedmiotów.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Aby to zmienić, potrzebujesz uprawnienia do opcji piaskownicy.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "Wysłano zmiany: %1. Serwer zaktualizuje tabele przedmiotów w ciągu sekundy.",

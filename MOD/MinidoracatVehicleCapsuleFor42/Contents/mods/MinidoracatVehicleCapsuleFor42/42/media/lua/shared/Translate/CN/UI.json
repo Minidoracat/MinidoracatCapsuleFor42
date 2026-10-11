@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "已记下判定。",
     "UI_MinidoracatVehicleCapsule_Discard": "取消变更",
     "UI_MinidoracatVehicleCapsule_Apply": "套用",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "预览",
     "UI_MinidoracatVehicleCapsule_LootNote": "只影响之后第一次打开的容器；已经翻过的容器不会重新生成。数字直接写进原版战利品表。",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "要有沙盒设置权限才能修改。",
     "UI_MinidoracatVehicleCapsule_LootApplied": "已送出 %1 项变更，服务器会在 1 秒内更新战利品表。",

@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "判定を保存しました。",
     "UI_MinidoracatVehicleCapsule_Discard": "変更を破棄",
     "UI_MinidoracatVehicleCapsule_Apply": "適用",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "プレビュー",
     "UI_MinidoracatVehicleCapsule_LootNote": "今後初めて開けるコンテナにのみ影響し、すでに漁ったコンテナには再出現しません。数値はそのままバニラの戦利品テーブルに書き込まれます。",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "変更するにはサンドボックス設定の権限が必要です。",
     "UI_MinidoracatVehicleCapsule_LootApplied": "%1 件の変更を送信しました。サーバーは 1 秒以内に戦利品テーブルを更新します。",

@@ -16,6 +16,10 @@ option MinidoracatVehicleCapsule.PackPermission
 option MinidoracatVehicleCapsule.ZombieSoundRadius
 {type = integer, min = 0, max = 50, default = 0, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_ZombieSoundRadius,}
 
+/* 收車、丟出與展開的煙霧和音效（client/Effects.lua 的 STYLES 依序）：1 卡通 2 寫實 3 塵土重落 4 蒸汽 5 科幻 6 魔法 7 衝擊環。只是畫面和聲音，每個客戶端自己畫，不影響殭屍 */
+option MinidoracatVehicleCapsule.EffectStyle
+{type = enum, numValues = 7, default = 1, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_EffectStyle,}
+
 /* 不用展開車也能從裝了車的膠囊拿出貨物（只能拿出，放不進去）。紀錄要已落盤：剛收好約 5 秒內、當機前未確認、已展開的膠囊照樣鎖住（Rules.cargoOpen） */
 option MinidoracatVehicleCapsule.AllowCargoTakeOut
 {type = boolean, default = false, page = MinidoracatVehicleCapsule, translation = MinidoracatVehicleCapsule_AllowCargoTakeOut,}

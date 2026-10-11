@@ -5,15 +5,16 @@
 --     "car is gone" for records a crash left uncertain.
 --     Every action is a server command (server/AdminCommands.lua) checked there; this file only shows replies.
 --   Settings and Loot: every sandbox option of the mod (Settings: return an empty capsule, who can pack, the zombie
---     radius of the capsule sound, taking cargo out, days to keep closed records; Loot: the master switch and the
---     four places with their weights). They are the sandbox options of the vanilla sandbox pages and are sent the same
---     way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the server checks
---     Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
+--     radius of the capsule sound, the effect style (with a preview played here only), taking cargo out, days to keep
+--     closed records; Loot: the master switch and the four places with their weights). They are the sandbox options of
+--     the vanilla sandbox pages and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771),
+--     so the server checks Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
 -- Entry: Dock (visible for admins, player option "show in the Dock"); without the Dock, the world context menu.
 require "MinidoracatVehicleCapsule/Core"
 require "MinidoracatVehicleCapsule/Info"
 require "MinidoracatVehicleCapsule/UIKit"
 require "MinidoracatVehicleCapsule/ThrowCursor"
+require "MinidoracatVehicleCapsule/Effects"
 require "PZAPI/ModOptions"
 local M = MinidoracatVehicleCapsule
 local Info, Kit = M.Info, M.UIKit
@@ -758,11 +759,12 @@ end
 -- ------------------------------------------------ settings tab
 
 -- The general sandbox page, in the order of sandbox-options.txt. kind: bool (checkbox), choice (one chip per value of
--- an enum option) or int (slider).
+-- an enum option; preview: a button that plays the chosen effect style) or int (slider).
 Panel.GENERAL = {
     { key = "ReturnEmptyCapsule", kind = "bool", default = true },
     { key = "PackPermission", kind = "choice", count = 3, default = 1 },
     { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
+    { key = "EffectStyle", kind = "choice", count = #M.Effects.STYLES, default = 1, preview = true },
     { key = "AllowCargoTakeOut", kind = "bool", default = false },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
@@ -770,7 +772,9 @@ Panel.GENERAL = {
 local function fmtInt(v) return tostring(math.floor(v + 0.5)) end
 
 -- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and the first
--- paragraph of its vanilla tooltip, at most two lines, under it. Strings are computed here: draw does not allocate.
+-- paragraph of its vanilla tooltip, at most two lines, under it. Chips (and the preview button after them) sit right of
+-- the label when they fit on its row; else the label (with the preview button at the right) keeps its row and the
+-- chips flow on rows under it. Strings are computed here: draw does not allocate.
 -- Fields are cfg*: a set* field would shadow the Win:set* methods (Win:setMsg) once assigned.
 function Win:buildSettings(p)
     local w = p.width
@@ -780,7 +784,7 @@ function Win:buildSettings(p)
     for i, f in ipairs(Panel.GENERAL) do
         local label = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key)
         local row = { field = f, y = y }
-        local controlX = PAD
+        local controlX, extra = PAD, 0
         if f.kind == "bool" then
             row.box = UI.Checkbox.new({ x = PAD, y = y, width = w - PAD * 2, label = label, theme = theme, target = self,
                 onChange = function(t) t:settingsChanged() end })
@@ -793,22 +797,46 @@ function Win:buildSettings(p)
             p:addChild(row.slider)
         else
             row.chips = {}
-            controlX = w - PAD
-            for v = f.count, 1, -1 do
+            local need = 0
+            for v = 1, f.count do
                 local b = UI.Button.new({ y = y, height = CH, style = "chip", theme = theme, target = self,
                     title = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_option" .. v),
                     onClick = function(t) t:pickChoice(i, v) end })
-                controlX = controlX - b.width
-                b:setX(controlX)
-                controlX = controlX - 6
                 p:addChild(b)
                 row.chips[v] = b
+                need = need + b.width + (v > 1 and 6 or 0)
+            end
+            local pv = 0
+            if f.preview then
+                row.preview = UI.Button.new({ y = y, height = CH, title = U("EffectPreview"), theme = theme,
+                    target = self, onClick = function(t) t:previewEffect(i) end })
+                p:addChild(row.preview)
+                pv = row.preview.width + GAP
+            end
+            if PAD + Kit.measure(label) + GAP + need + pv <= w - PAD then
+                controlX = w - PAD - need - pv
+                local x = controlX
+                for _, b in ipairs(row.chips) do
+                    b:setX(x)
+                    x = x + b.width + 6
+                end
+                if row.preview then row.preview:setX(x - 6 + GAP) end
+            else
+                controlX = w - PAD - pv
+                if row.preview then row.preview:setX(w - PAD - row.preview.width) end
+                local rows = Kit.flow(row.chips, w - PAD * 2, 6)
+                for _, b in ipairs(row.chips) do
+                    b:setX(PAD + b.flowX)
+                    b:setY(y + (CH + 6) * (b.flowRow + 1))
+                end
+                extra = rows * (CH + 6)
             end
         end
         if not row.box then row.label = fit(label, controlX - PAD - GAP) end
         local tip = getText("Sandbox_MinidoracatVehicleCapsule_" .. f.key .. "_tooltip")
         row.desc = Kit.lines(string.match(tip, "^[^\n]*") or tip, w - PAD * 2, 2)
-        y = y + CH + #row.desc * FH + GAP * 2
+        row.descY = y + CH + extra + 2
+        y = y + CH + extra + #row.desc * FH + GAP * 2
         self.cfgRows[i] = row
     end
     self.cfgNote = Kit.wrap(U("SettingsNote"), w - PAD * 2)
@@ -824,7 +852,7 @@ function Win:buildSettings(p)
     p.draw = function(el)
         for _, r in ipairs(self.cfgRows) do
             if r.label then text(el, r.label, PAD, r.y + math.floor((CH - FH) / 2), "text") end
-            for k, line in ipairs(r.desc) do text(el, line, PAD, r.y + CH + 2 + (k - 1) * FH, "textFaint") end
+            for k, line in ipairs(r.desc) do text(el, line, PAD, r.descY + (k - 1) * FH, "textFaint") end
         end
         local ny = self.cfgNoteY
         for _, line in ipairs(self.cfgNote) do
@@ -843,6 +871,19 @@ end
 function Win:pickChoice(i, v)
     self:showChoice(self.cfgRows[i], v)
     self:settingsChanged()
+end
+
+-- The style chosen in row i (applied or not) plays beside the admin, on this client only (Effects.preview); the panel
+-- steps aside until the smoke is gone.
+function Win:previewEffect(i)
+    local p = getSpecificPlayer(0)
+    if not p then return end
+    self.win:setVisible(false)
+    M.Effects.preview(self.cfgRows[i].choice, p, math.floor(p:getX()) + 4, math.floor(p:getY()), math.floor(p:getZ()),
+        function()
+            self.win:setVisible(true)
+            self.win:bringToTop()
+        end)
 end
 
 -- Current native option values into the controls; they are the base the changes are counted against.

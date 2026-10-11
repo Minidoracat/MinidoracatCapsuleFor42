@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "판정을 저장했습니다.",
     "UI_MinidoracatVehicleCapsule_Discard": "변경 취소",
     "UI_MinidoracatVehicleCapsule_Apply": "적용",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "미리보기",
     "UI_MinidoracatVehicleCapsule_LootNote": "이후 처음 여는 컨테이너에만 적용되며, 이미 뒤진 컨테이너에는 다시 생성되지 않습니다. 숫자는 기본 게임 전리품 테이블에 그대로 들어갑니다.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "바꾸려면 샌드박스 설정 권한이 필요합니다.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "변경 %1건을 보냈습니다. 서버가 1초 안에 전리품 테이블을 갱신합니다.",

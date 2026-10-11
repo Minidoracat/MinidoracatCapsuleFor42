@@ -13,8 +13,9 @@
 第 2–4 版候選（提示詞 scripts/assets/sfx_v2.json–sfx_v4.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
 temp/assets-review/sfx-v<N>/index.html）用 `v<N>:<ID>` 指定 temp/assets-review/sfx-v<N>/<Name>_<ID>.wav，例如：
     uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v4:P19
-
-整理：4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB（-18 dBFS；LOUDER 列的音效例外），
+第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）沒有 <Name>_<ID>.wav，
+`v5:<ID>` 直接讀 ElevenLabs 原始 take temp/assets-review/sfx-v5/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
+整理：4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB（-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
 再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
 """
 import argparse
@@ -46,13 +47,40 @@ SPEC = {
     "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
     "VehicleCapsuleButton": ((0.15, 0.5), 4),
 }
+# 效果樣式（沙盒 EffectStyle，client/Effects.lua 的 STYLES；2026-10-12 使用者看過演示頁 fx-v1 後：「效果都很好，做成管理面板的
+# 選項」）：演示頁七個套組的預設選擇（同一句提示詞裡長度合格、頻譜重心最低的 take，沒人耳挑過）。名稱＝VehicleCapsule＋提示詞 id。
+THROW, POP, PACK, BUTTON = (0.25, 0.9), (0.3, 1.7), (0.4, 1.6), (0.06, 0.7)
+SPEC.update({
+    "VehicleCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
+    "VehicleCapsuleThrowReal2": (THROW, "v5:ThrowReal2_4"),
+    "VehicleCapsuleThrowSci": (THROW, "v5:ThrowSci_3"),
+    "VehicleCapsuleThrowMagic": (THROW, "v5:ThrowMagic_4"),
+    "VehicleCapsulePopReal": (POP, "v5:PopReal_4"),
+    "VehicleCapsulePopHeavyDrop": (POP, "v5:PopHeavyDrop_4"),
+    "VehicleCapsulePopSteam": (POP, "v5:PopSteam_1"),
+    "VehicleCapsulePopSci": (POP, "v5:PopSci_1"),
+    "VehicleCapsulePopMagic": (POP, "v5:PopMagic_1"),
+    "VehicleCapsulePopSmokeGrenade": (POP, "v5:PopSmokeGrenade_1"),
+    "VehicleCapsulePackReal": (PACK, "v5:PackReal_2"),
+    "VehicleCapsulePackHeavy": (PACK, "v5:PackHeavy_1"),
+    "VehicleCapsulePackSteam": (PACK, "v5:PackSteam_3"),
+    "VehicleCapsulePackSci": (PACK, "v5:PackSci_4"),
+    "VehicleCapsulePackMagic": (PACK, "v5:PackMagic_2"),
+    "VehicleCapsuleButtonReal": (BUTTON, "v5:ButtonReal_3"),
+    "VehicleCapsuleButtonSwitch": (BUTTON, "v5:ButtonSwitch_2"),
+    "VehicleCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
+    "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_3"),
+})
+# 先過 SOFT 再整理響度：原檔頻譜重心超過 4 kHz、而且是容易刺耳的音色（閃光、電子音；design_fx.py 同一條規則）
+SOFTEN = {"VehicleCapsuleThrowSci", "VehicleCapsuleThrowMagic", "VehicleCapsulePackMagic"}
+SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
 TARGET_RMS_DB = -18.0
-# 個別音效的響度目標。第 4 輪使用者：「蹦的聲音可以大一點，要有炸開的感覺」，Pop 提高 4 dB。
-LOUDER = {"VehicleCapsulePop": -14.0}
+# 第 4 輪使用者：「蹦的聲音可以大一點，要有炸開的感覺」，出車的蹦聲（每個效果樣式的 VehicleCapsulePop*）提高 4 dB。
+LOUDER_DB = -14.0
 
 
 def target_db(name):
-    return LOUDER.get(name, TARGET_RMS_DB)
+    return LOUDER_DB if name.startswith("VehicleCapsulePop") else TARGET_RMS_DB
 
 
 def decode(path):
@@ -107,11 +135,12 @@ def check(name, s):
 
 
 def src_path(name, take):
-    """take：sfx-takes 的編號，或 `v<N>:<ID>` 指 sfx-v<N> 的候選。"""
+    """take：sfx-takes 的編號，或 `v<N>:<ID>` 指 sfx-v<N>/<name>_<ID>.wav（第 5 版：sfx-v5/raw/<ID>.wav）。"""
     take = str(take)
     if take.startswith("v") and ":" in take:
         ver, cid = take.split(":", 1)
-        return os.path.join(REVIEW, f"sfx-{ver}", f"{name}_{cid}.wav")
+        own = os.path.join(REVIEW, f"sfx-{ver}", f"{name}_{cid}.wav")
+        return own if os.path.exists(own) else os.path.join(REVIEW, f"sfx-{ver}", "raw", f"{cid}.wav")
     return os.path.join(TAKES, f"{name}_{take}.wav")
 
 
@@ -124,13 +153,26 @@ def level_af(s, target=TARGET_RMS_DB):
             f"volume={target - s['rms_peak_db']:.2f}dB,alimiter=limit=0.891:level=0")
 
 
+def soften(a):
+    """SOFT 濾鏡（削 3 kHz 以上的刺耳頻段，elevenlabs-tts 技能 2026-10-06 的做法）；32-bit float 進出，中途不削波。"""
+    out = subprocess.run(["ffmpeg", "-v", "error", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0",
+                          "-af", SOFT, "-f", "f32le", "pipe:1"], input=a.astype("<f4").tobytes(),
+                         capture_output=True, check=True).stdout
+    return np.frombuffer(out, dtype="<f4").astype(np.float64)
+
+
 def write(name, take):
     src = src_path(name, take)
-    af = level_af(stats(decode(src)), target_db(name))
     os.makedirs(OUT, exist_ok=True)
     dst = os.path.join(OUT, f"{name}.ogg")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-af", af, "-ac", "1", "-ar", str(SR),
-                    "-c:a", "libvorbis", "-q:a", "5", "-map_metadata", "-1", dst], check=True)
+    enc = ["-ac", "1", "-ar", str(SR), "-c:a", "libvorbis", "-q:a", "5", "-map_metadata", "-1", dst]
+    if name in SOFTEN:
+        a = soften(decode(src))
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0",
+                        "-af", level_af(stats(a), target_db(name)), *enc], input=a.astype("<f4").tobytes(), check=True)
+    else:
+        af = level_af(stats(decode(src)), target_db(name))
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-af", af, *enc], check=True)
     o = stats(decode(dst))
     print(f"{name}: take {take} -> {os.path.relpath(dst, REPO)}  dur {o['dur']:.2f}s  peak {o['peak_db']:.1f} dB  "
           f"rms-peak {o['rms_peak_db']:.1f} dB  centroid {o['centroid']:.0f} Hz")
@@ -143,9 +185,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--pick", nargs="*", default=[], help="name=take 或 name=v<N>:<ID>，覆寫 SPEC 的選定候選")
+    ap.add_argument("names", nargs="*", help="--write 只寫這幾條（預設 SPEC 全部）")
     a = ap.parse_args()
     picks = {n: t for n, (_, t) in SPEC.items()}
     picks.update(dict(p.split("=", 1) for p in a.pick))
+    unknown = [n for n in a.names if n not in picks]
+    if unknown:
+        sys.exit(f"SPEC 沒有：{', '.join(unknown)}")
     if not a.write:
         vers = sorted((d[4:] for d in os.listdir(REVIEW) if d.startswith("sfx-v")), key=lambda v: int(v[1:]))
         for name in SPEC:
@@ -166,6 +212,8 @@ def main():
                       f"centroid {s['centroid']:.0f} Hz  {'OK' if not bad else 'NG: ' + '；'.join(bad)}\n    env dB {s['env']}")
         return
     for name, take in picks.items():
+        if a.names and name not in a.names:
+            continue
         if take is None:
             print(f"{name}: 還沒選候選，略過（SPEC 或 --pick）")
             continue

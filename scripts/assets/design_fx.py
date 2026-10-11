@@ -46,7 +46,6 @@ OUT = os.path.join(bs.REVIEW, "fx-v1")
 RAW = os.path.join(bs.REVIEW, "sfx-v5", "raw")
 MOD_MEDIA = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
                          "42", "media")
-SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
 SOFT_ABOVE_HZ = 4000  # 頻譜重心超過這個、且提示詞是容易刺耳的音色（閃光、鈴、電子音）才柔化；嘶聲、蒸汽本來就亮，柔化會變悶
 SHRILL = re.compile(r"shimmer|sparkl|twinkl|chime|blip|zap|whir|electric", re.I)
 
@@ -79,12 +78,6 @@ CROP_UP = 470            # 裁切框上緣在落點上方多少（螢幕 px，zo
 
 def run_ff(args, data=None):
     return subprocess.run(["ffmpeg", "-v", "error", *args], input=data, capture_output=True, check=True).stdout
-
-
-def soften(a):
-    out = run_ff(["-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0", "-af", SOFT, "-f", "f32le", "pipe:1"],
-                 a.astype("<f4").tobytes())
-    return np.frombuffer(out, dtype="<f4").astype(np.float64)
 
 
 def encode(a, dst, target):
@@ -125,7 +118,7 @@ def build_sounds():
             s0 = bs.stats(a)
             soft = s0["centroid"] > SOFT_ABOVE_HZ and SHRILL.search(item["text"]) is not None
             if soft:
-                a = soften(a)
+                a = bs.soften(a)
             sid = f"{pid}_{n}"
             s = encode(a, os.path.join(OUT, "sfx", sid + ".ogg"), target)
             flags = []
@@ -221,12 +214,12 @@ def calib_compare(calib, shots, c0):
 def page(cfg):
     e = html.escape
     data = json.dumps(cfg, ensure_ascii=False)
-    return PAGE.replace("/*CFG*/", data).replace("{{TITLE}}", e(cfg["title"]))
+    return PAGE.replace("/*CFG*/", data).replace("@TITLE@", e(cfg["title"]))
 
 
 PAGE = r"""<!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{TITLE}}</title>
+<title>@TITLE@</title>
 <style>
 :root{color-scheme:dark;--bg:#121418;--panel:#1b1e24;--line:#2b3038;--fg:#e9e7e3;--mut:#9aa1a9;--acc:#e3a94f;--ok:#7fc58b;--warn:#e0b05c}
 *{box-sizing:border-box}
@@ -265,7 +258,7 @@ select{width:100%;background:#15181d;color:var(--fg);border:1px solid var(--line
 .flag{color:var(--warn)}
 </style></head><body>
 <header>
-<h1>{{TITLE}}</h1>
+<h1>@TITLE@</h1>
 <p>背景是遊戲內實際截圖（正午、晴天、預設縮放），煙霧照遊戲的畫法與大小疊上去，時間軸照程式：丟出的膠囊飛 0.5 秒落地出車、按鈕 0.8 秒後出車、收車在動作結束那一刻車消失。</p>
 <p>音效都對齊響度（出車那段 -14 dBFS，其他 -18 dBFS），遊戲裡還會依距離變小聲。遊戲同時會亮一下燈光（約 0.2 秒），白天實測看不出來，頁面不畫。「已柔化」＝原檔太亮，先削了高頻。慢動作不播聲音。</p>
 </header>

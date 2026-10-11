@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Veredicto guardado.",
     "UI_MinidoracatVehicleCapsule_Discard": "Descartar cambios",
     "UI_MinidoracatVehicleCapsule_Apply": "Aplicar",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Vista previa",
     "UI_MinidoracatVehicleCapsule_LootNote": "Solo afecta a los contenedores que se abran por primera vez a partir de ahora; los ya saqueados no se rellenan. Los números van directamente a las tablas de botín originales.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Necesitas el permiso de opciones de sandbox para cambiar esto.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "Se enviaron %1 cambio(s). El servidor actualiza las tablas de botín en menos de un segundo.",

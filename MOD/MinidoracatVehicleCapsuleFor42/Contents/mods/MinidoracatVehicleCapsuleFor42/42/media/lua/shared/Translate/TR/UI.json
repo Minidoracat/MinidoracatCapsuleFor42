@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Karar kaydedildi.",
     "UI_MinidoracatVehicleCapsule_Discard": "Değişiklikleri at",
     "UI_MinidoracatVehicleCapsule_Apply": "Uygula",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Önizle",
     "UI_MinidoracatVehicleCapsule_LootNote": "Yalnızca bundan sonra ilk kez açılan konteynerleri etkiler; önceden yağmalanmış konteynerler yenilenmez. Sayılar doğrudan orijinal ganimet tablolarına yazılır.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Bunları değiştirmek için sandbox seçenekleri yetkisi gerekir.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "%1 değişiklik gönderildi. Sunucu ganimet tablolarını bir saniye içinde günceller.",

@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Urteil gespeichert.",
     "UI_MinidoracatVehicleCapsule_Discard": "Änderungen verwerfen",
     "UI_MinidoracatVehicleCapsule_Apply": "Übernehmen",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Vorschau",
     "UI_MinidoracatVehicleCapsule_LootNote": "Betrifft nur Behälter, die danach zum ersten Mal geöffnet werden; bereits geplünderte Behälter werden nicht neu befüllt. Die Zahlen gehen direkt in die Vanilla-Beutetabellen.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Du brauchst die Berechtigung für Sandbox-Optionen, um das zu ändern.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "%1 Änderung(en) gesendet. Der Server aktualisiert die Beutetabellen innerhalb einer Sekunde.",

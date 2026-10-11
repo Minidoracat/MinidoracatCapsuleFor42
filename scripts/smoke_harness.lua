@@ -1503,6 +1503,59 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
 end
 uiLayout()
 
+print("Effects：效果樣式（沙盒 EffectStyle）的翻譯、音效與煙霧幀都對得上")
+local function effectStyles() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local base = MEDIA .. "/.."
+    local function read(path)
+        local f = io.open(path, "rb")
+        if not f then return nil end
+        local s = f:read("*a")
+        f:close()
+        return s
+    end
+    local function exists(path) return read(path) ~= nil end
+    require "MinidoracatVehicleCapsule/Effects"
+    local E = M.Effects
+    local n = #E.STYLES
+    local values = tonumber(read(base .. "/sandbox-options.txt"):match(
+        "option MinidoracatVehicleCapsule%.EffectStyle%s*{[^}]-numValues%s*=%s*(%d+)"))
+    check(values == n, "沙盒 EffectStyle 的 numValues（" .. tostring(values) .. "）＝樣式數（" .. n .. "）")
+    local names, missing = {}, {}
+    for _, lang in ipairs({ "CH", "CN", "DE", "EN", "ES", "FR", "JP", "KO", "PL", "PTBR", "RU", "TR" }) do
+        local t = M.Json.decode(read(MEDIA .. "/shared/Translate/" .. lang .. "/Sandbox.json"))
+        for i = 1, n + 1 do
+            local has = t["Sandbox_MinidoracatVehicleCapsule_EffectStyle_option" .. i] ~= nil
+            if has ~= (i <= n) then missing[#missing + 1] = lang .. ":option" .. i end
+        end
+    end
+    check(#missing == 0, "12 種語言各有 " .. n .. " 個樣式名稱、沒有多的（" .. table.concat(missing, ",") .. "）")
+    local script = read(base .. "/scripts/MinidoracatVehicleCapsule_sounds.txt")
+    for name, file in script:gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do names[name] = file end
+    local bad = {}
+    for _, st in ipairs(E.STYLES) do
+        for _, k in ipairs({ "throw", "pop", "pack", "button" }) do
+            local file = names[st[k]]
+            if not (file and exists(base .. "/../" .. file)) then bad[#bad + 1] = st.id .. "." .. k .. "=" .. tostring(st[k]) end
+        end
+        for i = 1, st.frames + 1 do
+            local has = exists(base .. "/textures/MinidoracatVehicleCapsule/" .. st.smoke .. i .. ".png")
+            if has ~= (i <= st.frames) then bad[#bad + 1] = st.id .. " frame " .. i end
+        end
+    end
+    check(#bad == 0, "每個樣式的四個音效都在 sound script 且檔案存在、煙霧幀數＝檔案數（" .. table.concat(bad, ",") .. "）")
+    local saved = SandboxVars
+    SandboxVars = { MinidoracatVehicleCapsule = { EffectStyle = 5 } }
+    local five = E.style()
+    SandboxVars.MinidoracatVehicleCapsule.EffectStyle = 99
+    local unknown = E.style()
+    SandboxVars = nil
+    local none = E.style()
+    SandboxVars = saved
+    check(five == E.STYLES[5] and unknown == E.STYLES[1] and none == E.STYLES[1],
+        "Effects.style()：沙盒值對應樣式；未知值或沒有沙盒時用卡通")
+end
+effectStyles()
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")

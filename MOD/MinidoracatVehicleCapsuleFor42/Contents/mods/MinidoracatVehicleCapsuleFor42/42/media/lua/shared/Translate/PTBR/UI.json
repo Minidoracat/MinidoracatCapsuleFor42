@@ -104,6 +104,7 @@
     "UI_MinidoracatVehicleCapsule_Resolved": "Veredito salvo.",
     "UI_MinidoracatVehicleCapsule_Discard": "Descartar alterações",
     "UI_MinidoracatVehicleCapsule_Apply": "Aplicar",
+    "UI_MinidoracatVehicleCapsule_EffectPreview": "Pré-visualizar",
     "UI_MinidoracatVehicleCapsule_LootNote": "Só afeta contêineres abertos pela primeira vez depois disso; contêineres já saqueados não são reabastecidos. Os números vão direto para as tabelas de itens originais.",
     "UI_MinidoracatVehicleCapsule_NoSandboxRight": "Você precisa da permissão de opções de sandbox para alterar isto.",
     "UI_MinidoracatVehicleCapsule_LootApplied": "%1 alteração(ões) enviada(s). O servidor atualiza as tabelas de itens em até um segundo.",
