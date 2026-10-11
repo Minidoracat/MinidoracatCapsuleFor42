@@ -1,0 +1,21 @@
+[
+  {"id": "ThrowReal", "duration": 0.7, "influence": 0.5, "text": "A small heavy metal canister thrown overhand: one quick realistic air swish of an object spinning past the listener, short and close, dry, no reverb, no music."},
+  {"id": "ThrowReal2", "duration": 0.7, "influence": 0.5, "text": "A single low heavy whoosh of a solid object thrown hard through the air, realistic foley swoosh, rounded, not whistling, dry, no reverb."},
+  {"id": "ThrowSci", "duration": 0.7, "influence": 0.5, "text": "A small futuristic gadget thrown through the air: a quick soft electric whir that rises and falls as it flies past, warm and low, not shrill, dry, no reverb."},
+  {"id": "ThrowMagic", "duration": 0.7, "influence": 0.5, "text": "A small enchanted object tossed through the air: a soft airy whoosh with a faint warm shimmering trail, gentle, low, not shrill, dry."},
+  {"id": "PopReal", "duration": 1.4, "influence": 0.5, "text": "A sealed metal capsule bursting open: a sharp pneumatic air release hiss and a solid metallic clank, immediately followed by the heavy thud of a pickup truck settling onto its suspension with a short creak. Realistic foley, dry, no music."},
+  {"id": "PopSmokeGrenade", "duration": 1.4, "influence": 0.5, "text": "A smoke grenade going off: a dull muffled pop followed by a rushing hiss of thick smoke pouring out for a moment, realistic, outdoor, dry, no music."},
+  {"id": "PopHeavyDrop", "duration": 1.5, "influence": 0.5, "text": "A pickup truck dropped from a short height onto a dirt road: one deep heavy thump with a suspension bounce and creak, then dust and small gravel settling. Realistic, outdoor, no music."},
+  {"id": "PopSteam", "duration": 1.2, "influence": 0.5, "text": "A sudden loud burst of high pressure steam venting, a powerful psssh that cuts off quickly, with a low heavy thump underneath. Realistic industrial sound, dry, not shrill, no music."},
+  {"id": "PopSci", "duration": 1.3, "influence": 0.5, "text": "Sci-fi teleport arrival: a deep warm energy whoomp with a short rising shimmer as a large vehicle materializes, a soft bass impact at the end. Smooth, not shrill, no music."},
+  {"id": "PopMagic", "duration": 1.3, "influence": 0.5, "text": "Magic spell revealing a large object: a soft deep whoosh poof with a warm low boom and a gentle sparkling shimmer fading out. Fairy tale, not shrill, no music."},
+  {"id": "PackReal", "duration": 1.3, "influence": 0.5, "text": "Air being sucked rapidly into a small metal canister with a rising vacuum whoosh, ending with a solid mechanical latch clunk and a short hiss. Realistic foley, dry, no music."},
+  {"id": "PackHeavy", "duration": 1.2, "influence": 0.5, "text": "A heavy deep whoomp of air rushing inward, like a large tarp snapped into a tight bundle, ending with one dull heavy thud. Realistic, dry, no music."},
+  {"id": "PackSteam", "duration": 1.3, "influence": 0.5, "text": "A powerful vacuum suction pulling air inward and rising in pitch, ending with a pressure seal clunk and a quick short hiss of steam. Industrial, not shrill, no music."},
+  {"id": "PackSci", "duration": 1.3, "influence": 0.5, "text": "Sci-fi dematerialize: a warm energy hum swirling inward and rising, then a soft electric zap as a large vehicle is beamed away. Smooth, not shrill, no music."},
+  {"id": "PackMagic", "duration": 1.3, "influence": 0.5, "text": "Magic vanishing spell: a swirling airy whoosh spiraling inward with soft twinkling sparkles, ending with a gentle low pop. Not shrill, no music."},
+  {"id": "ButtonReal", "duration": 0.5, "influence": 0.5, "text": "A solid mechanical push button on a heavy metal device pressed down then released: two crisp realistic clicks about 0.15 seconds apart, low pitched, dry, no reverb."},
+  {"id": "ButtonSwitch", "duration": 0.5, "influence": 0.5, "text": "A heavy industrial toggle switch flipped: one solid metallic clack with a tiny spring rattle, low pitched, dry, no reverb."},
+  {"id": "ButtonSci", "duration": 0.5, "influence": 0.5, "text": "A soft futuristic touch button: one gentle low-pitched electronic blip with a tiny click, rounded and warm, not shrill, not a beep, dry."},
+  {"id": "ButtonMagic", "duration": 0.6, "influence": 0.5, "text": "A small button pressed with a soft wooden click, followed by one gentle low warm chime, not shrill, dry."}
+]
