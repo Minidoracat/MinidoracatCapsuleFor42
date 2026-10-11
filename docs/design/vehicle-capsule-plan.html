@@ -816,7 +816,7 @@ end
     <doc-note tone="info"><strong>補得回的情況</strong> 伺服器當機回溯（含展開後還沒存到的新車）、本 MOD 移除後又裝回，以及地上的膠囊被清理 MOD 清掉。家族 ItemCleaner 同種地上物品超過 100 件才會清；把 LoadedCapsule 加進它的 ProtectList 就不會被清。玩家死亡時膠囊在屍體上或地上，找得回來，不必補。</doc-note>
     <doc-note tone="warn"><strong>補不回的部分</strong> 貨物原物件放在膠囊裡，膠囊不見就跟著不見，紀錄只留種類與數量。Zomboid/Lua 的紀錄檔被刪掉時，收起中的車都補不回；紀錄資料夾要和世界存檔一起備份、一起還原。</doc-note>
     <doc-note tone="ok"><strong>已實測</strong> 64 筆紀錄分頁、搜尋、篩選、明細時間軸、判定、補回（找得到車就拒絕）與前往紀錄位置都正常，一般玩家打不開面板。回歸時發現判定後補回會生在管理員的位置，已修正為紀錄位置。紀錄改版後也實測：最後看到那一行與「前往最後看到的位置」、「7 天沒看到」篩選、超過保留天數的舊紀錄被刪掉而收起中的留著、世界比展開舊時改回未確認且膠囊不動。測試輪次 <code>vcap-admin-1011a</code>；法文、俄文版面 <code>vcap-admin-fr-1011b</code>、<code>vcap-admin-ru-1011b</code>。</doc-note>
-    <doc-note tone="ok"><strong>已定：補回可以指定位置（2026-10-11）</strong> 「補回車輛」照紀錄位置補，行為不變。新增「指定位置補回」：面板先收起，地面游標畫出車身範圍，綠色放得下、紅色寫出原因，車頭朝離開管理員的方向，不限丟擲距離。點下去並確認後送出座標與方向，伺服器用丟出落點同一套車身範圍檢查再驗一次。已實測：選的格子綠色、停著的車底下紅色；補回後車在那格朝東；送到停著的車上被拒。法文、俄文的詳情按鈕換成兩列也放得下。測試輪次 <code>vcap-admin-1011f</code>、<code>vcap-admin-fr-1011f</code>、<code>vcap-admin-ru-1011f</code>。</doc-note>
+    <doc-note tone="ok"><strong>已定：補回車輛先選位置（2026-10-11）</strong> 使用者先選另加一顆「指定位置補回」，同日改成只留「補回車輛」，點了再選。按下後面板收起，出現地面游標，紀錄位置畫成白框（預設），直接點白框就是補回原處，也可以放在別處；綠色放得下、紅色寫出原因，車頭朝離開管理員的方向，不限丟擲距離。伺服器只收帶位置的補回，用丟出落點同一套車身範圍檢查再驗一次，不再有「照紀錄位置、不檢查」的補回。「前往紀錄位置」傳送到車身範圍外 2 格，剛到就點白框不會被自己擋住。已實測：剛前往紀錄位置就點白框是綠的，補回成功；另一台皮卡選附近的格子補回，車頭朝東；停著的車底下紅色，送過去被拒。這輪有一筆測試紀錄的位置本身放不下車，舊做法不會先檢查。法文、俄文的提示框與三顆詳情按鈕都放得下。測試輪次 <code>vcap-admin-1011h</code>、<code>vcap-admin-fr-1011h</code>、<code>vcap-admin-ru-1011h</code>。</doc-note>
   </doc-claim>
 
   <doc-claim>
@@ -882,7 +882,7 @@ end
 </script>
   </doc-schema>
   <doc-note tone="ok"><strong>已定</strong> 名稱「車輛膠囊 Vehicle Capsule」：Mod ID <code>MinidoracatVehicleCapsuleFor42</code>，Workshop「[B42] Minidoracat 車輛膠囊 Vehicle Capsule」，物品 module <code>MinidoracatVehicleCapsule</code>。存法用快照、貨物用原物件、3D 預覽只畫車種外觀、落點用游標、膠囊重量照算、太重時在地上按下按鈕、補回時貨物只列清單、戰利品四個地點各自設定、外型照原作但標誌原創、modData 照引擎規則跳過存不了的值、KI5 空槽補 defaultPartSet、裝了車的膠囊不能直接拿出貨物。</doc-note>
-  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。之後加上管理面板的「設定」分頁、補回可以指定位置，以及「裝了車的膠囊連貨物在經濟中心交易」，相關情境也都通過（測試輪次 <code>vcap-admin-1011f</code>、<code>vcap-trade-1011c</code>）。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意；經濟系統的 API rev 6 要跟著發新版。</doc-note>
+  <doc-note tone="ok"><strong>目前狀態（2026-10-11）</strong> 全部功能已實作並通過實機回歸。紀錄改版後重跑 12 輪情境全部通過，包含正常重啟後從同一個世界資料夾讀回紀錄、ModData 標記還在，以及單人存檔自己的資料夾。之後加上管理面板的「設定」分頁、補回車輛先選位置，以及「裝了車的膠囊連貨物在經濟中心交易」，相關情境也都通過（測試輪次 <code>vcap-admin-1011h</code>、<code>vcap-trade-1011c</code>）。介面支援 12 種語言，素材與封面都已完成。發布要另外經你同意；經濟系統的 API rev 6 要跟著發新版。</doc-note>
 </doc-claim>
 
 <doc-claim aux="scope">

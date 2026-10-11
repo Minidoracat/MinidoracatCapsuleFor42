@@ -211,19 +211,16 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule" and "Minidora
 [*] [b]When[/b]: the capsule is gone (lost by the player, removed by a cleanup mod, or this mod was removed and reinstalled), or a server rollback made the vehicle disappear.
 [*] [b]When a player dies[/b]: the capsule stays on the body or on the ground; if it can be found, there's nothing to restore.
 [/list]
-[h3]At the recorded spot[/h3]
+[h3]How to restore[/h3]
 [olist]
 [*] Select the capsule in the records and use "Go to the recorded spot" first.
-[*] Make sure nothing is in the way.
-[*] Press "Restore vehicle". The vehicle appears at the recorded spot (where it was last packed or unpacked) with its saved condition.
+[*] Press "Restore vehicle". The panel steps aside and a white frame shows on the ground: that's the recorded spot (where the vehicle was last packed or unpacked).
+[*] Move the mouse to where the vehicle should go: its ground turns green where it fits, red with the reason where it doesn't. Clicking the white frame restores it at the recorded spot.
+[*] Left-click and confirm, and the vehicle appears there facing away from you, with its saved condition. Right-click cancels and the panel comes back.
 [/olist]
-Records that are unconfirmed after a crash need "I checked on site" ticked first.
-[h3]Restore at a spot[/h3]
+Records that are unconfirmed after a crash need "I checked on site" ticked first. When you're too far from the recorded spot the white frame isn't shown, and the tooltip asks you to use "Go to the recorded spot" first.
 [list]
-[*] [b]When[/b]: the recorded spot doesn't suit; press "Restore at a spot".
-[*] [b]Pick the spot[/b]: the panel steps aside and the vehicle's ground shows on the floor: green where it fits, red with the reason where it doesn't.
-[*] [b]Confirm[/b]: left-click and confirm, and the vehicle appears there facing away from you.
-[*] [b]Cancel[/b]: right-click cancels and the panel comes back.
+[*] [b]Go to the recorded spot[/b]: teleports you east of the spot, two tiles clear of the vehicle's ground, so clicking the white frame right away isn't blocked by you.
 [/list]
 [h3]Restore rules[/h3]
 [list]
