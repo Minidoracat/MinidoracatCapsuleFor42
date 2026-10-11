@@ -50,7 +50,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [*] [b]Key[/b]: a key left in the ignition moves to your inventory.
 [*] [b]Afterwards[/b]: the empty capsule is used up and a capsule named after the vehicle drops where the vehicle stood.
 [*] [b]Capsule name[/b]: in the game language of the player who packed it.
-[*] [b]Effects[/b]: nearby players see smoke and a flash and hear a sound.
+[*] [b]Effects[/b]: nearby players see smoke and a flash and hear a sound. The server picks the style with the sandbox option "Pack and unpack effect" (Cartoon, Realistic, Dust, Steam, Sci-fi, Magic, Shockwave).
 [/list]
 [h3]What is saved[/h3]
 [list]
@@ -163,6 +163,7 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule" and "Minidora
 [tr][td]Return an empty capsule after unpacking[/td][td]On[/td][td]After a capsule unpacks, an empty capsule goes back into the thrower's inventory[/td][/tr]
 [tr][td]Who can pack vehicles[/td][td]Key holders[/td][td]The key in the inventory or in the ignition; can be set to "Anyone" or "Admins only"[/td][/tr]
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
+[tr][td]Pack and unpack effect[/td][td]Cartoon[/td][td]The smoke and sounds when packing, throwing and unpacking, 7 styles; looks and sound only[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
 [tr][td]Days to keep closed records[/td][td]30 days (1–90)[/td][td]Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this; packed and unconfirmed records are always kept[/td][/tr]
 [/table]
@@ -202,7 +203,8 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule" and "Minidora
 [/list]
 [h3]Settings and Loot[/h3]
 [list]
-[*] [b]Settings[/b]: every sandbox option of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press "Apply".
+[*] [b]Settings[/b]: every sandbox option of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, the pack and unpack effect, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press "Apply".
+[*] [b]Previewing an effect[/b]: pick a style and press "Preview": the panel steps aside and a capsule in that style is thrown beside you, seen by you only. It works before you press "Apply" too.
 [*] [b]Loot[/b]: the on/off switch and weight of each of the four locations; after "Apply", newly opened containers follow the new settings right away.
 [*] [b]Permission[/b]: these are the same values as the vanilla sandbox options; both tabs need the right to change sandbox settings.
 [/list]

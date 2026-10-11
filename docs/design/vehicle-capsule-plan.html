@@ -471,6 +471,8 @@ end
     </doc-calls>
     <doc-note tone="info"><strong>不用原版煙霧和陷阱</strong> IsoFire 的煙會讓殭屍失去目標，life 也不是秒數；陷阱的聲音會在 50 格內引殭屍。卡通煙只畫在畫面上，沒有這些副作用。</doc-note>
     <doc-note tone="ok"><strong>素材已完成</strong> 8 格卡通煙霧由 codex imagegen 產生。丟出、彈開、收車、按鈕四個音效由 ElevenLabs 產生，使用者逐一試聽挑選：丟出是滑哨「咻～」，彈開是拉炮式的「蹦！」（比其他音效大 4 dB），收車是神燈式旋轉吸入，按鈕是喀－嚓。</doc-note>
+    <doc-note tone="ok"><strong>已定：效果樣式做成伺服器選項（2026-10-12）</strong> 使用者看過效果演示頁後說「效果都很好，可以做成選項在管理面板設定選擇」。新增沙盒選項「收車與展開效果」，7 種：卡通（預設，原本的樣子）、寫實、塵土重落、蒸汽、科幻、魔法、衝擊環。每種有自己的煙霧和丟出、彈開、收車、按鈕四段音效；煙霧由程式生成，音效是 ElevenLabs，用的是演示頁七個套組的預設選擇。每個客戶端讀自己的沙盒值來畫，伺服器把沙盒變更廣播給所有客戶端，所以伺服器送的特效封包不用改。管理面板「設定」分頁一個樣式一顆選項鈕，放不下就換到下一列；「預覽」會收起面板、在身旁丟一次選中的樣式，只有自己看得到。使用者也問過「不同類型的膠囊有不同效果」：估計要多 14 種物品與圖示（每種空的、裝車的各一）、戰利品與經濟中心的設定，以及改寫 15 個檔案裡 26 處認膠囊種類的程式，回覆成本後先不做。已實測：七種樣式在遊戲裡都畫得出來、音效都認得；多人遊戲套用後伺服器讀到新值，套用的那台客戶端收到伺服器廣播後也換成新樣式；預覽不改選項；法文的選項鈕換到第二列也放得下。測試輪次 <code>vcap-fxstyle-1012c</code>、<code>vcap-loot-1012a</code>、<code>vcap-admin-fr-1012a</code>、<code>vcap-admin-ru-1012a</code>。</doc-note>
+    <doc-shot src="fx-styles.jpg" caption="遊戲內實拍：七種樣式在同一台皮卡上，約在煙霧的三分之一處。"></doc-shot>
     <doc-claim at="media/lua/client/MinidoracatVehicleCapsule/Fx.lua:5">
       <p><b>Fx.lua:5</b> · Fx.play()</p>
       <doc-code title="Fx.lua · sketch（客戶端）" lang="lua">

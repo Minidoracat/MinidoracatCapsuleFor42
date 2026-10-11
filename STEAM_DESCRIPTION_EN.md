@@ -25,7 +25,7 @@ Pack a parked vehicle into a capsule and throw it to bring the vehicle back, wit
 [h2]✨ Features[/h2]
 [list]
 [*] [b]Pack into a capsule[/b]: right-click a vehicle to pack it; the capsule carries the vehicle's name
-[*] [b]Throw to unpack[/b]: the cursor outlines the vehicle, the capsule lands in a puff of smoke and the vehicle appears as it was
+[*] [b]Throw to unpack[/b]: the cursor outlines the vehicle, the capsule lands in a puff of smoke and the vehicle appears as it was; servers pick one of 7 smoke and sound styles, from cartoon and realistic to sci-fi and magic
 [*] [b]Kept as it was[/b]: mods, paint, condition, fuel and the cargo all travel with it
 [*] [b]Tooltip and 3D preview[/b]: hover a capsule to see condition and cargo, and spin a 3D view of the model
 [*] [b]Crash-safe[/b]: a server crash or a rolled-back save never leaves you with an extra vehicle or a second copy of the cargo
