@@ -1,7 +1,7 @@
 -- Vehicle Capsule: server commands of the admin panel (records tab). Every command checks M.isAdmin itself
 -- (Capability.ManipulateVehicle, same as Admin.resolve/restore); a refused one is logged and answered NOT_ADMIN.
--- Restore uses the recorded spot, or the square and facing the admin picked with the restore cursor (Admin.restore
--- checks the vehicle's ground there). The two "go to" buttons use the coordinates the detail reply carried (recorded
+-- Restore always comes with the square and facing the admin picked with the restore cursor (Admin.restore checks the
+-- vehicle's ground there). The two "go to" buttons use the coordinates the detail reply carried (recorded
 -- spot, last sighting). The loot and settings tabs need no command: they send sandbox options like the vanilla
 -- sandbox page.
 if isClient() then return end
@@ -65,19 +65,13 @@ end
 
 local DIRS = { N = true, E = true, S = true, W = true }
 
--- args: id, note, checked; x, y, z, dir when the admin picked the spot. Without them the vehicle comes back where it
--- was recorded (that square has to be loaded).
+-- args: id, note, checked and the spot picked with the restore cursor: x, y, z, dir (the recorded spot is only the
+-- cursor's default; a restore without a spot is refused).
 function AdminCommands.adminRestore(player, args)
-    local id = tonumber(args.id) or -1
-    if args.x ~= nil then
-        local x, y, z = tonumber(args.x), tonumber(args.y), tonumber(args.z) or 0
-        if not (x and y and DIRS[args.dir]) then return { ok = false, why = "BAD_SPOT" } end
-        return Admin.restore(player, id, math.floor(x), math.floor(y), math.floor(z), note(args.note), flag(args.checked),
-            args.dir)
-    end
-    local snap = Store.read(id)
-    local e = snap and Store.recordedCar(snap) or {}
-    return Admin.restore(player, id, tonumber(e.x), tonumber(e.y), tonumber(e.z) or 0, note(args.note), flag(args.checked))
+    local x, y, z = tonumber(args.x), tonumber(args.y), tonumber(args.z) or 0
+    if not (x and y and DIRS[args.dir]) then return { ok = false, why = "BAD_SPOT" } end
+    return Admin.restore(player, tonumber(args.id) or -1, math.floor(x), math.floor(y), math.floor(z), note(args.note),
+        flag(args.checked), args.dir)
 end
 
 -- One entry for MP (OnClientCommand) and SP (the panel calls it directly). Returns the reply table.

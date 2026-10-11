@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "Linksklick zum Werfen, Rechtsklick zum Abbrechen",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "Linksklick zum Drücken, Rechtsklick zum Abbrechen",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "Linksklick zum Wiederherstellen hier, Rechtsklick zum Abbrechen",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "Der weiße Rahmen ist die eingetragene Stelle (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "Die eingetragene Stelle (%1, %2) ist nicht in der Nähe; zuerst „Zur Stelle gehen“ benutzen",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "Zu dieser Kapsel gibt es keinen Fahrzeugeintrag; sie kann nicht gehandelt werden.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "In dieser Kapsel steckt kein Fahrzeug mehr; sie kann nicht gehandelt werden.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Der Eintrag dieser Kapsel ist nicht bestätigt (kurz vor einem Serverabsturz verpackt). Ein Admin muss ihn zuerst prüfen.",

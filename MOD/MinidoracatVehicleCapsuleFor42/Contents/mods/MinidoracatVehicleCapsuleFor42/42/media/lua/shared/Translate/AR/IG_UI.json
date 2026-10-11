@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "Clic izquierdo para lanzar, clic derecho para cancelar",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "Clic izquierdo para pulsar, clic derecho para cancelar",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "Clic izquierdo para restaurar aquí, clic derecho para cancelar",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "El marco blanco es el lugar registrado (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "El lugar registrado (%1, %2) no está cerca; usa primero «Ir al lugar registrado»",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "Esta cápsula no tiene registro de vehículo y no se puede comerciar.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Esta cápsula ya no contiene un vehículo y no se puede comerciar.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "El registro de esta cápsula no está confirmado (guardada justo antes de una caída del servidor). Un admin debe revisarlo primero.",

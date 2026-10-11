@@ -48,11 +48,22 @@ function Cursor.open(player, item, mode)
     return cursor
 end
 
--- Admin restore: the vehicle `script` goes where the admin clicks, facing away from them, anywhere they can see
--- (no throw range). onDone(x, y, z, dir) after a click, onDone(nil) when the cursor goes away without one.
-function Cursor.openRestore(player, script, onDone)
+-- Admin restore ("Restore vehicle"): the vehicle `script` goes where the admin clicks, facing away from them, on any
+-- loaded square (no throw range, no line of sight). `home` { x, y, z } is the recorded spot, the default choice: its
+-- ground is drawn as a white frame (as the vehicle would stand if clicked there) and the tooltip names it. Both boxes
+-- and both tooltip lines are made here: render runs every frame. onDone(x, y, z, dir) after a click, onDone(nil) when
+-- the cursor goes away without one.
+function Cursor.openRestore(player, script, home, onDone)
     local cursor = Cursor.new(player, nil, "restore")
     cursor.script, cursor.onDone = script, onDone
+    local w, l = Footprint.size(script and getScriptManager():getVehicle(script))
+    if home and w then
+        local x, y = tostring(home.x), tostring(home.y)
+        cursor.home = { x = home.x, y = home.y, z = home.z or 0,
+            ns = Footprint.box(home.x, home.y, "N", w, l), ew = Footprint.box(home.x, home.y, "E", w, l),
+            near = getText("IGUI_MinidoracatVehicleCapsule_RestoreHome", x, y),
+            far = getText("IGUI_MinidoracatVehicleCapsule_RestoreHomeFar", x, y) }
+    end
     Cursor.current = cursor
     getCell():setDrag(cursor, player:getPlayerNum())
     return cursor
@@ -96,6 +107,15 @@ end
 function Cursor:render(x, y, z, square)
     local c = self.why == nil and getCore():getGoodHighlitedColor() or getCore():getBadHighlitedColor()
     local sprite = self:getFloorCursorSprite()
+    local h = self.home
+    if h and getCell():getGridSquare(h.x, h.y, h.z) then
+        local p = self.character
+        local d = Footprint.dirOf(h.x - p:getX(), h.y - p:getY()) -- the facing a click there would give
+        local hb = (d == "E" or d == "W") and h.ew or h.ns
+        for bx = hb.x1, hb.x2 do
+            for by = hb.y1, hb.y2 do sprite:RenderGhostTileColor(bx, by, h.z, 1, 1, 1, 0.3) end
+        end
+    end
     local b = self.box
     if b then
         for bx = b.x1, b.x2 do
@@ -115,6 +135,10 @@ function Cursor:tooltipText()
         text = " " .. getText("IGUI_MinidoracatVehicleCapsule_Loading") .. " <LINE> "
     else
         text = Notify.row(false, getText("IGUI_MinidoracatVehicleCapsule_NoFit", Notify.reason(self.why)))
+    end
+    local h = self.home
+    if h then
+        text = text .. " <RGB:0.85,0.85,0.85> " .. (getCell():getGridSquare(h.x, h.y, h.z) and h.near or h.far) .. " <LINE> "
     end
     if not self.joypad then
         text = text .. " <RGB:1,1,1> " .. getText(HINT[self.mode])

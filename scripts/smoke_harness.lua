@@ -1256,15 +1256,18 @@ do (function()
     local stillPacked = Store.read(71001).state
     blocked = nil
     local rBad = AdminCommands.handle(adm, "adminRestore", { id = 71001, x = 30, y = 40, z = 0, dir = "NE" })
+    local rNoSpot = AdminCommands.handle(adm, "adminRestore", { id = 71001, note = "x", checked = true })
+    local noSpotState = Store.read(71001).state
     local rOk = AdminCommands.handle(adm, "adminRestore", { id = 71001, x = 30.7, y = 40.2, z = 0, dir = "E" })
     local after, dirOk = Store.read(71001), gotDir
     packed(71002, { escrow = { active = true, cargo = {} } })
-    local rTrade = AdminCommands.handle(adm, "adminRestore", { id = 71002 })
+    local rTrade = AdminCommands.handle(adm, "adminRestore", { id = 71002, x = 30, y = 40, z = 0, dir = "N" })
     packed(71003, { escrow = { cargo = { { id = 5, s = { type = "Base.Axe" } } } } })
     local rDone = AdminCommands.handle(adm, "adminRestore", { id = 71003, x = 30, y = 40, z = 0, dir = "S" })
     quiet = false
     check(rBlocked.why == "PICK_BLOCKED" and stillPacked == "PACKED", "指定位置被擋 -> PICK_BLOCKED，紀錄不動")
     check(rBad.why == "BAD_SPOT", "方向不是東南西北 -> BAD_SPOT")
+    check(rNoSpot.why == "BAD_SPOT" and noSpotState == "PACKED", "沒帶位置的補回 -> BAD_SPOT（紀錄位置只是游標的預設，沒有不選位置的補回）")
     check(rOk.ok and dirOk == "E" and after.state == "RESTORED" and after.history[#after.history].x == 30,
         "指定位置補回：照選的方向生車、紀錄 RESTORED")
     check(rTrade.why == "IN_TRADE", "交易中的膠囊（escrow.active）不能補 -> IN_TRADE")
@@ -1490,13 +1493,13 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
         and items[5].flowRow == 2 and items[5].flowX == 0, "按鈕列放不下就換到下一列、比欄還寬的自成一列（rows=" .. rows .. "）")
     local ru = ui("RU")
     local btns = {}
-    for _, key in ipairs({ "GoTo", "GoSeen", "Restore", "RestorePick", "VerdictPresent", "VerdictMissing" }) do
+    for _, key in ipairs({ "GoTo", "GoSeen", "Restore", "VerdictPresent", "VerdictMissing" }) do
         btns[#btns + 1] = { width = width(ru[P .. key]) + 20 }
     end
     Kit.flow(btns, DW, 8)
     inside = true
     for _, b in ipairs(btns) do inside = inside and b.flowX + b.width <= DW end
-    check(inside, "RU 六顆詳情按鈕都在詳情欄內")
+    check(inside, "RU 五顆詳情按鈕都在詳情欄內")
 end
 uiLayout()
 

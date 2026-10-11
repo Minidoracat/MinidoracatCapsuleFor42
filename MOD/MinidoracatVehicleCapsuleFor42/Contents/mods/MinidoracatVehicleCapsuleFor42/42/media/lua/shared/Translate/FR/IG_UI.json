@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "Clic gauche pour lancer, clic droit pour annuler",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "Clic gauche pour appuyer, clic droit pour annuler",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "Clic gauche pour restaurer ici, clic droit pour annuler",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "Le cadre blanc est l'emplacement enregistré (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "L'emplacement enregistré (%1, %2) n'est pas à proximité ; utilisez d'abord « Aller sur place »",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "Cette capsule n'a pas d'enregistrement de véhicule et ne peut pas être échangée.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Cette capsule ne contient plus de véhicule et ne peut pas être échangée.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "L'enregistrement de cette capsule n'est pas confirmé (rangée juste avant un plantage du serveur). Un admin doit d'abord le vérifier.",

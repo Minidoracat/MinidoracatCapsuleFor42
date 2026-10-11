@@ -334,11 +334,10 @@ function Win:buildRecords(p)
     end
     self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
     self.seenBtn = btn("GoSeen", "normal", function(t) t:goSeen() end)
-    self.restoreBtn = btn("Restore", "primary", function(t) t:confirmRestore() end)
-    self.pickBtn = btn("RestorePick", "normal", function(t) t:pickRestore() end)
+    self.restoreBtn = btn("Restore", "primary", function(t) t:pickRestore() end)
     self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
     self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
-    local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.pickBtn, self.presentBtn, self.missingBtn }
+    local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
     local btnRows = Kit.flow(actions, dw, GAP)
     local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + btnRows * (CH + GAP) + FH
     local tlH = math.max(FH * 4, listH - (dy - y) - bottomBlock)
@@ -425,7 +424,6 @@ function Win:refreshButtons()
     self.gotoBtn:setEnabled(ok and d.x ~= nil)
     self.seenBtn:setEnabled(ok and type(d.seen) == "table" and d.seen.x ~= nil)
     self.restoreBtn:setEnabled(restorable == true)
-    self.pickBtn:setEnabled(restorable == true)
     self.presentBtn:setVisible(undecided == true)
     self.missingBtn:setVisible(undecided == true)
     self.prevBtn:setEnabled(self.page > 1 and not self.loading)
@@ -527,9 +525,12 @@ end
 function Win:goTo()
     local d, player = self.detail, getSpecificPlayer(0)
     if not (d and d.x and player) then return end
-    -- a few tiles beside the spot: a restored vehicle spawns on it facing north. Same path as the vanilla admin
-    -- tools (ISSafehousesList.lua:98-102): the server command in MP, a direct teleport in SP.
+    -- East of the spot, two tiles clear of the vehicle's ground when it is restored there facing away (west): the
+    -- default click of "Restore vehicle" (the white frame) is then not blocked by the admin. Same path as the vanilla
+    -- admin tools (ISSafehousesList.lua:98-102): the server command in MP, a direct teleport in SP.
     local x, y, z = d.x + 4, d.y, d.z or 0
+    local w, l = M.Footprint.size(d.script and getScriptManager():getVehicle(d.script))
+    if w then x = M.Footprint.box(d.x, d.y, "E", w, l).x2 + 2 end
     if isClient() then
         SendCommandToServer("/teleportto " .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(z))
     else
@@ -565,33 +566,34 @@ function Win:act(cmd, args)
     Panel.send(cmd, args)
 end
 
--- args: the picked spot (pickRestore), or nil for the recorded one. x, y: where the dialog says the car comes back.
-function Win:confirmRestore(args, x, y)
+-- args: the square and facing picked with the restore cursor (pickRestore); the dialog names that square.
+function Win:confirmRestore(args)
     local d = self.detail
     if not d then return end
-    args = args or { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
     if not (Kit.CAPS.dialog and UI.Dialog) then return self:act("adminRestore", args) end
     self.dialog = UI.Dialog.show({ title = U("Restore"), text = U("RestoreConfirm", Info.carName(d.script, d.name),
-        tostring(x or d.x), tostring(y or d.y)), theme = theme, confirmText = U("Restore"), cancelText = U("Cancel"),
+        tostring(args.x), tostring(args.y)), theme = theme, confirmText = U("Restore"), cancelText = U("Cancel"),
         onResult = function(ok)
             self.dialog = nil
             if ok then self:act("adminRestore", args) end
         end })
 end
 
--- "Restore at a spot": the panel steps aside while the admin places the vehicle with the ground cursor (green where
--- it fits, facing away from them), then comes back for the confirmation and the server's answer.
+-- "Restore vehicle": the panel steps aside while the admin places the vehicle with the ground cursor (green where it
+-- fits, facing away from them; the recorded spot drawn as a white frame, the default choice), then comes back for
+-- the confirmation and the server's answer.
 function Win:pickRestore()
     local d, player = self.detail, getSpecificPlayer(0)
     if not (d and d.ok and player) then return end
     local args = { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
+    local home = d.x and { x = d.x, y = d.y, z = d.z or 0 } or nil
     self.win:setVisible(false)
-    M.ThrowCursor.openRestore(player, d.script, function(x, y, z, dir)
+    M.ThrowCursor.openRestore(player, d.script, home, function(x, y, z, dir)
         self.win:setVisible(true)
         self.win:bringToTop()
         if x == nil then return end
         args.x, args.y, args.z, args.dir = x, y, z, dir
-        self:confirmRestore(args, x, y)
+        self:confirmRestore(args)
     end)
 end
 

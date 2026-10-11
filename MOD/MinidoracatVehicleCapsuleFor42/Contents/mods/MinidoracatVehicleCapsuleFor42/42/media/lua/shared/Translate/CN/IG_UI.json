@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "左键丢出，右键取消",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "左键按下，右键取消",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "左键补回到这里，右键取消",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "白框是纪录位置 (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "纪录位置 (%1, %2) 不在附近，可以先按「前往纪录位置」",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "这颗胶囊没有车辆纪录，不能交易。",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "这颗胶囊里已经没有车了，不能交易。",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "这颗胶囊的纪录还没确认（服务器宕机前收的车），请管理员先判定。",

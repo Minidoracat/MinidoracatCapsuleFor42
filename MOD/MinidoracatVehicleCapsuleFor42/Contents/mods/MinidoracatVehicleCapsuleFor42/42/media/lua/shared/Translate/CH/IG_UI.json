@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "左鍵丟出，右鍵取消",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "左鍵按下，右鍵取消",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "左鍵補回到這裡，右鍵取消",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "白框是紀錄位置 (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "紀錄位置 (%1, %2) 不在附近，可以先按「前往紀錄位置」",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "這顆膠囊沒有車輛紀錄，不能交易。",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "這顆膠囊裡已經沒有車了，不能交易。",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "這顆膠囊的紀錄還沒確認（伺服器當機前收的車），請管理員先判定。",

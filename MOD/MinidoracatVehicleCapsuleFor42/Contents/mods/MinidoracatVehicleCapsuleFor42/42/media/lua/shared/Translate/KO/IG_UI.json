@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "좌클릭으로 던지기, 우클릭으로 취소",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "좌클릭으로 누르기, 우클릭으로 취소",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "좌클릭으로 여기에 복구, 우클릭으로 취소",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "흰 테두리가 기록된 위치 (%1, %2)입니다",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "기록된 위치 (%1, %2)가 근처에 없습니다. 먼저 \"기록된 위치로 이동\"을 누르십시오",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "이 캡슐에는 차량 기록이 없어 거래할 수 없습니다.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "이 캡슐에는 더 이상 차량이 없어 거래할 수 없습니다.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "이 캡슐의 기록이 확정되지 않았습니다(서버 다운 직전에 수납). 먼저 관리자가 확인해야 합니다.",

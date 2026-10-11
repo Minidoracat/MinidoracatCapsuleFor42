@@ -61,10 +61,10 @@ end
 
 -- Spawns the recorded vehicle again at (x, y, z), without cargo (history lists it), for a PACKED record (uncertain
 -- ones need `checked`) or an uncertain UNPACKED one. RESTORED is written before the spawn, so the old capsule can
--- never unpack afterwards; a failed spawn puts the previous state back. `dir` is set when the admin picked the spot
--- (restore cursor): the vehicle faces it and its ground must be clear, the same check a throw's landing makes.
--- Without it the vehicle faces north on the recorded spot. A capsule out in an Economy trade (listed, auctioned)
--- is refused: its buyer would get a capsule whose vehicle is already back.
+-- never unpack afterwards; a failed spawn puts the previous state back. `dir`: the admin panel always sends the spot
+-- picked with the restore cursor, so the vehicle faces it and its ground must be clear, the same check a throw's
+-- landing makes. Without it (debug commands) the vehicle faces north and the ground is not checked. A capsule out in
+-- an Economy trade (listed, auctioned) is refused: its buyer would get a capsule whose vehicle is already back.
 function Admin.restore(admin, capsuleId, x, y, z, note, checked, dir)
     if not M.isAdmin(admin) then return fail("NOT_ADMIN") end
     local snap, why = Store.read(capsuleId)

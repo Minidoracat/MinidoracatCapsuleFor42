@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "左クリックで投げる、右クリックでキャンセル",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "左クリックで押す、右クリックでキャンセル",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "左クリックでここに復元、右クリックでキャンセル",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "白い枠が記録された場所 (%1, %2) です",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "記録された場所 (%1, %2) は近くにありません。先に「記録された場所へ移動」を使ってください",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "このカプセルには車両の記録がないため、取引できません。",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "このカプセルにはもう車両が入っていないため、取引できません。",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "このカプセルの記録はまだ確定していません（サーバーのクラッシュ直前に収納）。先に管理者が判定してください。",

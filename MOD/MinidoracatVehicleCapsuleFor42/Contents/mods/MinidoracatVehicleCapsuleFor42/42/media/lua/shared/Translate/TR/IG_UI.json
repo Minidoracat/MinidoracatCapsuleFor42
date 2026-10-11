@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "Fırlatmak için sol tık, iptal için sağ tık",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "Basmak için sol tık, iptal için sağ tık",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "Buraya geri getirmek için sol tık, iptal için sağ tık",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "Beyaz çerçeve kayıtlı yer (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "Kayıtlı yer (%1, %2) yakında değil; önce “Kayıtlı yere git” düğmesini kullan",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "Bu kapsülün araç kaydı yok, satılamaz.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "Bu kapsülde artık araç yok, satılamaz.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Bu kapsülün kaydı onaylanmadı (sunucu çökmeden hemen önce paketlendi). Önce bir yönetici kontrol etmeli.",

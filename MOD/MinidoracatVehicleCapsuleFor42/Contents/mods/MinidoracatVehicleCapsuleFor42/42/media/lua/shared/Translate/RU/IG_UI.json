@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "ЛКМ - бросить, ПКМ - отмена",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "ЛКМ - нажать, ПКМ - отмена",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "ЛКМ - восстановить здесь, ПКМ - отмена",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "Белая рамка — записанное место (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "Записанное место (%1, %2) далеко; сначала нажмите «К записанному месту»",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "У этой капсулы нет записи о транспорте, её нельзя продать.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "В этой капсуле больше нет транспорта, её нельзя продать.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Запись этой капсулы не подтверждена (упакована прямо перед сбоем сервера). Сначала её должен проверить админ.",

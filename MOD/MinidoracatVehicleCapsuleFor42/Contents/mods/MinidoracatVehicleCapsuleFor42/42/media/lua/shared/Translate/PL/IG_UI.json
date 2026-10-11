@@ -21,6 +21,8 @@
     "IGUI_MinidoracatVehicleCapsule_HintThrow": "LPM - rzuć, PPM - anuluj",
     "IGUI_MinidoracatVehicleCapsule_HintPress": "LPM - naciśnij, PPM - anuluj",
     "IGUI_MinidoracatVehicleCapsule_HintRestore": "LPM - przywróć tutaj, PPM - anuluj",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHome": "Biała ramka to zapisane miejsce (%1, %2)",
+    "IGUI_MinidoracatVehicleCapsule_RestoreHomeFar": "Zapisane miejsce (%1, %2) nie jest w pobliżu; najpierw użyj „Idź do zapisanego miejsca”",
     "IGUI_MinidoracatVehicleCapsule_Trade_NO_RECORD": "Ta kapsuła nie ma zapisu pojazdu i nie można nią handlować.",
     "IGUI_MinidoracatVehicleCapsule_Trade_NOT_PACKED": "W tej kapsule nie ma już pojazdu i nie można nią handlować.",
     "IGUI_MinidoracatVehicleCapsule_Trade_UNCERTAIN": "Zapis tej kapsuły nie jest potwierdzony (spakowana tuż przed awarią serwera). Najpierw musi go sprawdzić admin.",
