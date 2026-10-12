@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Empty capsule in your inventory: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "An admin switched %1 off; pack with another type",
     "IGUI_MinidoracatCapsule_PackInto": "Pack into %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "An admin switched this capsule type off; pack with another type"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "An admin switched this capsule type off; pack with another type",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "The animal was not packed",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "The animal goes into the capsule as it is now. Takes %1 seconds.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "No room for the animal here",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "The animal can't stand there: %1. The capsule fell on the spot: press its button next to an open square, or pick it up and throw it again.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "The animal can't stand there: %1. Pick an open square and press again.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "An admin switched off packing animals",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "the animal is dead or gone",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "the animal is being carried, or is in a hutch or a trailer",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Untie the rope first",
+    "IGUI_MinidoracatCapsule_Why_WATER": "water"
 }

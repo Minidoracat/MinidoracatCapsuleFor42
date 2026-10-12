@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Capsule onde de choc : peut ranger",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Désactivé : les joueurs ne peuvent pas ranger de véhicule avec les capsules onde de choc. Celles qui sont chargées se lancent ou se déploient toujours avec le bouton, et la capsule vide rendue est aussi une capsule onde de choc.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Capsule onde de choc : dans le butin",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Activé : des capsules onde de choc vides apparaissent dans le butin et partagent le poids de chaque lieu avec les autres types activés. Jamais tant que « peut ranger » est désactivé."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Activé : des capsules onde de choc vides apparaissent dans le butin et partagent le poids de chaque lieu avec les autres types activés. Jamais tant que « peut ranger » est désactivé.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Autoriser à ranger les animaux",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Activé, les joueurs peuvent ranger n'importe quel animal vivant du monde (sauvage ou apprivoisé, petit ou adulte) dans une capsule vide depuis le menu de l'animal. Désactivé, seul le rangement des animaux est bloqué : les capsules qui en contiennent déjà un peuvent toujours être lancées, déployées avec le bouton et restaurées par un administrateur."
 }

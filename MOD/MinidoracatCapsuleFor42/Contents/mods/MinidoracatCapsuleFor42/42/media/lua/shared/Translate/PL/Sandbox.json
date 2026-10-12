@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Kapsuła wybuchowa: można pakować",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Wyłączone: gracze nie mogą pakować pojazdów do kapsuł wybuchowych. Pełne nadal można rzucić lub rozpakować przyciskiem, a zwrócona pusta kapsuła też będzie wybuchowa.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Kapsuła wybuchowa: do znalezienia",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Włączone: puste kapsuły wybuchowe można znaleźć wśród przedmiotów; dzielą wagę każdego miejsca z innymi włączonymi typami. Nigdy, gdy „można pakować” jest wyłączone."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Włączone: puste kapsuły wybuchowe można znaleźć wśród przedmiotów; dzielą wagę każdego miejsca z innymi włączonymi typami. Nigdy, gdy „można pakować” jest wyłączone.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Pozwól pakować zwierzęta",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Gdy włączone, gracze mogą spakować do pustej kapsuły każde żywe zwierzę w świecie (dzikie lub oswojone, młode lub dorosłe) z menu zwierzęcia. Wyłączenie blokuje tylko pakowanie zwierząt: kapsuły, które już je zawierają, nadal można rzucać, rozpakować przyciskiem i przywrócić przez administratora."
 }

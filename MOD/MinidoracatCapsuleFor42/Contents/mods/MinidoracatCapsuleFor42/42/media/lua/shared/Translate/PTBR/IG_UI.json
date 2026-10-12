@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Cápsula vazia no inventário: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "Um administrador desativou a %1; guarde com outro tipo",
     "IGUI_MinidoracatCapsule_PackInto": "Guardar na %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Um administrador desativou este tipo de cápsula; guarde com outro tipo"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Um administrador desativou este tipo de cápsula; guarde com outro tipo",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "O animal não foi guardado",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "O animal vai para a cápsula do jeito que está agora. Leva %1 segundos.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Não há espaço para o animal aqui",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "O animal não cabe ali: %1. A cápsula caiu no local: aperte o botão dela ao lado de um quadrado livre, ou pegue-a e arremesse de novo.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "O animal não cabe ali: %1. Escolha um quadrado livre e aperte de novo.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Um administrador desativou guardar animais",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "o animal está morto ou sumiu",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "alguém está carregando o animal, ou ele está num galinheiro ou reboque",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Tire a corda primeiro",
+    "IGUI_MinidoracatCapsule_Why_WATER": "água"
 }

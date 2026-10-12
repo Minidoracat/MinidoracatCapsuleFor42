@@ -132,4 +132,33 @@ function Rules.packWhyNot(player, vehicle, t)
     return nil
 end
 
+-- Sandbox AllowAnimals (default on). Off only stops packing animals: animal capsules still land, like Type<id>.
+function Rules.animalsOn()
+    return Rules.sandbox().AllowAnimals ~= false
+end
+
+-- Why this animal cannot be packed by anyone right now, or nil: the menu (client), the timed action and the server
+-- (Pack.packAnimal) ask the same. Any live animal in the world may be packed, wild or tame, young or grown. Not in
+-- the world (isExistInTheWorld: carried, in a hutch or a trailer, IsoAnimal.java:2369) is ANIMAL_AWAY; a carcass or
+-- an animal on a butcher hook is NO_ANIMAL; a rope to a player or a post has to come off first (ROPE).
+function Rules.animalWhyNot(player, animal)
+    if not animal or animal:isDead() or animal:isOnHook() then return "NO_ANIMAL" end
+    if not Rules.animalsOn() then return "ANIMALS_OFF" end
+    if not animal:isExistInTheWorld() then return "ANIMAL_AWAY" end
+    local d = animal:getData()
+    if d:getAttachedPlayer() or d:getAttachedTree() then return "ROPE" end
+    local dx, dy = player:getX() - animal:getX(), player:getY() - animal:getY()
+    if dx * dx + dy * dy > M.PACK_RANGE * M.PACK_RANGE then return "TOO_FAR" end
+    return nil
+end
+
+-- Everything the server checks before a player packs an animal with a capsule of type t, or nil.
+function Rules.packAnimalWhyNot(player, animal, t)
+    local why = Rules.animalWhyNot(player, animal)
+    if why then return why end
+    if not Rules.emptyCapsule(player, t) then return "NO_CAPSULE" end
+    if not Rules.typeOn(t) then return "TYPE_OFF" end
+    return nil
+end
+
 return Rules

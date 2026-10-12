@@ -114,17 +114,21 @@ function Handlers.packed(args)
     -- refused for permission: the same reason the menu row gives (VehicleManager's wording included)
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
-    Notify.dialog(getText("IGUI_MinidoracatCapsule_PackFailed"), text)
+    Notify.dialog(getText(args.kind == "animal" and "IGUI_MinidoracatCapsule_PackAnimalFailed"
+        or "IGUI_MinidoracatCapsule_PackFailed"), text)
 end
 
 function Handlers.landed(args)
+    local animal = args.kind == "animal" and "Animal" or ""
     if args.ok then
-        Notify.toast(getText("IGUI_MinidoracatCapsule_Unpacked", Notify.vehicleName(args.script)),
+        local name = animal ~= "" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
+        Notify.toast(getText("IGUI_MinidoracatCapsule_Unpacked", name),
             args.returned and getText("IGUI_MinidoracatCapsule_EmptyBack") or nil)
     elseif args.why == "BLOCKED" then
         local body = args.mode == "press" and "IGUI_MinidoracatCapsule_BlockedPress"
             or "IGUI_MinidoracatCapsule_BlockedThrow"
-        Notify.dialog(getText("IGUI_MinidoracatCapsule_BlockedTitle"), getText(body, Notify.reason(args.reason)))
+        Notify.dialog(getText("IGUI_MinidoracatCapsule_BlockedTitle" .. animal),
+            getText(body .. animal, Notify.reason(args.reason)))
     elseif args.why == "UNCERTAIN" then
         Notify.dialog(getText("IGUI_MinidoracatCapsule_UncertainTitle"),
             getText("IGUI_MinidoracatCapsule_UncertainBody", tostring(args.capsuleId)))

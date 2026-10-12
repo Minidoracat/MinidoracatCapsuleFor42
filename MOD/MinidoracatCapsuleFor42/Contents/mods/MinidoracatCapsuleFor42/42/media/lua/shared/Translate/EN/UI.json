@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Opened a product draft for %1 in the Economy Center. Set its price and apply it there.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "You do not have Economy Center admin rights.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "The Economy Center admin window is not ready; try again later.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "The Economy Center did not open the product draft."
+    "UI_MinidoracatCapsule_ShopOpen_other": "The Economy Center did not open the product draft.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Restore animal",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restore %1 at (%2, %3)? The old capsule can never be unpacked afterwards.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "animal #%1 is near its recorded spot on the server",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "animal #%1 is not near its recorded spot",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "The recorded animal is still near its recorded spot: it is still in the world."
 }

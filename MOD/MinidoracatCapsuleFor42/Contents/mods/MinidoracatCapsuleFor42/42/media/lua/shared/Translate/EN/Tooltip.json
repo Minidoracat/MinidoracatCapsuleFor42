@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Reading vehicle condition...",
-    "Tooltip_MinidoracatCapsule_Empty": "Empty capsule. Pack a parked vehicle from its vehicle menu.",
+    "Tooltip_MinidoracatCapsule_Empty": "Empty capsule. Pack a parked vehicle from its vehicle menu, or a live animal from its animal menu.",
     "Tooltip_MinidoracatCapsule_Far": "Come closer to see the vehicle's condition.",
     "Tooltip_MinidoracatCapsule_NoRecord": "This capsule's record is not on this server. Please contact an admin.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Vehicle",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "White steam, steam venting sounds",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "A light column and a ring on the ground, energy sounds",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Lavender smoke with sparkles, magic sounds",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "A mushroom cloud and a ground shockwave, an explosion sound"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "A mushroom cloud and a ground shockwave, an explosion sound",
+    "Tooltip_MinidoracatCapsule_Animal": "Animal",
+    "Tooltip_MinidoracatCapsule_Name": "Name",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 days",
+    "Tooltip_MinidoracatCapsule_Weight": "Weight",
+    "Tooltip_MinidoracatCapsule_Milk": "Milk",
+    "Tooltip_MinidoracatCapsule_Wild": "Wild"
 }

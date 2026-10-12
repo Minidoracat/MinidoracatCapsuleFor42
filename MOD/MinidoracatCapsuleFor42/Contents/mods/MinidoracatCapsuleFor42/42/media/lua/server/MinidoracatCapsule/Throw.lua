@@ -1,8 +1,8 @@
 -- Universal Capsule: a thrown or pressed capsule lands (server authority; SP runs the same code locally).
 -- The action's complete() schedules the landing; the capsule stays where it is (inventory or ground) until then.
 -- Landing: a record that is not a usable PACKED one goes straight to Unpack (it refuses, logs and clears stale cargo);
--- otherwise the footprint must be clear, then Unpack spawns the vehicle. A blocked throw drops the capsule on the
--- landing square; a pressed capsule stays where it lies.
+-- otherwise the ground must be clear (the vehicle's body, or one square for an animal), then Unpack spawns it. A
+-- blocked throw drops the capsule on the landing square; a pressed capsule stays where it lies.
 if isClient() then return end
 require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Footprint"
@@ -62,13 +62,19 @@ function Throw.land(p)
     else
         local snap = Store.read(p.capsuleId)
         local usable = snap and snap.state == "PACKED" and not Store.uncertain(p.capsuleId, snap)
-        local reason = usable and Footprint.clear(getScriptManager():getVehicle(snap.script), p.x, p.y, p.z, p.dir)
+        local reason
+        if usable and snap.kind == "animal" then
+            reason = Footprint.animalClear(p.x, p.y, p.z)
+        elseif usable then
+            reason = Footprint.clear(getScriptManager():getVehicle(snap.script), p.x, p.y, p.z, p.dir)
+        end
         if reason and reason ~= "NO_SCRIPT" then
             res = { ok = false, why = "BLOCKED", reason = reason }
         else
             res = Unpack.unpack(player, capsule, sq, p.dir, {})
             if res.why == "BLOCKED" then res.reason = "SPAWN" end
         end
+        res.kind = snap and snap.kind -- the client words the dialog for a vehicle or an animal
         if not res.ok and res.why ~= "BLOCKED" then
             snap = Store.read(p.capsuleId)
             if snap then res.state, res.t = snap.state, stateTime(snap) end

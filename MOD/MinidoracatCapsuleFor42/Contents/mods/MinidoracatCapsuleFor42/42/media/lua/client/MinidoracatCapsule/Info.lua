@@ -125,6 +125,59 @@ local function num1(v)
     return (string.gsub(s, "%.0$", ""))
 end
 
+-- An animal's breed and type the vanilla way (IsoAnimal.getFullName, IsoAnimal.java:2274-2290), in this player's
+-- language. a = { type, breed, name } from a record (server Animal.view).
+function Info.animalKind(a)
+    if type(a) ~= "table" then return "?" end
+    local kind = getTextOrNull("IGUI_AnimalType_" .. tostring(a.type)) or tostring(a.type)
+    local breed = a.breed and getTextOrNull("IGUI_Breed_" .. tostring(a.breed))
+    return breed and getText("IGUI_AnimalFullName", breed, kind) or kind
+end
+
+-- The animal's own name, or its breed and type (vanilla AnimalInventoryItem.initAnimalData).
+function Info.animalName(a)
+    if type(a) == "table" and type(a.name) == "string" and a.name ~= "" then return a.name end
+    return Info.animalKind(a)
+end
+
+-- What a capsule holds, in words: the animal's name or the vehicle's. r: a summary, a detail or a capsuleInfo reply.
+function Info.thingName(r)
+    if r.kind == "animal" then return Info.animalName(r.animal) end
+    return Info.carName(r.script, r.name)
+end
+
+-- Vanilla bands for wool (ISAnimalUI:getWoolText).
+local function woolText(q)
+    if q < 1 then return getText("IGUI_Animal_Wool_None") end
+    if q < 5 then return getText("IGUI_Animal_Wool_Handful") end
+    if q < 8 then return getText("IGUI_Animal_Wool_Little") end
+    if q < 15 then return getText("IGUI_Animal_Wool_Moderate") end
+    return getText("IGUI_Animal_Wool_Abundant")
+end
+
+-- { { label, value }, ... } describing a recorded animal, labels in vanilla's animal wording where it has one
+-- (ISAnimalUI). Pregnancy and fertilization only come when the server sent them (Husbandry above 2).
+function Info.animalRows(a)
+    local rows = {}
+    local function add(label, value) rows[#rows + 1] = { label, value } end
+    if type(a) ~= "table" then return rows end
+    add(T("Animal"), Info.animalKind(a))
+    add(getText("UI_characreation_gender"), getText(a.female and "IGUI_Animal_Female" or "IGUI_Animal_Male"))
+    if type(a.age) == "number" then add(getText("IGUI_char_Age"), T("AgeDays", tostring(a.age))) end
+    local w = tonumber(a.weight)
+    if w then
+        add(T("Weight"), w > 1 and getText("IGUI_AnimalWeight", num1(w)) or getText("IGUI_AnimalWeightG", num1(w * 1000)))
+    end
+    local hp = tonumber(a.health)
+    if hp then add(getText("IGUI_XP_Health"), T("Percent", tostring(math.floor(hp * 100 + 0.5)))) end
+    if tonumber(a.milkMax) then add(T("Milk"), T("FuelOf", num1(tonumber(a.milk) or 0), num1(a.milkMax))) end
+    if (tonumber(a.wool) or 0) > 0 then add(getText("IGUI_Animal_Wool"), woolText(a.wool)) end
+    if a.pregnant then add(getText("IGUI_Animal_Pregnant"), getText("IGUI_Yes")) end
+    if a.fert then add(getText("IGUI_Animal_Fertilized"), getText("IGUI_Yes")) end
+    if a.wild then add(T("Wild"), getText("IGUI_Yes")) end -- own label: vanilla KO IGUI_Animal_Wild is empty
+    return rows
+end
+
 -- Insertion sort for short lists (cargo kinds, part names); the family gate bans the built-in sort.
 local function isort(a, less)
     for i = 2, #a do
@@ -184,8 +237,13 @@ function Info.status(r)
 end
 
 -- { { label, value, token? }, ... } describing the vehicle (PACKED and uncertain ones): what the tooltip and the
--- preview list. `full` adds paint and the whole cargo list (preview).
+-- preview list. `full` adds paint and the whole cargo list (preview). An animal record lists the animal instead.
 function Info.rows(r, full)
+    if r.kind == "animal" then
+        local rows = Info.animalRows(r.animal)
+        if r.by then rows[#rows + 1] = { T("PackedBy"), tostring(r.by) } end
+        return rows
+    end
     local d = Info.details(r)
     local rows = {}
     local function add(label, value, token) rows[#rows + 1] = { T(label), value, token } end
@@ -230,11 +288,18 @@ function Info.rows(r, full)
 end
 
 -- Lines Minidoracat Economy shows under a listed or auctioned capsule (server Trade.view): the vehicle in this
--- player's language and the numbers the tooltip shows.
+-- player's language and the numbers the tooltip shows; for an animal the capsule type, its name and the animal rows.
 function Info.viewLines(v)
     local out = {}
     if type(v) ~= "table" then return out end
     local function add(label, value) out[#out + 1] = T("Row", T(label), value) end
+    if v.kind == "animal" then
+        local t = M.TYPE_BY_ID[tostring(v.style)]
+        if t then add("Type", Info.itemName(t.empty)) end
+        add("Name", Info.animalName(v.animal))
+        for _, row in ipairs(Info.animalRows(v.animal)) do out[#out + 1] = T("Row", row[1], row[2]) end
+        return out
+    end
     add("Vehicle", Info.carName(v.script, v.name))
     if v.engine or v.body then
         add("Condition", T("EngineBody", v.engine and tostring(v.engine) or "-", v.body and tostring(v.body) or "-"))
@@ -278,13 +343,13 @@ Events.OnGameStart.Add(function()
     end
 end)
 
--- A loaded capsule's name in this player's language, "<type>: <vehicle>" (IG_UI LoadedName), from its record; nil
--- while there is none. The server leaves the script's name on the item (Pack.lua), so no packing client's language
--- sticks to it; each client renames its own copy.
+-- A loaded capsule's name in this player's language, "<type>: <vehicle or animal>" (IG_UI LoadedName), from its
+-- record; nil while there is none. The server leaves the script's name on the item (Pack.lua), so no packing client's
+-- language sticks to it; each client renames its own copy.
 function Info.capsuleName(item, r)
     local t = M.typeOf(item)
-    if not (t and type(r) == "table" and r.ok and r.script) then return nil end
-    return getText("IGUI_MinidoracatCapsule_LoadedName", Info.itemName(t.empty), Info.carName(r.script, r.name))
+    if not (t and type(r) == "table" and r.ok and (r.script or r.kind == "animal")) then return nil end
+    return getText("IGUI_MinidoracatCapsule_LoadedName", Info.itemName(t.empty), Info.thingName(r))
 end
 
 local function rename(item)

@@ -6,11 +6,11 @@
     "MinidoracatCapsule.CapsuleSciFi": "科幻胶囊",
     "MinidoracatCapsule.CapsuleMagic": "魔法胶囊",
     "MinidoracatCapsule.CapsuleShock": "冲击胶囊",
-    "MinidoracatCapsule.LoadedCapsuleCartoon": "卡通胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleReal": "写实胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleDust": "尘土胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleSteam": "蒸汽胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleSciFi": "科幻胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleMagic": "魔法胶囊（已收车）",
-    "MinidoracatCapsule.LoadedCapsuleShock": "冲击胶囊（已收车）"
+    "MinidoracatCapsule.LoadedCapsuleCartoon": "卡通胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleReal": "写实胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleDust": "尘土胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleSteam": "蒸汽胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleSciFi": "科幻胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleMagic": "魔法胶囊（已装入）",
+    "MinidoracatCapsule.LoadedCapsuleShock": "冲击胶囊（已装入）"
 }

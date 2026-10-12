@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "차량 상태를 읽는 중...",
-    "Tooltip_MinidoracatCapsule_Empty": "빈 캡슐입니다. 주차된 차량의 차량 메뉴에서 넣을 수 있습니다.",
+    "Tooltip_MinidoracatCapsule_Empty": "빈 캡슐입니다. 주차된 차량은 차량 메뉴에서, 살아 있는 동물은 동물 메뉴에서 넣을 수 있습니다.",
     "Tooltip_MinidoracatCapsule_Far": "가까이 가야 차량 상태를 볼 수 있습니다.",
     "Tooltip_MinidoracatCapsule_NoRecord": "이 캡슐의 기록이 이 서버에 없습니다. 관리자에게 문의하십시오.",
     "Tooltip_MinidoracatCapsule_Vehicle": "차량",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "하얀 증기, 증기가 뿜어지는 소리",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "빛기둥과 바닥의 빛 고리, 에너지 소리",
     "Tooltip_MinidoracatCapsule_Look_Magic": "연보라 연기와 반짝이는 별, 마법 소리",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "버섯구름과 땅을 따라 퍼지는 충격파, 폭발음"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "버섯구름과 땅을 따라 퍼지는 충격파, 폭발음",
+    "Tooltip_MinidoracatCapsule_Animal": "동물",
+    "Tooltip_MinidoracatCapsule_Name": "이름",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1일",
+    "Tooltip_MinidoracatCapsule_Weight": "체중",
+    "Tooltip_MinidoracatCapsule_Milk": "우유",
+    "Tooltip_MinidoracatCapsule_Wild": "야생"
 }

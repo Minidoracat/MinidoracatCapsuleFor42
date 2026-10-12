@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Cápsula de Onda de Choque: pode guardar",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Desativado: os jogadores não podem guardar veículos com Cápsulas de Onda de Choque. As carregadas ainda podem ser arremessadas ou liberadas pelo botão, e a cápsula vazia devolvida também é uma Cápsula de Onda de Choque.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Cápsula de Onda de Choque: aparece nos itens",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Ativado: Cápsulas de Onda de Choque vazias aparecem nos itens, dividindo o peso de cada local com os outros tipos ativados. Nunca enquanto “pode guardar” estiver desativado."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Ativado: Cápsulas de Onda de Choque vazias aparecem nos itens, dividindo o peso de cada local com os outros tipos ativados. Nunca enquanto “pode guardar” estiver desativado.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Permitir guardar animais",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Ligado, os jogadores podem guardar numa cápsula vazia qualquer animal vivo do mundo (selvagem ou domesticado, filhote ou adulto) pelo menu do animal. Desligado só impede guardar animais: cápsulas que já têm um ainda podem ser arremessadas, liberadas pelo botão e restauradas por um administrador."
 }

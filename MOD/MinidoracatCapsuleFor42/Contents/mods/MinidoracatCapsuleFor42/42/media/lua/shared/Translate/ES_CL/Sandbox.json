@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Cápsula de onda expansiva: puede guardar",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Desactivado: los jugadores no pueden guardar vehículos con cápsulas de onda expansiva. Las cargadas se pueden seguir lanzando o desplegando con el botón, y la cápsula vacía que se devuelve también es una cápsula de onda expansiva.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Cápsula de onda expansiva: en el botín",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Activado: aparecen cápsulas de onda expansiva vacías en el botín, que reparten el peso de cada lugar con los demás tipos activados. Nunca mientras «puede guardar» esté desactivado."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Activado: aparecen cápsulas de onda expansiva vacías en el botín, que reparten el peso de cada lugar con los demás tipos activados. Nunca mientras «puede guardar» esté desactivado.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Permitir guardar animales",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Si está activado, los jugadores pueden guardar en una cápsula vacía cualquier animal vivo del mundo (salvaje o domesticado, cría o adulto) desde el menú del animal. Desactivarlo solo impide guardar animales: las cápsulas que ya tienen uno se pueden seguir lanzando, desplegando con el botón y restaurando por un administrador."
 }

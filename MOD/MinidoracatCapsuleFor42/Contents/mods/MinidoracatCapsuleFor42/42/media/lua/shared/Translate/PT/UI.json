@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Rascunho de produto para a %1 aberto na Central Econômica. Defina o preço e aplique lá.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "Você não tem permissão de administrador da Central Econômica.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "A janela de administração da Central Econômica não está pronta; tente de novo mais tarde.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "A Central Econômica não abriu o rascunho de produto."
+    "UI_MinidoracatCapsule_ShopOpen_other": "A Central Econômica não abriu o rascunho de produto.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Restaurar animal",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restaurar %1 em (%2, %3)? A cápsula antiga nunca mais poderá ser liberada.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "o animal #%1 está perto do local registrado no servidor",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "o animal #%1 não está perto do local registrado",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "O animal registrado ainda está perto do local registrado: ele ainda está no mundo."
 }

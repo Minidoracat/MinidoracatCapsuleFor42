@@ -167,6 +167,13 @@ local function cargoText(manifest)
     return U("CargoList", table.concat(parts, ", "))
 end
 
+-- The animal of an animal record, where a vehicle record lists its cargo: "Animal: Holstein Cow, Gender: Female ...".
+local function animalText(a)
+    local parts = {}
+    for _, row in ipairs(Info.animalRows(a)) do parts[#parts + 1] = Info.T("Row", row[1], row[2]) end
+    return table.concat(parts, sep())
+end
+
 -- "Last seen: 10/10 18:40 · on Bob (10763, 9775, 0)": where the server last saw the capsule (Store.seen). In an
 -- Economy trade it is in Economy's hands (Trade.escrow), with no square to go to.
 local function seenText(s)
@@ -342,11 +349,16 @@ function Win:buildRecords(p)
     end
     self.gotoBtn = btn("GoTo", "normal", function(t) t:goTo() end)
     self.seenBtn = btn("GoSeen", "normal", function(t) t:goSeen() end)
-    self.restoreBtn = btn("Restore", "primary", function(t) t:pickRestore() end)
+    -- "Restore vehicle" / "Restore animal" (onDetail): laid out at the longer title, so the shorter never overflows
+    local restoreTitles = { U("Restore"), U("RestoreAnimal") }
+    self.restoreBtn = UI.Button.new({ height = CH, style = "primary", theme = theme, target = self,
+        title = Kit.measure(restoreTitles[2]) > Kit.measure(restoreTitles[1]) and restoreTitles[2] or restoreTitles[1],
+        onClick = function(t) t:pickRestore() end })
     self.presentBtn = btn("VerdictPresent", "normal", function(t) t:resolve("present") end)
     self.missingBtn = btn("VerdictMissing", "danger", function(t) t:resolve("missing") end)
     local actions = { self.gotoBtn, self.seenBtn, self.restoreBtn, self.presentBtn, self.missingBtn }
     local btnRows = Kit.flow(actions, dw, GAP)
+    self.restoreBtn:setTitle(restoreTitles[1])
     local bottomBlock = (FH + 2) * 2 + GAP + CH + GAP + CH + GAP + btnRows * (CH + GAP) + FH
     local tlH = math.max(FH * 4, listH - (dy - y) - bottomBlock)
     self.whyRows = math.max(1, math.floor((dy - self.headY) / FH)) -- a refused detail shows its reason above the timeline
@@ -389,7 +401,9 @@ function Win:layoutChips()
 end
 
 function Win:bindRow(c, row, cw)
-    c.line1 = fit(tostring(row.id) .. "   " .. Info.carName(row.script, row.name), cw)
+    local name = row.kind == "animal" and Info.animalName({ type = row.atype, breed = row.breed, name = row.name })
+        or Info.carName(row.script, row.name)
+    c.line1 = fit(tostring(row.id) .. "   " .. name, cw)
     c.line2 = fit(tostring(row.by or "-") .. sep() .. Info.date(row.t) .. sep() .. stateLabel(row.state, row.uncertain), cw)
     c.token1 = "text"
     c.token2 = row.uncertain and "errorText" or "textMuted"
@@ -514,15 +528,18 @@ function Win:onDetail(d)
     if not d.ok then
         self.dWhy = Kit.lines(Panel.whyText(d.why), self.dw, self.whyRows)
     else
-        self.dTitle = fit(tostring(d.id) .. "   " .. Info.carName(d.script, d.name), self.dw)
+        local animal = d.kind == "animal"
+        self.dTitle = fit(tostring(d.id) .. "   " .. Info.thingName(d), self.dw)
+        self.restoreBtn:setTitle(U(animal and "RestoreAnimal" or "Restore"))
         self.dState = Kit.lines(stateLabel(d.state, d.uncertain) .. (d.uncertain and ("  " .. U("UncertainHelp")) or ""),
             self.dw, 2)
         local spot = d.x and U("Spot", tostring(d.x), tostring(d.y), tostring(d.z or 0)) or U("SpotNone")
-        local car = U(d.carLoaded and "CarLoaded" or "CarNotLoaded", tostring(d.car or "-"))
+        local car = animal and U(d.carLoaded and "AnimalLoaded" or "AnimalNotLoaded", tostring(d.car or "-"))
+            or U(d.carLoaded and "CarLoaded" or "CarNotLoaded", tostring(d.car or "-"))
         self.dInfo = { fit(spot, self.dw), fit(car, self.dw), fit(seenText(d.seen), self.dw) }
         local more = (tonumber(d.historyTotal) or 0) - #(d.history or {})
         self.dTimelineHead = more > 0 and U("TimelineMore", tostring(more)) or U("Timeline")
-        self.dCargo = Kit.lines(cargoText(d.manifest), self.dw, 2)
+        self.dCargo = Kit.lines(animal and animalText(d.animal) or cargoText(d.manifest), self.dw, 2)
         local h = {}
         for i = #(d.history or {}), 1, -1 do h[#h + 1] = d.history[i] end -- newest first
         self.timeline:setItems(h)
@@ -539,6 +556,7 @@ function Win:goTo()
     local x, y, z = d.x + 4, d.y, d.z or 0
     local w, l = M.Footprint.size(d.script and getScriptManager():getVehicle(d.script))
     if w then x = M.Footprint.box(d.x, d.y, "E", w, l).x2 + 2 end
+    if d.kind == "animal" then x = d.x + 2 end -- an animal takes one square
     if isClient() then
         SendCommandToServer("/teleportto " .. tostring(x) .. "," .. tostring(y) .. "," .. tostring(z))
     else
@@ -579,8 +597,11 @@ function Win:confirmRestore(args)
     local d = self.detail
     if not d then return end
     if not (Kit.CAPS.dialog and UI.Dialog) then return self:act("adminRestore", args) end
-    self.dialog = UI.Dialog.show({ title = U("Restore"), text = U("RestoreConfirm", Info.carName(d.script, d.name),
-        tostring(args.x), tostring(args.y)), theme = theme, confirmText = U("Restore"), cancelText = U("Cancel"),
+    local animal = d.kind == "animal"
+    local title = U(animal and "RestoreAnimal" or "Restore")
+    self.dialog = UI.Dialog.show({ title = title, text = U(animal and "RestoreAnimalConfirm" or "RestoreConfirm",
+        Info.thingName(d), tostring(args.x), tostring(args.y)), theme = theme, confirmText = title,
+        cancelText = U("Cancel"),
         onResult = function(ok)
             self.dialog = nil
             if ok then self:act("adminRestore", args) end
@@ -596,7 +617,7 @@ function Win:pickRestore()
     local args = { id = d.id, note = noteText(self.note), checked = self.checked:getChecked() }
     local home = d.x and { x = d.x, y = d.y, z = d.z or 0 } or nil
     self.win:setVisible(false)
-    M.ThrowCursor.openRestore(player, d.script, home, function(x, y, z, dir)
+    M.ThrowCursor.openRestore(player, d, home, function(x, y, z, dir)
         self.win:setVisible(true)
         self.win:bringToTop()
         if x == nil then return end
@@ -998,6 +1019,7 @@ Panel.GENERAL = {
     { key = "PackPermission", kind = "choice", count = 3, default = 1 },
     { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
     { key = "AllowCargoTakeOut", kind = "bool", default = false },
+    { key = "AllowAnimals", kind = "bool", default = true },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
 

@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Envanterinde boş kapsül var: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "%1 bir yönetici tarafından kapatıldı; başka bir türle kapsüle koy",
     "IGUI_MinidoracatCapsule_PackInto": "%1 içine koy",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Bir yönetici bu kapsül türünü kapattı; başka bir türle kapsüle koy"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Bir yönetici bu kapsül türünü kapattı; başka bir türle kapsüle koy",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "Hayvan kapsüle konmadı",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "Hayvan şu anki hâliyle kapsüle girer. %1 saniye sürer.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Burada hayvana yer yok",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "Hayvan oraya sığmıyor: %1. Kapsül olduğu yere düştü: boş bir karenin yanında düğmesine bas ya da alıp tekrar fırlat.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "Hayvan oraya sığmıyor: %1. Boş bir kare seç ve tekrar bas.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Bir yönetici hayvanları kapsüle koymayı kapattı",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "hayvan ölü ya da artık yok",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "hayvan birinin kucağında ya da kümeste veya römorkta",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Önce halatı çöz",
+    "IGUI_MinidoracatCapsule_Why_WATER": "su"
 }

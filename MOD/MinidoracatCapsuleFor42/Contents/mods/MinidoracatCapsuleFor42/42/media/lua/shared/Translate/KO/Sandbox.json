@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "충격파 캡슐: 차량 넣기 가능",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "끄면 플레이어가 충격파 캡슐에 차량을 넣을 수 없습니다. 차량이 든 충격파 캡슐은 그대로 던지거나 버튼으로 꺼낼 수 있고, 돌려받는 빈 캡슐도 충격파 캡슐입니다.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "충격파 캡슐: 전리품에 등장",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "켜면 빈 충격파 캡슐이 전리품으로 등장하며, 각 장소의 가중치를 켜져 있는 다른 종류와 나눠 가집니다. '차량 넣기 가능'이 꺼져 있으면 등장하지 않습니다."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "켜면 빈 충격파 캡슐이 전리품으로 등장하며, 각 장소의 가중치를 켜져 있는 다른 종류와 나눠 가집니다. '차량 넣기 가능'이 꺼져 있으면 등장하지 않습니다.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "동물 넣기 허용",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "켜면 플레이어가 월드의 살아 있는 동물(야생이든 길들인 동물이든, 새끼든 성체든)을 동물 메뉴에서 빈 캡슐에 넣을 수 있습니다. 끄면 동물 넣기만 막습니다. 이미 동물이 든 캡슐은 계속 던지고, 버튼으로 꺼내고, 관리자가 복구할 수 있습니다."
 }

@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "背包里有空胶囊：%1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "管理员停用了%1，换一种胶囊再收",
     "IGUI_MinidoracatCapsule_PackInto": "收进%1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "管理员停用了这种胶囊，换一种胶囊再收"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "管理员停用了这种胶囊，换一种胶囊再收",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "动物没有收进胶囊",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "动物会照现在的状态收进胶囊。需要 %1 秒。",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "这里放不下动物",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "落点不能放动物：%1。胶囊掉在落点：走到空着的格子旁按下按钮，或捡起来再丢。",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "落点不能放动物：%1。换一个空着的格子再按一次。",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "管理员关闭了收动物",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "动物已经死了或不见了",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "动物被抱着，或在畜栏、拖车里",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "先解开绳索",
+    "IGUI_MinidoracatCapsule_Why_WATER": "水上"
 }

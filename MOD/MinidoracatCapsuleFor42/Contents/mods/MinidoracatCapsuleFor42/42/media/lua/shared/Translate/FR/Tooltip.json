@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Lecture de l'état du véhicule...",
-    "Tooltip_MinidoracatCapsule_Empty": "Capsule vide. Rangez un véhicule garé depuis son menu véhicule.",
+    "Tooltip_MinidoracatCapsule_Empty": "Capsule vide. Rangez un véhicule garé depuis son menu véhicule, ou un animal vivant depuis son menu animal.",
     "Tooltip_MinidoracatCapsule_Far": "Approchez-vous pour voir l'état du véhicule.",
     "Tooltip_MinidoracatCapsule_NoRecord": "L'historique de cette capsule n'est pas sur ce serveur. Contactez un admin.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Véhicule",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Vapeur blanche, bruit de jet de vapeur",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Une colonne de lumière et un anneau au sol, des sons d'énergie",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Fumée lavande et étincelles, des sons magiques",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Nuage en champignon, onde de choc au sol, bruit d'explosion"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Nuage en champignon, onde de choc au sol, bruit d'explosion",
+    "Tooltip_MinidoracatCapsule_Animal": "Animal",
+    "Tooltip_MinidoracatCapsule_Name": "Nom",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 jours",
+    "Tooltip_MinidoracatCapsule_Weight": "Poids",
+    "Tooltip_MinidoracatCapsule_Milk": "Lait",
+    "Tooltip_MinidoracatCapsule_Wild": "Sauvage"
 }

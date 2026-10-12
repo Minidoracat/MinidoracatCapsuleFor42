@@ -79,7 +79,7 @@ end
 -- Returns true when the capsule was cleared.
 function Guard.stale(player, capsule, capsuleId, snap, why)
     if snap.state == "UNPACKED" and not Store.marked(capsuleId) then
-        if not Store.findLoadedVehicle(Store.recordedCar(snap).car, snap.script) then
+        if not Store.findRecorded(snap) then
             Store.suspect(capsuleId, snap, player)
             return false
         end

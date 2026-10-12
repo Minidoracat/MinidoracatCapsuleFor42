@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Odczytywanie stanu pojazdu...",
-    "Tooltip_MinidoracatCapsule_Empty": "Pusta kapsuła. Spakuj zaparkowany pojazd z jego menu.",
+    "Tooltip_MinidoracatCapsule_Empty": "Pusta kapsuła. Spakuj zaparkowany pojazd z jego menu albo żywe zwierzę z menu zwierzęcia.",
     "Tooltip_MinidoracatCapsule_Far": "Podejdź bliżej, aby zobaczyć stan pojazdu.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Zapisu tej kapsuły nie ma na tym serwerze. Skontaktuj się z administratorem.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Pojazd",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Biała para, odgłos wyrzutu pary",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Słup światła i świetlny pierścień na ziemi, dźwięki energii",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Lawendowy dym z iskierkami, magiczne dźwięki",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Chmura grzybowa i fala uderzeniowa na ziemi, odgłos wybuchu"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Chmura grzybowa i fala uderzeniowa na ziemi, odgłos wybuchu",
+    "Tooltip_MinidoracatCapsule_Animal": "Zwierzę",
+    "Tooltip_MinidoracatCapsule_Name": "Imię",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 dni",
+    "Tooltip_MinidoracatCapsule_Weight": "Waga",
+    "Tooltip_MinidoracatCapsule_Milk": "Mleko",
+    "Tooltip_MinidoracatCapsule_Wild": "Dzikie"
 }

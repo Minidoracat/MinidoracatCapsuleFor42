@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "已在經濟中心打開「%1」的商品草稿，設好價格後在那邊套用。",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "你沒有經濟中心的管理權限。",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "經濟中心的管理視窗還沒準備好，稍後再試。",
-    "UI_MinidoracatCapsule_ShopOpen_other": "經濟中心沒有打開商品草稿。"
+    "UI_MinidoracatCapsule_ShopOpen_other": "經濟中心沒有打開商品草稿。",
+    "UI_MinidoracatCapsule_RestoreAnimal": "補回動物",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "在 (%2, %3) 補回 %1？原本的膠囊之後不能再展開。",
+    "UI_MinidoracatCapsule_AnimalLoaded": "伺服器在紀錄位置附近找得到動物 #%1",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "紀錄位置附近找不到動物 #%1",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "伺服器在紀錄位置附近找得到那隻動物：牠還在世界上。"
 }

@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "В Экономическом центре открыт черновик товара «%1». Задайте цену и примените его там.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "У вас нет прав администратора Экономического центра.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "Окно администрирования Экономического центра ещё не готово; попробуйте позже.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "Экономический центр не открыл черновик товара."
+    "UI_MinidoracatCapsule_ShopOpen_other": "Экономический центр не открыл черновик товара.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Восстановить животное",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Восстановить %1 в (%2, %3)? Старую капсулу больше никогда нельзя будет распаковать.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "животное #%1 на сервере рядом с записанным местом",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "животного #%1 нет рядом с записанным местом",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Записанное животное всё ещё рядом с записанным местом: оно всё ещё в мире."
 }

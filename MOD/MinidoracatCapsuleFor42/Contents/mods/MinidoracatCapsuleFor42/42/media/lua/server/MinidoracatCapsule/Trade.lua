@@ -152,9 +152,13 @@ local function refill(container, nodes, eco, lost, keyRing)
     end
 end
 
--- What the listing shows under the capsule (client Info.viewLines): the vehicle and the tooltip's numbers. Small:
--- Economy sends it with every listing row.
-function Trade.view(capsuleId, snap)
+-- What the listing shows under the capsule (client Info.viewLines): the vehicle and the tooltip's numbers, or for an
+-- animal record the capsule type (`style`, M.TYPES id) and the animal (Animal.view without breeding: every buyer sees
+-- it). Small: Economy sends it with every listing row.
+function Trade.view(capsuleId, snap, style)
+    if snap.kind == "animal" then
+        return { kind = "animal", style = style, animal = M.Animal.view(snap.animal, false) }
+    end
     local s = M.Query.summary(capsuleId, snap)
     local c = M.Condition.of(s.parts)
     local n = 0
@@ -164,22 +168,28 @@ function Trade.view(capsuleId, snap)
 end
 
 -- Economy takes the capsule (listed or put up for auction) in this tick. Returns ext, or nil plus a refusal detail.
+-- An animal capsule carries nothing (the animal is the record): no cargo goes into the escrow.
 function Trade.escrow(item, player, channel, ref)
     local ok, detail = Trade.check(item, player)
     if not ok then return nil, detail end
     local eco, id = economy(), item:getID()
     local snap = Store.read(id)
-    local box = item:getInventory()
-    detachAll(box, box, eco, snap)
-    local cargo, err = pack(box:getItems(), eco)
-    if not cargo then return nil, err end
+    local cargo
+    if snap.kind ~= "animal" then
+        local box = item:getInventory()
+        detachAll(box, box, eco, snap)
+        local err
+        cargo, err = pack(box:getItems(), eco)
+        if not cargo then return nil, err end
+    end
     local now, by = getTimestampMs(), player and player:getUsername() or "-"
     snap.escrow = { active = true, t = now, by = by, channel = tostring(channel), ref = tostring(ref), cargo = cargo }
     snap.seen = { t = now, where = "economy", by = by }
     if not Store.event(id, snap, "ESCROW", player, { why = tostring(channel) .. " " .. tostring(ref) }) then
         return nil, { code = "OTHER" }
     end
-    return { capsuleId = id, view = Trade.view(id, snap), weight = item:getUnequippedWeight() }
+    local t = M.typeOf(item)
+    return { capsuleId = id, view = Trade.view(id, snap, t and t.id), weight = item:getUnequippedWeight() }
 end
 
 -- Economy built a capsule from its snapshot to hand over (buyer, auction winner, the seller on a cancel or an expiry):

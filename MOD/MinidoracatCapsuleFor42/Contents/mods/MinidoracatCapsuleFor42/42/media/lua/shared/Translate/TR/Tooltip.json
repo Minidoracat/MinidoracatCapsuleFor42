@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Araç durumu okunuyor...",
-    "Tooltip_MinidoracatCapsule_Empty": "Boş kapsül. Park etmiş bir aracı araç menüsünden kapsüle koy.",
+    "Tooltip_MinidoracatCapsule_Empty": "Boş kapsül. Park etmiş bir aracı araç menüsünden, canlı bir hayvanı hayvan menüsünden kapsüle koy.",
     "Tooltip_MinidoracatCapsule_Far": "Aracın durumunu görmek için yaklaş.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Bu kapsülün kaydı bu sunucuda yok. Lütfen bir yöneticiye başvur.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Araç",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Beyaz buhar, buhar püskürme sesi",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Işık sütunu ve yerde ışık halkası, enerji sesleri",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Lavanta rengi duman ve parıltılar, büyü sesleri",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Mantar bulutu ve yerde şok dalgası, patlama sesi"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Mantar bulutu ve yerde şok dalgası, patlama sesi",
+    "Tooltip_MinidoracatCapsule_Animal": "Hayvan",
+    "Tooltip_MinidoracatCapsule_Name": "Ad",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 gün",
+    "Tooltip_MinidoracatCapsule_Weight": "Ağırlık",
+    "Tooltip_MinidoracatCapsule_Milk": "Süt",
+    "Tooltip_MinidoracatCapsule_Wild": "Yabani"
 }

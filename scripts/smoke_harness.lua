@@ -755,7 +755,7 @@ check(inN and inE, "皮卡（2.2×5）朝北／朝東轉 ±0.2 rad，四角都�
 check(bN.y2 - bN.y1 > bN.x2 - bN.x1 and bE.x2 - bE.x1 > bE.y2 - bE.y1, "朝北長邊沿 y、朝東長邊沿 x")
 
 -- 假格子：預設空曠的戶外地面
-IsoFlagType = { solidfloor = "solidfloor" }
+IsoFlagType = { solidfloor = "solidfloor", water = "water" }
 for k in pairs(loadedSquares) do loadedSquares[k] = nil end
 local function fakeSquare(x, y)
     local s = { x = x, y = y, free = true, floor = true, outside = true, wallE = false, wallS = false }
@@ -766,7 +766,8 @@ local function fakeSquare(x, y)
     function s:getMovingObjects() return javaList(self.movers or {}) end
     function s:isFree() return self.free and self.floor and not self.tree end
     function s:HasTree() return self.tree == true end
-    function s:has(flag) return flag == "solidfloor" and self.floor end
+    function s:has(flag) return (flag == "solidfloor" and self.floor) or (flag == "water" and self.water == true) end
+    function s:getAnimals() return javaList(self.animals or {}) end
     function s:isOutside() return self.outside end
     function s:isBlockedTo(o)
         if o.x == self.x + 1 then return self.wallE end
@@ -803,6 +804,26 @@ check(Footprint.blocked(getSq, Footprint.box(10, 20, "E", 2.2, 5.0), 0) == nil, 
 -- 按按鈕：玩家站在膠囊旁邊，車放在另一側 3 格（中心＝落點格的西北角），玩家那一格不能在範圍內
 local pb = Footprint.box(23, 30, "E", 2.2, 5.0)
 check(pb.x1 >= 20, "膠囊在 (20,30)、往東 3 格放車：站在膠囊西邊 (19,30) 的玩家不在範圍內（x1=" .. pb.x1 .. "）")
+do -- 動物落點只看一格：水、車、樹、家具、沒地面擋；室內與有人站著可以
+    local s = sq(10, 20)
+    local function with(field, v, want, label)
+        local old = s[field]
+        s[field] = v
+        local got = Footprint.animalClear(10, 20, 0)
+        s[field] = old
+        check(got == want, "動物落點：" .. label .. "（得到 " .. tostring(got) .. "）")
+    end
+    with("water", true, "WATER", "水上不行（IsoAnimal.new 在水上不初始化）")
+    with("vehicle", {}, "VEHICLE", "車底下不行")
+    with("tree", true, "TREE", "樹不行")
+    with("free", false, "SOLID", "家具不行")
+    with("floor", false, "NO_FLOOR", "沒有地面不行")
+    with("outside", false, nil, "室內可以")
+    with("movers", { {} }, nil, "有人站著也可以（只看 isFree(false)）")
+    local why, box = Footprint.animalClear(10, 20, 0)
+    check(why == nil and box.x1 == 10 and box.x2 == 10 and box.y1 == 20 and box.y2 == 20
+        and Footprint.animalClear(99, 99, 0) == "UNLOADED", "動物只占一格；沒載入的格子 UNLOADED")
+end
 
 print("Footprint：丟擲距離與視線")
 local losBlocked = false
@@ -933,6 +954,22 @@ do -- 動作瞬間完成（管理員作弊）時沒有放手事件：complete �
         Fx.broadcast, Fp.reach, Th.schedule = saved[1], saved[2], saved[3]
         check(ok == true and kinds[1] == "flight" and at == nowMs + Th.FLIGHT_MS,
             "沒有放手事件時 complete 先送飛行特效、FLIGHT_MS 後落地（" .. tostring(kinds[1]) .. "）")
+    end)()
+end
+do -- 收動物：intent 種類 packAnimal（id＝動物的 onlineID），沒有 intent 的動作被拒並記一行
+    (function()
+        local carol = newPlayer("carol", false)
+        local cow = { getOnlineID = function() return 31 end }
+        local lines, saved = {}, print
+        print = function(s) lines[#lines + 1] = tostring(s) end
+        local noIntent = Play.packAnimal(carol, cow, "Cartoon")
+        print = saved
+        clientCommand(M.MODULE, "intent", carol, { kind = "packAnimal", id = 31, type = "Steam" })
+        local it = Play.takeIntent(carol, "packAnimal", 31)
+        check(noIntent == false and lines[1] ~= nil and lines[1]:find("packAnimal refused by=carol why=NO_INTENT", 1, true) ~= nil,
+            "沒有 intent 的收動物被拒並記一行：" .. tostring(lines[1]))
+        check(it ~= nil and it.type == M.TYPE_BY_ID.Steam and Play.takeIntent(carol, "pack", 31) == nil,
+            "packAnimal intent 帶動物的 onlineID 與款式，不能拿去收車")
     end)()
 end
 -- ===== Phase 4：索引分頁、查詢權限、管理指令、戰利品權重 =====
@@ -1624,6 +1661,303 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
 capsuleTypes()
+
+print("Animals：快照可存、寫回順序、規則、收進膠囊、展開、紀錄分 kind、管理員、Economy、16 種語言")
+local function animals() -- 獨立函式：主程式的 local 已接近 200 個上限
+    require "MinidoracatCapsule/Pack"
+    do -- an earlier case replaced Unpack.spawn for good: put the real one back (modules hold the M.Unpack table)
+        local Unpack0 = M.Unpack
+        loadfile(MEDIA .. "/server/MinidoracatCapsule/Unpack.lua")()
+        Unpack0.spawn, M.Unpack = M.Unpack.spawn, Unpack0
+    end
+    local A, Pack, Unpack, Query, Index, AdminCommands, Trade = M.Animal, M.Pack, M.Unpack, M.Query, M.Index,
+        M.AdminCommands, M.Trade
+    local Steam = M.TYPE_BY_ID.Steam
+    CharacterStat = { HUNGER = "HUNGER", THIRST = "THIRST" }
+    fakeSquare(30, 40) -- an earlier case left a bare table there; findLoadedAnimal scans around (10, 10)
+    local function allele(v, r, gd)
+        return { getCurrentValue = function() return v end, getTrueRatioValue = function() return r end,
+            isDominant = function() return true end, isUsed = function() return false end,
+            getGeneticDisorder = function() return gd end }
+    end
+    -- A live animal as Animal.capture, Rules.animalWhyNot and Pack.packAnimal read it.
+    local function live(o)
+        o = o or {}
+        local d = {
+            getAge = function() return 40 end, getSize = function() return 0.9 end, getWeight = function() return 512.5 end,
+            canHaveMilk = function() return true end, getMilkQuantity = function() return 3.2 end,
+            getMaxMilkActual = function() return 5.5 end, getWoolQuantity = function() return 0 end,
+            isPregnant = function() return true end, getPregnancyTime = function() return 37 end,
+            isFertilized = function() return false end, getFertilizedTime = function() return 0 end,
+            getAttachedPlayer = function() return o.rope end, getAttachedTree = function() return nil end,
+        }
+        local a = { log = {}, wild = o.wild == true,
+            md = { tag = "cow", num = 42.5, flag = true, fn = function() end, [3] = "numeric key" } }
+        function a:getData() return d end
+        function a:getGeneticDisorder() return javaList({ "dwarf" }) end
+        function a:getModData() return self.md end
+        function a:getAnimalVisual() return { getSkinTexture = function() return "CowHolstein01" end } end
+        function a:getAnimalType() return "cow" end
+        function a:getBreed() return { getName = function() return "holstein" end } end
+        function a:isFemale() return true end
+        function a:getHoursSurvived() return 960.5 end
+        function a:getHealth() return 0.73 end
+        function a:getStats() return { get = function(_, k) return k == "HUNGER" and 0.31 or 0.27 end } end
+        function a:getStress() return 23.5 end
+        function a:getCustomName() return o.name end
+        function a:getAnimalID() return 4321 end
+        function a:isWild() return self.wild end
+        function a:setWild(b)
+            self.log[#self.log + 1] = "setWild:" .. tostring(b)
+            if not b then self.wild = false end
+        end
+        function a:getAcceptanceLevel() return 66.6 end
+        function a:getFullGenomeList()
+            return javaList({ { getName = function() return "strength" end,
+                getAllele1 = function() return allele(0.613, 0.5) end,
+                getAllele2 = function() return allele(0.4, 0.377, "blind") end } })
+        end
+        function a:isDead() return o.dead == true end
+        function a:isOnHook() return o.hook == true end
+        function a:isExistInTheWorld() return o.away ~= true end
+        function a:getX() return o.x or 101.5 end
+        function a:getY() return 201.5 end
+        function a:getSquare() return o.square end
+        function a:getOnlineID() return 31 end
+        function a:remove()
+            self.log[#self.log + 1] = "remove"
+            self.removedWith = o.onRemove and o.onRemove()
+        end
+        return a
+    end
+    local packer, admin = newPlayer("packer", false), newPlayer("admin", true)
+
+    -- capture -> JSON -> back
+    local snap = A.capture(live({ name = "Bessie" }), packer)
+    local text = Json.encode(snap)
+    local back = text and Json.decode(text)
+    check(text ~= nil and back ~= nil and diff(snap, back) == nil and back.modData.fn == nil and back.modData[3] == nil
+        and back.modData.num == 42.5 and back.genome.strength.a2.gd == "blind" and back.disorders[1] == "dwarf"
+        and back.accept == 66.6 and back.milkMax == 5.5 and back.name == "Bessie",
+        "動物快照（基因、遺傳病、只留字串 key 基本值的 modData）存成 JSON 原樣讀回（" .. tostring(text and #text) .. " bytes）")
+
+    -- restore order: every call on the rebuilt animal, in order
+    local order, water, spawned = {}, false, nil
+    local function rec(name, own)
+        return setmetatable(own or {}, { __index = function(_, k)
+            return function(_, v) order[#order + 1] = name .. "." .. k .. "(" .. tostring(v) .. ")" end
+        end })
+    end
+    IsoAnimal = { new = function(_, x, y, z, t, b)
+        local a1, a2, data = rec("a1"), rec("a2"), rec("d")
+        local gn = { getName = function() return "strength" end, getAllele1 = function() return a1 end,
+            getAllele2 = function() return a2 end }
+        spawned = rec("an", { at = { x, y, z, t, b }, md = {},
+            getAnimalType = function() return not water and t or nil end,
+            getFullGenomeList = function() return javaList({ gn }) end,
+            getData = function() return data end, getStats = function() return rec("st") end,
+            getAnimalVisual = function() return rec("vis") end, getModData = function(self) return self.md end,
+            setAnimalID = function(self, id) order[#order + 1] = "an.setAnimalID(" .. id .. ")"; self.id = id end,
+            getAnimalID = function(self) return self.id end, getSquare = function() return sq(10, 10) end,
+            getOnlineID = function() return 77 end, isDead = function() return false end })
+        return spawned
+    end }
+    AnimalGene = { checkGeneticDisorder = function() order[#order + 1] = "AnimalGene.check" end }
+    local function at(s, from)
+        for i = from or 1, #order do if order[i] == s then return i end end
+        return math.huge
+    end
+    local made = A.restore(back, sq(10, 10), packer)
+    local o = {
+        gene = at("a1.setCurrentValue(0.613)"), check = at("AnimalGene.check"), age = at("an.setAgeDebug(40)"),
+        hours = at("an.setHoursSurvived(960.5)"), size = at("d.setSize(0.9)"), weight = at("d.setWeight(512.5)"),
+        wild = at("an.setWild(false)"), stress = at("an.setDebugStress(23.5)"), milkOff = at("d.setCanHaveMilk(false)"),
+    }
+    o.max1 = at("d.setMaxMilkActual(5.5)", o.milkOff)
+    o.milk = at("d.setMilkQuantity(3.2)", o.max1)
+    o.max2 = at("d.setMaxMilkActual(5.5)", o.milk)
+    o.milkOn = at("d.setCanHaveMilk(true)", o.max2)
+    check(made == spawned and spawned.at[4] == "cow" and spawned.at[5] == "holstein" and spawned.md.num == 42.5
+        and o.gene < o.check and o.check < o.age and o.age < o.hours and o.hours < o.size and o.size < o.weight
+        and o.wild < o.stress and o.milkOff < o.max1 and o.max1 < o.milk and o.milk < o.max2 and o.max2 < o.milkOn
+        and o.milkOn < math.huge and order[#order] == "an.addToWorld(nil)",
+        "寫回順序：基因→checkGeneticDisorder→年齡→存活時數→體型→體重；野生在壓力前；奶上限→奶量→奶上限→可擠奶；最後 addToWorld")
+    water, order = true, {}
+    local none, why = A.restore(back, sq(10, 10), packer)
+    water = false
+    check(none == nil and why == "BLOCKED" and at("an.addToWorld(nil)") == math.huge, "水上 IsoAnimal.new 沒初始化（沒有種類）：BLOCKED、不放進世界")
+
+    -- rules
+    SandboxVars = { MinidoracatCapsule = {} }
+    local function why1(o2) return tostring(Rules.animalWhyNot(packer, o2 and live(o2) or nil)) end
+    check(why1(nil) == "NO_ANIMAL" and why1({ dead = true }) == "NO_ANIMAL" and why1({ hook = true }) == "NO_ANIMAL"
+        and why1({ away = true }) == "ANIMAL_AWAY" and why1({ rope = {} }) == "ROPE" and why1({ x = 150 }) == "TOO_FAR"
+        and why1({ wild = true }) == "nil",
+        "animalWhyNot：死的或掛鉤上 NO_ANIMAL、被抱著／雞舍／拖車 ANIMAL_AWAY、繩子 ROPE、太遠 TOO_FAR；野生的照樣能收")
+    SandboxVars.MinidoracatCapsule.AllowAnimals = false
+    local off = why1({})
+    SandboxVars.MinidoracatCapsule = { TypeSteam = false }
+    local noCap = Rules.packAnimalWhyNot(packer, live(), Steam)
+    packer.inv:AddItem(instanceItem(Steam.empty))
+    local typeOff = Rules.packAnimalWhyNot(packer, live(), Steam)
+    SandboxVars.MinidoracatCapsule = {}
+    check(off == "ANIMALS_OFF" and noCap == "NO_CAPSULE" and typeOff == "TYPE_OFF" and Rules.packAnimalWhyNot(packer, live(), Steam) == nil,
+        "沙盒 AllowAnimals 關掉 ANIMALS_OFF；沒有空膠囊 NO_CAPSULE；款式停用 TYPE_OFF；都過才放行")
+
+    -- pack: record first, capsule on the square, the animal goes last
+    local ground = {}
+    local spot = { getX = function() return 101 end, getY = function() return 201 end, getZ = function() return 0 end,
+        AddWorldInventoryItem = function(_, it) ground[#ground + 1] = it end }
+    local empty = Rules.emptyCapsule(packer, Steam)
+    local cow = live({ name = "Bessie", wild = true, square = spot,
+        onRemove = function() return ground[1] and Store.read(ground[1]:getID()) end })
+    quiet = true
+    local dead = Pack.packAnimal(packer, live({ dead = true, square = spot }), { capsule = empty, typeId = "Steam" })
+    dropWrites = true
+    local lost = live({ square = spot })
+    local failed = Pack.packAnimal(packer, lost, { capsule = empty, typeId = "Steam" })
+    dropWrites = false
+    local afterFail = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Steam.empty) }
+    local res = Pack.packAnimal(packer, cow, { capsule = empty, typeId = "Steam" })
+    quiet = false
+    check(dead.ok == false and dead.why == "NO_ANIMAL" and failed.ok == false and failed.why == "WRITE_FAILED"
+        and #lost.log == 1 and afterFail.ground == 0 and afterFail.empties == 1,
+        "收不了的動物不動；紀錄寫不進去：動物留在世界、空膠囊不用掉、地上沒有膠囊")
+    local stored = res.ok and Store.read(res.capsuleId) or {}
+    check(res.ok and res.kind == "animal" and res.type == "Steam" and res.animal.name == "Bessie" and res.animal.type == "cow"
+        and res.x == 101 and res.y == 201, "packAnimal 回傳和收車同一個形狀，另帶 kind 與動物名稱")
+    check(stored.kind == "animal" and stored.state == "PACKED" and stored.animal.animalId == 4321 and stored.animal.wild == false
+        and stored.history[1].ev == "PACKED" and stored.history[1].animal == 4321 and stored.history[1].car == nil
+        and stored.script == nil, "紀錄 kind=animal、animal＝快照、PACKED 事件記動物編號不記 car")
+    check(cow.log[1] == "setWild:false" and cow.log[#cow.log] == "remove" and cow.removedWith ~= nil
+        and cow.removedWith.kind == "animal", "快照前 setWild(false)（照原版抱起）；紀錄與地上的膠囊都在之後才 remove 動物")
+    check(#ground == 1 and ground[1]:getFullType() == Steam.loaded and packer.inv:getCountTypeRecurse(Steam.empty) == 0,
+        "裝好的蒸汽膠囊放在動物那一格，玩家的蒸汽空膠囊用掉")
+
+    -- unpack by the existing claim / spawn / event path
+    local capsule = packer.inv:AddItem(ground[1])
+    order = {}
+    quiet = true
+    local u = Unpack.unpack(packer, capsule, sq(10, 10), "N", {})
+    quiet = false
+    local after = Store.read(res.capsuleId)
+    local ev = after.history[#after.history]
+    check(u.ok and u.kind == "animal" and u.animalId == 4321 and u.onlineId == 77 and u.animal.name == "Bessie" and u.returned
+        and u.script == nil and u.sqlId == nil, "展開動物膠囊：同一 tick 生出（addToWorld）、回傳 kind 與動物，還空膠囊")
+    check(after.state == "UNPACKED" and ev.ev == "UNPACKED" and ev.animal == 4321 and ev.x == 10 and ev.car == nil
+        and packer.inv:getCountTypeRecurse(Steam.empty) == 1, "紀錄 UNPACKED，事件記動物編號與落點")
+
+    -- the spawned animal is found by id near its recorded spot
+    sq(11, 10).animals = { spawned }
+    local near = Store.findLoadedAnimal(4321, 10, 10, 3, 0)
+    check(near == spawned and Store.findLoadedAnimal(9999, 10, 10, 3, 0) == nil and Store.findLoadedAnimal(4321, 25, 10, 3, 0) == nil
+        and Store.findRecorded(after) == spawned, "findLoadedAnimal 比動物編號、只看半徑內；findRecorded 依 kind 找動物")
+
+    -- admin: restore refused while the animal is around, one-square pick check, then restored
+    local id = 88001
+    local function packedRec(extra)
+        local s = { kind = "animal", animal = Json.copy(back), state = "PACKED", settled = true, packedBy = "packer",
+            history = { { t = 1, ev = "PACKED", by = "packer", x = 10, y = 10, z = 0, animal = 4321 } } }
+        for k, v in pairs(extra or {}) do s[k] = v end
+        Store.write(id, s)
+    end
+    packedRec()
+    quiet = true
+    local exists = AdminCommands.handle(admin, "adminRestore", { id = id, x = 12, y = 12, z = 0, dir = "E" })
+    local resolveExists = Admin.resolve(admin, id, "missing", nil, true)
+    sq(11, 10).animals = nil
+    sq(12, 12).water = true
+    local picked = AdminCommands.handle(admin, "adminRestore", { id = id, x = 12, y = 12, z = 0, dir = "E" })
+    local stillPacked = Store.read(id).state
+    sq(12, 12).water = nil
+    local detail = AdminCommands.adminDetail(admin, { id = id })
+    local restored = AdminCommands.handle(admin, "adminRestore", { id = id, x = 12, y = 12, z = 0, dir = "E" })
+    quiet = false
+    local rs = Store.read(id)
+    check(exists.why == "ANIMAL_EXISTS" and resolveExists.why == "NOT_UNCERTAIN", "紀錄的動物還在附近：補回被拒 ANIMAL_EXISTS")
+    check(picked.why == "PICK_BLOCKED" and stillPacked == "PACKED", "補回的格子是水：PICK_BLOCKED（一格的落點檢查），紀錄不動")
+    check(detail.ok and detail.kind == "animal" and detail.animal.type == "cow" and detail.animal.pregnant == true
+        and detail.car == 4321 and detail.carLoaded == false and detail.script == nil and detail.x == 10,
+        "管理面板明細：kind、動物摘要（管理員看得到懷孕）、動物編號與在不在附近")
+    check(restored.ok and restored.animalId == 4321 and rs.state == "RESTORED" and rs.history[#rs.history].animal == 4321
+        and rs.history[#rs.history].x == 10, "補回生出動物，紀錄 RESTORED、事件記動物編號")
+
+    -- record readers branch on kind
+    local sumNo, sumYes = Query.summary(id, rs, false), Query.summary(id, rs, true)
+    check(sumNo.kind == "animal" and sumNo.animal.name == "Bessie" and sumNo.animal.pregnant == nil and sumYes.animal.pregnant == true
+        and sumNo.parts == nil and sumNo.script == nil and sumNo.animal.milkMax == 5.5,
+        "Query：動物紀錄回動物摘要；懷孕只給畜牧 > 2（原版規則）")
+    local row = Index.row(id, rs)
+    local pageRow = Index.page({ q = tostring(id) }, 1).rows[1]
+    check(row.kind == "animal" and row.name == "Bessie" and row.atype == "cow" and row.breed == "holstein" and row.script == nil
+        and row.x == 10 and pageRow and pageRow.kind == "animal" and pageRow.atype == "cow",
+        "索引列與分頁列帶 kind、動物名、種類與品種；紀錄位置取動物的事件")
+    check(Index.row(1, { state = "PACKED", script = "Base.PickUpTruck", history = {} }).kind == nil,
+        "沒有 kind 的紀錄一律當車")
+
+    -- Economy: listed and bought like a vehicle capsule, nothing escrowed
+    local snaps = 0
+    MinidoracatEconomy = { v1 = { snapshotItem = function() snaps = snaps + 1; return {} end,
+        rebuildItem = function() return nil, "x" end } }
+    local listed = instanceItem(Steam.loaded)
+    function listed:getUnequippedWeight() return 0.2 end
+    local lid = listed.id
+    Store.write(lid, { kind = "animal", animal = Json.copy(back), state = "PACKED", settled = true,
+        history = { { t = 1, ev = "PACKED", x = 10, y = 10, z = 0, animal = 4321 } } })
+    quiet = true
+    local okCheck = Trade.check(listed, packer)
+    local ext = Trade.escrow(listed, packer, "market", "L-9")
+    local held = Store.read(lid)
+    local fresh = instanceItem(Steam.loaded)
+    local buyer = newPlayer("buyer", false)
+    Trade.rebuilt(ext, fresh, buyer, { kind = "market", ref = "L-9" })
+    Guard.check(buyer, fresh)
+    quiet = false
+    local got = Store.read(lid)
+    local v = ext and ext.view or {}
+    check(okCheck == true and ext and ext.capsuleId == lid and ext.weight == 0.2 and snaps == 0 and held.escrow.active
+        and held.escrow.cargo == nil, "動物膠囊能上架：escrow 不帶貨物")
+    check(v.kind == "animal" and v.style == "Steam" and v.animal.name == "Bessie" and v.animal.type == "cow"
+        and v.animal.pregnant == nil and v.script == nil, "上架 view：款式、動物名與摘要（不給懷孕）")
+    check(fresh.id == lid and #fresh.inv.list == 0 and got.state == "PACKED" and got.escrow.active == nil
+        and got.history[#got.history].ev == "TRADED", "rebuilt 改回膠囊編號，紀錄不動；買方身上看到才記 TRADED")
+    MinidoracatEconomy = nil
+    SandboxVars = nil
+
+    -- strings: every new key in the 16 languages; the loaded name no longer says "vehicle packed"
+    local want = {
+        Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty" },
+        IG_UI = { "PackAnimalFailed", "PackAnimalInfo", "BlockedTitleAnimal", "BlockedThrowAnimal", "BlockedPressAnimal",
+            "Why_ANIMALS_OFF", "Why_NO_ANIMAL", "Why_ANIMAL_AWAY", "Why_ROPE", "Why_WATER" },
+        UI = { "RestoreAnimal", "RestoreAnimalConfirm", "AnimalLoaded", "AnimalNotLoaded", "Why_ANIMAL_EXISTS" },
+        Sandbox = { "AllowAnimals", "AllowAnimals_tooltip" },
+    }
+    local PREFIX = { Tooltip = "Tooltip_MinidoracatCapsule_", IG_UI = "IGUI_MinidoracatCapsule_",
+        UI = "UI_MinidoracatCapsule_", Sandbox = "Sandbox_MinidoracatCapsule_" }
+    local missing = {}
+    for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
+        local dir = MEDIA .. "/shared/Translate/" .. lang .. "/"
+        for file, keys in pairs(want) do
+            local f = io.open(dir .. file .. ".json", "rb")
+            local data = f and Json.decode(f:read("*a")) or {}
+            if f then f:close() end
+            for _, k in ipairs(keys) do
+                if type(data[PREFIX[file] .. k]) ~= "string" or data[PREFIX[file] .. k] == "" then missing[#missing + 1] = lang .. ":" .. k end
+            end
+        end
+        local f = io.open(dir .. "ItemName.json", "rb")
+        local names = f:read("*a")
+        f:close()
+        if names:find("收車", 1, true) or names:find("收车", 1, true) then missing[#missing + 1] = lang .. ":LoadedName(vehicle)" end
+    end
+    local sandboxTxt = io.open(MEDIA .. "/../sandbox-options.txt", "rb")
+    local sbText = sandboxTxt:read("*a")
+    sandboxTxt:close()
+    check(#missing == 0 and sbText:find("option MinidoracatCapsule%.AllowAnimals%s*{type = boolean, default = true, page = MinidoracatCapsule,") ~= nil,
+        "16 種語言都有動物的新字串、裝填名稱不再寫「收車」；沙盒 AllowAnimals 布林、預設開、在主頁（"
+        .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
+end
+animals()
 
 print()
 if failures > 0 then

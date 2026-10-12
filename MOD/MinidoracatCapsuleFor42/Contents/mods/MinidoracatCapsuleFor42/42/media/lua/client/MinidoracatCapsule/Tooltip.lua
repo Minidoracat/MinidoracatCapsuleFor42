@@ -113,13 +113,14 @@ function Tooltip.rows(item)
         rows = { { "", T(r.why == "FAR" and "Far" or "NoRecord"), "warn" } }
     else
         local status = Info.status(r)
+        local animal = r.kind == "animal"
         if status and r.state ~= "PACKED" then
-            rows = { typeRow(t), { T("Vehicle"), Info.carName(r.script, r.name) }, { "", status, "warn" } }
+            rows = { typeRow(t), { T(animal and "Animal" or "Vehicle"), Info.thingName(r) }, { "", status, "warn" } }
         else
             rows = Info.rows(r, false)
             table.insert(rows, 1, typeRow(t))
             if status then rows[#rows + 1] = { "", status, "warn" } end
-            rows[#rows + 1] = { "", T("PreviewHint"), "muted" }
+            if not animal then rows[#rows + 1] = { "", T("PreviewHint"), "muted" } end -- no 3D preview of animals
         end
     end
     r.tipRows = rows

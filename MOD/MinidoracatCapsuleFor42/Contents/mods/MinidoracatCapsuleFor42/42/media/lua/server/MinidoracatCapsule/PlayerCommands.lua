@@ -19,7 +19,7 @@ M.Play = Play
 
 local INTENT_TTL_MS = 60000 -- queue (walk there) + action time
 local INTENTS_PER_PLAYER = 8
-local KINDS = { pack = true, throw = true, press = true }
+local KINDS = { pack = true, packAnimal = true, throw = true, press = true }
 
 -- Server -> one client. SP has no channel (sendServerCommand is a no-op there): hand it to the client code directly.
 function Play.send(player, cmd, args)
@@ -70,8 +70,9 @@ end
 -- ---------------------------------------------------------------- client commands
 local Handlers = {}
 
--- args: kind ("pack" / "throw" / "press"), id (vehicle id for pack, capsule id otherwise), type (pack only: the id of
--- the capsule type to pack with, M.TYPES; Play.pack checks the player carries one and that it is enabled).
+-- args: kind ("pack" / "packAnimal" / "throw" / "press"), id (vehicle id for pack, the animal's online id for
+-- packAnimal, capsule id otherwise), type (packing only: the id of the capsule type to pack with, M.TYPES; Play.pack /
+-- Play.packAnimal check the player carries one and that it is enabled).
 function Handlers.intent(player, args)
     local id = tonumber(args.id)
     if not (KINDS[args.kind] and id) then return end
@@ -81,12 +82,15 @@ function Handlers.intent(player, args)
     list[#list + 1] = { kind = args.kind, id = id, type = M.TYPE_BY_ID[tostring(args.type)], exp = now() + INTENT_TTL_MS }
 end
 
--- The vehicle script of a capsule the player holds or stands near (the landing cursor needs its size).
+-- The vehicle script (or for an animal record kind "animal" and the animal's names) of a capsule the player holds or
+-- stands near: the landing cursor needs the vehicle's size, an animal takes one square.
 function Play.capsuleInfo(player, capsuleId)
     local capsule = capsuleId and M.Unpack.findCapsule(player, capsuleId)
     local snap = capsule and Store.read(capsuleId)
+    local a = snap and snap.kind == "animal" and type(snap.animal) == "table" and snap.animal or nil
     Play.send(player, "capsuleInfo", { capsuleId = capsuleId, ok = snap ~= nil, script = snap and snap.script,
-        state = snap and snap.state })
+        state = snap and snap.state, kind = snap and snap.kind,
+        animal = a and { type = a.type, breed = a.breed, name = a.name } or nil })
 end
 
 function Handlers.capsuleInfo(player, args)
@@ -110,6 +114,24 @@ function Play.pack(player, vehicle, typeId)
     local res = why and { ok = false, why = why, vehicleId = id, type = t and t.id } -- the client words NOT_ALLOWED
         or M.Pack.pack(player, vehicle, { type = t, empty = Rules.emptyCapsule(player, t) }) -- like its menu row
     if not res.ok then refuse(player, "pack", tostring(res.why), id) end
+    Play.send(player, "packed", res)
+    return res.ok == true
+end
+
+-- ISPackAnimalAction. The intent names the animal by its online id (what the client sees; the server rebuilt the
+-- action's animal from it). typeId: the SP client's choice (MP takes it from the intent).
+function Play.packAnimal(player, animal, typeId)
+    local id = animal and animal:getOnlineID()
+    local intent = Play.takeIntent(player, "packAnimal", id)
+    if not intent then return refuse(player, "packAnimal", "NO_INTENT", id) end
+    local t = intent.type or M.TYPE_BY_ID[tostring(typeId)]
+    local why = Rules.packAnimalWhyNot(player, animal, t)
+    local res = why and { ok = false, why = why, kind = "animal", type = t and t.id }
+        or M.Pack.packAnimal(player, animal, { capsule = Rules.emptyCapsule(player, t), typeId = t.id })
+    if not res.ok then
+        res.kind = "animal"
+        refuse(player, "packAnimal", tostring(res.why), id)
+    end
     Play.send(player, "packed", res)
     return res.ok == true
 end

@@ -5,6 +5,7 @@
 -- admins (Capability.ManipulateVehicle) about any. When a record is written every client drops its cached copy.
 if isClient() then return end
 require "MinidoracatCapsule/Core"
+require "MinidoracatCapsule/Animal"
 require "MinidoracatCapsule/Store"
 local M = MinidoracatCapsule
 local Store = M.Store
@@ -61,21 +62,33 @@ function Query.near(player, capsuleId)
 end
 
 -- Compact snapshot for display. parts: { id, c = condition, i = item, ic = item condition, u = uses, a = amount }.
-function Query.summary(capsuleId, snap)
+-- An animal record (kind "animal") carries `animal` (Animal.view) instead of the vehicle fields; pregnancy and
+-- fertilization only when `breeding` (the asking player's Husbandry is above 2, the vanilla rule).
+function Query.summary(capsuleId, snap, breeding)
+    local h = snap.history or {}
+    local first, last = h[1] or {}, h[#h] or {}
+    local out = {
+        ok = true, id = capsuleId, state = snap.state, settled = snap.settled == true,
+        uncertain = Store.uncertain(capsuleId, snap), by = snap.packedBy,
+        t = first.t, last = { ev = last.ev, t = last.t, by = last.by },
+    }
+    if snap.kind == "animal" then
+        out.kind, out.animal = "animal", M.Animal.view(snap.animal, breeding)
+        return out
+    end
     local parts = {}
     for id, ps in pairs(snap.parts or {}) do
         parts[#parts + 1] = { id = id, c = ps.cond, i = ps.item, ic = ps.icond, u = ps.uses, a = ps.amount }
     end
     local manifest = {}
     for ft, n in pairs(snap.manifest or {}) do manifest[#manifest + 1] = { ft = ft, n = n } end
-    local h = snap.history or {}
-    local first, last = h[1] or {}, h[#h] or {}
-    return {
-        ok = true, id = capsuleId, state = snap.state, settled = snap.settled == true,
-        uncertain = Store.uncertain(capsuleId, snap), script = snap.script, name = snap.name, by = snap.packedBy,
-        skin = snap.skin, parts = parts, manifest = manifest,
-        t = first.t, last = { ev = last.ev, t = last.t, by = last.by },
-    }
+    out.script, out.name, out.skin, out.parts, out.manifest = snap.script, snap.name, snap.skin, parts, manifest
+    return out
+end
+
+-- Vanilla shows (and sends) an animal's pregnancy only to Husbandry > 2 (NetworkPlayerAI.java:212-222).
+local function breeding(player)
+    return Perks ~= nil and player:getPerkLevel(Perks.Husbandry) > 2
 end
 
 -- Answers each id: summary, or { ok = false, id, why = "FAR" | "NO_SNAPSHOT" | "CORRUPT" }. A capsule near the
@@ -92,7 +105,7 @@ function Query.query(player, ids)
                 out[#out + 1] = { ok = false, id = id, why = "FAR" }
             else
                 local snap, why = Store.read(id)
-                out[#out + 1] = snap and Query.summary(id, snap) or { ok = false, id = id, why = why }
+                out[#out + 1] = snap and Query.summary(id, snap, breeding(player)) or { ok = false, id = id, why = why }
                 if snap and at then Store.seen(id, at) end
             end
         end

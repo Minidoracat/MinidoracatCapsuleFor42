@@ -8,6 +8,7 @@ if isClient() then return end
 require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Store"
 require "MinidoracatCapsule/Admin"
+require "MinidoracatCapsule/Animal"
 require "MinidoracatCapsule/Index"
 local M = MinidoracatCapsule
 local Store, Admin, Index = M.Store, M.Admin, M.Index
@@ -33,7 +34,9 @@ function AdminCommands.adminPage(player, args)
     return res
 end
 
--- args: id. Everything the detail pane shows; history is trimmed to the newest HISTORY_MAX entries.
+-- args: id. Everything the detail pane shows; history is trimmed to the newest HISTORY_MAX entries. An animal record
+-- (kind "animal") carries the animal's view (Animal.view, breeding included: admins) instead of a script and cargo;
+-- `car` is then the animal id and carLoaded tells whether it is still around its recorded spot.
 function AdminCommands.adminDetail(player, args)
     local id = tonumber(args.id) or -1
     local snap, why = Store.read(id)
@@ -42,8 +45,8 @@ function AdminCommands.adminDetail(player, args)
     local history = {}
     for i = math.max(1, #h - AdminCommands.HISTORY_MAX + 1), #h do
         local e = h[i]
-        history[#history + 1] = { t = e.t, ev = e.ev, by = e.by, x = e.x, y = e.y, z = e.z, car = e.car, why = e.why,
-            verdict = e.verdict, note = e.note, items = e.items }
+        history[#history + 1] = { t = e.t, ev = e.ev, by = e.by, x = e.x, y = e.y, z = e.z, car = e.car or e.animal,
+            why = e.why, verdict = e.verdict, note = e.note, items = e.items }
     end
     local manifest = {}
     for ft, n in pairs(snap.manifest or {}) do manifest[#manifest + 1] = { ft = ft, n = n } end
@@ -52,8 +55,9 @@ function AdminCommands.adminDetail(player, args)
     return {
         ok = true, id = id, state = snap.state, settled = snap.settled == true, uncertain = Store.uncertain(id, snap),
         script = snap.script, name = snap.name, by = snap.packedBy, history = history, historyTotal = #h,
-        manifest = manifest, x = e.x, y = e.y, z = e.z, car = e.car,
-        carLoaded = Store.findLoadedVehicle(e.car, snap.script) ~= nil,
+        manifest = manifest, x = e.x, y = e.y, z = e.z, car = e.car or e.animal,
+        carLoaded = Store.findRecorded(snap) ~= nil,
+        kind = snap.kind, animal = M.Animal.view(snap.animal, true),
         seen = s and { t = s.t, where = s.where, by = s.by, x = s.x, y = s.y, z = s.z } or nil,
     }
 end

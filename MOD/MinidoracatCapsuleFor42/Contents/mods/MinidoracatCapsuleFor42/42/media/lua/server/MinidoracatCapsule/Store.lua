@@ -373,13 +373,45 @@ function Store.marked(capsuleId) return marks()[capsuleId] == true end
 -- (vcap-admin-1010s restored the car at the admin's square after a "missing" verdict).
 local PLACES_CAR = { PACKED = true, UNPACKED = true, RESTORED = true }
 
--- The last history entry that placed a car: PACKED -> the original car, UNPACKED/RESTORED -> the spawned one.
+-- The last history entry that placed the record's vehicle (`car`, vehicles.db id) or animal (`animal`, its animal id):
+-- PACKED -> the original, UNPACKED/RESTORED -> the spawned one.
 function Store.recordedCar(snap)
     local h = snap.history or {}
     for i = #h, 1, -1 do
-        if PLACES_CAR[h[i].ev] and h[i].car ~= nil then return h[i] end
+        if PLACES_CAR[h[i].ev] and (h[i].car ~= nil or h[i].animal ~= nil) then return h[i] end
     end
     return {}
+end
+
+Store.ANIMAL_RADIUS = 30 -- squares around the recorded spot searched for the record's animal (it wanders off)
+
+-- A loaded animal by animal id within `radius` squares of (x, y) on floor z (default 0). Animal ids are not unique
+-- (Rand.Next(10000) at birth, IsoAnimal.java:1509) and kept by restore, so this only answers "is that animal still
+-- around here"; unloaded squares are skipped. SP has no AnimalInstanceManager, so squares are scanned on both.
+function Store.findLoadedAnimal(animalId, x, y, radius, z)
+    if type(animalId) ~= "number" or type(x) ~= "number" or type(y) ~= "number" then return nil end
+    local cell = getCell()
+    for dx = -radius, radius do
+        for dy = -radius, radius do
+            local sq = cell:getGridSquare(x + dx, y + dy, z or 0)
+            local list = sq and sq:getAnimals()
+            for i = 0, (list and list:size() or 0) - 1 do
+                local a = list:get(i)
+                if a:getAnimalID() == animalId and not a:isDead() then return a end
+            end
+        end
+    end
+    return nil
+end
+
+-- The record's vehicle or animal when the server has it loaded (where the history last placed it), or nil.
+function Store.findRecorded(snap)
+    local e = Store.recordedCar(snap)
+    if snap.kind == "animal" then
+        local id = type(snap.animal) == "table" and snap.animal.animalId or e.animal
+        return Store.findLoadedAnimal(id, e.x, e.y, Store.ANIMAL_RADIUS, e.z)
+    end
+    return Store.findLoadedVehicle(e.car, snap.script)
 end
 
 -- A loaded vehicle by vehicles.db id (cell scan, like the towing code: BaseVehicle.java:10346-10351). The script
@@ -427,7 +459,7 @@ local function logEvent(capsuleId, e, state)
     local line = M.LOG_PREFIX .. e.ev .. " capsule=" .. tostring(capsuleId) .. " state=" .. tostring(state)
         .. " by=" .. tostring(e.by) .. " x=" .. tostring(e.x) .. " y=" .. tostring(e.y) .. " z=" .. tostring(e.z)
         .. " car=" .. tostring(e.car)
-    for _, k in ipairs({ "why", "verdict", "items", "note" }) do
+    for _, k in ipairs({ "animal", "why", "verdict", "items", "note" }) do
         if e[k] ~= nil then line = line .. " " .. k .. "=" .. tostring(e[k]) end
     end
     writeLog("UniversalCapsule", line)

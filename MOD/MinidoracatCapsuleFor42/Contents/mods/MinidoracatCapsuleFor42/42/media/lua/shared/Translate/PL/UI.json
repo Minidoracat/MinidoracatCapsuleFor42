@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Otwarto szkic produktu w Centrum Ekonomii: %1. Ustaw tam cenę i zastosuj.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "Nie masz uprawnień administratora Centrum Ekonomii.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "Okno administracji Centrum Ekonomii nie jest gotowe; spróbuj później.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "Centrum Ekonomii nie otworzyło szkicu produktu."
+    "UI_MinidoracatCapsule_ShopOpen_other": "Centrum Ekonomii nie otworzyło szkicu produktu.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Przywróć zwierzę",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Przywrócić %1 w (%2, %3)? Starej kapsuły nigdy potem nie będzie można rozpakować.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "zwierzę #%1 jest na serwerze blisko zapisanego miejsca",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "zwierzęcia #%1 nie ma blisko zapisanego miejsca",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Zapisane zwierzę wciąż jest blisko zapisanego miejsca: wciąż jest w świecie."
 }

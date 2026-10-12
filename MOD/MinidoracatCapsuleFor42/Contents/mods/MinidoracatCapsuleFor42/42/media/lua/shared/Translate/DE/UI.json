@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Produktentwurf im Wirtschaftszentrum geöffnet: %1. Leg dort den Preis fest und übernimm ihn.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "Du hast keine Admin-Rechte für das Wirtschaftszentrum.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "Das Admin-Fenster des Wirtschaftszentrums ist noch nicht bereit; versuch es später noch mal.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "Das Wirtschaftszentrum hat den Produktentwurf nicht geöffnet."
+    "UI_MinidoracatCapsule_ShopOpen_other": "Das Wirtschaftszentrum hat den Produktentwurf nicht geöffnet.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Tier wiederherstellen",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "%1 bei (%2, %3) wiederherstellen? Die alte Kapsel kann danach nie mehr entpackt werden.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "Tier #%1 ist auf dem Server nahe der eingetragenen Stelle",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "Tier #%1 ist nicht nahe der eingetragenen Stelle",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Das eingetragene Tier ist noch nahe der eingetragenen Stelle: Es ist noch in der Welt."
 }

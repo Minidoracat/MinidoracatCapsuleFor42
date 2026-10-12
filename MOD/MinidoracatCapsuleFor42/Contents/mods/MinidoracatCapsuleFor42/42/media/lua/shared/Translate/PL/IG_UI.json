@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Pusta kapsuła w ekwipunku: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "%1: wyłączona przez administratora; spakuj do kapsuły innego typu",
     "IGUI_MinidoracatCapsule_PackInto": "Spakuj do: %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Administrator wyłączył ten typ kapsuły; spakuj do kapsuły innego typu"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Administrator wyłączył ten typ kapsuły; spakuj do kapsuły innego typu",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "Zwierzę nie zostało spakowane",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "Zwierzę trafi do kapsuły w obecnym stanie. Zajmie to %1 s.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Tu nie ma miejsca na zwierzę",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "Zwierzę nie może tam stanąć: %1. Kapsuła upadła na miejscu: naciśnij jej przycisk obok wolnego pola albo podnieś ją i rzuć ponownie.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "Zwierzę nie może tam stanąć: %1. Wybierz wolne pole i naciśnij ponownie.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Administrator wyłączył pakowanie zwierząt",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "zwierzę nie żyje albo go nie ma",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "ktoś niesie zwierzę albo jest ono w zagrodzie lub przyczepie",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Najpierw zdejmij linę",
+    "IGUI_MinidoracatCapsule_Why_WATER": "woda"
 }

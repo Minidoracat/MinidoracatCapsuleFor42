@@ -6,6 +6,7 @@ require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Rules"
 require "MinidoracatCapsule/Store"
 require "MinidoracatCapsule/Snapshot"
+require "MinidoracatCapsule/Animal"
 require "MinidoracatCapsule/Guard"
 local M = MinidoracatCapsule
 local Store, Snapshot, Guard = M.Store, M.Snapshot, M.Guard
@@ -56,13 +57,28 @@ local function removeCapsule(player, capsule)
     end
 end
 
--- Spawns snap's vehicle on square and writes the snapshot back in the same tick. With `capsule` its cargo goes back
--- into the part containers; without (admin restore) the containers stay empty.
+-- Spawns the record's vehicle (or animal, kind "animal") on square and writes the snapshot back in the same tick. With
+-- `capsule` its cargo goes back into the part containers; without (admin restore) the containers stay empty.
 -- opts.transmit: flag every transmit* after the restore (test knob).
 -- opts.persist (default true): queue a vehicles.db UPDATE right away; addVehicleDebug INSERTed the random spawn state.
--- Returns vehicle, cargo { home, other, ground } or nil, why ("CORRUPT" / "SCRIPT_MISSING" / "BLOCKED").
-function Unpack.spawn(snap, square, dir, opts, capsule)
+-- player: the animal's acceptance goes to them (the record has the packer's).
+-- Returns vehicle (or animal), cargo { home, other, ground } or nil, why ("CORRUPT" / "SCRIPT_MISSING" / "BLOCKED").
+function Unpack.spawn(snap, square, dir, opts, capsule, player)
     opts = opts or {}
+    if snap.kind == "animal" then
+        if not (type(snap.animal) == "table" and snap.animal.type and snap.animal.breed) then
+            M.log("animal record incomplete, not spawning")
+            return nil, "CORRUPT"
+        end
+        if not square then return nil, "BLOCKED" end
+        local ok, animal, why = pcall(M.Animal.restore, snap.animal, square, player)
+        if not ok then
+            M.log("animal restore failed: " .. tostring(animal))
+            return nil, "BLOCKED"
+        end
+        if not animal then return nil, why end
+        return animal, { home = 0, other = 0, ground = 0 }
+    end
     local bad = Snapshot.missing(snap)
     if bad then
         M.log("snapshot missing " .. bad .. ", not spawning")
@@ -94,11 +110,20 @@ function Unpack.spawn(snap, square, dir, opts, capsule)
     return vehicle, cargo
 end
 
--- Returns { ok = true, vehicleId, sqlId, returned, script, ... } or { ok = false, why }. A capsule whose record is
--- stale (its cargo is a second copy) is replaced by an empty one: why = "CLEARED"; when the world save is older than
--- that unpack and its car is not loaded, an admin checks first: why = "UNCERTAIN" (Guard.stale). An empty capsule of
--- the same type goes back to the player when SandboxVars ReturnEmptyCapsule is on (returned = true), also when that
--- type is switched off: nothing turns into another type.
+-- The history fields for what Unpack.spawn put in the world: where it stands and which vehicle (`car`) or animal.
+function Unpack.placed(snap, thing)
+    local sq = thing:getSquare()
+    local e = { x = sq:getX(), y = sq:getY(), z = sq:getZ() }
+    if snap.kind == "animal" then e.animal = thing:getAnimalID() else e.car = thing:getSqlId() end
+    return e
+end
+
+-- Returns { ok = true, vehicleId, sqlId, returned, script, ... } (an animal: kind = "animal", animal = { type, breed,
+-- name }, animalId, onlineId) or { ok = false, why }. A capsule whose record is stale (its cargo is a second copy) is
+-- replaced by an empty one: why = "CLEARED"; when the world save is older than that unpack and its car is not loaded,
+-- an admin checks first: why = "UNCERTAIN" (Guard.stale). An empty capsule of the same type goes back to the player
+-- when SandboxVars ReturnEmptyCapsule is on (returned = true), also when that type is switched off: nothing turns
+-- into another type.
 function Unpack.unpack(player, capsule, square, dir, opts)
     local capsuleId = capsule:getID()
     local snap, why, stale = Store.claim(capsuleId, player)
@@ -106,8 +131,8 @@ function Unpack.unpack(player, capsule, square, dir, opts)
         return { ok = false, why = Guard.stale(player, capsule, capsuleId, stale, "unpack") and "CLEARED" or "UNCERTAIN" }
     end
     if not snap then return { ok = false, why = why } end
-    local vehicle, cargo = Unpack.spawn(snap, square, dir, opts, capsule)
-    if not vehicle then
+    local thing, cargo = Unpack.spawn(snap, square, dir, opts, capsule, player)
+    if not thing then
         Store.release(capsuleId, snap, player, cargo)
         return { ok = false, why = cargo }
     end
@@ -119,15 +144,18 @@ function Unpack.unpack(player, capsule, square, dir, opts)
         inv:AddItem(empty)
         sendAddItemToContainer(inv, empty)
     end
-    local sq = vehicle:getSquare()
-    local x, y, z = sq:getX(), sq:getY(), sq:getZ()
-    Store.event(capsuleId, snap, "UNPACKED", player, { x = x, y = y, z = z, car = vehicle:getSqlId() })
-    return {
-        ok = true, capsuleId = capsuleId, vehicleId = vehicle:getId(), sqlId = vehicle:getSqlId(),
-        x = x, y = y, z = z, keyId = vehicle:getKeyId(), skin = vehicle:getSkinIndex(),
-        home = cargo.home, other = cargo.other, ground = cargo.ground, returned = empty ~= nil and empty ~= false,
-        script = snap.script,
-    }
+    local e = Unpack.placed(snap, thing)
+    Store.event(capsuleId, snap, "UNPACKED", player, e)
+    local res = { ok = true, capsuleId = capsuleId, x = e.x, y = e.y, z = e.z, returned = empty ~= nil and empty ~= false }
+    if snap.kind == "animal" then
+        local a = snap.animal
+        res.kind, res.animal = "animal", { type = a.type, breed = a.breed, name = a.name }
+        res.animalId, res.onlineId = e.animal, thing:getOnlineID()
+        return res
+    end
+    res.vehicleId, res.sqlId, res.keyId, res.skin = thing:getId(), e.car, thing:getKeyId(), thing:getSkinIndex()
+    res.home, res.other, res.ground, res.script = cargo.home, cargo.other, cargo.ground, snap.script
+    return res
 end
 
 return Unpack

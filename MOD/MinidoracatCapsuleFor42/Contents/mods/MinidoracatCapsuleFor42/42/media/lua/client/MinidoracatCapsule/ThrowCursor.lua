@@ -17,14 +17,17 @@ local Cursor = {}
 M.ThrowCursor = Cursor
 local Class
 
-local scripts = {} -- capsuleId -> vehicle script name, false = the server has no record
+-- capsuleId -> { kind, script, animal } (Play.capsuleInfo: a vehicle script, or kind "animal" with its names), false =
+-- the server has no record
+local infos = {}
 local HINT = { throw = "IGUI_MinidoracatCapsule_HintThrow", press = "IGUI_MinidoracatCapsule_HintPress",
     restore = "IGUI_MinidoracatCapsule_HintRestore" }
 local PROMPT = { throw = "ContextMenu_MinidoracatCapsule_Throw", press = "ContextMenu_MinidoracatCapsule_Press",
     restore = "UI_MinidoracatCapsule_Restore" }
 
 function Cursor.onInfo(args)
-    if args.capsuleId then scripts[args.capsuleId] = args.ok and args.script or false end
+    if not args.capsuleId then return end
+    infos[args.capsuleId] = args.ok and { kind = args.kind, script = args.script, animal = args.animal } or false
 end
 
 local function sendIntent(player, kind, id)
@@ -34,8 +37,8 @@ end
 -- mode: "throw" (capsule in the player's inventory) or "press" (capsule on the ground).
 function Cursor.open(player, item, mode)
     local id = item:getID()
-    if type(scripts[id]) ~= "string" then
-        scripts[id] = nil
+    if type(infos[id]) ~= "table" then
+        infos[id] = nil
         if isClient() then
             sendClientCommand(player, M.MODULE, "capsuleInfo", { capsuleId = id })
         elseif M.Play then
@@ -48,19 +51,25 @@ function Cursor.open(player, item, mode)
     return cursor
 end
 
--- Admin restore ("Restore vehicle"): the vehicle `script` goes where the admin clicks, facing away from them, on any
--- loaded square (no throw range, no line of sight). `home` { x, y, z } is the recorded spot, the default choice: its
--- ground is drawn as a white frame (as the vehicle would stand if clicked there) and the tooltip names it. Both boxes
--- and both tooltip lines are made here: render runs every frame. onDone(x, y, z, dir) after a click, onDone(nil) when
--- the cursor goes away without one.
-function Cursor.openRestore(player, script, home, onDone)
+-- Admin restore ("Restore vehicle" / "Restore animal"): rec (the detail: script, or kind "animal") goes where the admin
+-- clicks, a vehicle facing away from them, on any loaded square (no throw range, no line of sight). `home` { x, y, z }
+-- is the recorded spot, the default choice: its ground is drawn as a white frame (as the vehicle would stand if
+-- clicked there; an animal's one square) and the tooltip names it. Both boxes and both tooltip lines are made here:
+-- render runs every frame. onDone(x, y, z, dir) after a click, onDone(nil) when the cursor goes away without one.
+function Cursor.openRestore(player, rec, home, onDone)
     local cursor = Cursor.new(player, nil, "restore")
-    cursor.script, cursor.onDone = script, onDone
-    local w, l = Footprint.size(script and getScriptManager():getVehicle(script))
-    if home and w then
+    cursor.rec, cursor.onDone = { kind = rec.kind, script = rec.script, animal = rec.animal }, onDone
+    local ns, ew
+    if rec.kind == "animal" then
+        if home then ns = select(2, Footprint.animalClear(home.x, home.y, home.z or 0)) end
+        ew = ns
+    else
+        local w, l = Footprint.size(rec.script and getScriptManager():getVehicle(rec.script))
+        if home and w then ns, ew = Footprint.box(home.x, home.y, "N", w, l), Footprint.box(home.x, home.y, "E", w, l) end
+    end
+    if ns then
         local x, y = tostring(home.x), tostring(home.y)
-        cursor.home = { x = home.x, y = home.y, z = home.z or 0,
-            ns = Footprint.box(home.x, home.y, "N", w, l), ew = Footprint.box(home.x, home.y, "E", w, l),
+        cursor.home = { x = home.x, y = home.y, z = home.z or 0, ns = ns, ew = ew,
             near = getText("IGUI_MinidoracatCapsule_RestoreHome", x, y),
             far = getText("IGUI_MinidoracatCapsule_RestoreHomeFar", x, y) }
     end
@@ -82,19 +91,24 @@ function Cursor:origin()
     return c:getX(), c:getY(), c:getZ(), Rules.THROW_RANGE, true
 end
 
--- Reason the vehicle cannot land on square, or nil; keeps self.box / self.dir for render.
+-- Reason the vehicle (or animal) cannot land on square, or nil; keeps self.box / self.dir for render.
 function Cursor:judge(square)
     self.box = nil
-    local script = self.script or scripts[self.capsuleId]
-    if script == nil then return "LOADING" end
-    if script == false then return "NO_SNAPSHOT" end
+    local rec = self.rec or infos[self.capsuleId]
+    if rec == nil then return "LOADING" end
+    if rec == false then return "NO_SNAPSHOT" end
     local ox, oy, oz, range, sight = self:origin()
     if not ox then return "NO_CAPSULE" end
     local x, y, z = square:getX(), square:getY(), square:getZ()
     self.dir = Footprint.dirOf(x - ox, y - oy)
-    local sc = getScriptManager():getVehicle(script)
-    if not sc then return "SCRIPT_MISSING" end
-    local clear, box = Footprint.clear(sc, x, y, z, self.dir)
+    local clear, box
+    if rec.kind == "animal" then
+        clear, box = Footprint.animalClear(x, y, z)
+    else
+        local sc = getScriptManager():getVehicle(rec.script)
+        if not sc then return "SCRIPT_MISSING" end
+        clear, box = Footprint.clear(sc, x, y, z, self.dir)
+    end
     self.box = box
     return (range and Footprint.reach(ox, oy, oz, x, y, z, range, sight)) or clear
 end
@@ -127,10 +141,11 @@ function Cursor:render(x, y, z, square)
 end
 
 function Cursor:tooltipText()
-    local script = self.script or scripts[self.capsuleId]
+    local rec = self.rec or infos[self.capsuleId]
     local text
     if self.why == nil then
-        text = Notify.row(true, getText("IGUI_MinidoracatCapsule_Fits", Notify.vehicleName(script)))
+        local name = rec.kind == "animal" and M.Info.animalName(rec.animal) or Notify.vehicleName(rec.script)
+        text = Notify.row(true, getText("IGUI_MinidoracatCapsule_Fits", name))
     elseif self.why == "LOADING" then
         text = " " .. getText("IGUI_MinidoracatCapsule_Loading") .. " <LINE> "
     else

@@ -19,10 +19,13 @@ local function U(key, a, b)
     return getText(k, a, b)
 end
 
--- Context menu entry; needs the framework (the window is a UI.Window).
+-- Context menu entry; needs the framework (the window is a UI.Window). None for an animal capsule (no 3D view of
+-- animals); its summary is already cached by then (the capsule was named from it when its window listed it).
 local function onFill(playerNum, context, items)
     for _, item in ipairs(ISInventoryPane.getActualItems(items)) do
         if M.isLoaded(item) and not M.inCapsule(item) then
+            local r = Info.get(item:getID())
+            if r and r.kind == "animal" then return end
             local option = context:addOption(U("Preview"), item:getID(), Preview.open)
             if not Kit.ok then
                 option.notAvailable = true
@@ -250,7 +253,7 @@ function Win:show(r)
         self.title, self.subtitle = U("PreviewTitle"), ""
         lines = { { "", Info.T(r.why == "FAR" and "Far" or "NoRecord"), "errorText" } }
     else
-        self.title, self.subtitle = Info.carName(r.script, r.name), tostring(r.script)
+        self.title, self.subtitle = Info.thingName(r), tostring(r.script or "")
         lines = Info.rows(r, true)
         table.remove(lines, 1) -- the vehicle name is the title
         local status = Info.status(r)

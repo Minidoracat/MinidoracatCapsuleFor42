@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Şok Dalgası Kapsülü: araç koyabilir",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Kapalıyken oyuncular Şok Dalgası Kapsülü ile araç koyamaz. Dolu olanlar yine fırlatılabilir veya düğmeyle açılabilir; geri verilen boş kapsül de yine Şok Dalgası Kapsülü olur.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Şok Dalgası Kapsülü: ganimette çıkar",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Açıkken boş Şok Dalgası Kapsülü ganimette çıkar ve her yerin ağırlığını açık olan diğer türlerle paylaşır. “Araç koyabilir” kapalıyken hiç çıkmaz."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Açıkken boş Şok Dalgası Kapsülü ganimette çıkar ve her yerin ağırlığını açık olan diğer türlerle paylaşır. “Araç koyabilir” kapalıyken hiç çıkmaz.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Hayvanları kapsüle koymaya izin ver",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Açıkken oyuncular dünyadaki her canlı hayvanı (yabani ya da evcil, yavru ya da yetişkin) hayvan menüsünden boş bir kapsüle koyabilir. Kapatmak yalnızca hayvanları kapsüle koymayı engeller: içinde zaten hayvan olan kapsüller yine fırlatılabilir, düğmeyle açılabilir ve yöneticiler tarafından geri getirilebilir."
 }

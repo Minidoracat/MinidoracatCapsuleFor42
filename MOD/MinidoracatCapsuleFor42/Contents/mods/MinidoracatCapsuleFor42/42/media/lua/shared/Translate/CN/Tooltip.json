@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "车况读取中...",
-    "Tooltip_MinidoracatCapsule_Empty": "空胶囊。站在停着的车旁，从车辆菜单收进胶囊。",
+    "Tooltip_MinidoracatCapsule_Empty": "空胶囊。站在停着的车旁，从车辆菜单收进胶囊；活着的动物从它的动物菜单收。",
     "Tooltip_MinidoracatCapsule_Far": "靠近一点才看得到车况。",
     "Tooltip_MinidoracatCapsule_NoRecord": "这颗胶囊的数据不在这台服务器上，请找管理员。",
     "Tooltip_MinidoracatCapsule_Vehicle": "车种",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "白色蒸汽，蒸汽喷发声",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "光柱与地面光环，能量声",
     "Tooltip_MinidoracatCapsule_Look_Magic": "淡紫色烟雾与星芒，魔法声",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "蘑菇云与地面冲击波，爆炸声"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "蘑菇云与地面冲击波，爆炸声",
+    "Tooltip_MinidoracatCapsule_Animal": "动物",
+    "Tooltip_MinidoracatCapsule_Name": "名字",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 天",
+    "Tooltip_MinidoracatCapsule_Weight": "体重",
+    "Tooltip_MinidoracatCapsule_Milk": "奶量",
+    "Tooltip_MinidoracatCapsule_Wild": "野生"
 }

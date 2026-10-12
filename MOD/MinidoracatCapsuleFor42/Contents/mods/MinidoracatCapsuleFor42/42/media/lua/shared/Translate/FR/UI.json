@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Brouillon de produit ouvert pour la %1 dans le Centre économique. Fixez son prix et appliquez-le là-bas.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "Vous n'avez pas les droits d'admin du Centre économique.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "La fenêtre d'administration du Centre économique n'est pas prête ; réessayez plus tard.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "Le Centre économique n'a pas ouvert le brouillon de produit."
+    "UI_MinidoracatCapsule_ShopOpen_other": "Le Centre économique n'a pas ouvert le brouillon de produit.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Restaurer l'animal",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restaurer %1 en (%2, %3) ? L'ancienne capsule ne pourra plus jamais être déployée.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "l'animal #%1 est près de son lieu enregistré sur le serveur",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "l'animal #%1 n'est pas près de son lieu enregistré",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "L'animal enregistré est toujours près de son lieu enregistré : il est toujours dans le monde."
 }

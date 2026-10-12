@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "衝擊膠囊：可以收車",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "關掉後玩家不能用衝擊膠囊收車；已裝車的衝擊膠囊照樣能丟出、按按鈕展開，展開後還的也是衝擊膠囊。",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "衝擊膠囊：出現在戰利品",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "開著時空的衝擊膠囊會出現在戰利品，和其他開著的款式平分各地點的比重；「可以收車」關掉時不會出現。"
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "開著時空的衝擊膠囊會出現在戰利品，和其他開著的款式平分各地點的比重；「可以收車」關掉時不會出現。",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "可以收動物",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "開啟時，玩家可以從動物選單把世界上任何活著的動物（野生或家養、幼崽或成年）收進空膠囊。關掉只擋收動物：已經裝了動物的膠囊照樣能丟出、按按鈕展開，也能由管理員補回。"
 }

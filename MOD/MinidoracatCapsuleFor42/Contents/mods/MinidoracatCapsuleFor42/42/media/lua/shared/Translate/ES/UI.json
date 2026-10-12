@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Se abrió un borrador de producto para la %1 en el Centro Económico. Fija su precio y aplícalo allí.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "No tienes permisos de administrador del Centro Económico.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "La ventana de administración del Centro Económico no está lista; inténtalo más tarde.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "El Centro Económico no abrió el borrador de producto."
+    "UI_MinidoracatCapsule_ShopOpen_other": "El Centro Económico no abrió el borrador de producto.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Restaurar animal",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "¿Restaurar %1 en (%2, %3)? La cápsula antigua ya nunca se podrá desplegar.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "el animal #%1 está cerca de su lugar registrado en el servidor",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "el animal #%1 no está cerca de su lugar registrado",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "El animal registrado sigue cerca de su lugar registrado: sigue en el mundo."
 }

@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Чтение состояния транспорта...",
-    "Tooltip_MinidoracatCapsule_Empty": "Пустая капсула. Упакуйте стоящий транспорт через его меню.",
+    "Tooltip_MinidoracatCapsule_Empty": "Пустая капсула. Упакуйте стоящий транспорт через его меню или живое животное через меню животного.",
     "Tooltip_MinidoracatCapsule_Far": "Подойдите ближе, чтобы увидеть состояние транспорта.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Записи этой капсулы нет на этом сервере. Обратитесь к администратору.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Транспорт",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Белый пар, звук выброса пара",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Столб света и световое кольцо на земле, звуки энергии",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Лавандовый дым с искрами, волшебные звуки",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Грибовидное облако и ударная волна по земле, звук взрыва"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Грибовидное облако и ударная волна по земле, звук взрыва",
+    "Tooltip_MinidoracatCapsule_Animal": "Животное",
+    "Tooltip_MinidoracatCapsule_Name": "Имя",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 дн.",
+    "Tooltip_MinidoracatCapsule_Weight": "Вес",
+    "Tooltip_MinidoracatCapsule_Milk": "Молоко",
+    "Tooltip_MinidoracatCapsule_Wild": "Дикое"
 }

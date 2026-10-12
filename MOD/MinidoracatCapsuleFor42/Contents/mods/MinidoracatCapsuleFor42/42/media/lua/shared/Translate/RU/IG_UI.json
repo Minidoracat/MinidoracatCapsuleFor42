@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "В инвентаре есть пустая капсула: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "«%1» отключена администратором; упакуйте в капсулу другого типа",
     "IGUI_MinidoracatCapsule_PackInto": "Упаковать: %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Администратор отключил этот тип капсул; упакуйте в капсулу другого типа"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Администратор отключил этот тип капсул; упакуйте в капсулу другого типа",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "Животное не упаковано",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "Животное попадёт в капсулу таким, какое оно сейчас. Займёт %1 сек.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Здесь нет места для животного",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "Животное не может встать там: %1. Капсула упала на месте: нажмите её кнопку рядом со свободной клеткой или подберите её и бросьте снова.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "Животное не может встать там: %1. Выберите свободную клетку и нажмите снова.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Администратор отключил упаковку животных",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "животное мертво или исчезло",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "животное несут на руках, или оно в курятнике или прицепе",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Сначала снимите верёвку",
+    "IGUI_MinidoracatCapsule_Why_WATER": "вода"
 }

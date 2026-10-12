@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "インベントリに空のカプセルがあります：%1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "管理者が%1を無効にしました。別の種類で収納してください",
     "IGUI_MinidoracatCapsule_PackInto": "%1に収納",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "管理者がこの種類のカプセルを無効にしました。別の種類で収納してください"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "管理者がこの種類のカプセルを無効にしました。別の種類で収納してください",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "動物を収納できませんでした",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "動物は今の状態のままカプセルに収納されます。所要時間は %1 秒です。",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "ここには動物を置けません",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "そこには動物を置けません：%1。カプセルはその場に落ちました。空いているマスのそばでボタンを押すか、拾ってもう一度投げてください。",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "そこには動物を置けません：%1。空いているマスを選んでもう一度押してください。",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "管理者が動物の収納を無効にしています",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "動物は死んでいるか、いなくなりました",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "動物は抱えられているか、飼育小屋やトレーラーの中にいます",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "先にロープを外してください",
+    "IGUI_MinidoracatCapsule_Why_WATER": "水の上です"
 }

@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "인벤토리에 빈 캡슐이 있습니다: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "관리자가 %1을 비활성화했습니다. 다른 종류로 넣으십시오",
     "IGUI_MinidoracatCapsule_PackInto": "%1에 넣기",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "관리자가 이 종류의 캡슐을 비활성화했습니다. 다른 종류로 넣으십시오"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "관리자가 이 종류의 캡슐을 비활성화했습니다. 다른 종류로 넣으십시오",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "동물을 넣지 못했습니다",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "동물은 지금 상태 그대로 캡슐에 들어갑니다. %1초가 걸립니다.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "이곳에는 동물을 놓을 수 없습니다",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "그곳에는 동물을 놓을 수 없습니다: %1. 캡슐은 그 자리에 떨어졌습니다. 빈 칸 옆에서 버튼을 누르거나, 주워서 다시 던지십시오.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "그곳에는 동물을 놓을 수 없습니다: %1. 빈 칸을 골라 다시 누르십시오.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "관리자가 동물 넣기를 껐습니다",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "동물이 죽었거나 사라졌습니다",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "누군가 동물을 들고 있거나, 우리나 트레일러 안에 있습니다",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "먼저 밧줄을 푸십시오",
+    "IGUI_MinidoracatCapsule_Why_WATER": "물 위"
 }

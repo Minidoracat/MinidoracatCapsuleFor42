@@ -52,7 +52,8 @@ end
 Index.sort = msort
 
 -- Plain row from a snapshot. `who` is every player name in the history, lower case, comma separated, for search.
--- st: last sighting, or the first event while the capsule has not been seen since.
+-- st: last sighting, or the first event while the capsule has not been seen since. An animal record (kind "animal")
+-- has no script: name is the animal's own name, atype / breed name it otherwise (client Info.animalName).
 function Index.row(capsuleId, snap)
     local h = type(snap.history) == "table" and snap.history or {}
     local first, last, e = h[1] or {}, h[#h] or {}, Store.recordedCar(snap)
@@ -64,16 +65,18 @@ function Index.row(capsuleId, snap)
     add(snap.packedBy)
     for _, ev in ipairs(h) do add(ev.by) end
     local sight = type(snap.seen) == "table" and snap.seen or {}
+    local a = snap.kind == "animal" and type(snap.animal) == "table" and snap.animal or nil
     return {
-        id = capsuleId, state = snap.state, settled = snap.settled == true,
-        script = snap.script, name = snap.name, by = snap.packedBy,
-        t = tonumber(first.t) or 0, lt = tonumber(last.t) or 0, ev = last.ev,
+        id = capsuleId, state = snap.state, settled = snap.settled == true, kind = snap.kind,
+        script = snap.script, name = a and a.name or snap.name, atype = a and a.type, breed = a and a.breed,
+        by = snap.packedBy, t = tonumber(first.t) or 0, lt = tonumber(last.t) or 0, ev = last.ev,
         x = e.x, y = e.y, z = e.z, who = table.concat(names, ","),
         st = tonumber(sight.t) or tonumber(first.t) or 0,
     }
 end
 
-local FIELDS = { "state", "settled", "script", "name", "by", "t", "lt", "ev", "x", "y", "z", "who", "st" }
+local FIELDS = { "state", "settled", "kind", "script", "name", "atype", "breed", "by", "t", "lt", "ev", "x", "y", "z",
+    "who", "st" }
 local function same(a, b)
     for _, k in ipairs(FIELDS) do
         if a[k] ~= b[k] then return false end
@@ -271,7 +274,7 @@ function Index.page(filter, page, size)
     for i = (page - 1) * size + 1, math.min(#hits, page * size) do
         local r = hits[i]
         out[#out + 1] = { id = r.id, state = r.state, uncertain = Index.uncertain(r), name = r.name, script = r.script,
-            by = r.by, t = r.t, lt = r.lt, ev = r.ev, st = r.st }
+            kind = r.kind, atype = r.atype, breed = r.breed, by = r.by, t = r.t, lt = r.lt, ev = r.ev, st = r.st }
     end
     return { rows = out, total = #hits, page = page, pages = pages, counts = counts }
 end

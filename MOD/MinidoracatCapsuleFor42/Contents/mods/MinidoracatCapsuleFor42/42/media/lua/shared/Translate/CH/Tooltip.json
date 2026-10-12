@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "車況讀取中...",
-    "Tooltip_MinidoracatCapsule_Empty": "空膠囊。站在停著的車旁，從車輛選單收進膠囊。",
+    "Tooltip_MinidoracatCapsule_Empty": "空膠囊。站在停著的車旁，從車輛選單收進膠囊；活著的動物從牠的動物選單收。",
     "Tooltip_MinidoracatCapsule_Far": "靠近一點才看得到車況。",
     "Tooltip_MinidoracatCapsule_NoRecord": "這顆膠囊的資料不在這台伺服器上，請找管理員。",
     "Tooltip_MinidoracatCapsule_Vehicle": "車種",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "白色蒸氣，蒸汽噴發聲",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "光柱與地面光環，能量聲",
     "Tooltip_MinidoracatCapsule_Look_Magic": "淡紫色煙霧與星芒，魔法聲",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "蘑菇雲與地面衝擊波，爆炸聲"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "蘑菇雲與地面衝擊波，爆炸聲",
+    "Tooltip_MinidoracatCapsule_Animal": "動物",
+    "Tooltip_MinidoracatCapsule_Name": "名字",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 天",
+    "Tooltip_MinidoracatCapsule_Weight": "體重",
+    "Tooltip_MinidoracatCapsule_Milk": "奶量",
+    "Tooltip_MinidoracatCapsule_Wild": "野生"
 }

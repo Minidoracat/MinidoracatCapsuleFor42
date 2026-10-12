@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Leyendo el estado del vehículo...",
-    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vacía. Guarda un vehículo estacionado desde su menú de vehículo.",
+    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vacía. Guarda un vehículo estacionado desde su menú de vehículo, o un animal vivo desde su menú de animal.",
     "Tooltip_MinidoracatCapsule_Far": "Acércate para ver el estado del vehículo.",
     "Tooltip_MinidoracatCapsule_NoRecord": "El registro de esta cápsula no está en este servidor. Contacta con un administrador.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Vehículo",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Vapor blanco, sonido de vapor a presión",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Una columna de luz y un anillo en el suelo, sonidos de energía",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Humo lavanda con destellos, sonidos mágicos",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Nube en forma de hongo y onda expansiva, sonido de explosión"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Nube en forma de hongo y onda expansiva, sonido de explosión",
+    "Tooltip_MinidoracatCapsule_Animal": "Animal",
+    "Tooltip_MinidoracatCapsule_Name": "Nombre",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 días",
+    "Tooltip_MinidoracatCapsule_Weight": "Peso",
+    "Tooltip_MinidoracatCapsule_Milk": "Leche",
+    "Tooltip_MinidoracatCapsule_Wild": "Salvaje"
 }

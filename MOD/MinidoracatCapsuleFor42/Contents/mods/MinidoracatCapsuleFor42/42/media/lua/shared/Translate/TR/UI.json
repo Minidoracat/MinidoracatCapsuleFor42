@@ -127,5 +127,10 @@
     "UI_MinidoracatCapsule_ShopOpened": "Ekonomi Merkezi'nde ürün taslağı açıldı: %1. Fiyatını orada belirleyip uygula.",
     "UI_MinidoracatCapsule_ShopOpen_forbidden": "Ekonomi Merkezi yönetici yetkin yok.",
     "UI_MinidoracatCapsule_ShopOpen_unavailable": "Ekonomi Merkezi yönetim penceresi hazır değil; daha sonra tekrar dene.",
-    "UI_MinidoracatCapsule_ShopOpen_other": "Ekonomi Merkezi ürün taslağını açmadı."
+    "UI_MinidoracatCapsule_ShopOpen_other": "Ekonomi Merkezi ürün taslağını açmadı.",
+    "UI_MinidoracatCapsule_RestoreAnimal": "Hayvanı geri getir",
+    "UI_MinidoracatCapsule_RestoreAnimalConfirm": "%1, (%2, %3) konumunda geri getirilsin mi? Eski kapsül bundan sonra asla açılamaz.",
+    "UI_MinidoracatCapsule_AnimalLoaded": "hayvan #%1 sunucuda kayıtlı konumun yakınında",
+    "UI_MinidoracatCapsule_AnimalNotLoaded": "hayvan #%1 kayıtlı konumun yakınında değil",
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Kayıtlı hayvan hâlâ kayıtlı konumun yakınında: hâlâ dünyada."
 }

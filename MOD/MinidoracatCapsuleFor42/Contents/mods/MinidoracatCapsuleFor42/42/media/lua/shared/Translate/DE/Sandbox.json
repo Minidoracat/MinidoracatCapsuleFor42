@@ -60,5 +60,7 @@
     "Sandbox_MinidoracatCapsule_TypeShock": "Druckwellenkapsel: kann einpacken",
     "Sandbox_MinidoracatCapsule_TypeShock_tooltip": "Aus: Spieler können mit Druckwellenkapseln keine Fahrzeuge einpacken. Beladene lassen sich weiterhin werfen oder per Knopf entpacken, und die zurückgegebene leere Kapsel ist ebenfalls eine Druckwellenkapsel.",
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Druckwellenkapsel: als Beute",
-    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "An: Leere Druckwellenkapseln tauchen als Beute auf und teilen sich die Gewichtung jedes Orts mit den anderen aktiven Typen. Nie, solange „kann einpacken“ aus ist."
+    "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "An: Leere Druckwellenkapseln tauchen als Beute auf und teilen sich die Gewichtung jedes Orts mit den anderen aktiven Typen. Nie, solange „kann einpacken“ aus ist.",
+    "Sandbox_MinidoracatCapsule_AllowAnimals": "Einpacken von Tieren erlauben",
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Wenn an, können Spieler jedes lebende Tier in der Welt (wild oder zahm, jung oder ausgewachsen) über das Tiermenü in eine leere Kapsel einpacken. Aus verhindert nur das Einpacken von Tieren: Kapseln, die schon eines enthalten, lassen sich weiter werfen, per Knopf entpacken und von Admins wiederherstellen."
 }

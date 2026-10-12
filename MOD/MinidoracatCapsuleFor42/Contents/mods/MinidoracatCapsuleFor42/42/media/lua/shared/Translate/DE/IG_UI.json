@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Leere Kapsel im Inventar: %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "Ein Admin hat die %1 abgeschaltet; nimm zum Einpacken einen anderen Typ",
     "IGUI_MinidoracatCapsule_PackInto": "Einpacken: %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Ein Admin hat diesen Kapseltyp abgeschaltet; nimm zum Einpacken einen anderen Typ"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Ein Admin hat diesen Kapseltyp abgeschaltet; nimm zum Einpacken einen anderen Typ",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "Das Tier wurde nicht eingepackt",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "Das Tier kommt so in die Kapsel, wie es gerade ist. Dauert %1 Sekunden.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Hier ist kein Platz für das Tier",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "Das Tier kann dort nicht stehen: %1. Die Kapsel ist an Ort und Stelle gelandet: Drück ihren Knopf neben einem freien Feld oder heb sie auf und wirf sie erneut.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "Das Tier kann dort nicht stehen: %1. Wähl ein freies Feld und drück erneut.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Ein Admin hat das Einpacken von Tieren abgeschaltet",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "das Tier ist tot oder weg",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "das Tier wird getragen oder ist in einem Stall oder Anhänger",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Nimm zuerst das Seil ab",
+    "IGUI_MinidoracatCapsule_Why_WATER": "Wasser"
 }

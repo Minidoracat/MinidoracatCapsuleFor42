@@ -86,4 +86,21 @@ function Footprint.clear(script, x, y, z, dir)
     return Footprint.blocked(cellSquare, box, z), box
 end
 
+-- The one square an animal lands on: loaded, not water (IsoAnimal.new skips its init there), not under a vehicle and
+-- free (isFree(false): no solid object, tree or missing floor; people and other animals may stand there). Indoors is
+-- fine. Reason or nil, then the one-square box (the cursor draws it). Shared by the cursor and every landing check.
+function Footprint.animalClear(x, y, z)
+    local box = { x1 = x, y1 = y, x2 = x, y2 = y }
+    local sq = cellSquare(x, y, z)
+    if not sq then return "UNLOADED", box end
+    if sq:has(IsoFlagType.water) then return "WATER", box end
+    if sq:getVehicleContainer() then return "VEHICLE", box end
+    if not sq:isFree(false) then
+        if sq:HasTree() then return "TREE", box end
+        if not sq:has(IsoFlagType.solidfloor) then return "NO_FLOOR", box end
+        return "SOLID", box
+    end
+    return nil, box
+end
+
 return Footprint

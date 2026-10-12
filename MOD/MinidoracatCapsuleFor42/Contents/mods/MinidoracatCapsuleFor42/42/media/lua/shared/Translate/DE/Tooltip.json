@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Fahrzeugzustand wird gelesen...",
-    "Tooltip_MinidoracatCapsule_Empty": "Leere Kapsel. Pack ein geparktes Fahrzeug über sein Fahrzeugmenü ein.",
+    "Tooltip_MinidoracatCapsule_Empty": "Leere Kapsel. Pack ein geparktes Fahrzeug über sein Fahrzeugmenü oder ein lebendes Tier über sein Tiermenü ein.",
     "Tooltip_MinidoracatCapsule_Far": "Komm näher, um den Fahrzeugzustand zu sehen.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Der Eintrag dieser Kapsel ist nicht auf diesem Server. Wende dich an einen Admin.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Fahrzeug",
@@ -37,5 +37,11 @@
     "Tooltip_MinidoracatCapsule_Look_Steam": "Weißer Dampf, Geräusch eines Dampfstoßes",
     "Tooltip_MinidoracatCapsule_Look_SciFi": "Eine Lichtsäule und ein Lichtring am Boden, Energiegeräusche",
     "Tooltip_MinidoracatCapsule_Look_Magic": "Lavendelfarbener Rauch mit Funkeln, magische Klänge",
-    "Tooltip_MinidoracatCapsule_Look_Shock": "Pilzwolke und Druckwelle am Boden, Explosionsknall"
+    "Tooltip_MinidoracatCapsule_Look_Shock": "Pilzwolke und Druckwelle am Boden, Explosionsknall",
+    "Tooltip_MinidoracatCapsule_Animal": "Tier",
+    "Tooltip_MinidoracatCapsule_Name": "Name",
+    "Tooltip_MinidoracatCapsule_AgeDays": "%1 Tage",
+    "Tooltip_MinidoracatCapsule_Weight": "Gewicht",
+    "Tooltip_MinidoracatCapsule_Milk": "Milch",
+    "Tooltip_MinidoracatCapsule_Wild": "Wild"
 }

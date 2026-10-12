@@ -71,5 +71,15 @@
     "IGUI_MinidoracatCapsule_HasCapsuleKind": "Capsule vide dans l'inventaire : %1",
     "IGUI_MinidoracatCapsule_TypeOffRow": "Un admin a désactivé la %1 ; rangez le véhicule avec un autre type",
     "IGUI_MinidoracatCapsule_PackInto": "Ranger dans la %1",
-    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Un admin a désactivé ce type de capsule ; rangez le véhicule avec un autre type"
+    "IGUI_MinidoracatCapsule_Why_TYPE_OFF": "Un admin a désactivé ce type de capsule ; rangez le véhicule avec un autre type",
+    "IGUI_MinidoracatCapsule_PackAnimalFailed": "L'animal n'a pas été rangé",
+    "IGUI_MinidoracatCapsule_PackAnimalInfo": "L'animal entre dans la capsule tel qu'il est maintenant. Durée : %1 secondes.",
+    "IGUI_MinidoracatCapsule_BlockedTitleAnimal": "Pas de place pour l'animal ici",
+    "IGUI_MinidoracatCapsule_BlockedThrowAnimal": "L'animal ne peut pas se poser ici : %1. La capsule est tombée sur place : appuyez sur son bouton à côté d'une case libre, ou ramassez-la et relancez-la.",
+    "IGUI_MinidoracatCapsule_BlockedPressAnimal": "L'animal ne peut pas se poser ici : %1. Choisissez une case libre et appuyez à nouveau.",
+    "IGUI_MinidoracatCapsule_Why_ANIMALS_OFF": "Un administrateur a désactivé le rangement des animaux",
+    "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "l'animal est mort ou n'est plus là",
+    "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "l'animal est porté, ou dans un poulailler ou une remorque",
+    "IGUI_MinidoracatCapsule_Why_ROPE": "Retirez d'abord la corde",
+    "IGUI_MinidoracatCapsule_Why_WATER": "de l'eau"
 }
