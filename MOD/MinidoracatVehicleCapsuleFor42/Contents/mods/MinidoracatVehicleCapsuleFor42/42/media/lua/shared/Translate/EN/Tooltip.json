@@ -34,8 +34,8 @@
     "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "White cartoon smoke and cartoon sounds",
     "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Grey smoke, mechanical and pneumatic sounds",
     "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "A dust burst along the ground, a heavy landing thud",
-    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "White steam, a steam blast",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "White steam, steam venting sounds",
     "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "A light column and a ring on the ground, energy sounds",
     "Tooltip_MinidoracatVehicleCapsule_Look_Magic": "Lavender smoke with sparkles, magic sounds",
-    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "A mushroom cloud and a shockwave along the ground, an explosion sound"
+    "Tooltip_MinidoracatVehicleCapsule_Look_Shock": "A mushroom cloud and a ground shockwave, an explosion sound"
 }
