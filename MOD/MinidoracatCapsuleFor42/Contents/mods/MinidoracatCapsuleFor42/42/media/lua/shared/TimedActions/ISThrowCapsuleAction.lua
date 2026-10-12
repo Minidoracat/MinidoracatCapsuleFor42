@@ -1,9 +1,10 @@
 require "TimedActions/ISBaseTimedAction"
 require "MinidoracatCapsule/Core"
 
--- Throw a loaded capsule at (x, y, z). Plays the vanilla Molotov clip through our own action node
--- (AnimSets/player/actions/MinidoracatCapsuleThrow.xml): the vanilla Throw node only
--- matches Weapon=throwing, and a capsule is a container, not a HandWeapon.
+-- Throw a loaded capsule at (x, y, z), or an empty one at an animal or a vehicle to capture it (the server tells the
+-- two apart by the item; a capture's target goes with the "capture" intent, SP: self.capture). Plays the vanilla
+-- Molotov clip through our own action node (AnimSets/player/actions/MinidoracatCapsuleThrow.xml): the vanilla Throw
+-- node only matches Weapon=throwing, and a capsule is a container, not a HandWeapon.
 -- CapsuleRelease (30%) is when the capsule leaves the hand (nearby clients see it fly); CapsuleEnd (75%) ends
 -- the action. The dedicated server plays no animations, so serverStart emulates both events with the same
 -- timing (emulateAnimEventOnce, LuaManager.java:12237; same approach as Workshop 3809762635).
@@ -24,7 +25,7 @@ local function side()
 end
 
 function ISThrowCapsuleAction:isValid()
-    return self.item ~= nil and M.isLoaded(self.item)
+    return self.item ~= nil and (M.isLoaded(self.item) or M.isEmpty(self.item))
         and self.character:getInventory():containsID(self.item:getID())
 end
 

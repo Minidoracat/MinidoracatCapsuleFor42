@@ -27,6 +27,7 @@ local function frames(st)
         st.tex = {}
         for i = 1, st.frames do st.tex[i] = getTexture(DIR .. st.smoke .. i .. ".png") end
         st.sprite = getTexture("media/textures/Item_MinidoracatCapsule" .. st.id .. "Loaded.png")
+        st.spriteEmpty = getTexture("media/textures/Item_MinidoracatCapsule" .. st.id .. ".png")
     end
     return st.tex
 end
@@ -36,14 +37,14 @@ local function removeAll(ids)
     for _, id in ipairs(ids) do Effects.active[id] = nil end
 end
 
--- args from the server: id, kind, x, y, z (flight: x0, y0, z0 too), style (index into M.TYPES; unknown = cartoon).
--- The preview adds onDone (called when the effect ends).
+-- args from the server: id, kind, x, y, z (flight: x0, y0, z0 too, and empty = an empty capsule thrown to capture),
+-- style (index into M.TYPES; unknown = cartoon). The preview adds onDone (called when the effect ends).
 function Effects.play(args)
     if not args.id or Effects.active[args.id] then return end -- split screen: one copy per message
     local st = M.TYPES[tonumber(args.style)] or M.TYPES[1]
     -- the frames load now, at the throw too, so the pop does not wait for them
     local fx = { kind = args.kind, st = st, tex = frames(st), t0 = getTimestampMs(), x = args.x, y = args.y, z = args.z,
-        x0 = args.x0, y0 = args.y0, z0 = args.z0, onDone = args.onDone }
+        x0 = args.x0, y0 = args.y0, z0 = args.z0, onDone = args.onDone, empty = args.empty == true }
     Effects.played = Effects.played + 1
     local sound = st[SOUND[fx.kind] or "pop"]
     if fx.kind ~= "flight" then
@@ -87,7 +88,7 @@ local function drawSmoke(p, fx, age)
 end
 
 local function drawFlight(p, fx, age)
-    local sprite = fx.st.sprite
+    local sprite = fx.empty and fx.st.spriteEmpty or fx.st.sprite
     if not sprite then return end
     local t = math.min(age / FLIGHT_MS, 1)
     local x, y, z = fx.x0 + (fx.x - fx.x0) * t, fx.y0 + (fx.y - fx.y0) * t, fx.z0 + (fx.z - fx.z0) * t

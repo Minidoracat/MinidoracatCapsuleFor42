@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "動物 #%1 はサーバー上で記録位置の近くにいます",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "動物 #%1 は記録位置の近くにいません",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "記録された動物はまだ記録位置の近くにいます。動物はまだワールドにいます。",
-    "UI_MinidoracatCapsule_RestoredAnimal": "動物を復元しました。"
+    "UI_MinidoracatCapsule_RestoredAnimal": "動物を復元しました。",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "選んだ場所は他人のセーフハウスの中です。別の場所を選んでください。"
 }

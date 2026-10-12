@@ -2,5 +2,6 @@
     "ContextMenu_MinidoracatCapsule_Pack": "收进胶囊",
     "ContextMenu_MinidoracatCapsule_Throw": "丢出胶囊",
     "ContextMenu_MinidoracatCapsule_Press": "按下按钮",
-    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2"
+    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatCapsule_Capture": "丢出抓取"
 }

@@ -62,9 +62,12 @@ function Notify.vehicleName(scriptName)
     return text or name
 end
 
--- Player-facing text for a reason code (cursor, dialogs, toasts).
-function Notify.reason(code)
-    return getTextOrNull("IGUI_MinidoracatCapsule_Why_" .. tostring(code))
+-- Player-facing text for a reason code (cursor, dialogs, toasts). release: the code is about a landing spot (throw,
+-- press, admin restore), worded by Why_<code>_RELEASE where there is one (SAFEHOUSE: packing says "in someone else's
+-- safehouse", landing "the spot is in someone else's safehouse").
+function Notify.reason(code, release)
+    local key = "IGUI_MinidoracatCapsule_Why_" .. tostring(code)
+    return (release and getTextOrNull(key .. "_RELEASE")) or getTextOrNull(key)
         or getText("IGUI_MinidoracatCapsule_Why_OTHER", tostring(code))
 end
 
@@ -118,7 +121,23 @@ function Handlers.packed(args)
         or "IGUI_MinidoracatCapsule_PackFailed"), text)
 end
 
+-- A thrown empty capsule (mode "capture"): a toast either way; a miss says why and where the capsule went.
+local function captured(args)
+    if args.ok then
+        local name = args.kind == "animal" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
+        Notify.toast(getText("IGUI_MinidoracatCapsule_Captured", name), getText("IGUI_MinidoracatCapsule_CapturedHere"))
+        return
+    end
+    local text = Notify.reason(args.why)
+    -- refused for permission: the same reason the vehicle menu row gives (VehicleManager's wording included)
+    local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
+    if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
+    Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed", text),
+        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept"), true, 8000)
+end
+
 function Handlers.landed(args)
+    if args.mode == "capture" then return captured(args) end
     local animal = args.kind == "animal" and "Animal" or ""
     if args.ok then
         local name = animal ~= "" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
@@ -138,7 +157,9 @@ function Handlers.landed(args)
         Notify.dialog(getText("IGUI_MinidoracatCapsule_UsedTitle"),
             getText("IGUI_MinidoracatCapsule_UsedBody", stamp(args.t), state, tostring(args.capsuleId)))
     else
-        Notify.dialog(getText("IGUI_MinidoracatCapsule_UnpackFailed"), Notify.reason(args.why))
+        local text = Notify.reason(args.why, true)
+        if args.feet and args.dropped then text = getText("IGUI_MinidoracatCapsule_DroppedAtFeet", text) end
+        Notify.dialog(getText("IGUI_MinidoracatCapsule_UnpackFailed"), text)
     end
 end
 

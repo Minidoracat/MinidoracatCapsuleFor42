@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "Tier #%1 ist auf dem Server nahe der eingetragenen Stelle",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "Tier #%1 ist nicht nahe der eingetragenen Stelle",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Das eingetragene Tier ist noch nahe der eingetragenen Stelle: Es ist noch in der Welt.",
-    "UI_MinidoracatCapsule_RestoredAnimal": "Tier wiederhergestellt."
+    "UI_MinidoracatCapsule_RestoredAnimal": "Tier wiederhergestellt.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "Die gewählte Stelle liegt im Safehouse eines anderen. Wähl eine andere."
 }

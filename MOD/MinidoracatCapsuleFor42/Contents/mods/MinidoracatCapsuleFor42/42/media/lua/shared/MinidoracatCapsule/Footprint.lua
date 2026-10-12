@@ -103,4 +103,80 @@ function Footprint.animalClear(x, y, z)
     return nil, box
 end
 
+-- The loaded squares of box on floor z, as a list.
+function Footprint.squares(box, z)
+    local out = {}
+    for x = box.x1, box.x2 do
+        for y = box.y1, box.y2 do
+            local sq = cellSquare(x, y, z)
+            if sq then out[#out + 1] = sq end
+        end
+    end
+    return out
+end
+
+-- A box around a parked vehicle that holds its whole body whatever way it faces: its longest side, centred on it,
+-- plus a square. The squares under the body are those of this box whose getVehicleContainer() is the vehicle.
+function Footprint.bodyBox(vehicle)
+    local w, l = Footprint.size(vehicle:getScript())
+    local r = math.ceil(math.max(w or 0, l or 0) / 2) + 1
+    local x, y = math.floor(vehicle:getX()), math.floor(vehicle:getY())
+    return { x1 = x - r, y1 = y - r, x2 = x + r, y2 = y + r }
+end
+
+-- What an empty capsule thrown at square (x, y, z) captures (spec B): an animal on that square, else a vehicle over
+-- it, else the nearest animal on the eight squares around it, else a vehicle over one of them. Returns thing, isAnimal
+-- or nil. Dead animals and animals on a hook are not on a square's list (IsoGridSquare.getAnimals).
+function Footprint.target(x, y, z)
+    local best, bestScore, animal
+    for dx = -1, 1 do
+        for dy = -1, 1 do
+            local sq = cellSquare(x + dx, y + dy, z)
+            if sq then
+                local far = (dx ~= 0 or dy ~= 0) and 2 or 0
+                local list = sq:getAnimals()
+                for i = 0, list:size() - 1 do
+                    local a = list:get(i)
+                    local ax, ay = a:getX() - x - 0.5, a:getY() - y - 0.5
+                    local score = far + math.min(ax * ax + ay * ay, 0.9)
+                    if not bestScore or score < bestScore then best, bestScore, animal = a, score, true end
+                end
+                local v = sq:getVehicleContainer()
+                if v and (not bestScore or far + 1 < bestScore) then best, bestScore, animal = v, far + 1, false end
+            end
+        end
+    end
+    return best, animal
+end
+
+-- The target a capture named, if it is still on or next to square (x, y, z) (the landing re-finds it there), or nil.
+-- cap = { kind = "animal" | "vehicle", tid = its online id (animal) or vehicle id: MP, what the client saw } or
+-- { kind, thing = the object itself: SP, where the throw never crossed the network }. An animal's own position counts,
+-- not only the square list it is on: one moved this tick still sits on its old square's list (vcap-capture-1013b).
+function Footprint.find(cap, x, y, z)
+    local function named(o)
+        if cap.thing ~= nil then return o == cap.thing end
+        return (cap.kind == "animal" and o:getOnlineID() or o:getId()) == cap.tid
+    end
+    local function near(a)
+        return math.abs(math.floor(a:getX()) - x) <= 1 and math.abs(math.floor(a:getY()) - y) <= 1
+    end
+    for dx = -1, 1 do
+        for dy = -1, 1 do
+            local sq = cellSquare(x + dx, y + dy, z)
+            if sq and cap.kind == "animal" then
+                local list = sq:getAnimals()
+                for i = 0, list:size() - 1 do
+                    local a = list:get(i)
+                    if named(a) and near(a) then return a end
+                end
+            elseif sq then
+                local v = sq:getVehicleContainer()
+                if v and named(v) then return v end
+            end
+        end
+    end
+    return nil
+end
+
 return Footprint

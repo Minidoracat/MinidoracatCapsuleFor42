@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "el animal #%1 está cerca de su lugar registrado en el servidor",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "el animal #%1 no está cerca de su lugar registrado",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "El animal registrado sigue cerca de su lugar registrado: sigue en el mundo.",
-    "UI_MinidoracatCapsule_RestoredAnimal": "Animal restaurado."
+    "UI_MinidoracatCapsule_RestoredAnimal": "Animal restaurado.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "El lugar elegido está en el refugio de otra persona. Elige otro."
 }

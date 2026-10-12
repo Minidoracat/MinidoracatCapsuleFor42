@@ -2,5 +2,6 @@
     "ContextMenu_MinidoracatCapsule_Pack": "Guardar en cápsula",
     "ContextMenu_MinidoracatCapsule_Throw": "Lanzar cápsula",
     "ContextMenu_MinidoracatCapsule_Press": "Pulsar el botón",
-    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2"
+    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatCapsule_Capture": "Lanzar para capturar"
 }

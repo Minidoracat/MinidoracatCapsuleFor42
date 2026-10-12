@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "伺服器在紀錄位置附近找得到動物 #%1",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "紀錄位置附近找不到動物 #%1",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "伺服器在紀錄位置附近找得到那隻動物：牠還在世界上。",
-    "UI_MinidoracatCapsule_RestoredAnimal": "已補回動物。"
+    "UI_MinidoracatCapsule_RestoredAnimal": "已補回動物。",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "選的位置在別人的安全屋裡，請換個地方。"
 }

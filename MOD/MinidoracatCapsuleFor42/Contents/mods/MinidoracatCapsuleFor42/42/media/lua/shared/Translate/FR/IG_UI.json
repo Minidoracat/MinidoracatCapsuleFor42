@@ -81,5 +81,17 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "l'animal est mort ou n'est plus là",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "l'animal est porté, ou dans un poulailler ou une remorque",
     "IGUI_MinidoracatCapsule_Why_ROPE": "Retirez d'abord la corde",
-    "IGUI_MinidoracatCapsule_Why_WATER": "de l'eau"
+    "IGUI_MinidoracatCapsule_Why_WATER": "de l'eau",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "dans l'abri de quelqu'un d'autre",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "l'endroit est dans l'abri de quelqu'un d'autre",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "aucun animal ni véhicule ici",
+    "IGUI_MinidoracatCapsule_CaptureFits": "Capturer : %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "Cible : %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "Capture impossible : %1",
+    "IGUI_MinidoracatCapsule_Captured": "Capturé : %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Rien capturé : %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "La capsule vide est tombée par terre.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. La capsule est tombée à vos pieds.",
+    "IGUI_MinidoracatCapsule_CapturedHere": "La capsule est tombée là où se trouvait la cible.",
+    "IGUI_MinidoracatCapsule_CaptureKept": "La capsule vide est toujours dans votre inventaire."
 }

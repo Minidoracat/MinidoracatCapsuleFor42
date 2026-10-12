@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "zwierzę #%1 jest na serwerze blisko zapisanego miejsca",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "zwierzęcia #%1 nie ma blisko zapisanego miejsca",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Zapisane zwierzę wciąż jest blisko zapisanego miejsca: wciąż jest w świecie.",
-    "UI_MinidoracatCapsule_RestoredAnimal": "Zwierzę przywrócone."
+    "UI_MinidoracatCapsule_RestoredAnimal": "Zwierzę przywrócone.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "Wybrane miejsce jest w cudzym schronieniu. Wybierz inne."
 }

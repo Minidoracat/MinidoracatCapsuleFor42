@@ -81,5 +81,17 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "動物已經死了或不見了",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "動物被抱著，或在畜欄、拖車裡",
     "IGUI_MinidoracatCapsule_Why_ROPE": "先解開繩子",
-    "IGUI_MinidoracatCapsule_Why_WATER": "水上"
+    "IGUI_MinidoracatCapsule_Why_WATER": "水上",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "在別人的安全屋裡",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "落點在別人的安全屋裡",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "那裡沒有動物或車",
+    "IGUI_MinidoracatCapsule_CaptureFits": "抓取：%1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "目標：%1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "抓不了：%1",
+    "IGUI_MinidoracatCapsule_Captured": "抓到了：%1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "沒抓到：%1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "空膠囊掉在地上了。",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1。膠囊掉在你腳邊。",
+    "IGUI_MinidoracatCapsule_CapturedHere": "膠囊就落在目標原本的位置。",
+    "IGUI_MinidoracatCapsule_CaptureKept": "空膠囊還在你的背包裡。"
 }

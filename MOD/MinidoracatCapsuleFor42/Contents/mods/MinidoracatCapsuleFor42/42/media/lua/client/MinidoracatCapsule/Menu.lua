@@ -9,6 +9,8 @@
 --     opaque. The server checks again in complete().
 --   * A loaded capsule: "Throw capsule" when the player carries it, "Press the button" when it lies on the ground
 --     (inventory/loot window and world right click). Both open the landing cursor (ThrowCursor.lua).
+--   * An empty capsule the player carries: "Throw to capture" (inventory window), the capture cursor: an animal or a
+--     vehicle at the spot is packed into it when it lands, under the same rules as the menus above.
 require "MinidoracatCapsule/Rules"
 require "MinidoracatCapsule/Notify"
 require "MinidoracatCapsule/ThrowCursor"
@@ -187,6 +189,7 @@ end
 
 -- ------------------------------------------------------------------ capsule
 function Menu.onThrow(player, item) M.ThrowCursor.open(player, item, "throw") end
+function Menu.onCapture(player, item) M.ThrowCursor.open(player, item, "capture") end
 
 -- Walk next to the capsule first, then pick the spot: the player then stands where the cursor can see them.
 function Menu.onPress(player, item)
@@ -217,6 +220,11 @@ Events.OnFillInventoryObjectContextMenu.Add(function(playerNum, context, items)
     for _, item in ipairs(ISInventoryPane.getActualItems(items)) do
         if M.isLoaded(item) and not M.inCapsule(item) then
             addCapsule(context, player, item)
+            return
+        end
+        if M.isEmpty(item) and not M.inCapsule(item) and not item:getWorldItem()
+            and player:getInventory():containsRecursive(item) then
+            context:addOption(getText("ContextMenu_MinidoracatCapsule_Capture"), player, Menu.onCapture, item)
             return
         end
     end

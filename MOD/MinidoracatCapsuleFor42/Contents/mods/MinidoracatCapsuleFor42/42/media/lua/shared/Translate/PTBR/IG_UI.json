@@ -81,5 +81,17 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "o animal está morto ou sumiu",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "alguém está carregando o animal, ou ele está num galinheiro ou reboque",
     "IGUI_MinidoracatCapsule_Why_ROPE": "Tire a corda primeiro",
-    "IGUI_MinidoracatCapsule_Why_WATER": "água"
+    "IGUI_MinidoracatCapsule_Why_WATER": "água",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "na base de outra pessoa",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "o local está na base de outra pessoa",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "não há nenhum animal nem veículo ali",
+    "IGUI_MinidoracatCapsule_CaptureFits": "Capturar: %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "Alvo: %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "Não é possível capturar: %1",
+    "IGUI_MinidoracatCapsule_Captured": "Capturado: %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nada capturado: %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "A cápsula vazia caiu no chão.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. A cápsula caiu aos seus pés.",
+    "IGUI_MinidoracatCapsule_CapturedHere": "A cápsula ficou onde o alvo estava.",
+    "IGUI_MinidoracatCapsule_CaptureKept": "A cápsula vazia continua no seu inventário."
 }

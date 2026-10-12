@@ -133,5 +133,6 @@
     "UI_MinidoracatCapsule_AnimalLoaded": "животное #%1 на сервере рядом с записанным местом",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "животного #%1 нет рядом с записанным местом",
     "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Записанное животное всё ещё рядом с записанным местом: оно всё ещё в мире.",
-    "UI_MinidoracatCapsule_RestoredAnimal": "Животное восстановлено."
+    "UI_MinidoracatCapsule_RestoredAnimal": "Животное восстановлено.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "Выбранное место в чужом убежище. Выберите другое."
 }

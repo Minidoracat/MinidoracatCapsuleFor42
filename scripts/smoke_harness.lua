@@ -726,7 +726,7 @@ end
 require "MinidoracatCapsule/Footprint"
 require "MinidoracatCapsule/Rules"
 local clientCommand
-Events.OnClientCommand = { Add = function(fn) clientCommand = fn end }
+Events.OnClientCommand = { Add = function(fn) clientCommand = clientCommand or fn end } -- PlayerCommands' (the first)
 require "MinidoracatCapsule/PlayerCommands"
 local Footprint, Rules, Play = M.Footprint, M.Rules, M.Play
 
@@ -1979,6 +1979,243 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
 animals()
+
+print("Capture／Safehouse：丟空膠囊抓取（選目標、重找、規則、沒中）與安全屋（選單收、抓取、丟、按、補回）")
+local function captureCases() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local Throw, Steam = M.Throw, M.TYPE_BY_ID.Steam
+    SandboxVars = { MinidoracatCapsule = { PackPermission = 1 } }
+    -- 假安全屋：x 20..24、y 30..34，屋主 owner；屋主、成員以外只有 CanGoInsideSafehouses 能碰（SafeHouse.java:245-260）
+    local zone, houses = { x1 = 20, y1 = 30, x2 = 24, y2 = 34 }, {}
+    SafeHouse = {
+        getSafehouseList = function() return javaList(houses) end,
+        isSafehouseAllowInteract = function(s, p)
+            if not s or not p or #houses == 0 then return true end
+            local inside = s:getX() >= zone.x1 and s:getX() <= zone.x2 and s:getY() >= zone.y1 and s:getY() <= zone.y2
+            return not inside or p:getUsername() == "owner" or p.canGoInside == true
+        end }
+    local function at(name, x, y, admin)
+        local p = newPlayer(name, admin)
+        function p:getX() return x + 0.5 end
+        function p:getY() return y + 0.5 end
+        function p:getCurrentSquare() return sq(x, y) end
+        p.inv.haveThisKeyId = function() return nil end
+        p.inv.containsID = function(c, id) return c:getItemWithIDRecursiv(id) ~= nil end
+        return p
+    end
+    local function beast(x, y, oid)
+        local a = { x = x, y = y }
+        function a:getX() return self.x + 0.5 end
+        function a:getY() return self.y + 0.5 end
+        function a:getSquare() return sq(self.x, self.y) end
+        function a:getOnlineID() return oid end
+        function a:getAnimalID() return 9000 + oid end
+        function a:isDead() return false end
+        function a:isOnHook() return false end
+        function a:isExistInTheWorld() return true end
+        function a:getData() return { getAttachedPlayer = function() end, getAttachedTree = function() end } end
+        sq(x, y).animals = { a }
+        return a
+    end
+    local function move(a, x, y)
+        sq(a.x, a.y).animals = nil
+        a.x, a.y = x, y
+        sq(x, y).animals = { a }
+    end
+    local function truck(id, x1, y1, x2, y2)
+        local v = {}
+        function v:getId() return id end
+        function v:getX() return (x1 + x2 + 1) / 2 end
+        function v:getY() return (y1 + y2 + 1) / 2 end
+        function v:getZ() return 0 end
+        function v:getSquare() return sq(math.floor(self:getX()), math.floor(self:getY())) end
+        function v:getScript() return pickup end
+        function v:getMaxPassengers() return 0 end
+        function v:getVehicleTowing() return nil end
+        function v:getVehicleTowedBy() return nil end
+        function v:getAnimals() return javaList({}) end
+        function v:isEngineRunning() return self.engine == true end
+        function v:getPartCount() return 0 end
+        function v:isKeysInIgnition() return false end
+        function v:getCurrentKey() return nil end
+        function v:getKeyId() return 7 end
+        for x = x1, x2 do for y = y1, y2 do sq(x, y).vehicle = v end end
+        return v
+    end
+    local hunter, stranger, owner = at("hunter", 6, 30), at("stranger", 19, 37), at("owner", 19, 37)
+    local cow, truck1 = beast(12, 30, 31), truck(501, 14, 28, 15, 32)
+    local cow2, truck2, truck3 = beast(22, 31, 32), truck(502, 21, 32, 22, 36), truck(503, 17, 30, 18, 34)
+
+    -- target selection and re-finding
+    local function tgt(x, y) local t, a = Footprint.target(x, y, 0); return t, a end
+    local t1, a1 = tgt(12, 30)
+    local t2, a2 = tgt(14, 29)
+    local t3, a3 = tgt(13, 30)
+    check(t1 == cow and a1 and t2 == truck1 and a2 == false and t3 == cow and a3 and tgt(3, 3) == nil,
+        "選目標：游標格的動物、游標格的車、旁邊一格時動物優先於車；空地沒有目標")
+    check(Footprint.find({ kind = "animal", tid = 31 }, 12, 30, 0) == cow and Footprint.find({ kind = "animal", tid = 31 }, 12, 32, 0) == nil
+        and Footprint.find({ kind = "animal", thing = cow }, 11, 31, 0) == cow and Footprint.find({ kind = "animal", tid = 99 }, 12, 30, 0) == nil
+        and Footprint.find({ kind = "vehicle", tid = 501 }, 13, 30, 0) == truck1 and Footprint.find({ kind = "vehicle", tid = 501 }, 11, 30, 0) == nil,
+        "重找目標：MP 比 onlineID／車 id、SP 比物件，只認瞄準點一格內；離開兩格就找不到")
+    cow.x = 18 -- teleported this tick: still on its old square's list
+    check(Footprint.find({ kind = "animal", tid = 31 }, 12, 30, 0) == nil, "重找目標看動物自己的位置：剛傳送走、還掛在舊格子清單上的不算")
+    cow.x = 12
+
+    -- capture rules: the menu's rules with CAPTURE_REACH, TYPE_OFF
+    local far = at("far", 12, 10)
+    check(Rules.captureWhyNot(hunter, cow, true, Steam) == nil and Rules.captureWhyNot(far, cow, true, Steam) == "TOO_FAR"
+        and Rules.animalWhyNot(hunter, cow) == nil and Rules.animalWhyNot(at("h2", 1, 30), cow) == "TOO_FAR",
+        "抓取距離用 CAPTURE_REACH（選單仍是 PACK_RANGE）")
+    SandboxVars.MinidoracatCapsule.AllowAnimals = false
+    local off = Rules.captureWhyNot(hunter, cow, true, Steam)
+    SandboxVars.MinidoracatCapsule.AllowAnimals, SandboxVars.MinidoracatCapsule.TypeSteam = nil, false
+    local typeOff = Rules.captureWhyNot(hunter, cow, true, Steam)
+    SandboxVars.MinidoracatCapsule.TypeSteam = nil
+    local noKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
+    hunter.inv.haveThisKeyId = function(_, id) return id == 7 and {} or nil end
+    local withKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
+    truck1.engine = true
+    local running = Rules.captureWhyNot(hunter, truck1, false, Steam)
+    truck1.engine = nil
+    check(off == "ANIMALS_OFF" and typeOff == "TYPE_OFF" and noKey == "NOT_ALLOWED" and withKey == nil and running == "ENGINE_RUNNING",
+        "抓取規則：收動物關閉、款式停用、車沒鑰匙 NOT_ALLOWED（同選單權限）、有鑰匙放行、引擎發動中")
+
+    -- safehouse: the animal's square, the squares under the vehicle's body
+    local none = Rules.animalWhyNot(stranger, cow2)
+    houses[1] = zone
+    local admin = at("boss", 19, 37, true)
+    admin.canGoInside = true
+    check(none == nil and Rules.animalWhyNot(stranger, cow2) == "SAFEHOUSE" and Rules.animalWhyNot(owner, cow2) == nil
+        and Rules.animalWhyNot(admin, cow2) == nil and Rules.packAnimalWhyNot(stranger, cow2, Steam) == "SAFEHOUSE",
+        "安全屋：動物那格在別人的安全屋 SAFEHOUSE（選單收也擋）；屋主、有 CanGoInsideSafehouses 的管理員可以；沒有安全屋不擋")
+    stranger.inv.haveThisKeyId, owner.inv.haveThisKeyId = hunter.inv.haveThisKeyId, hunter.inv.haveThisKeyId
+    check(Rules.vehicleWhyNot(stranger, truck2) == "SAFEHOUSE" and Rules.vehicleWhyNot(owner, truck2) == nil
+        and Rules.vehicleWhyNot(stranger, truck3) == nil and Rules.captureWhyNot(stranger, cow2, true, Steam) == "SAFEHOUSE"
+        and Rules.captureWhyNot(stranger, truck2, false, Steam) == "SAFEHOUSE",
+        "安全屋：車身壓到安全屋的格子就擋（只壓到外框範圍不算）；丟出抓取同一條")
+
+    -- Play.throw with an empty capsule: the capture intent names the target; refusals keep the capsule
+    local savedSchedule, savedFx, savedOnline = Throw.schedule, M.Fx.broadcast, getOnlinePlayers
+    local scheduled, flights = {}, {}
+    Throw.schedule = function(p) scheduled[#scheduled + 1] = p end
+    M.Fx.broadcast = function(kind, args) if kind == "flight" then flights[#flights + 1] = args end end
+    getOnlinePlayers = function() return javaList({ hunter, stranger }) end
+    local function capsuleFor(p) return p.inv:AddItem(instanceItem(Steam.empty)) end
+    local function throwAt(p, item, x, y) return Play.throw({ character = p, item = item, x = x, y = y, z = 0 }) end
+    local function lastSent() local s = sent[#sent]; return s and s[4] or {} end
+    local c1 = capsuleFor(hunter)
+    quiet = true
+    clientCommand(M.MODULE, "intent", hunter, { kind = "capture", id = c1.id }) -- no target: not kept
+    local noTarget = throwAt(hunter, c1, 12, 30)
+    clientCommand(M.MODULE, "intent", hunter, { kind = "capture", id = c1.id, target = "animal", tid = 99 })
+    local gone = throwAt(hunter, c1, 12, 30)
+    local goneSent = lastSent()
+    clientCommand(M.MODULE, "intent", hunter, { kind = "capture", id = c1.id, target = "animal", tid = 31 })
+    local thrown = throwAt(hunter, c1, 12, 30)
+    local c2 = capsuleFor(stranger)
+    clientCommand(M.MODULE, "intent", stranger, { kind = "capture", id = c2.id, target = "animal", tid = 32 })
+    local inHouse = throwAt(stranger, c2, 22, 31)
+    local houseSent = lastSent()
+    quiet = false
+    check(noTarget == false and gone == false and goneSent.why == "NO_TARGET" and goneSent.mode == "capture"
+        and hunter.inv:getItemWithIDRecursiv(c1.id) == c1, "抓取 intent 沒帶目標不收；目標不在瞄準點：complete 拒絕 NO_TARGET，膠囊留在背包")
+    local sp = scheduled[1] or {}
+    check(thrown == true and #scheduled == 1 and sp.mode == "capture" and sp.cap and sp.cap.kind == "animal" and sp.cap.tid == 31
+        and flights[1] and flights[1].empty == true, "抓取：排落地（mode capture、帶目標），飛行特效畫空膠囊")
+    check(inHouse == false and houseSent.why == "SAFEHOUSE" and #scheduled == 1 and stranger.inv:getItemWithIDRecursiv(c2.id) == c2,
+        "丟出抓取別人安全屋裡的動物：丟擲前就被拒 SAFEHOUSE，膠囊留在背包、不排落地")
+
+    -- Throw.capture (landing): the pack path with the thrown capsule, or a miss that drops it
+    local packed = {}
+    local savedPA, savedP = M.Pack.packAnimal, M.Pack.pack
+    M.Pack.packAnimal = function(p, a, opts) packed[#packed + 1] = { p, a, opts }; return { ok = true, capsuleId = 777, kind = "animal" } end
+    M.Pack.pack = function(p, v, opts) packed[#packed + 1] = { p, v, opts }; return { ok = true, capsuleId = 778, script = "Base.PickUpTruck" } end
+    local function drops(s) local l = {}; s.AddWorldInventoryItem = function(_, it) l[#l + 1] = it end; return l end
+    quiet = true
+    Throw.land(sp)
+    local okSent = lastSent()
+    local c3 = capsuleFor(hunter)
+    move(cow, 12, 34) -- the target ran off before the capsule landed
+    local landing = drops(sq(12, 30))
+    Throw.land({ player = hunter, capsuleId = c3.id, x = 12, y = 30, z = 0, mode = "capture", cap = { kind = "animal", tid = 31 } })
+    local missSent = lastSent()
+    local c4 = capsuleFor(hunter)
+    Throw.land({ player = hunter, capsuleId = c4.id, x = 14, y = 30, z = 0, mode = "capture", cap = { kind = "vehicle", tid = 501 } })
+    local c5 = capsuleFor(stranger)
+    local feet, house = drops(sq(19, 37)), drops(sq(22, 31))
+    Throw.land({ player = stranger, capsuleId = c5.id, x = 22, y = 31, z = 0, mode = "capture", cap = { kind = "animal", tid = 77 } })
+    quiet = false
+    local pa, pv = packed[1] or {}, packed[2] or {}
+    check(pa[2] == cow and pa[3].capsule == c1 and pa[3].typeId == "Steam" and pa[3].range == Rules.CAPTURE_REACH
+        and okSent.ok and okSent.mode == "capture" and okSent.loadedId == 777 and okSent.capsuleId == c1.id,
+        "抓到動物：走 Pack.packAnimal，用的是丟出去的那顆空膠囊、距離用 CAPTURE_REACH，回覆帶裝好的膠囊編號")
+    check(missSent.ok == false and missSent.why == "NO_TARGET" and missSent.dropped == true and landing[1] == c3 and #packed == 2,
+        "目標在落地前跑開：沒中，空膠囊掉在落點，toast 寫原因")
+    check(pv[2] == truck1 and pv[3].empty == c4 and pv[3].type == Steam and pv[3].range == Rules.CAPTURE_REACH,
+        "抓到車：走 Pack.pack（同選單收車），用丟出去的空膠囊")
+    check(feet[1] == c5 and #house == 0, "沒中且落點在別人的安全屋：空膠囊掉在丟的人腳下，不掉進安全屋")
+    M.Pack.packAnimal, M.Pack.pack = savedPA, savedP
+
+    -- releasing into a safehouse: throw drops at the thrower's feet, press keeps the capsule, the admin restore refuses
+    local function animalRecord(item)
+        Store.write(item.id, { kind = "animal", animal = { type = "cow", breed = "holstein", animalId = 4321 }, state = "PACKED",
+            settled = true, packedBy = "x", history = { { t = 1, ev = "PACKED", x = 5, y = 5, z = 0, animal = 4321 } } })
+        return item
+    end
+    local l1 = animalRecord(stranger.inv:AddItem(instanceItem(Steam.loaded)))
+    local l2 = animalRecord(stranger.inv:AddItem(instanceItem(Steam.loaded)))
+    feet = drops(sq(19, 37))
+    quiet = true
+    Throw.land({ player = stranger, capsuleId = l1.id, x = 22, y = 31, z = 0, mode = "throw", dir = "E" })
+    local throwSent = lastSent()
+    Throw.land({ player = stranger, capsuleId = l2.id, x = 22, y = 31, z = 0, mode = "press", dir = "E" })
+    local pressSent = lastSent()
+    quiet = false
+    check(throwSent.why == "SAFEHOUSE" and throwSent.feet == true and throwSent.dropped == true and feet[1] == l1
+        and Store.read(l1.id).state == "PACKED", "丟裝好的膠囊進別人的安全屋：落地被拒，膠囊掉在丟的人腳下，紀錄不動")
+    check(pressSent.why == "SAFEHOUSE" and pressSent.dropped == nil and stranger.inv:getItemWithIDRecursiv(l2.id) == l2
+        and Throw.safehouse(owner, Store.read(l2.id), 22, 31, 0, "E") == nil and Throw.safehouse(stranger, Store.read(l2.id), 12, 31, 0, "E") == nil,
+        "按按鈕放進別人的安全屋被拒、膠囊不動；屋主或安全屋外可以")
+    local restorer = at("restorer", 19, 37, true)
+    quiet = true
+    local refused = Admin.restore(restorer, l2.id, 22, 31, 0, nil, nil, "E")
+    local savedSpawn = M.Unpack.spawn
+    M.Unpack.spawn = function() return { getSquare = function() return sq(22, 31) end, getAnimalID = function() return 4321 end }, {} end
+    restorer.canGoInside = true
+    local passed = Admin.restore(restorer, l2.id, 22, 31, 0, nil, nil, "E")
+    M.Unpack.spawn = savedSpawn
+    quiet = false
+    check(refused.why == "SAFEHOUSE" and passed.ok == true, "管理員補回到別人的安全屋：沒有 CanGoInsideSafehouses 擋 SAFEHOUSE，有就放行")
+
+    Throw.schedule, M.Fx.broadcast, getOnlinePlayers = savedSchedule, savedFx, savedOnline
+    houses[1] = nil
+    SafeHouse, SandboxVars = nil, nil
+    for _, s in ipairs({ sq(12, 34), sq(22, 31) }) do s.animals = nil end
+    for x = 14, 22 do for y = 28, 36 do sq(x, y).vehicle = nil end end
+
+    -- strings in the 16 languages
+    local want = {
+        IG_UI = { "IGUI_MinidoracatCapsule_Why_SAFEHOUSE", "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE",
+            "IGUI_MinidoracatCapsule_Why_NO_TARGET", "IGUI_MinidoracatCapsule_CaptureFits", "IGUI_MinidoracatCapsule_CaptureTarget",
+            "IGUI_MinidoracatCapsule_CaptureNoFit", "IGUI_MinidoracatCapsule_Captured", "IGUI_MinidoracatCapsule_CaptureFailed",
+            "IGUI_MinidoracatCapsule_CaptureDropped", "IGUI_MinidoracatCapsule_DroppedAtFeet",
+            "IGUI_MinidoracatCapsule_CapturedHere", "IGUI_MinidoracatCapsule_CaptureKept" },
+        ContextMenu = { "ContextMenu_MinidoracatCapsule_Capture" },
+        UI = { "UI_MinidoracatCapsule_Why_SAFEHOUSE" },
+    }
+    local missing = {}
+    for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
+        for file, keys in pairs(want) do
+            local f = io.open(MEDIA .. "/shared/Translate/" .. lang .. "/" .. file .. ".json", "rb")
+            local data = f and Json.decode(f:read("*a")) or {}
+            if f then f:close() end
+            for _, k in ipairs(keys) do
+                if type(data[k]) ~= "string" or data[k] == "" then missing[#missing + 1] = lang .. ":" .. k end
+            end
+        end
+    end
+    check(#missing == 0, "16 種語言都有抓取與安全屋的字串（" .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
+end
+captureCases()
 
 print()
 if failures > 0 then
