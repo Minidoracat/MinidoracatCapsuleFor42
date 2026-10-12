@@ -189,7 +189,11 @@ function Trade.escrow(item, player, channel, ref)
         return nil, { code = "OTHER" }
     end
     local t = M.typeOf(item)
-    return { capsuleId = id, view = Trade.view(id, snap, t and t.id), weight = item:getUnequippedWeight() }
+    -- The capsule's own weight comes from its script: on a dedicated server this mod's items have no display name (the
+    -- name is the full type) and such an item weighs 0 (InventoryItem.getActualWeightUnmodded, InventoryItem.java:2740-
+    -- 2742), so getUnequippedWeight left the capsule out (an animal capsule was listed at 0.0, vcap-tam-1012c).
+    local weight = item:getScriptItem():getActualWeight() + item:getContentsWeight()
+    return { capsuleId = id, view = Trade.view(id, snap, t and t.id), weight = weight }
 end
 
 -- Economy built a capsule from its snapshot to hand over (buyer, auction winner, the seller on a cancel or an expiry):

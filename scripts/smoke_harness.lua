@@ -1401,7 +1401,11 @@ do (function()
     local ring, key = keyRing(newItem("Base.KeyRing")), newItem("Base.Key1")
     ring:addKey(key)
     for _, it in ipairs({ water, rifle, bag, ring }) do cap.inv:AddItem(it) end
-    function cap:getUnequippedWeight() return 12.5 end
+    -- a dedicated server weighs this mod's items at 0 (no display name, InventoryItem.java:2740-2742): the escrow adds
+    -- the script weight to the contents
+    function cap:getUnequippedWeight() return 12 end
+    function cap:getContentsWeight() return 12 end
+    function cap:getScriptItem() return { getActualWeight = function() return 0.5 end } end
     local id = cap.id
     local function record(extra)
         local s = { state = "PACKED", settled = true, script = "Base.PickUpTruck", name = "Truck",
@@ -1900,7 +1904,9 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     MinidoracatEconomy = { v1 = { snapshotItem = function() snaps = snaps + 1; return {} end,
         rebuildItem = function() return nil, "x" end } }
     local listed = instanceItem(Steam.loaded)
-    function listed:getUnequippedWeight() return 0.2 end
+    function listed:getUnequippedWeight() return 0 end -- the dedicated server's reading (vcap-tam-1012c listed 0.0)
+    function listed:getContentsWeight() return 0 end
+    function listed:getScriptItem() return { getActualWeight = function() return 0.2 end } end
     local lid = listed.id
     Store.write(lid, { kind = "animal", animal = Json.copy(back), state = "PACKED", settled = true,
         history = { { t = 1, ev = "PACKED", x = 10, y = 10, z = 0, animal = 4321 } } })
