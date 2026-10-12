@@ -1,6 +1,7 @@
 -- Universal Capsule: player rules shared by the client menus (what the tooltip rows show) and the server actions
 -- (what complete() enforces). The client copy only decides the menu; the server checks again before anything moves.
 require "MinidoracatCapsule/Core"
+require "MinidoracatCapsule/Footprint"
 local M = MinidoracatCapsule
 local Rules = {}
 M.Rules = Rules
@@ -8,6 +9,9 @@ M.Rules = Rules
 Rules.PACK_SECONDS = 10
 Rules.THROW_RANGE = 8 -- tiles from the thrower to the landing point
 Rules.PRESS_RANGE = 3 -- tiles from a capsule on the ground to the landing point
+-- tiles from a capture's thrower to its target: the aim point is within THROW_RANGE (Footprint.reach), the target on or
+-- next to it, and a vehicle's centre up to half a body further
+Rules.CAPTURE_REACH = Rules.THROW_RANGE + 4
 
 function Rules.sandbox()
     return SandboxVars and SandboxVars.MinidoracatCapsule or {}
@@ -27,6 +31,22 @@ function Rules.isAdmin(player)
     return role ~= nil and Capability ~= nil and role:hasCapability(Capability.ManipulateVehicle) == true
 end
 
+-- SAFEHOUSE when a square of box (floor z) lies in a safehouse this player may not touch, else nil: the vanilla rule
+-- SafeHouse.isSafehouseAllowInteract (no safehouse there, the owner or a member, Capability.CanGoInsideSafehouses, or
+-- at war: SafeHouse.java:245-260; works on both sides, SP has no safehouses). With `vehicle` only the squares under
+-- its body count (getVehicleContainer, Footprint.bodyBox). Packing (menu or capture) asks for the vehicle's body or
+-- the animal's square; releasing (throw, press, admin restore) for the landing ground (Footprint.clear's box).
+function Rules.safehouseWhyNot(player, box, z, vehicle)
+    local list = SafeHouse and SafeHouse.getSafehouseList()
+    if not (list and list:size() > 0) then return nil end
+    for _, sq in ipairs(M.Footprint.squares(box, z)) do
+        if (not vehicle or sq:getVehicleContainer() == vehicle) and not SafeHouse.isSafehouseAllowInteract(sq, player) then
+            return "SAFEHOUSE"
+        end
+    end
+    return nil
+end
+
 function Rules.occupied(vehicle)
     for seat = 0, vehicle:getMaxPassengers() - 1 do
         if vehicle:getCharacter(seat) then return true end
@@ -35,10 +55,11 @@ function Rules.occupied(vehicle)
 end
 
 -- Why this vehicle cannot be packed by anyone right now, or nil (Pack.whyNot). Player rules are in packWhyNot.
-function Rules.vehicleWhyNot(player, vehicle)
+-- range: tiles from the player to the vehicle (default M.PACK_RANGE; a capture: CAPTURE_REACH).
+function Rules.vehicleWhyNot(player, vehicle, range)
     if not vehicle or not vehicle:getSquare() then return "NO_VEHICLE" end
-    local dx, dy = player:getX() - vehicle:getX(), player:getY() - vehicle:getY()
-    if dx * dx + dy * dy > M.PACK_RANGE * M.PACK_RANGE then return "TOO_FAR" end
+    local dx, dy, r = player:getX() - vehicle:getX(), player:getY() - vehicle:getY(), range or M.PACK_RANGE
+    if dx * dx + dy * dy > r * r then return "TOO_FAR" end
     if Rules.occupied(vehicle) then return "OCCUPIED" end
     if vehicle:getVehicleTowing() or vehicle:getVehicleTowedBy() then return "TOWING" end
     local animals = vehicle:getAnimals()
@@ -52,7 +73,7 @@ function Rules.vehicleWhyNot(player, vehicle)
             end
         end
     end
-    return nil
+    return Rules.safehouseWhyNot(player, M.Footprint.bodyBox(vehicle), math.floor(vehicle:getZ()), vehicle)
 end
 
 -- Who may pack: a vehicle claimed in VehicleManager needs its Tow permission (the owner, players the owner or the
@@ -140,16 +161,19 @@ end
 -- Why this animal cannot be packed by anyone right now, or nil: the menu (client), the timed action and the server
 -- (Pack.packAnimal) ask the same. Any live animal in the world may be packed, wild or tame, young or grown. Not in
 -- the world (isExistInTheWorld: carried, in a hutch or a trailer, IsoAnimal.java:2369) is ANIMAL_AWAY; a carcass or
--- an animal on a butcher hook is NO_ANIMAL; a rope to a player or a post has to come off first (ROPE).
-function Rules.animalWhyNot(player, animal)
+-- an animal on a butcher hook is NO_ANIMAL; a rope to a player or a post has to come off first (ROPE); its square in
+-- someone else's safehouse is SAFEHOUSE. range: as in vehicleWhyNot.
+function Rules.animalWhyNot(player, animal, range)
     if not animal or animal:isDead() or animal:isOnHook() then return "NO_ANIMAL" end
     if not Rules.animalsOn() then return "ANIMALS_OFF" end
     if not animal:isExistInTheWorld() then return "ANIMAL_AWAY" end
     local d = animal:getData()
     if d:getAttachedPlayer() or d:getAttachedTree() then return "ROPE" end
-    local dx, dy = player:getX() - animal:getX(), player:getY() - animal:getY()
-    if dx * dx + dy * dy > M.PACK_RANGE * M.PACK_RANGE then return "TOO_FAR" end
-    return nil
+    local dx, dy, r = player:getX() - animal:getX(), player:getY() - animal:getY(), range or M.PACK_RANGE
+    if dx * dx + dy * dy > r * r then return "TOO_FAR" end
+    local sq = animal:getSquare()
+    if not sq then return nil end
+    return Rules.safehouseWhyNot(player, { x1 = sq:getX(), y1 = sq:getY(), x2 = sq:getX(), y2 = sq:getY() }, sq:getZ())
 end
 
 -- Everything the server checks before a player packs an animal with a capsule of type t, or nil.
@@ -157,6 +181,22 @@ function Rules.packAnimalWhyNot(player, animal, t)
     local why = Rules.animalWhyNot(player, animal)
     if why then return why end
     if not Rules.emptyCapsule(player, t) then return "NO_CAPSULE" end
+    if not Rules.typeOn(t) then return "TYPE_OFF" end
+    return nil
+end
+
+-- Everything the server checks before a thrown empty capsule of type t takes this animal (isAnimal) or vehicle, or
+-- nil (spec B): the menu's rules for the same thing (a vehicle: its state and who may pack it, both with the same
+-- reasons), with CAPTURE_REACH for the distance, and the capsule's type switched on. The capsule is the thrown one.
+function Rules.captureWhyNot(player, thing, isAnimal, t)
+    local why
+    if isAnimal then
+        why = Rules.animalWhyNot(player, thing, Rules.CAPTURE_REACH)
+    else
+        why = Rules.vehicleWhyNot(player, thing, Rules.CAPTURE_REACH)
+        if not why and not Rules.mayPack(player, thing) then why = "NOT_ALLOWED" end
+    end
+    if why then return why end
     if not Rules.typeOn(t) then return "TYPE_OFF" end
     return nil
 end

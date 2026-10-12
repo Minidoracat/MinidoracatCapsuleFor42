@@ -81,5 +81,15 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "the animal is dead or gone",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "the animal is being carried, or is in a hutch or a trailer",
     "IGUI_MinidoracatCapsule_Why_ROPE": "Untie the rope first",
-    "IGUI_MinidoracatCapsule_Why_WATER": "water"
+    "IGUI_MinidoracatCapsule_Why_WATER": "water",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "in someone else's safehouse",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "the spot is in someone else's safehouse",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "no animal or vehicle there",
+    "IGUI_MinidoracatCapsule_CaptureFits": "Capture: %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "Target: %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "Can't capture: %1",
+    "IGUI_MinidoracatCapsule_Captured": "Captured: %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nothing captured: %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "The empty capsule fell on the ground.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. The capsule fell at your feet."
 }

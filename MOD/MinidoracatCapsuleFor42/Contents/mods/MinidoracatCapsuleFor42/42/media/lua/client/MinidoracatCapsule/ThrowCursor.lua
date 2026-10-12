@@ -1,9 +1,10 @@
--- Universal Capsule (client): the landing cursor for "throw capsule" and "press the button", and the admin panel's
--- "restore at a picked spot". A build cursor (ISBuildingObject, like vanilla ISFarmingCursorMouse): the engine calls
--- isValid/render every frame and create on a left click (only when valid); right click opens the world menu, which
--- drops the drag (ISWorldObjectContextMenu createMenu -> setDrag(nil)); a gamepad moves it and presses A / B. The
--- vehicle's ground is drawn tile by tile in the good / bad highlight colour with a tooltip that says why. The server
--- checks the same rules again (Footprint.lua), so this is only what the player sees.
+-- Universal Capsule (client): the landing cursor for "throw capsule" and "press the button", the admin panel's
+-- "restore at a picked spot", and "throw to capture" (an empty capsule at an animal or a vehicle). A build cursor
+-- (ISBuildingObject, like vanilla ISFarmingCursorMouse): the engine calls isValid/render every frame and create on a
+-- left click (only when valid); right click opens the world menu, which drops the drag (ISWorldObjectContextMenu
+-- createMenu -> setDrag(nil)); a gamepad moves it and presses A / B. The vehicle's ground (a capture: its target) is
+-- drawn tile by tile in the good / bad highlight colour with a tooltip that says why. The server checks the same rules
+-- again (Footprint.lua, Rules.lua), so this is only what the player sees.
 require "MinidoracatCapsule/Rules"
 require "MinidoracatCapsule/Footprint"
 require "MinidoracatCapsule/Notify"
@@ -21,23 +22,29 @@ local Class
 -- the server has no record
 local infos = {}
 local HINT = { throw = "IGUI_MinidoracatCapsule_HintThrow", press = "IGUI_MinidoracatCapsule_HintPress",
-    restore = "IGUI_MinidoracatCapsule_HintRestore" }
+    restore = "IGUI_MinidoracatCapsule_HintRestore", capture = "IGUI_MinidoracatCapsule_HintThrow" }
 local PROMPT = { throw = "ContextMenu_MinidoracatCapsule_Throw", press = "ContextMenu_MinidoracatCapsule_Press",
-    restore = "UI_MinidoracatCapsule_Restore" }
+    restore = "UI_MinidoracatCapsule_Restore", capture = "ContextMenu_MinidoracatCapsule_Capture" }
+local CAPTURE_MS = 250 -- a capture re-judges its square this often (the target moves; a vehicle's body costs a scan)
 
 function Cursor.onInfo(args)
     if not args.capsuleId then return end
     infos[args.capsuleId] = args.ok and { kind = args.kind, script = args.script, animal = args.animal } or false
 end
 
-local function sendIntent(player, kind, id)
-    if isClient() then sendClientCommand(player, M.MODULE, "intent", { kind = kind, id = id }) end
+-- extra: more intent fields (a capture's target).
+local function sendIntent(player, kind, id, extra)
+    if not isClient() then return end
+    local args = { kind = kind, id = id }
+    for k, v in pairs(extra or {}) do args[k] = v end
+    sendClientCommand(player, M.MODULE, "intent", args)
 end
 
--- mode: "throw" (capsule in the player's inventory) or "press" (capsule on the ground).
+-- mode: "throw" (capsule in the player's inventory), "press" (capsule on the ground) or "capture" (an empty capsule in
+-- the player's inventory).
 function Cursor.open(player, item, mode)
     local id = item:getID()
-    if type(infos[id]) ~= "table" then
+    if mode ~= "capture" and type(infos[id]) ~= "table" then
         infos[id] = nil
         if isClient() then
             sendClientCommand(player, M.MODULE, "capsuleInfo", { capsuleId = id })
@@ -91,9 +98,46 @@ function Cursor:origin()
     return c:getX(), c:getY(), c:getZ(), Rules.THROW_RANGE, true
 end
 
+-- The name the tooltip gives an animal or a vehicle in the world.
+local function thingName(thing, isAnimal)
+    if isAnimal then
+        return M.Info.animalName({ type = thing:getAnimalType(), breed = thing:getBreed():getName(),
+            name = thing:getCustomName() })
+    end
+    return Notify.vehicleName(thing:getScriptName())
+end
+
+-- Capture: the animal or vehicle on or next to square (Footprint.target) and the reason it can't be taken (the same
+-- rules as packing it by menu, Rules.captureWhyNot), or nil. Keeps self.target (thing, animal, name) and self.cells
+-- (the target's squares, drawn in render). Judged at most every CAPTURE_MS per square.
+function Cursor:judgeCapture(square)
+    local x, y, z, now = square:getX(), square:getY(), square:getZ(), getTimestampMs()
+    local last = self.last
+    if last and last.x == x and last.y == y and now - last.at < CAPTURE_MS then return last.why end
+    local thing, animal = Footprint.target(x, y, z)
+    self.target, self.cells = nil, {}
+    if thing then
+        self.target = { thing = thing, animal = animal, name = thingName(thing, animal) }
+        if animal then
+            self.cells[1] = thing:getSquare()
+        else
+            for _, sq in ipairs(Footprint.squares(Footprint.bodyBox(thing), z)) do
+                if sq:getVehicleContainer() == thing then self.cells[#self.cells + 1] = sq end
+            end
+        end
+    end
+    local c = self.character
+    local why = Footprint.reach(c:getX(), c:getY(), c:getZ(), x, y, z, Rules.THROW_RANGE, true)
+    if not why and not thing then why = "NO_TARGET" end
+    if not why then why = Rules.captureWhyNot(c, thing, animal, M.typeOf(self.item)) end
+    self.last = { x = x, y = y, at = now, why = why }
+    return why
+end
+
 -- Reason the vehicle (or animal) cannot land on square, or nil; keeps self.box / self.dir for render.
 function Cursor:judge(square)
     self.box = nil
+    if self.mode == "capture" then return self:judgeCapture(square) end
     local rec = self.rec or infos[self.capsuleId]
     if rec == nil then return "LOADING" end
     if rec == false then return "NO_SNAPSHOT" end
@@ -110,7 +154,8 @@ function Cursor:judge(square)
         clear, box = Footprint.clear(sc, x, y, z, self.dir)
     end
     self.box = box
-    return (range and Footprint.reach(ox, oy, oz, x, y, z, range, sight)) or clear
+    return (range and Footprint.reach(ox, oy, oz, x, y, z, range, sight))
+        or (box and Rules.safehouseWhyNot(self.character, box, z)) or clear
 end
 
 function Cursor:isValid(square)
@@ -136,20 +181,31 @@ function Cursor:render(x, y, z, square)
             for by = b.y1, b.y2 do sprite:RenderGhostTileColor(bx, by, z, c:getR(), c:getG(), c:getB(), 0.5) end
         end
     end
+    for _, sq in ipairs(self.mode == "capture" and self.cells or {}) do
+        sprite:RenderGhostTileColor(sq:getX(), sq:getY(), sq:getZ(), c:getR(), c:getG(), c:getB(), 0.5)
+    end
     sprite:RenderGhostTileColor(x, y, z, 1, 1, 1, 0.8)
     self:renderTooltip(square)
 end
 
 function Cursor:tooltipText()
-    local rec = self.rec or infos[self.capsuleId]
     local text
-    if self.why == nil then
+    if self.mode == "capture" then
+        local tgt = self.target
+        if self.why == nil then
+            text = Notify.row(true, getText("IGUI_MinidoracatCapsule_CaptureFits", tgt.name))
+        else
+            text = (tgt and " <RGB:1,1,1> " .. getText("IGUI_MinidoracatCapsule_CaptureTarget", tgt.name) .. " <LINE> " or "")
+                .. Notify.row(false, getText("IGUI_MinidoracatCapsule_CaptureNoFit", Notify.reason(self.why)))
+        end
+    elseif self.why == nil then
+        local rec = self.rec or infos[self.capsuleId]
         local name = rec.kind == "animal" and M.Info.animalName(rec.animal) or Notify.vehicleName(rec.script)
         text = Notify.row(true, getText("IGUI_MinidoracatCapsule_Fits", name))
     elseif self.why == "LOADING" then
         text = " " .. getText("IGUI_MinidoracatCapsule_Loading") .. " <LINE> "
     else
-        text = Notify.row(false, getText("IGUI_MinidoracatCapsule_NoFit", Notify.reason(self.why)))
+        text = Notify.row(false, getText("IGUI_MinidoracatCapsule_NoFit", Notify.reason(self.why, true)))
     end
     local h = self.home
     if h then
@@ -205,11 +261,13 @@ function Cursor:create(x, y, z)
         self.onDone(x, y, z, self.dir)
         return
     end
-    Cursor.queue(self.character, self.item, self.mode, x, y, z)
+    Cursor.queue(self.character, self.item, self.mode, x, y, z, self.target)
 end
 
--- Queues the throw or the press (also used by E2E scenarios). The intent tells the server who really asked.
-function Cursor.queue(player, item, mode, x, y, z)
+-- Queues the throw, the capture or the press (also used by E2E scenarios). The intent tells the server who really
+-- asked; a capture's intent also names its target ({ thing, animal }: what the cursor judged): the animal's online id
+-- or the vehicle id (SP: the action keeps the object, complete() runs on this very action).
+function Cursor.queue(player, item, mode, x, y, z, target)
     local id = item:getID()
     if mode == "press" then
         local wo = item:getWorldItem()
@@ -221,8 +279,17 @@ function Cursor.queue(player, item, mode, x, y, z)
         return action
     end
     ISInventoryPaneContextMenu.transferIfNeeded(player, item)
-    sendIntent(player, "throw", id)
+    local capture
+    if mode == "capture" and target then
+        local kind = target.animal and "animal" or "vehicle"
+        capture = { kind = kind, thing = target.thing }
+        sendIntent(player, "capture", id, { target = kind,
+            tid = target.animal and target.thing:getOnlineID() or target.thing:getId() })
+    else
+        sendIntent(player, "throw", id)
+    end
     local action = ISThrowCapsuleAction:new(player, item, x, y, z)
+    action.capture = capture
     ISTimedActionQueue.add(action)
     return action
 end

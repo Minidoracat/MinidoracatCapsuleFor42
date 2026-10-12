@@ -6,6 +6,7 @@ require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Store"
 require "MinidoracatCapsule/Unpack"
 require "MinidoracatCapsule/Footprint"
+require "MinidoracatCapsule/Rules"
 local M = MinidoracatCapsule
 local Store, Unpack = M.Store, M.Unpack
 local Admin = {}
@@ -66,9 +67,10 @@ end
 -- (uncertain ones need `checked`) or an uncertain UNPACKED one. RESTORED is written before the spawn, so the old capsule
 -- can never unpack afterwards; a failed spawn puts the previous state back. `dir`: the admin panel always sends the
 -- spot picked with the restore cursor, so the vehicle faces it and its ground (an animal: its one square) must be
--- clear, the same check a throw's landing makes. Without it (debug commands) the vehicle faces north and the ground is
--- not checked. A capsule out in an Economy trade (listed, auctioned) is refused: its buyer would get a capsule whose
--- vehicle is already back.
+-- clear and outside safehouses this admin may not touch (SAFEHOUSE; Capability.CanGoInsideSafehouses passes), the same
+-- checks a throw's landing makes. Without it (debug commands) the vehicle faces north and the ground is not checked.
+-- A capsule out in an Economy trade (listed, auctioned) is refused: its buyer would get a capsule whose vehicle is
+-- already back.
 function Admin.restore(admin, capsuleId, x, y, z, note, checked, dir)
     if not M.isAdmin(admin) then return fail("NOT_ADMIN") end
     local snap, why = Store.read(capsuleId)
@@ -80,12 +82,17 @@ function Admin.restore(admin, capsuleId, x, y, z, note, checked, dir)
     if uncertain and not checked then return fail("CHECK_SITE") end
     local square = x and y and getCell():getGridSquare(x, y, z or 0)
     if not square then return fail("BLOCKED") end
-    if snap.kind == "animal" then
-        if dir and M.Footprint.animalClear(x, y, z or 0) then return fail("PICK_BLOCKED") end
-    else
-        local sc = getScriptManager():getVehicle(snap.script)
-        if not sc then return fail("SCRIPT_MISSING") end
-        if dir and M.Footprint.clear(sc, x, y, z or 0, dir) then return fail("PICK_BLOCKED") end
+    local sc = snap.kind ~= "animal" and getScriptManager():getVehicle(snap.script)
+    if snap.kind ~= "animal" and not sc then return fail("SCRIPT_MISSING") end
+    if dir then
+        local why, box
+        if snap.kind == "animal" then
+            why, box = M.Footprint.animalClear(x, y, z or 0)
+        else
+            why, box = M.Footprint.clear(sc, x, y, z or 0, dir)
+        end
+        if why then return fail("PICK_BLOCKED") end
+        if M.Rules.safehouseWhyNot(admin, box, z or 0) then return fail("SAFEHOUSE") end
     end
     local prev = { state = snap.state, settled = snap.settled, uncertain = uncertain }
     snap.escrow = nil -- a finished Economy trade's cargo copy: the old capsule can never unpack again

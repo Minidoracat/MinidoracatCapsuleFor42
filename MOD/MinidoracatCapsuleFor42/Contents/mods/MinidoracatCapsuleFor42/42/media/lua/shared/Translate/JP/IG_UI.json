@@ -81,5 +81,15 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "動物は死んでいるか、いなくなりました",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "動物は抱えられているか、飼育小屋やトレーラーの中にいます",
     "IGUI_MinidoracatCapsule_Why_ROPE": "先にロープを外してください",
-    "IGUI_MinidoracatCapsule_Why_WATER": "水の上です"
+    "IGUI_MinidoracatCapsule_Why_WATER": "水の上です",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "他人のセーフハウスの中です",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "その場所は他人のセーフハウスの中です",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "そこに動物も車両もいません",
+    "IGUI_MinidoracatCapsule_CaptureFits": "捕獲：%1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "対象：%1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "捕獲できません：%1",
+    "IGUI_MinidoracatCapsule_Captured": "捕獲しました：%1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "何も捕獲できませんでした：%1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "空のカプセルが地面に落ちました。",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1。カプセルが足元に落ちました。"
 }

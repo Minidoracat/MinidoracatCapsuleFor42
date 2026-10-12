@@ -1,16 +1,19 @@
 -- Universal Capsule: a thrown or pressed capsule lands (server authority; SP runs the same code locally).
 -- The action's complete() schedules the landing; the capsule stays where it is (inventory or ground) until then.
 -- Landing: a record that is not a usable PACKED one goes straight to Unpack (it refuses, logs and clears stale cargo);
--- otherwise the ground must be clear (the vehicle's body, or one square for an animal), then Unpack spawns it. A
--- blocked throw drops the capsule on the landing square; a pressed capsule stays where it lies.
+-- otherwise the ground must be clear (the vehicle's body, or one square for an animal) and outside other players'
+-- safehouses, then Unpack spawns it. A blocked throw drops the capsule on the landing square (a safehouse refusal: at
+-- the thrower's feet); a pressed capsule stays where it lies. A thrown empty capsule captures instead (Throw.capture).
 if isClient() then return end
 require "MinidoracatCapsule/Core"
+require "MinidoracatCapsule/Rules"
 require "MinidoracatCapsule/Footprint"
 require "MinidoracatCapsule/Store"
 require "MinidoracatCapsule/Unpack"
+require "MinidoracatCapsule/Pack"
 require "MinidoracatCapsule/Fx"
 local M = MinidoracatCapsule
-local Footprint, Store, Unpack, Fx = M.Footprint, M.Store, M.Unpack, M.Fx
+local Rules, Footprint, Store, Unpack, Fx = M.Rules, M.Footprint, M.Store, M.Unpack, M.Fx
 local Throw = { pending = {} }
 M.Throw = Throw
 
@@ -36,9 +39,14 @@ local function stateTime(snap)
     return nil
 end
 
+-- Drops a carried capsule on sq; never into a safehouse the player may not touch (spec C.3): their own square then.
 local function dropAt(player, capsule, sq)
     local c = capsule:getContainer()
     if not c or capsule:getWorldItem() then return false end
+    if not sq or Rules.safehouseWhyNot(player, { x1 = sq:getX(), y1 = sq:getY(), x2 = sq:getX(), y2 = sq:getY() }, sq:getZ()) then
+        sq = player:getCurrentSquare()
+    end
+    if not sq then return false end
     player:removeFromHands(capsule)
     c:DoRemoveItem(capsule)
     sendRemoveItemFromContainer(c, capsule)
@@ -46,13 +54,65 @@ local function dropAt(player, capsule, sq)
     return true
 end
 
--- p = { player, capsuleId, x, y, z, dir, mode = "throw" | "press" }
+-- SAFEHOUSE when the ground the record needs at (x, y, z) (the vehicle's body facing dir, the animal's square) touches
+-- a safehouse this player may not, else nil. Throw and press ask before they schedule a landing (the capsule stays
+-- put) and the landing asks again. No record, or no such vehicle type: nil (the landing refuses those anyway).
+function Throw.safehouse(player, snap, x, y, z, dir)
+    if type(snap) ~= "table" then return nil end
+    local box
+    if snap.kind == "animal" then
+        box = select(2, Footprint.animalClear(x, y, z))
+    else
+        local sc = getScriptManager():getVehicle(snap.script)
+        box = sc and select(2, Footprint.clear(sc, x, y, z, dir))
+    end
+    return box and Rules.safehouseWhyNot(player, box, z) or nil
+end
+
+-- An empty capsule thrown at an animal or a vehicle (spec B) lands: p.cap names the target (Footprint.find). It must
+-- still be on or next to the aim point and pass the same rules as at the throw (Rules.captureWhyNot, safehouse
+-- included); then the menu's pack path takes it with this very capsule (Pack.packAnimal / Pack.pack: the loaded
+-- capsule lies where the target stood, the pack effect plays there). A miss drops the empty capsule on the landing
+-- square (in someone else's safehouse: at the thrower's feet) and the toast says why.
+function Throw.capture(p)
+    local player = p.player
+    local capsule = Unpack.findCapsule(player, p.capsuleId)
+    local res
+    if not (capsule and M.isEmpty(capsule) and capsule:getContainer() and not capsule:getWorldItem()) then
+        res = { ok = false, why = "NO_CAPSULE" }
+    else
+        local t = M.typeOf(capsule)
+        local animal = p.cap.kind == "animal"
+        local thing = Footprint.find(p.cap, p.x, p.y, p.z)
+        local why = "NO_TARGET"
+        if thing then why = Rules.captureWhyNot(player, thing, animal, t) end
+        if why then
+            res = { ok = false, why = why }
+        elseif animal then
+            res = M.Pack.packAnimal(player, thing, { capsule = capsule, typeId = t.id, range = Rules.CAPTURE_REACH })
+        else
+            res = M.Pack.pack(player, thing, { type = t, empty = capsule, range = Rules.CAPTURE_REACH })
+        end
+        if not res.ok then res.dropped = dropAt(player, capsule, getCell():getGridSquare(p.x, p.y, p.z)) end
+        res.loadedId = res.ok and res.capsuleId or nil -- the loaded capsule now lying where the target stood
+        res.kind = animal and "animal" or nil
+        if thing and not animal then res.vehicleId = thing:getId() end -- a NOT_ALLOWED toast words its permission
+    end
+    res.capsuleId, res.mode = p.capsuleId, "capture"
+    M.log(string.format("CAPTURED capsule=%d by=%s target=%s:%s x=%d y=%d z=%d ok=%s why=%s loaded=%s dropped=%s",
+        p.capsuleId, player:getUsername(), tostring(p.cap.kind), tostring(p.cap.tid), p.x, p.y, p.z, tostring(res.ok),
+        tostring(res.why), tostring(res.loadedId), tostring(res.dropped)))
+    M.Play.send(player, "landed", res)
+end
+
+-- p = { player, capsuleId, x, y, z, dir, mode = "throw" | "press" | "capture", cap (capture: the target) }
 function Throw.land(p)
     local player = p.player
     if not online(player) then
         M.log("land skipped capsule=" .. p.capsuleId .. ": thrower left")
         return
     end
+    if p.mode == "capture" then return Throw.capture(p) end
     local res
     local capsule = Unpack.findCapsule(player, p.capsuleId)
     local t = capsule and M.typeOf(capsule) -- read now: a good unpack removes the capsule
@@ -63,12 +123,18 @@ function Throw.land(p)
         local snap = Store.read(p.capsuleId)
         local usable = snap and snap.state == "PACKED" and not Store.uncertain(p.capsuleId, snap)
         local reason
-        if usable and snap.kind == "animal" then
+        if usable then reason = Throw.safehouse(player, snap, p.x, p.y, p.z, p.dir) end
+        if reason then
+            res = { ok = false, why = reason }
+        elseif usable and snap.kind == "animal" then
             reason = Footprint.animalClear(p.x, p.y, p.z)
         elseif usable then
             reason = Footprint.clear(getScriptManager():getVehicle(snap.script), p.x, p.y, p.z, p.dir)
         end
-        if reason and reason ~= "NO_SCRIPT" then
+        if res then
+            -- in someone else's safehouse: a thrown capsule falls at the thrower's feet, a pressed one stays put
+            if p.mode == "throw" then res.dropped, res.feet = dropAt(player, capsule, player:getCurrentSquare()), true end
+        elseif reason and reason ~= "NO_SCRIPT" then
             res = { ok = false, why = "BLOCKED", reason = reason }
         else
             res = Unpack.unpack(player, capsule, sq, p.dir, {})

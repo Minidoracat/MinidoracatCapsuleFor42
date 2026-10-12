@@ -33,10 +33,11 @@ end
 -- opts.type: the capsule type (M.TYPES row) of opts.empty, the player's empty capsule, used up once the snapshot is on
 -- disk; without them (debug commands) a cartoon capsule and nothing used up. The capsule keeps the script's name: each
 -- client names it in its own language from the record (client/Info.lua), so no packing client's language sticks.
+-- opts.range: tiles from the player to the vehicle (a thrown capsule: Rules.CAPTURE_REACH; default M.PACK_RANGE).
 -- Returns { ok = true, capsuleId, x, y, z, ... } or { ok = false, why, path? }.
 function Pack.pack(player, vehicle, opts)
     opts = opts or {}
-    local why = Pack.whyNot(player, vehicle)
+    local why = Pack.whyNot(player, vehicle, opts.range)
     if why then return { ok = false, why = why } end
     local sq = vehicle:getSquare()
     local x, y, z = sq:getX(), sq:getY(), sq:getZ()
@@ -83,7 +84,8 @@ end
 -- Packs a live animal: the record is { kind = "animal", animal = Animal.capture(...) } and the loaded capsule (empty
 -- inside, the animal lives only in the record) drops on the animal's square. The menu action (Play.packAnimal) and a
 -- thrown empty capsule share this. opts.capsule: the player's empty capsule, already checked by the caller (used up
--- once the record is on disk; none for debug); opts.typeId: its M.TYPES id (default the first type).
+-- once the record is on disk; none for debug); opts.typeId: its M.TYPES id (default the first type); opts.range: as in
+-- Pack.pack.
 -- Like vanilla picking up (ISPickupAnimal.complete), a wild animal of a kind that can be tamed becomes tame
 -- (setWild(false) is a no-op for the others, IsoAnimal.java:3214-3225). The animal is removed last, once record and
 -- capsule are in place (IsoAnimal.remove deletes it and tells every client).
@@ -91,7 +93,7 @@ end
 -- name } } or { ok = false, why, path? }.
 function Pack.packAnimal(player, animal, opts)
     opts = opts or {}
-    local why = M.Rules.animalWhyNot(player, animal)
+    local why = M.Rules.animalWhyNot(player, animal, opts.range)
     if why then return { ok = false, why = why } end
     local t = M.TYPE_BY_ID[tostring(opts.typeId)] or M.TYPES[1]
     local capsule = instanceItem(t.loaded)

@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "%1, (%2, %3) konumunda geri getirilsin mi? Eski kapsül bundan sonra asla açılamaz.",
     "UI_MinidoracatCapsule_AnimalLoaded": "hayvan #%1 sunucuda kayıtlı konumun yakınında",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "hayvan #%1 kayıtlı konumun yakınında değil",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Kayıtlı hayvan hâlâ kayıtlı konumun yakınında: hâlâ dünyada."
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "Kayıtlı hayvan hâlâ kayıtlı konumun yakınında: hâlâ dünyada.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "Seçilen nokta başkasının sığınağında. Başka bir yer seç."
 }

@@ -81,5 +81,15 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "das Tier ist tot oder weg",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "das Tier wird getragen oder ist in einem Stall oder Anhänger",
     "IGUI_MinidoracatCapsule_Why_ROPE": "Nimm zuerst das Seil ab",
-    "IGUI_MinidoracatCapsule_Why_WATER": "Wasser"
+    "IGUI_MinidoracatCapsule_Why_WATER": "Wasser",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "im Safehouse eines anderen",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "die Stelle liegt im Safehouse eines anderen",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "dort ist kein Tier und kein Fahrzeug",
+    "IGUI_MinidoracatCapsule_CaptureFits": "Fangen: %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "Ziel: %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "Fangen nicht möglich: %1",
+    "IGUI_MinidoracatCapsule_Captured": "Gefangen: %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nichts gefangen: %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "Die leere Kapsel ist auf den Boden gefallen.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Die Kapsel ist dir vor die Füße gefallen."
 }

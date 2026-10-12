@@ -19,7 +19,8 @@ M.Play = Play
 
 local INTENT_TTL_MS = 60000 -- queue (walk there) + action time
 local INTENTS_PER_PLAYER = 8
-local KINDS = { pack = true, packAnimal = true, throw = true, press = true }
+local KINDS = { pack = true, packAnimal = true, throw = true, press = true, capture = true }
+local TARGETS = { animal = true, vehicle = true }
 
 -- Server -> one client. SP has no channel (sendServerCommand is a no-op there): hand it to the client code directly.
 function Play.send(player, cmd, args)
@@ -70,16 +71,23 @@ end
 -- ---------------------------------------------------------------- client commands
 local Handlers = {}
 
--- args: kind ("pack" / "packAnimal" / "throw" / "press"), id (vehicle id for pack, the animal's online id for
--- packAnimal, capsule id otherwise), type (packing only: the id of the capsule type to pack with, M.TYPES; Play.pack /
--- Play.packAnimal check the player carries one and that it is enabled).
+-- args: kind ("pack" / "packAnimal" / "throw" / "press" / "capture"), id (vehicle id for pack, the animal's online id
+-- for packAnimal, capsule id otherwise), type (packing only: the id of the capsule type to pack with, M.TYPES; Play.pack
+-- / Play.packAnimal check the player carries one and that it is enabled). capture also names its target: target
+-- ("animal" / "vehicle") and tid (the animal's online id / the vehicle id); the landing finds it again near the aim.
 function Handlers.intent(player, args)
     local id = tonumber(args.id)
     if not (KINDS[args.kind] and id) then return end
+    local cap
+    if args.kind == "capture" then
+        cap = { kind = args.target, tid = tonumber(args.tid) }
+        if not (TARGETS[cap.kind] and cap.tid) then return end
+    end
     local list = liveIntents(player) or {}
     Play.intents[player:getUsername()] = list
     if #list >= INTENTS_PER_PLAYER then table.remove(list, 1) end
-    list[#list + 1] = { kind = args.kind, id = id, type = M.TYPE_BY_ID[tostring(args.type)], exp = now() + INTENT_TTL_MS }
+    list[#list + 1] = { kind = args.kind, id = id, type = M.TYPE_BY_ID[tostring(args.type)], cap = cap,
+        exp = now() + INTENT_TTL_MS }
 end
 
 -- The vehicle script (or for an animal record kind "animal" and the animal's names) of a capsule the player holds or
@@ -136,40 +144,72 @@ function Play.packAnimal(player, animal, typeId)
     return res.ok == true
 end
 
--- The capsule leaves the hand: every client nearby sees it fly, drawn and heard as its own type.
+-- The capsule leaves the hand: every client nearby sees it fly, drawn and heard as its own type (an empty one: plain).
 local function fly(action)
     local player, t = action.character, M.typeOf(action.item)
     action.flightAt = now()
     Fx.broadcast("flight", { x0 = player:getX(), y0 = player:getY(), z0 = player:getZ(),
-        x = action.x, y = action.y, z = action.z, style = t and t.index })
+        x = action.x, y = action.y, z = action.z, style = t and t.index, empty = M.isEmpty(action.item) or nil })
 end
+
+-- The target of a capture: MP from the intent (the client named it), SP from the action (Cursor.queue sets it).
+local function captureOf(action, intent)
+    if isServer() then return intent and intent.cap end
+    return action.capture
+end
+
+-- Why this throw may not go ahead, or nil. A loaded capsule: the aim point in range and in sight, and its ground
+-- outside other players' safehouses (spec C). An empty capsule (capture, spec B): the target it names on or next to
+-- the aim point, and every rule packing it by menu has (Rules.captureWhyNot). Asked at the release (a refused throw
+-- shows no flight) and in complete (a refused one is never scheduled: the capsule stays in the inventory).
+local function throwWhyNot(action, intent)
+    local player, item, x, y, z = action.character, action.item, action.x, action.y, action.z
+    local px, py, pz = player:getX(), player:getY(), player:getZ()
+    local why = Footprint.reach(px, py, pz, x, y, z, Rules.THROW_RANGE + 1, true)
+    if why then return why end
+    if M.isEmpty(item) then
+        local cap = captureOf(action, intent)
+        local thing = cap and Footprint.find(cap, x, y, z)
+        if not thing then return "NO_TARGET" end
+        return Rules.captureWhyNot(player, thing, cap.kind == "animal", M.typeOf(item))
+    end
+    return Throw.safehouse(player, Store.read(item:getID()), x, y, z, Footprint.dirOf(x - px, y - py))
+end
+
+local function intentKind(item) return M.isEmpty(item) and "capture" or "throw" end
 
 -- ISThrowCapsuleAction release (server / SP).
 function Play.released(action)
     local item = action.item
-    if not (item and Play.hasIntent(action.character, "throw", item:getID())) then return end
+    if not item then return end
+    local intent = {} -- SP: no intents (Play.takeIntent)
+    if isServer() then intent = findIntent(action.character, intentKind(item), item:getID()) end
+    if not intent or throwWhyNot(action, intent) then return end
     fly(action)
 end
 
--- ISThrowCapsuleAction complete: re-check the capsule and the spot, then land FLIGHT_MS after the release.
+-- ISThrowCapsuleAction complete: re-check the capsule, the spot (and a capture's target), then land FLIGHT_MS after the
+-- release. A refusal leaves the capsule in the inventory and tells the player why.
 function Play.throw(action)
     local player, item, x, y, z = action.character, action.item, action.x, action.y, action.z
     local id = item and item:getID()
-    if not (item and M.isLoaded(item) and player:getInventory():containsID(id)) then
+    if not (item and (M.isLoaded(item) or M.isEmpty(item)) and player:getInventory():containsID(id)) then
         return refuse(player, "throw", "NO_CAPSULE", id)
     end
-    if not Play.takeIntent(player, "throw", id) then return refuse(player, "throw", "NO_INTENT", id) end
-    local px, py, pz = player:getX(), player:getY(), player:getZ()
-    local why = Footprint.reach(px, py, pz, x, y, z, Rules.THROW_RANGE + 1, true)
+    local kind = intentKind(item)
+    local intent = Play.takeIntent(player, kind, id)
+    if not intent then return refuse(player, kind, "NO_INTENT", id) end
+    local why = throwWhyNot(action, intent)
     if why then
-        Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = "throw" })
-        return refuse(player, "throw", why, id)
+        Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = kind })
+        return refuse(player, kind, why, id)
     end
     -- No release event: the admin power "timed action instant" ends the action on its first tick, before the clip
     -- or the server's emulated events. The intent is already taken, so fly here (Play.released would refuse).
     if not action.flightAt then fly(action) end
-    Throw.schedule({ player = player, capsuleId = id, x = x, y = y, z = z, mode = "throw",
-        dir = Footprint.dirOf(x - px, y - py) }, action.flightAt + Throw.FLIGHT_MS)
+    local px, py = player:getX(), player:getY()
+    Throw.schedule({ player = player, capsuleId = id, x = x, y = y, z = z, mode = kind,
+        dir = Footprint.dirOf(x - px, y - py), cap = captureOf(action, intent) }, action.flightAt + Throw.FLIGHT_MS)
     return true
 end
 
@@ -181,13 +221,14 @@ function Play.press(player, capsuleId, x, y, z)
     local sq = wo and wo:getSquare()
     if not (sq and M.isLoaded(capsule)) then return refuse(player, "press", "NO_CAPSULE", capsuleId) end
     local cx, cy = sq:getX() + 0.5, sq:getY() + 0.5
+    local dir = Footprint.dirOf(x - cx, y - cy)
     local why = Footprint.reach(cx, cy, sq:getZ(), x, y, z, Rules.PRESS_RANGE + 0.5, false)
+        or Throw.safehouse(player, Store.read(capsuleId), x, y, z, dir)
     if why then
         Play.send(player, "landed", { ok = false, why = why, capsuleId = capsuleId, mode = "press" })
         return refuse(player, "press", why, capsuleId)
     end
-    Throw.schedule({ player = player, capsuleId = capsuleId, x = x, y = y, z = z, mode = "press",
-        dir = Footprint.dirOf(x - cx, y - cy) }, now())
+    Throw.schedule({ player = player, capsuleId = capsuleId, x = x, y = y, z = z, mode = "press", dir = dir }, now())
     return true
 end
 

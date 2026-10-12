@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restore %1 at (%2, %3)? The old capsule can never be unpacked afterwards.",
     "UI_MinidoracatCapsule_AnimalLoaded": "animal #%1 is near its recorded spot on the server",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "animal #%1 is not near its recorded spot",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "The recorded animal is still near its recorded spot: it is still in the world."
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "The recorded animal is still near its recorded spot: it is still in the world.",
+    "UI_MinidoracatCapsule_Why_SAFEHOUSE": "The chosen spot is in someone else's safehouse. Pick another one."
 }

@@ -81,5 +81,15 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "동물이 죽었거나 사라졌습니다",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "누군가 동물을 들고 있거나, 우리나 트레일러 안에 있습니다",
     "IGUI_MinidoracatCapsule_Why_ROPE": "먼저 밧줄을 푸십시오",
-    "IGUI_MinidoracatCapsule_Why_WATER": "물 위"
+    "IGUI_MinidoracatCapsule_Why_WATER": "물 위",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "다른 사람의 은신처 안입니다",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "그 위치는 다른 사람의 은신처 안입니다",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "그곳에 동물이나 차량이 없습니다",
+    "IGUI_MinidoracatCapsule_CaptureFits": "포획: %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "대상: %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "포획할 수 없음: %1",
+    "IGUI_MinidoracatCapsule_Captured": "포획했습니다: %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "아무것도 포획하지 못했습니다: %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "빈 캡슐이 땅에 떨어졌습니다.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. 캡슐이 발밑에 떨어졌습니다."
 }

@@ -2,5 +2,6 @@
     "ContextMenu_MinidoracatCapsule_Pack": "캡슐에 넣기",
     "ContextMenu_MinidoracatCapsule_Throw": "캡슐 던지기",
     "ContextMenu_MinidoracatCapsule_Press": "버튼 누르기",
-    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2"
+    "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatCapsule_Capture": "던져서 포획"
 }

@@ -81,5 +81,15 @@
     "IGUI_MinidoracatCapsule_Why_NO_ANIMAL": "животное мертво или исчезло",
     "IGUI_MinidoracatCapsule_Why_ANIMAL_AWAY": "животное несут на руках, или оно в курятнике или прицепе",
     "IGUI_MinidoracatCapsule_Why_ROPE": "Сначала снимите верёвку",
-    "IGUI_MinidoracatCapsule_Why_WATER": "вода"
+    "IGUI_MinidoracatCapsule_Why_WATER": "вода",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE": "в чужом убежище",
+    "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE": "это место в чужом убежище",
+    "IGUI_MinidoracatCapsule_Why_NO_TARGET": "там нет ни животного, ни транспорта",
+    "IGUI_MinidoracatCapsule_CaptureFits": "Поймать: %1",
+    "IGUI_MinidoracatCapsule_CaptureTarget": "Цель: %1",
+    "IGUI_MinidoracatCapsule_CaptureNoFit": "Нельзя поймать: %1",
+    "IGUI_MinidoracatCapsule_Captured": "Поймано: %1",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Ничего не поймано: %1",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "Пустая капсула упала на землю.",
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Капсула упала вам под ноги."
 }
