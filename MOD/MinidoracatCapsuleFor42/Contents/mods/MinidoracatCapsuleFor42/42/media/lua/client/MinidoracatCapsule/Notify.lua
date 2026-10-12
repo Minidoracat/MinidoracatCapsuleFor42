@@ -125,7 +125,7 @@ end
 local function captured(args)
     if args.ok then
         local name = args.kind == "animal" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
-        Notify.toast(getText("IGUI_MinidoracatCapsule_Captured", name))
+        Notify.toast(getText("IGUI_MinidoracatCapsule_Captured", name), getText("IGUI_MinidoracatCapsule_CapturedHere"))
         return
     end
     local text = Notify.reason(args.why)
@@ -133,7 +133,7 @@ local function captured(args)
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
     Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed", text),
-        args.dropped and getText("IGUI_MinidoracatCapsule_CaptureDropped") or nil, true, 8000)
+        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept"), true, 8000)
 end
 
 function Handlers.landed(args)

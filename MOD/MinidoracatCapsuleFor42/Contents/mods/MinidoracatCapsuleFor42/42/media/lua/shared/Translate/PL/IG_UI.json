@@ -91,5 +91,7 @@
     "IGUI_MinidoracatCapsule_Captured": "Złapano: %1",
     "IGUI_MinidoracatCapsule_CaptureFailed": "Nic nie złapano: %1",
     "IGUI_MinidoracatCapsule_CaptureDropped": "Pusta kapsuła spadła na ziemię.",
-    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Kapsuła spadła ci pod nogi."
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Kapsuła spadła ci pod nogi.",
+    "IGUI_MinidoracatCapsule_CapturedHere": "Kapsuła leży tam, gdzie stał cel.",
+    "IGUI_MinidoracatCapsule_CaptureKept": "Pusta kapsuła wciąż jest w twoim ekwipunku."
 }

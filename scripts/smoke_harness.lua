@@ -2173,7 +2173,8 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         IG_UI = { "IGUI_MinidoracatCapsule_Why_SAFEHOUSE", "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE",
             "IGUI_MinidoracatCapsule_Why_NO_TARGET", "IGUI_MinidoracatCapsule_CaptureFits", "IGUI_MinidoracatCapsule_CaptureTarget",
             "IGUI_MinidoracatCapsule_CaptureNoFit", "IGUI_MinidoracatCapsule_Captured", "IGUI_MinidoracatCapsule_CaptureFailed",
-            "IGUI_MinidoracatCapsule_CaptureDropped", "IGUI_MinidoracatCapsule_DroppedAtFeet" },
+            "IGUI_MinidoracatCapsule_CaptureDropped", "IGUI_MinidoracatCapsule_DroppedAtFeet",
+            "IGUI_MinidoracatCapsule_CapturedHere", "IGUI_MinidoracatCapsule_CaptureKept" },
         ContextMenu = { "ContextMenu_MinidoracatCapsule_Capture" },
         UI = { "UI_MinidoracatCapsule_Why_SAFEHOUSE" },
     }

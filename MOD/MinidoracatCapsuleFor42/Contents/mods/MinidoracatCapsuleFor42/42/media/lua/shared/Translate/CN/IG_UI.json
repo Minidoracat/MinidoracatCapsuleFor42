@@ -91,5 +91,7 @@
     "IGUI_MinidoracatCapsule_Captured": "抓到了：%1",
     "IGUI_MinidoracatCapsule_CaptureFailed": "没抓到：%1",
     "IGUI_MinidoracatCapsule_CaptureDropped": "空胶囊掉在地上了。",
-    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1。胶囊掉在你脚边。"
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1。胶囊掉在你脚边。",
+    "IGUI_MinidoracatCapsule_CapturedHere": "胶囊就落在目标原本的位置。",
+    "IGUI_MinidoracatCapsule_CaptureKept": "空胶囊还在你的背包里。"
 }

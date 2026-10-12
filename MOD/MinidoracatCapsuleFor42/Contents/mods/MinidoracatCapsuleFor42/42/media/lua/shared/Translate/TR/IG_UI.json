@@ -91,5 +91,7 @@
     "IGUI_MinidoracatCapsule_Captured": "Yakalandı: %1",
     "IGUI_MinidoracatCapsule_CaptureFailed": "Hiçbir şey yakalanmadı: %1",
     "IGUI_MinidoracatCapsule_CaptureDropped": "Boş kapsül yere düştü.",
-    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Kapsül ayaklarının dibine düştü."
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Kapsül ayaklarının dibine düştü.",
+    "IGUI_MinidoracatCapsule_CapturedHere": "Kapsül hedefin durduğu yerde.",
+    "IGUI_MinidoracatCapsule_CaptureKept": "Boş kapsül hâlâ envanterinde."
 }

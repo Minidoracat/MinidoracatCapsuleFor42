@@ -91,5 +91,7 @@
     "IGUI_MinidoracatCapsule_Captured": "포획했습니다: %1",
     "IGUI_MinidoracatCapsule_CaptureFailed": "아무것도 포획하지 못했습니다: %1",
     "IGUI_MinidoracatCapsule_CaptureDropped": "빈 캡슐이 땅에 떨어졌습니다.",
-    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. 캡슐이 발밑에 떨어졌습니다."
+    "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. 캡슐이 발밑에 떨어졌습니다.",
+    "IGUI_MinidoracatCapsule_CapturedHere": "캡슐은 대상이 있던 자리에 떨어져 있습니다.",
+    "IGUI_MinidoracatCapsule_CaptureKept": "빈 캡슐은 아직 소지품에 있습니다."
 }
