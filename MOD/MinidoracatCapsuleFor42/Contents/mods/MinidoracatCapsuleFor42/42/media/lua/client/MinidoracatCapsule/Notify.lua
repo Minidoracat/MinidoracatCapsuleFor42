@@ -23,11 +23,13 @@ local function remember(kind, title, text)
 end
 
 -- holdMs: how long it stays (framework default 3 s); failures the player must act on go to Notify.dialog instead.
+-- No text: the title alone is the message, without a title bar (the toast needs a message; title and message both set
+-- showed the line twice, e.g. "Unpacked: X" with ReturnEmptyCapsule off).
 function Notify.toast(title, text, bad, holdMs)
     remember(bad and "toast-bad" or "toast", title, text)
     local UI = ui()
     if UI and UI.CAPABILITIES.toast then
-        UI.Toast.show({ title = title, message = text or title, maxLines = 4, holdMs = holdMs })
+        UI.Toast.show({ title = text and title or nil, message = text or title, maxLines = 4, holdMs = holdMs })
         return
     end
     local player = getPlayer()

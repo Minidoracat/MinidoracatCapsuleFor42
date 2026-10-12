@@ -1965,6 +1965,30 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         for _, s in ipairs({ names, says("Tooltip", "Tooltip_MinidoracatCapsule_PackedBy"), says("UI", "UI_MinidoracatCapsule_Ev_PACKED") }) do
             if s:find("收車", 1, true) or s:find("收车", 1, true) then missing[#missing + 1] = lang .. ":vehicle-only wording" end
         end
+        -- strings a player also sees on an animal record or capsule: in EN, CH and CN a vehicle word only together with
+        -- "animal" (the VOID tooltip, admin verdicts and the type switches said "vehicle" only until the merge pass)
+        local word = ({ EN = { "vehicle", "animal" }, CH = { "車", "動物" }, CN = { "车", "动物" } })[lang]
+        if word then
+            local shared = {
+                Tooltip = { "Loading", "Far", "Restored", "Void", "TypeOff" },
+                IG_UI = { "UsedBody", "State_RESTORED", "Trade_NO_RECORD", "Trade_NOT_PACKED", "Trade_UNCERTAIN",
+                    "Why_NO_FLOOR", "Why_SPAWN", "TypeOffRow", "Why_TYPE_OFF" },
+                UI = { "Why_BLOCKED", "Why_PICK_BLOCKED", "Verdict_present", "Verdict_missing", "VerdictPresent",
+                    "VerdictMissing", "UncertainHelp", "TypeUseTip", "TypeOffLine" },
+                Sandbox = { "ReturnEmptyCapsule_tooltip", "RecordRetentionDays_tooltip" },
+            }
+            for _, t in ipairs(M.TYPES) do
+                table.insert(shared.Sandbox, "Type" .. t.id)
+                table.insert(shared.Sandbox, "Type" .. t.id .. "_tooltip")
+            end
+            for file, keys in pairs(shared) do
+                for _, k in ipairs(keys) do
+                    local s = says(file, PREFIX[file] .. k):lower()
+                    local car = s:find(word[1], 1, true) or (lang == "EN" and s:find("%f[%a]car%f[%A]"))
+                    if s == "" or (car and not s:find(word[2], 1, true)) then missing[#missing + 1] = lang .. ":" .. k end
+                end
+            end
+        end
     end
     -- the panel's message after an animal restore (Admin.restore answers animalId) is the animal one
     local panel = io.open(MEDIA .. "/client/MinidoracatCapsule/AdminPanel.lua", "rb")
@@ -1975,7 +1999,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local sbText = sandboxTxt:read("*a")
     sandboxTxt:close()
     check(#missing == 0 and sbText:find("option MinidoracatCapsule%.AllowAnimals%s*{type = boolean, default = true, page = MinidoracatCapsule,") ~= nil,
-        "16 種語言都有動物的新字串、裝填名稱不再寫「收車」；沙盒 AllowAnimals 布林、預設開、在主頁（"
+        "16 種語言都有動物的新字串、裝填名稱不再寫「收車」、與動物共用的字串不只寫車（EN／CH／CN）；沙盒 AllowAnimals 布林、預設開、在主頁（"
         .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
 animals()
@@ -2216,6 +2240,29 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(#missing == 0, "16 種語言都有抓取與安全屋的字串（" .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
 captureCases()
+
+print("Notify：Toast 沒有第二行時只寫一次")
+local function toastCases() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local saved, shown = MinidoracatUI, {}
+    MinidoracatUI = { v1 = { API_MAJOR = 1, API_REVISION = 18, CAPABILITIES = { toast = true },
+        Toast = { show = function(o) shown[#shown + 1] = o end } } }
+    loaded["MinidoracatUI/V1"] = true
+    -- Info and Effects pull in vanilla UI classes; the toast only needs the animal's name
+    loaded["MinidoracatCapsule/Info"], loaded["MinidoracatCapsule/Effects"] = true, true
+    local savedInfo = M.Info
+    M.Info = { animalName = function(a) return a.name end }
+    require "MinidoracatCapsule/Notify"
+    -- unpacked with ReturnEmptyCapsule off (no "empty capsule is back" line), then on
+    local cow = { type = "cow", name = "E2E Bessie" }
+    M.onServerCommand("landed", { ok = true, mode = "throw", kind = "animal", animal = cow })
+    M.onServerCommand("landed", { ok = true, mode = "throw", kind = "animal", animal = cow, returned = true })
+    local one, two = shown[1] or {}, shown[2] or {}
+    check(#shown == 2 and one.title == nil and one.message == "IGUI_MinidoracatCapsule_Unpacked"
+        and two.title == "IGUI_MinidoracatCapsule_Unpacked" and two.message == "IGUI_MinidoracatCapsule_EmptyBack",
+        "展開的 Toast：ReturnEmptyCapsule 關掉時只有一行（標題不再當內文重複），開著時標題＋空膠囊回來")
+    MinidoracatUI, M.Info = saved, savedInfo
+end
+toastCases()
 
 print()
 if failures > 0 then
