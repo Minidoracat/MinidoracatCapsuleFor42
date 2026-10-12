@@ -1,16 +1,17 @@
 <!-- Steam guide source (English): the full reference for this mod; the Workshop description only summarizes. Format and sync: pz-family-docs/release.md「完整說明：Steam 指南」 -->
 <!-- 標題：📖 Universal Capsule Mod Guide: Packing, Unpacking & Recovery -->
-<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules, packing vehicles, throwing capsules and Press the Button, cargo, the tooltip and 3D preview, trading vehicles in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and what happens after a crash. -->
+<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules, packing vehicles and animals, throwing capsules and Press the Button, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
 === 🚀 Quick start
 [b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]萬用膠囊 MOD 完整說明[/url]
 
 The mod on Steam Workshop:
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
-Universal Capsule lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need the vehicle, and it appears exactly as it was, with its mods, condition and cargo. Packed vehicles are not in the world, so busy bases run smoother too.
+Universal Capsule lets you pack a parked vehicle or a live animal into a capsule and carry it around. Throw the capsule when you need it: a vehicle appears exactly as it was, with its mods, condition and cargo, and an animal comes back just as you packed it. Packed vehicles are not in the world, so busy bases run smoother too.
 [olist]
 [*] [b]Get an empty capsule[/b]: loot, an admin or the Economy Center; see "Getting capsules".
 [*] [b]Pack[/b]: park, turn the engine off, make sure nobody is inside, carry an empty capsule, then right-click the vehicle and choose "Pack into Capsule". After about 10 seconds the vehicle is packed and the capsule drops where the vehicle stood.
+[*] [b]Pack an animal[/b]: right-click a live animal, open that animal's submenu and choose "Pack into Capsule"; see "Packing an animal".
 [*] [b]Throw[/b]: pick up the capsule. When you need the vehicle, right-click the capsule in your inventory and choose "Throw Capsule"; the cursor outlines the vehicle, and you left-click when the outline is green.
 [*] [b]Too heavy to pick up?[/b] Right-click it on the ground and choose "Press the Button"; the vehicle appears next to it.
 [/olist]
@@ -18,7 +19,7 @@ Universal Capsule lets you pack a parked vehicle into a capsule and carry it aro
 [list]
 [*] [b]Loot[/b]: all seven kinds of empty capsule show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Each location's share is split evenly over the types that are on. Servers can toggle each location and tune its weight; see "Sandbox options and defaults".
 [*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatCapsule.Capsule<Type>[/b], for example CapsuleCartoon) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule in the Economy Center.
-[*] [b]Loaded capsules[/b]: can be listed or auctioned too; see "Trading vehicles in the Economy Center".
+[*] [b]Capsules holding a vehicle or an animal[/b]: can be listed or auctioned too; see "Trading vehicles and animals in the Economy Center".
 [*] [b]From admins[/b]: hand out empty capsules with the vanilla item list or the /additem command.
 [/list]
 [h3]Seven capsule types[/h3]
@@ -27,7 +28,7 @@ Universal Capsule lets you pack a parked vehicle into a capsule and carry it aro
 [*] [b]Same function[/b]: requirements, time, permission and records are the same; only the look, the smoke and the four sounds (throw, pop, pack, button) differ.
 [*] [b]Everyone sees the same type[/b]: the type you pack with is the smoke nearby players see when packing, throwing and unpacking.
 [*] [b]After unpacking[/b]: the empty capsule you get back is the same type.
-[*] [b]A type an admin switched off[/b]: can't pack vehicles any more; loaded ones still throw and unpack with the button. Its empty capsule's tooltip says so.
+[*] [b]A type an admin switched off[/b]: can't pack vehicles or animals any more; loaded ones still throw and unpack with the button. Its empty capsule's tooltip says so.
 [/list]
 === 🧰 Packing a vehicle
 [h3]Menu and requirements[/h3]
@@ -70,6 +71,54 @@ Universal Capsule lets you pack a parked vehicle into a capsule and carry it aro
 [*] The cargo in every container on the vehicle
 [/list]
 Vanilla and modded vehicles such as KI5's work the same way.
+=== 🧰 Packing an animal
+[h3]Menu and requirements[/h3]
+[list]
+[*] [b]The menu[/b]: right-click a live animal in the world. The vanilla menu has one entry per animal; open that animal's submenu and "Pack into Capsule" is at the end.
+[*] [b]Each requirement listed[/b]: hover the option; the tooltip shows the empty capsule in your inventory and the animal's state, says what is wrong, and the option stays grayed out until it's fixed.
+[*] [b]Requirements[/b]:
+[list]
+[*] An empty capsule in your inventory (bags count) of a type an admin has not switched off
+[*] The server has "Allow packing animals" on
+[*] The animal is alive and out in the world (not being carried, not in a hutch or a trailer)
+[*] No rope on it (untie it first)
+[*] You are not in a vehicle
+[/list]
+[*] [b]Can't be packed[/b]: dead animals and animals on a butcher hook.
+[*] [b]Who can pack[/b]: any player, no key or permission needed; tame or wild, young or grown.
+[*] [b]Choosing a type[/b]: with empty capsules of two or more types, "Pack into Capsule" opens a submenu with one entry per type.
+[/list]
+[h3]Packing[/h3]
+[list]
+[*] [b]Time[/b]: your character walks next to the animal, then about 10 seconds; the animal stays put meanwhile.
+[*] [b]The server checks again[/b]: the animal's state, the switch and the empty capsule; it only packs when everything passes, saves the animal first and removes it from the world last.
+[*] [b]Afterwards[/b]: the empty capsule you used becomes a loaded capsule of the same type and drops where the animal stood.
+[*] [b]Capsule name[/b]: "Type: name"; an unnamed animal goes by its breed and kind the vanilla way. Every player sees it in their own game language.
+[*] [b]Wild animals[/b]: a wild animal that can be domesticated (a wild rabbit, for example) becomes tame when packed, just like picking it up in vanilla; animals that can't be domesticated, such as deer, stay wild.
+[*] [b]Weight[/b]: the animal is not inside the capsule, so a capsule holding one weighs the same as an empty one.
+[/list]
+[h3]What is kept[/h3]
+[list]
+[*] Name, breed, sex
+[*] Age, size and weight
+[*] Health, hunger and thirst, stress
+[*] Genes and genetic disorders
+[*] Milk, wool
+[*] Pregnancy and fertilization, and how far along they are
+[/list]
+[h3]What is not kept[/h3]
+[list]
+[*] [b]Time stands still in a capsule[/b]: a packed animal doesn't grow, get hungry or move along in a pregnancy; it comes out just as it went in.
+[*] [b]Vanilla timers restart[/b]: the milking and petting intervals, the eggs laid that day, and breeding cooldowns.
+[*] [b]Herd[/b]: which herd a wild animal belonged to is not kept.
+[*] [b]Coat pattern (multiplayer)[/b]: vanilla lets each player's game pick the pattern, so after release different players may see different patterns.
+[/list]
+[h3]When an admin switches animal packing off[/h3]
+[list]
+[*] [b]The switch[/b]: the sandbox option "Allow packing animals" (on by default), also in the admin panel's "Settings" tab.
+[*] [b]When off[/b]: the option is grayed out with "An admin switched off packing animals".
+[*] [b]Capsules already holding an animal[/b]: can still be thrown, pressed and restored by admins.
+[/list]
 === 🧰 Throwing and pressing
 [h3]Throwing a capsule[/h3]
 [list]
@@ -100,6 +149,16 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]Thrown[/b]: the capsule drops on the landing spot. Pick a clear spot and press the button on the ground, or pick it up and throw again.
 [*] [b]Pressed[/b]: the capsule stays where it is; pick a clear spot and press again.
 [*] [b]Nothing is lost[/b]: the vehicle and the cargo stay in the capsule.
+[/list]
+=== 🧰 Releasing an animal
+[list]
+[*] [b]Throwing[/b]: same as a vehicle: right-click the capsule in your inventory and choose "Throw Capsule"; the spot must be within about 8 tiles of you and in sight, and the cursor marks a single square.
+[*] [b]Press the Button[/b]: right-click the capsule on the ground and choose "Press the Button"; the animal appears on the square you pick within about 3 tiles of the capsule.
+[*] [b]Landing spot[/b]: one free square is enough. Water, under a vehicle, a tree, no ground, something in the way or an area not loaded yet won't do; indoors is fine.
+[*] [b]Landing[/b]: the capsule lands with smoke and a flash, the animal appears as it was, and the screen says "Unpacked: <name>".
+[*] [b]Empty capsule back[/b]: with "Return an empty capsule after unpacking" on (the default), an empty capsule of the same type goes back into your inventory.
+[*] [b]No room[/b]: if the spot is blocked on landing, no animal appears and a "No room for the animal here" window gives the reason. A thrown capsule drops on the spot and a pressed one stays where it is; try another free square, the animal is still in the capsule.
+[*] [b]No 3D preview[/b]: a capsule holding an animal has no "Preview vehicle" in its menu.
 [/list]
 === 🧰 Cargo
 [h3]Kept as it was[/h3]
@@ -143,13 +202,18 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]Capsules on the ground[/b]: walk closer to see the details.
 [*] [b]Other states[/b]: an empty capsule tells you its type and how to pack, with a "!" line when an admin switched its type off; already unpacked, restored by an admin, unconfirmed after a crash, or data missing on this server are all spelled out.
 [/list]
+[h3]Capsules holding an animal[/h3]
+[list]
+[*] [b]It lists[/b]: the type, the animal's kind and breed, name, sex, age, weight, health, milk (when it can be milked), wool (when it has some), whether it is wild, and who packed it.
+[*] [b]Pregnancy and fertilization[/b]: as in vanilla, only shown to players with Husbandry level 3 or higher.
+[/list]
 [h3]3D preview[/h3]
 [list]
 [*] [b]Open it[/b]: right-click a capsule and choose "Preview vehicle".
 [*] [b]Controls[/b]: left-drag to rotate, right-drag to pan, scroll to zoom, double-click to reset, or use the front, side and top view buttons.
 [*] [b]It shows the model, not this vehicle[/b]: the preview draws the vehicle type's default look with every optional part, not this vehicle's actual paint and parts; the list next to it shows this vehicle's real state.
 [/list]
-=== 🧰 Trading vehicles in the Economy Center
+=== 🧰 Trading vehicles and animals in the Economy Center
 [list]
 [*] [b]Needs a recent Minidoracat Economy[/b]: a loaded capsule can be listed on the market or put up for auction, cargo included. Older Economy versions still refuse loaded capsules.
 [*] [b]What buyers see[/b]: market and auction listings show the vehicle and its condition (engine and body, fuel, battery, number of missing parts, number of cargo items).
@@ -158,6 +222,14 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]One capsule per listing[/b]: every capsule holds a different vehicle, so each one is its own listing; buy requests can't take them and the shop doesn't buy them.
 [*] [b]When listing is refused[/b]: in the first seconds after packing, while a record is unconfirmed after a crash, or when the cargo holds something the Economy Center can't carry (for example written paper, mixed liquids, a radio with a disc inside, or more than 300 cargo items). The item picker says why; unpack, take that item out and pack again.
 [*] [b]Weapon attachments[/b]: attachments come off when the capsule is listed and stay in the weapon's container, so the buyer gets the weapon and its attachments separately.
+[/list]
+[h3]Capsules holding an animal[/h3]
+[list]
+[*] [b]Listed and auctioned the same way[/b]: with a recent Minidoracat Economy, a capsule holding an animal can be listed on the market or put up for auction.
+[*] [b]What buyers see[/b]: the type, the name, and the animal's kind and breed, sex, age, weight, health, milk, wool and whether it is wild; pregnancy is not shown on the listing.
+[*] [b]The buyer gets that very animal[/b]: the capsule they receive has the same number; thrown, it's that animal, in the same state as when it was listed.
+[*] [b]One capsule per listing[/b]: as with vehicles, buy requests can't take them and the shop doesn't buy them; listing is refused in the first seconds after packing and while a record is unconfirmed after a crash.
+[*] [b]Not sold[/b]: the capsule comes back unchanged.
 [/list]
 === 🧰 Performance
 [list]
@@ -173,6 +245,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [tr][td]Who can pack vehicles[/td][td]Key holders[/td][td]The key in the inventory or in the ignition; can be set to "Anyone" or "Admins only"[/td][/tr]
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
+[tr][td]Allow packing animals[/td][td]On[/td][td]Players can pack live animals into capsules from the animal's menu; off only stops packing animals, and capsules already holding one can still be thrown, pressed and restored by admins[/td][/tr]
 [tr][td]Days to keep closed records[/td][td]30 days (1–90)[/td][td]Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this; packed and unconfirmed records are always kept[/td][/tr]
 [/table]
 [list]
@@ -221,14 +294,14 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [/list]
 [h3]Settings, Types and Loot[/h3]
 [list]
-[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
+[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, allow packing animals, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
 [*] [b]Types[/b]: one row per capsule type with its "Use" (packing) and "Loot" switches.
 [*] [b]Preview[/b]: press a row's "Preview": the panel steps aside and a capsule of that type is thrown beside you, seen by you only. It works before you press "Apply" too.
 [*] [b]List...[/b]: with Minidoracat Economy installed, opens a product draft for that empty capsule on the Economy Center's shop page; set the price there. A type already on sale is skipped.
 [*] [b]Loot[/b]: the on/off switch and weight of each of the four locations; after "Apply", newly opened containers follow the new settings right away.
 [*] [b]Permission[/b]: these are the same values as the vanilla sandbox options; changing them needs the right to change sandbox settings.
 [/list]
-=== ⚙️ Restoring a vehicle
+=== ⚙️ Restoring a vehicle or an animal
 [list]
 [*] [b]When[/b]: the capsule is gone (lost by the player, removed by a cleanup mod, or this mod was removed and reinstalled), or a server rollback made the vehicle disappear.
 [*] [b]When a player dies[/b]: the capsule stays on the body or on the ground; if it can be found, there's nothing to restore.
@@ -250,6 +323,14 @@ Records that are unconfirmed after a crash need "I checked on site" ticked first
 [*] [b]Never an extra vehicle[/b]: restoring makes the original capsule void at the same time, so it can't be unpacked even if it turns up later.
 [*] [b]Refused if the vehicle exists[/b]: if the server can find the recorded vehicle in the world, the restore is refused.
 [*] [b]Not while trading[/b]: a capsule that is listed or up for auction in the Economy Center can't be restored; the seller cancels the listing first, or the auction ends.
+[/list]
+[h3]Restoring an animal[/h3]
+[list]
+[*] [b]The button[/b]: for an animal capsule's record the button reads "Restore animal" and works like restoring a vehicle.
+[*] [b]Landing spot[/b]: the cursor marks a single square and the white frame is the recorded spot; as when releasing an animal, water or under a vehicle won't do, and indoors is fine.
+[*] [b]Written back[/b]: the animal appears with its recorded state; the time in the capsule doesn't count here either.
+[*] [b]Refused if the animal exists[/b]: if the server can find that animal near its recorded spot, the restore is refused; it only finds loaded animals, so check on site before deciding.
+[*] [b]Go to the recorded spot[/b]: teleports you two tiles east of the spot.
 [/list]
 === ⚙️ Unconfirmed after a crash
 [list]
@@ -275,7 +356,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === ⚙️ Recommended setup
 [list]
-[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up: [b]MinidoracatCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic and LoadedCapsuleShock (each with the MinidoracatCapsule. prefix).
+[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules (the same seven hold vehicles and animals) to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up: [b]MinidoracatCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic and LoadedCapsuleShock (each with the MinidoracatCapsule. prefix).
 [*] [b]Other ground-cleanup mods[/b]: please exclude these seven items there too.
 [*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatCapsule/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
 [*] [b]If that folder is deleted[/b]: packed vehicles can't be restored.
@@ -286,10 +367,13 @@ Select the record, check on site, tick "I checked on site", then press:
 [*] [b]3D preview[/b]: draws the vehicle type's default look, not the actual paint and parts.
 [*] [b]"Timed action instant"[/b]: with this admin power on, packing and pressing finish at once and a thrown capsule has no throwing animation (the capsule still flies and unpacks).
 [*] [b]Can't be packed[/b]: vehicles that are towing or being towed, carry animals in a trailer, have the engine running or have someone inside.
-[*] [b]Where it unpacks[/b]: not indoors; a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle within about 3 tiles of the capsule.
+[*] [b]Animals that can't be packed[/b]: dead, on a butcher hook, being carried, in a hutch or a trailer, or tied with a rope.
+[*] [b]Animal timers[/b]: time stands still in a capsule; after release the milking and petting intervals, the eggs laid that day and breeding cooldowns start over, and a wild animal's herd is not kept.
+[*] [b]Animal coat (multiplayer)[/b]: vanilla lets each player's game pick the pattern, so after release different players may see different patterns.
+[*] [b]Where it unpacks[/b]: vehicles not indoors (animals can be); a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle or animal within about 3 tiles of the capsule.
 [*] [b]Vehicle mod removed[/b]: capsules holding its vehicles can't unpack (the tooltip says the server doesn't have this vehicle type); they work again once the vehicle mod is back.
 [*] [b]Economy Center[/b]: loaded capsules can only be listed or auctioned: buy requests can't take them and the shop doesn't buy them, and a capsule whose cargo holds something the Economy Center can't carry has to be unpacked first. A recent Minidoracat Economy is needed; older versions refuse loaded capsules.
-[*] [b]Capsule name[/b]: "Type: vehicle" appears once the inventory or loot window lists the capsule; Economy Center lists title it with the item's own name (for example "Steam Capsule (Loaded)") and put the vehicle on the next line.
+[*] [b]Capsule name[/b]: "Type: vehicle" or "Type: animal" appears once the inventory or loot window lists the capsule; Economy Center lists title it with the item's own name (for example "Steam Capsule (Loaded)") and put the vehicle or animal on the next line.
 [*] [b]Restoring[/b]: brings back the vehicle, not the cargo; the server only finds vehicles that are loaded nearby, so check on site before deciding.
 [*] [b]"Last seen"[/b]: only records the moment the server saw the capsule: one in a container or vehicle updates when someone opens that container, and who took it afterwards or where it went is not known.
 [*] [b]After unpacking[/b]: this mod doesn't track the vehicle; use Vehicle Manager for owners and locations.
@@ -297,8 +381,8 @@ Select the record, check on site, tick "I checked on site", then press:
 === ❓ FAQ
 [h3]Removing this mod?[/h3]
 [list]
-[*] Unpack every capsule first, then remove it. Capsules that are still packed disappear along with their cargo.
-[*] The server records remain, so if you reinstall the mod later, admins can restore the vehicles from the admin panel, but not the cargo.
+[*] Release every vehicle and animal from its capsule first, then remove it. Capsules that are still packed disappear along with what they hold.
+[*] The server records remain, so if you reinstall the mod later, admins can restore the vehicles and animals from the admin panel, but not the vehicles' cargo.
 [/list]
 [h3]My capsule is gone. What now?[/h3]
 [list]
@@ -346,6 +430,20 @@ Select the record, check on site, tick "I checked on site", then press:
 [*] Packing, unpacking and restoring are all validated by the server.
 [*] The vehicle data lives only on the server, and the capsule itself only carries its name.
 [/list]
+[h3]Do packed animals grow or get hungry?[/h3]
+[list]
+[*] No. Time stands still in a capsule; the animal comes out just as it went in.
+[*] The milking and petting intervals and breeding cooldowns start over.
+[/list]
+[h3]Does a packed wild animal become mine?[/h3]
+[list]
+[*] One that can be domesticated (a wild rabbit, for example) becomes tame, just like picking it up in vanilla.
+[*] Animals that can't be domesticated, such as deer, stay wild.
+[/list]
+[h3]Why can't I pack this animal?[/h3]
+[list]
+[*] Hover the option and read the tooltip: the server may have "Allow packing animals" off, you may have no empty capsule, or the animal is being carried, in a hutch or a trailer, or tied with a rope.
+[/list]
 === 💬 Feedback
 [list]
 [*] [b][url=https://github.com/Minidoracat/MinidoracatVehicleCapsuleFor42/issues]GitHub Issues[/url][/b]
@@ -354,7 +452,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [list]
 [*] your game version
 [*] your mod list
-[*] the vehicle
+[*] the vehicle or animal
 [*] what happened (packing or unpacking, single player or multiplayer, and the capsule number from any dialog)
 [/list]
 [*] [b]Translation issues[/b]: please report them too.

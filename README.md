@@ -1,6 +1,8 @@
-# Minidoracat Universal Capsule
+# Minidoracat Universal Capsule（萬用膠囊）
 
-把停著的車收進膠囊，丟出去就展開，改裝、車況與貨物一起保存；收起來的車不在世界上，KI5 這類吃效能的車也能收起來減輕負擔。單人與多人皆可用。
+把停著的車或活著的動物收進膠囊，丟出去就原樣出現：車的改裝、車況與貨物，動物的品種、年齡、基因與懷孕都一起保存；收起來的車不在世界上，KI5 這類吃效能的車也能收起來減輕負擔。單人與多人皆可用。
+
+舊名：車輛膠囊（Vehicle Capsule，舊 Mod ID `MinidoracatVehicleCapsuleFor42`），首發前改名；GitHub repo 仍是舊名。
 
 Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 準備中）。
 
@@ -8,7 +10,7 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 
 - [Minidoracat UI Library](https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701)（必裝：3D 預覽與管理面板）
 - [Minidoracat Vehicle Manager](https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279)（選用：綁定的車只有車主和被分享「拖曳」權限的人能收，展開後車主不變）
-- [Minidoracat Economy](https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125)（選用：管理員把空膠囊上架到經濟中心販售，不需要整合程式）
+- [Minidoracat Economy](https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125)（選用：管理員把空膠囊上架到經濟中心販售；有裝新版時，裝了車或動物的膠囊可以在市場上架或拍賣）
 
 ## 功能
 
@@ -22,6 +24,11 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 - **紀錄與補回**：每顆膠囊只能展開一次，每次收車、展開、拒絕、補回都有紀錄；管理面板（家族工具列「萬用膠囊管理」）可搜尋、看時間軸與貨物清單、前往紀錄位置、補回車輛（只補車，貨物列清單由管理員決定）。
 - **取得方式**：戰利品（修車廠、汽車用品店、加油站修車區、住家車庫，四個地點各自開關與權重，管理面板也能改；每個地點的量由開著的款式平分）、管理員發放、經濟中心上架。
 - **七種膠囊**：卡通、寫實、塵土、蒸汽、科幻、魔法、衝擊，配色、煙霧與四段音效各不相同，功能一樣。管理面板「種類」分頁可以逐種關掉收車或戰利品、在身旁預覽、在經濟中心建立商品草稿。煙霧與閃光只畫在畫面上；聲音預設不引殭屍，可用沙盒調範圍。
+- **收動物**：右鍵世界上活著的動物，在那隻動物的子選單選「收進膠囊」，約 10 秒；家養與野生、成年與幼崽都能收，誰都能收。能馴養的野生動物收進去就變成家養（照原版抱起動物），鹿這類照舊是野生。死掉、掛在屠宰鉤上、被抱著、在畜欄或拖車裡的不能收，綁著繩子的要先解開。
+- **動物保存什麼**：名字、品種、性別、年齡、體型與體重、健康、飢餓與口渴、壓力、基因與遺傳疾病、奶量、羊毛、懷孕與受精。膠囊裡時間不走。原版的擠奶與撫摸間隔、當天下蛋數、繁殖冷卻會重新開始；多人時毛色花紋由每位玩家的遊戲各自決定（原版行為）。
+- **放出動物**：丟出或按下按鈕，落點只要一格空地（不能是水、車底、樹或沒有地面），室內可以。提示框列出動物資料（懷孕照原版只給畜牧 3 級以上看）；動物膠囊沒有 3D 預覽。管理面板可補回動物。
+- **管理員開關**：沙盒「可以收動物」（預設開，管理面板「設定」分頁也能改）只擋收動物，已經裝了動物的膠囊照樣能放出與補回。
+- **經濟中心**：裝了車的膠囊連貨物、裝了動物的膠囊連動物資料都能在市場上架或拍賣（需要新版 Minidoracat Economy），不能用求購單收、不能賣給商店。
 
 完整玩家說明見 Steam 指南稿源 [`STEAM_GUIDE.md`](STEAM_GUIDE.md)（英文 [`STEAM_GUIDE_EN.md`](STEAM_GUIDE_EN.md)）；首發後簡介會連到 Steam 指南。
 
@@ -29,9 +36,9 @@ Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 �
 
 ## 給服主
 
-- 伺服器紀錄存在 `Zomboid/Lua/MinidoracatCapsule/<世界>/`（不在世界存檔裡，每個伺服器／單人存檔一個資料夾，最多 513 個檔）；收起中的車只能靠它補回，請和世界存檔一起備份、一起還原。已結束的紀錄預設保留 30 天（沙盒「結束紀錄保留天數」，1–90）。
-- 用 Minidoracat Cleaner 時，把七種裝了車的膠囊 `MinidoracatCapsule.LoadedCapsuleCartoon`、`LoadedCapsuleReal`、`LoadedCapsuleDust`、`LoadedCapsuleSteam`、`LoadedCapsuleSciFi`、`LoadedCapsuleMagic`、`LoadedCapsuleShock` 加進「物品保護清單」（ProtectList），地上裝了車的膠囊就不會被清掉。
-- 物品 ID：空膠囊 `MinidoracatCapsule.Capsule<款式>`（上架、發放用）、裝了車的膠囊 `MinidoracatCapsule.LoadedCapsule<款式>`（不能用求購單收、不能賣給商店）；款式是 `Cartoon`、`Real`、`Dust`、`Steam`、`SciFi`、`Magic`、`Shock`。
+- 伺服器紀錄存在 `Zomboid/Lua/MinidoracatCapsule/<世界>/`（不在世界存檔裡，每個伺服器／單人存檔一個資料夾，最多 513 個檔）；收起中的車和動物只能靠它補回，請和世界存檔一起備份、一起還原。已結束的紀錄預設保留 30 天（沙盒「結束紀錄保留天數」，1–90）。
+- 用 Minidoracat Cleaner 時，把七種裝了東西的膠囊（車或動物都是同一種物品）`MinidoracatCapsule.LoadedCapsuleCartoon`、`LoadedCapsuleReal`、`LoadedCapsuleDust`、`LoadedCapsuleSteam`、`LoadedCapsuleSciFi`、`LoadedCapsuleMagic`、`LoadedCapsuleShock` 加進「物品保護清單」（ProtectList），地上裝了東西的膠囊就不會被清掉。
+- 物品 ID：空膠囊 `MinidoracatCapsule.Capsule<款式>`（上架、發放用）、裝了車或動物的膠囊 `MinidoracatCapsule.LoadedCapsule<款式>`（不能用求購單收、不能賣給商店）；款式是 `Cartoon`、`Real`、`Dust`、`Steam`、`SciFi`、`Magic`、`Shock`。
 
 ## 安裝
 
