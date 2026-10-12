@@ -16,7 +16,8 @@ temp/assets-review/sfx-v<N>/index.html）用 `v<N>:<ID>` 指定 temp/assets-revi
 第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）與第 6 版（七種款式補錄的 5 段，
 scripts/assets/sfx_v6.json，試聽挑選頁 scripts/assets/pick_sfx.py）沒有 <Name>_<ID>.wav，`v5:<ID>`／`v6:<ID>` 直接讀
 ElevenLabs 原始 take temp/assets-review/sfx-v<N>/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
-整理：4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB（-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
+整理：先剪掉 CUT 指定的開頭（主聲比畫面晚到的 take），4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB
+（-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
 再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
 """
 import argparse
