@@ -1,6 +1,6 @@
 <!-- Steam guide source (English): the full reference for this mod; the Workshop description only summarizes. Format and sync: pz-family-docs/release.md「完整說明：Steam 指南」 -->
 <!-- 標題：📖 Universal Capsule Mod Guide: Packing, Unpacking & Recovery -->
-<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules, packing vehicles and animals, throwing capsules and Press the Button, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
+<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules, packing vehicles and animals, throwing to capture, throwing capsules and Press the Button, safehouse protection, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
 === 🚀 Quick start
 [b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]萬用膠囊 MOD 完整說明[/url]
 
@@ -12,6 +12,7 @@ Universal Capsule lets you pack a parked vehicle or a live animal into a capsule
 [*] [b]Get an empty capsule[/b]: loot, an admin or the Economy Center; see "Getting capsules".
 [*] [b]Pack[/b]: park, turn the engine off, make sure nobody is inside, carry an empty capsule, then right-click the vehicle and choose "Pack into Capsule". After about 10 seconds the vehicle is packed and the capsule drops where the vehicle stood.
 [*] [b]Pack an animal[/b]: right-click a live animal, open that animal's submenu and choose "Pack into Capsule"; see "Packing an animal".
+[*] [b]Throw to capture[/b]: right-click an empty capsule in your inventory, choose "Throw to Capture" and throw it at an animal or a vehicle to pack it; see "Throwing to capture".
 [*] [b]Throw[/b]: pick up the capsule. When you need the vehicle, right-click the capsule in your inventory and choose "Throw Capsule"; the cursor outlines the vehicle, and you left-click when the outline is green.
 [*] [b]Too heavy to pick up?[/b] Right-click it on the ground and choose "Press the Button"; the vehicle appears next to it.
 [/olist]
@@ -41,6 +42,7 @@ Universal Capsule lets you pack a parked vehicle or a live animal into a capsule
 [*] Nobody inside
 [*] An empty capsule in your inventory (bags count) of a type an admin has not switched off
 [*] Permission to pack this vehicle (see "Who can pack")
+[*] The vehicle is not in someone else's safehouse (see "Safehouse protection")
 [/list]
 [*] [b]Can't be packed[/b]: a vehicle that is towing or being towed, has animals in its trailer, or holds another loaded capsule; the menu tells you why.
 [*] [b]Choosing a type[/b]: with empty capsules of two or more types, "Pack into Capsule" opens a submenu with one entry per type (for example "Steam Capsule ×1"); the tooltip title says "Pack into Steam Capsule".
@@ -83,10 +85,12 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] The animal is alive and out in the world (not being carried, not in a hutch or a trailer)
 [*] No rope on it (untie it first)
 [*] You are not in a vehicle
+[*] The animal is not in someone else's safehouse (see "Safehouse protection")
 [/list]
 [*] [b]Can't be packed[/b]: dead animals and animals on a butcher hook.
 [*] [b]Who can pack[/b]: any player, no key or permission needed; tame or wild, young or grown.
 [*] [b]Choosing a type[/b]: with empty capsules of two or more types, "Pack into Capsule" opens a submenu with one entry per type.
+[*] [b]Rather not walk up?[/b] Throw an empty capsule at it instead; see "Throwing to capture". Wild animals run from people they see, so throwing is the easier way to catch them.
 [/list]
 [h3]Packing[/h3]
 [list]
@@ -116,7 +120,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [h3]When an admin switches animal packing off[/h3]
 [list]
 [*] [b]The switch[/b]: the sandbox option "Allow packing animals" (on by default), also in the admin panel's "Settings" tab.
-[*] [b]When off[/b]: the option is grayed out with "An admin switched off packing animals".
+[*] [b]When off[/b]: the option is grayed out with "An admin switched off packing animals"; throwing to capture can't take animals either (vehicles still can).
 [*] [b]Capsules already holding an animal[/b]: can still be thrown, pressed and restored by admins.
 [/list]
 === 🧰 Throwing and pressing
@@ -125,7 +129,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]How[/b]: with the capsule on you, right-click it in the inventory and choose "Throw Capsule" to get the landing cursor. Left-click to throw, right-click to cancel.
 [*] [b]Landing spot[/b]: within about 8 tiles of you and in sight.
 [*] [b]Green outline[/b]: the vehicle's footprint on the ground, with "Fits: <vehicle>" when it fits.
-[*] [b]Red outline[/b]: it doesn't fit, with the reason: too far, can't see there, not loaded yet, another vehicle, a person, a tree, no ground to park on, furniture or other objects, a wall or fence, indoors.
+[*] [b]Red outline[/b]: it doesn't fit, with the reason: too far, can't see there, not loaded yet, another vehicle, a person, a tree, no ground to park on, furniture or other objects, a wall or fence, indoors, the spot is in someone else's safehouse.
 [/list]
 [h3]Landing[/h3]
 [list]
@@ -159,6 +163,48 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]Empty capsule back[/b]: with "Return an empty capsule after unpacking" on (the default), an empty capsule of the same type goes back into your inventory.
 [*] [b]No room[/b]: if the spot is blocked on landing, no animal appears and a "No room for the animal here" window gives the reason. A thrown capsule drops on the spot and a pressed one stays where it is; try another free square, the animal is still in the capsule.
 [*] [b]No 3D preview[/b]: a capsule holding an animal has no "Preview vehicle" in its menu.
+[/list]
+=== 🧰 Throwing to capture
+[h3]How to throw[/h3]
+[list]
+[*] [b]The menu[/b]: with an empty capsule on you (bags count), right-click it in the inventory and choose "Throw to Capture" to get the capture cursor. Left-click to throw, right-click to cancel.
+[*] [b]Target[/b]: an animal or a vehicle on the square under the cursor or right next to it; any square of a vehicle's body counts. With both an animal and a vehicle there, the animal comes first.
+[*] [b]Range[/b]: the spot you aim at must be within about 8 tiles of you and in sight.
+[*] [b]Green outline[/b]: marks the target (the animal's square or the whole vehicle) with "Capture: <name>".
+[*] [b]Red outline[/b]: it can't be captured, with the reason: no animal or vehicle there, too far, can't see there, an admin switched off packing animals or this capsule type, in someone else's safehouse, or the same state and permission reasons as packing from the menu.
+[/list]
+[h3]What can be captured[/h3]
+[list]
+[*] [b]Animals[/b]: the same requirements as the menu: alive, out in the world, no rope, and "Allow packing animals" on. Tame or wild, young or grown; a wild animal that can be domesticated becomes tame when captured.
+[*] [b]Vehicles[/b]: the same permission as packing from the menu (Tow shared in Vehicle Manager, or the sandbox option "Who can pack vehicles", by default the vehicle's key), and the engine off, nobody inside and no trailer.
+[*] [b]No walking up[/b]: it's just the throw, without the 10 seconds of packing.
+[*] [b]Best for wild animals[/b]: wild animals run from people they see, so packing from the menu means getting right next to them; a throw works from a distance.
+[/list]
+[h3]Hit or miss[/h3]
+[list]
+[*] [b]Two checks[/b]: the cursor and the server check before the throw; on landing the server looks for the target again within one square of the spot and checks the rules again.
+[*] [b]Captured[/b]: the empty capsule flies over, the packing smoke rises at the target and it goes into the capsule. The loaded capsule lies where the target stood and the screen says "Captured: <name>"; go and pick it up.
+[*] [b]Refused before the throw[/b]: the capsule doesn't leave your hand; the screen gives the reason and "The empty capsule is still in your inventory."
+[*] [b]Missed[/b]: the capsule takes a moment from release to landing. If the target moves more than a square away from where you aimed, dies, is picked up, or someone gets into the vehicle in that time, the throw misses. The empty capsule lies on the landing spot and the screen says "Nothing captured: <reason>"; pick it up and throw again.
+[*] [b]Landing spot in someone else's safehouse[/b]: a missed empty capsule falls at your feet instead.
+[/list]
+=== 🧰 Safehouse protection
+[list]
+[*] [b]The rule[/b]: on a multiplayer server, nobody can pack, capture or release a vehicle or an animal in someone else's safehouse. Who is exempt follows vanilla: the safehouse owner and members, staff with the vanilla safehouse permission, and safehouse war time.
+[*] [b]Single player[/b]: there are no safehouses, so nothing changes.
+[/list]
+[h3]Packing and capturing[/h3]
+[list]
+[*] [b]Squares checked[/b]: the animal's square; for a vehicle, every square under its body, and one square inside someone else's safehouse is enough to refuse.
+[*] [b]From the menu[/b]: the option is grayed out with "in someone else's safehouse".
+[*] [b]Throw to capture[/b]: the cursor turns red with the same reason and the capsule is not thrown.
+[/list]
+[h3]Releasing[/h3]
+[list]
+[*] [b]Squares checked[/b]: the landing ground of a throw or a press (the vehicle's footprint or the animal's square); one square inside someone else's safehouse is enough, and the cursor says "the spot is in someone else's safehouse".
+[*] [b]Refused before the throw[/b]: the capsule is not thrown and stays in your inventory; a pressed one stays where it is.
+[*] [b]Refused on landing[/b] (rare): a thrown capsule falls at your feet, never inside someone else's safehouse; a pressed one stays where it is. The vehicle or animal is still in the capsule.
+[*] [b]Admin restore[/b]: refused when the chosen spot is in someone else's safehouse; see "Restoring a vehicle or an animal".
 [/list]
 === 🧰 Cargo
 [h3]Kept as it was[/h3]
@@ -323,6 +369,7 @@ Records that are unconfirmed after a crash need "I checked on site" ticked first
 [*] [b]Never an extra vehicle[/b]: restoring makes the original capsule void at the same time, so it can't be unpacked even if it turns up later.
 [*] [b]Refused if the vehicle exists[/b]: if the server can find the recorded vehicle in the world, the restore is refused.
 [*] [b]Not while trading[/b]: a capsule that is listed or up for auction in the Economy Center can't be restored; the seller cancels the listing first, or the auction ends.
+[*] [b]Someone else's safehouse[/b]: a restore onto a spot in someone else's safehouse is refused ("The chosen spot is in someone else's safehouse. Pick another one."); admins with the vanilla safehouse permission are exempt.
 [/list]
 [h3]Restoring an animal[/h3]
 [list]
@@ -368,6 +415,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [*] [b]"Timed action instant"[/b]: with this admin power on, packing and pressing finish at once and a thrown capsule has no throwing animation (the capsule still flies and unpacks).
 [*] [b]Can't be packed[/b]: vehicles that are towing or being towed, carry animals in a trailer, have the engine running or have someone inside.
 [*] [b]Animals that can't be packed[/b]: dead, on a butcher hook, being carried, in a hutch or a trailer, or tied with a rope.
+[*] [b]Throw to capture[/b]: a target that moves more than a square away from where you aimed between release and landing is missed; with both an animal and a vehicle at the spot, the animal is taken first.
 [*] [b]Animal timers[/b]: time stands still in a capsule; after release the milking and petting intervals, the eggs laid that day and breeding cooldowns start over, and a wild animal's herd is not kept.
 [*] [b]Animal coat (multiplayer)[/b]: vanilla lets each player's game pick the pattern, so after release different players may see different patterns.
 [*] [b]Where it unpacks[/b]: vehicles not indoors (animals can be); a thrown capsule must land within about 8 tiles and in sight, and a pressed one puts the vehicle or animal within about 3 tiles of the capsule.
@@ -443,6 +491,16 @@ Select the record, check on site, tick "I checked on site", then press:
 [h3]Why can't I pack this animal?[/h3]
 [list]
 [*] Hover the option and read the tooltip: the server may have "Allow packing animals" off, you may have no empty capsule, or the animal is being carried, in a hutch or a trailer, or tied with a rope.
+[/list]
+[h3]Why did my capsule miss?[/h3]
+[list]
+[*] The target moved away while the capsule was in the air (more than a square from where you aimed), or in that moment it died, was picked up, or someone got into the vehicle. The screen tells you why.
+[*] The empty capsule lies on the landing spot (at your feet if that spot is in someone else's safehouse); pick it up and throw again. Aim where the animal is heading, or wait until it stops.
+[/list]
+[h3]Why can't I pack this in a safehouse?[/h3]
+[list]
+[*] It's someone else's safehouse: on a multiplayer server, vehicles and animals in someone else's safehouse can't be packed or captured, and nothing can be released there.
+[*] The owner, members, staff with the vanilla safehouse permission and safehouse war time are exempt, as in vanilla; in your own safehouse you pack and release as usual.
 [/list]
 === 💬 Feedback
 [list]

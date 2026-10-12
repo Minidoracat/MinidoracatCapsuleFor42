@@ -17,7 +17,7 @@ Pack a parked vehicle or a live animal into a capsule, then throw the capsule to
 [h2]🚀 Quick Start[/h2]
 [olist]
 [*] Get an empty capsule: loot mechanic shops and car supply stores, or get one from an admin or the Economy Center
-[*] Park, turn the engine off and make sure nobody is inside, then right-click the vehicle; or right-click a live animal and open its submenu. Choose [b]Pack into Capsule[/b]
+[*] Park, turn the engine off and make sure nobody is inside, then right-click the vehicle; or right-click a live animal and open its submenu. Choose [b]Pack into Capsule[/b], or right-click an empty capsule in your inventory and choose [b]Throw to Capture[/b]
 [*] When you need it, right-click the capsule, choose [b]Throw Capsule[/b], pick a landing spot with the cursor and left-click
 [*] Capsule too heavy to pick up, or want it out right there? Right-click it on the ground and choose [b]Press the Button[/b]
 [/olist]
@@ -25,15 +25,15 @@ Pack a parked vehicle or a live animal into a capsule, then throw the capsule to
 [h2]✨ Features[/h2]
 [list]
 [*] [b]Pack into a capsule[/b]: right-click a vehicle or an animal to pack it into a capsule labeled with its name
+[*] [b]Throw to capture[/b]: throw an empty capsule at an animal or a vehicle to pack it, even a wild animal that runs from you
 [*] [b]Throw to bring it back[/b]: the cursor marks the landing spot, the capsule lands in a puff of smoke and the vehicle or animal appears as it was
 [*] [b]Seven capsule types[/b]: from cartoon and realistic to sci-fi and magic, each with its own smoke and sounds
-[*] [b]Vehicles kept as they were[/b]: mods, paint, condition, fuel and the cargo all travel with them
-[*] [b]Animals too[/b]: tame or wild, young or grown; breed, age, genes and pregnancy are kept
+[*] [b]Kept as they were[/b]: a vehicle's mods, condition and cargo, an animal's breed, age, genes and pregnancy
 [*] [b]Tooltip and 3D preview[/b]: hover a capsule to see a vehicle's condition or an animal's details, and spin a 3D view of a vehicle
-[*] [b]Crash-safe[/b]: a server crash or a rolled-back save never leaves you with an extra vehicle, an extra animal or a second copy of the cargo
-[*] [b]Records and recovery[/b]: every capsule is logged; if one goes missing, admins can trace it and restore the vehicle or animal
+[*] [b]Safehouse protection[/b]: vehicles and animals in someone else's safehouse can't be packed, and nothing can be released there
+[*] [b]No copies, nothing lost[/b]: a crash or a rolled-back save never creates an extra vehicle, animal or cargo, and admins can trace a lost capsule and restore what it held
 [/list]
-📖 [b]Packing vehicles and animals, throwing and pressing, what animals keep, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Universal Capsule Guide: Packing, Unpacking & Recovery[/url]
+📖 [b]Packing vehicles and animals, throwing to capture, throwing and pressing, safehouses, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Universal Capsule Guide: Packing, Unpacking & Recovery[/url]
 
 [h2]🔗 All Minidoracat Mods[/h2]
 Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat collection[/url] and subscribe to what you need.
