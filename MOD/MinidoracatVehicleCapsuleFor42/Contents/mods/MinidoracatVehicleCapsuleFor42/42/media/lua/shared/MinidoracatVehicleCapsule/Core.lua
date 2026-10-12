@@ -36,7 +36,7 @@ M.TYPES = {
         throw = "VehicleCapsuleThrowMagic", pop = "VehicleCapsulePopMagic", pack = "VehicleCapsulePackMagic",
         button = "VehicleCapsuleButtonMagic" },
     { id = "Shock", smoke = "smoke_S6_", frames = 18, frameMs = 90, px = 672, anchor = 0.75, flash = { 1, 0.85, 0.6 },
-        throw = "VehicleCapsuleThrowShock", pop = "VehicleCapsulePopSmokeGrenade", pack = "VehicleCapsulePackShock",
+        throw = "VehicleCapsuleThrowShock", pop = "VehicleCapsulePopExplosion", pack = "VehicleCapsulePackShock",
         button = "VehicleCapsuleButtonShock" },
 }
 M.EMPTY, M.LOADED, M.TYPE_BY_ID = {}, {}, {} -- empty / loaded full type -> type; id -> type

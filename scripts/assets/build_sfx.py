@@ -13,9 +13,9 @@
 第 2–4 版候選（提示詞 scripts/assets/sfx_v2.json–sfx_v4.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
 temp/assets-review/sfx-v<N>/index.html）用 `v<N>:<ID>` 指定 temp/assets-review/sfx-v<N>/<Name>_<ID>.wav，例如：
     uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v4:P19
-第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）與第 6 版（七種款式補錄的 5 段，
-scripts/assets/sfx_v6.json，試聽挑選頁 scripts/assets/pick_sfx.py）沒有 <Name>_<ID>.wav，`v5:<ID>`／`v6:<ID>` 直接讀
-ElevenLabs 原始 take temp/assets-review/sfx-v<N>/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
+第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）、第 6 版（七種款式補錄的 5 段，
+scripts/assets/sfx_v6.json）與第 7 版（衝擊款的爆炸聲，scripts/assets/sfx_v7.json；試聽挑選頁都是 scripts/assets/pick_sfx.py）
+沒有 <Name>_<ID>.wav，`v<N>:<ID>` 直接讀 ElevenLabs 原始 take temp/assets-review/sfx-v<N>/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
 整理：先剪掉 CUT 指定的開頭（主聲比畫面晚到的 take），4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB
 （-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
 再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
@@ -50,8 +50,9 @@ SPEC = {
     "VehicleCapsuleButton": ((0.15, 0.5), 4),
 }
 # 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條）。名稱＝VehicleCapsule＋提示詞 id。
-# 2026-10-12 使用者在試聽頁（scripts/assets/pick_sfx.py，配特效動畫）挑定：18 段維持原本的預設（同一句提示詞裡長度合格、
-# 頻譜重心最低的 take），換了 6 段（PackReal_3、PackSteam_4、PopSci_3、ThrowMagic_1、PopSmokeGrenade_2、PackShock_4）。
+# 2026-10-12 使用者在試聽頁（scripts/assets/pick_sfx.py，配特效動畫）挑了兩輪：17 段維持原本的預設（同一句提示詞裡長度合格、
+# 頻譜重心最低的 take），換了 6 段（PackReal_3、PackSteam_4、PopSci_3、ThrowMagic_1、ButtonMagic_4、PackShock_4）；
+# 衝擊款的彈開改成爆炸聲（下面第 7 版）。
 THROW, POP, PACK, BUTTON = (0.25, 0.9), (0.3, 1.7), (0.4, 1.6), (0.06, 0.7)
 SPEC.update({
     "VehicleCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
@@ -63,7 +64,6 @@ SPEC.update({
     "VehicleCapsulePopSteam": (POP, "v5:PopSteam_1"),
     "VehicleCapsulePopSci": (POP, "v5:PopSci_3"),
     "VehicleCapsulePopMagic": (POP, "v5:PopMagic_1"),
-    "VehicleCapsulePopSmokeGrenade": (POP, "v5:PopSmokeGrenade_2"),
     "VehicleCapsulePackReal": (PACK, "v5:PackReal_3"),
     "VehicleCapsulePackHeavy": (PACK, "v5:PackHeavy_1"),
     "VehicleCapsulePackSteam": (PACK, "v5:PackSteam_4"),
@@ -72,7 +72,7 @@ SPEC.update({
     "VehicleCapsuleButtonReal": (BUTTON, "v5:ButtonReal_3"),
     "VehicleCapsuleButtonSwitch": (BUTTON, "v5:ButtonSwitch_2"),
     "VehicleCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
-    "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_3"),
+    "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_4"),
 })
 # 七種款式（設計稿 vcap-types-1012）原本借用別款的 5 段新錄：提示詞 scripts/assets/sfx_v6.json，`v6:<ID>` 讀 sfx-v6/raw。
 SPEC.update({
@@ -82,6 +82,10 @@ SPEC.update({
     "VehicleCapsuleButtonDust": (BUTTON, "v6:ButtonDust_1"),
     "VehicleCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
 })
+# 衝擊款的彈開換成爆炸聲（使用者 2026-10-12：「應該換大一點的爆炸聲」）：第 7 版提示詞 scripts/assets/sfx_v7.json，三種爆炸各
+# 4 條（`v7:<ID>` 讀 sfx-v7/raw），提示詞要求一開頭就炸，12 條主聲都在開頭 20 ms 內。暫選 PopBoom_2（1.48 s、低音與存在感
+# 平衡），等使用者在試聽頁挑。
+SPEC.update({"VehicleCapsulePopExplosion": (POP, "v7:PopBoom_2")})
 # 主聲比畫面晚的 take（使用者在試聽頁配特效聽出來）：剪掉原始 take 開頭這幾秒，主瞬態就落在觸發那一刻（出車、收車）。
 #   PopReal_4：前 0.39 s 是細的高頻嘶聲，砰在後面；PackShock_4：嗡聲蓄能 0.71 s 才炸開（3 kHz 以上的瞬態起點）。
 CUT = {"v5:PopReal_4": 0.385, "v6:PackShock_4": 0.705}

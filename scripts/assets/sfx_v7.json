@@ -1,0 +1,20 @@
+[
+  {
+    "id": "PopBoom",
+    "duration": 1.5,
+    "influence": 0.5,
+    "text": "A big explosion that hits at the very first instant: a deep heavy boom with a sharp crack on impact, then a rolling low rumble and a little falling debris, fading out. Outdoors, no fuse, no build-up, no whoosh before it, no music."
+  },
+  {
+    "id": "PopBlast",
+    "duration": 1.5,
+    "influence": 0.5,
+    "text": "A powerful cinematic explosion blast starting instantly: a thunderous low-frequency boom and a punchy shockwave thump, then a short roaring fireball fading away. Open air, no lead-in, no rising sound before the blast, no music."
+  },
+  {
+    "id": "PopMushroom",
+    "duration": 1.6,
+    "influence": 0.45,
+    "text": "A huge bomb explosion with the blast at the very start: a massive bass boom and a crackling burst of fire, then a dull deep roar as a mushroom cloud rises, with a distant echo dying out. No build-up, no fuse, no music."
+  }
+]

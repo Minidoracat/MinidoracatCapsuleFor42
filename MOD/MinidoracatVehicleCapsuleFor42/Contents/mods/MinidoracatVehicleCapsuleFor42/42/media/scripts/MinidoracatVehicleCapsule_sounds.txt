@@ -259,12 +259,12 @@ module Base
         }
     }
 
-    sound VehicleCapsulePopSmokeGrenade
+    sound VehicleCapsulePopExplosion
     {
         category = Item,
         clip
         {
-            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopSmokeGrenade.ogg,
+            file = media/sound/MinidoracatVehicleCapsule/VehicleCapsulePopExplosion.ogg,
             distanceMax = 20,
         }
     }
