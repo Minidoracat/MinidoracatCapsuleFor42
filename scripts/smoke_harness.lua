@@ -2035,6 +2035,9 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         and Footprint.find({ kind = "animal", thing = cow }, 11, 31, 0) == cow and Footprint.find({ kind = "animal", tid = 99 }, 12, 30, 0) == nil
         and Footprint.find({ kind = "vehicle", tid = 501 }, 13, 30, 0) == truck1 and Footprint.find({ kind = "vehicle", tid = 501 }, 11, 30, 0) == nil,
         "重找目標：MP 比 onlineID／車 id、SP 比物件，只認瞄準點一格內；離開兩格就找不到")
+    cow.x = 18 -- teleported this tick: still on its old square's list
+    check(Footprint.find({ kind = "animal", tid = 31 }, 12, 30, 0) == nil, "重找目標看動物自己的位置：剛傳送走、還掛在舊格子清單上的不算")
+    cow.x = 12
 
     -- capture rules: the menu's rules with CAPTURE_REACH, TYPE_OFF
     local far = at("far", 12, 10)

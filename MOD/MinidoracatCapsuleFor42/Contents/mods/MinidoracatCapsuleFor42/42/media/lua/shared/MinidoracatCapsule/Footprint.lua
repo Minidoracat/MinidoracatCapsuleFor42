@@ -151,11 +151,15 @@ end
 
 -- The target a capture named, if it is still on or next to square (x, y, z) (the landing re-finds it there), or nil.
 -- cap = { kind = "animal" | "vehicle", tid = its online id (animal) or vehicle id: MP, what the client saw } or
--- { kind, thing = the object itself: SP, where the throw never crossed the network }.
+-- { kind, thing = the object itself: SP, where the throw never crossed the network }. An animal's own position counts,
+-- not only the square list it is on: one moved this tick still sits on its old square's list (vcap-capture-1013b).
 function Footprint.find(cap, x, y, z)
     local function named(o)
         if cap.thing ~= nil then return o == cap.thing end
         return (cap.kind == "animal" and o:getOnlineID() or o:getId()) == cap.tid
+    end
+    local function near(a)
+        return math.abs(math.floor(a:getX()) - x) <= 1 and math.abs(math.floor(a:getY()) - y) <= 1
     end
     for dx = -1, 1 do
         for dy = -1, 1 do
@@ -163,7 +167,8 @@ function Footprint.find(cap, x, y, z)
             if sq and cap.kind == "animal" then
                 local list = sq:getAnimals()
                 for i = 0, list:size() - 1 do
-                    if named(list:get(i)) then return list:get(i) end
+                    local a = list:get(i)
+                    if named(a) and near(a) then return a end
                 end
             elseif sq then
                 local v = sq:getVehicleContainer()
