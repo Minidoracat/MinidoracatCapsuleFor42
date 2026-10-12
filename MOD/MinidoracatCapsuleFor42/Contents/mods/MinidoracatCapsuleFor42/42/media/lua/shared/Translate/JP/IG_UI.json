@@ -89,9 +89,9 @@
     "IGUI_MinidoracatCapsule_CaptureTarget": "対象：%1",
     "IGUI_MinidoracatCapsule_CaptureNoFit": "捕獲できません：%1",
     "IGUI_MinidoracatCapsule_Captured": "捕獲しました：%1",
-    "IGUI_MinidoracatCapsule_CaptureFailed": "何も捕獲できませんでした：%1",
-    "IGUI_MinidoracatCapsule_CaptureDropped": "空のカプセルが地面に落ちました。",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "何も捕獲できませんでした",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "%1。空のカプセルが地面に落ちました。",
     "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1。カプセルが足元に落ちました。",
     "IGUI_MinidoracatCapsule_CapturedHere": "カプセルは対象がいた場所に落ちています。",
-    "IGUI_MinidoracatCapsule_CaptureKept": "空のカプセルは持ち物に残っています。"
+    "IGUI_MinidoracatCapsule_CaptureKept": "%1。空のカプセルは持ち物に残っています。"
 }

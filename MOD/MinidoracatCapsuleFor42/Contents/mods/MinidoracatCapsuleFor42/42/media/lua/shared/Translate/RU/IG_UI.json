@@ -89,9 +89,9 @@
     "IGUI_MinidoracatCapsule_CaptureTarget": "Цель: %1",
     "IGUI_MinidoracatCapsule_CaptureNoFit": "Нельзя поймать: %1",
     "IGUI_MinidoracatCapsule_Captured": "Поймано: %1",
-    "IGUI_MinidoracatCapsule_CaptureFailed": "Ничего не поймано: %1",
-    "IGUI_MinidoracatCapsule_CaptureDropped": "Пустая капсула упала на землю.",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Ничего не поймано",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "%1. Пустая капсула упала на землю.",
     "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Капсула упала вам под ноги.",
     "IGUI_MinidoracatCapsule_CapturedHere": "Капсула лежит там, где была цель.",
-    "IGUI_MinidoracatCapsule_CaptureKept": "Пустая капсула осталась в инвентаре."
+    "IGUI_MinidoracatCapsule_CaptureKept": "%1. Пустая капсула осталась в инвентаре."
 }

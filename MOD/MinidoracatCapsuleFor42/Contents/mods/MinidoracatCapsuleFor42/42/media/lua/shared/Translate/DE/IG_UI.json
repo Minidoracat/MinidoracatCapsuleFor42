@@ -89,9 +89,9 @@
     "IGUI_MinidoracatCapsule_CaptureTarget": "Ziel: %1",
     "IGUI_MinidoracatCapsule_CaptureNoFit": "Fangen nicht möglich: %1",
     "IGUI_MinidoracatCapsule_Captured": "Gefangen: %1",
-    "IGUI_MinidoracatCapsule_CaptureFailed": "Nichts gefangen: %1",
-    "IGUI_MinidoracatCapsule_CaptureDropped": "Die leere Kapsel ist auf den Boden gefallen.",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nichts gefangen",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "%1. Die leere Kapsel ist auf den Boden gefallen.",
     "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. Die Kapsel ist dir vor die Füße gefallen.",
     "IGUI_MinidoracatCapsule_CapturedHere": "Die Kapsel liegt jetzt dort, wo das Ziel stand.",
-    "IGUI_MinidoracatCapsule_CaptureKept": "Die leere Kapsel ist noch in deinem Inventar."
+    "IGUI_MinidoracatCapsule_CaptureKept": "%1. Die leere Kapsel ist noch in deinem Inventar."
 }

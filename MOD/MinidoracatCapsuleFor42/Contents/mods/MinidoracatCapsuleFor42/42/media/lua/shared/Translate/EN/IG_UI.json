@@ -89,9 +89,9 @@
     "IGUI_MinidoracatCapsule_CaptureTarget": "Target: %1",
     "IGUI_MinidoracatCapsule_CaptureNoFit": "Can't capture: %1",
     "IGUI_MinidoracatCapsule_Captured": "Captured: %1",
-    "IGUI_MinidoracatCapsule_CaptureFailed": "Nothing captured: %1",
-    "IGUI_MinidoracatCapsule_CaptureDropped": "The empty capsule fell on the ground.",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nothing captured",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "%1. The empty capsule fell on the ground.",
     "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. The capsule fell at your feet.",
     "IGUI_MinidoracatCapsule_CapturedHere": "The capsule lies where the target stood.",
-    "IGUI_MinidoracatCapsule_CaptureKept": "The empty capsule is still in your inventory."
+    "IGUI_MinidoracatCapsule_CaptureKept": "%1. The empty capsule is still in your inventory."
 }

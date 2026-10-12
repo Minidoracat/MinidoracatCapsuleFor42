@@ -29,7 +29,7 @@ function Notify.toast(title, text, bad, holdMs)
     remember(bad and "toast-bad" or "toast", title, text)
     local UI = ui()
     if UI and UI.CAPABILITIES.toast then
-        UI.Toast.show({ title = text and title or nil, message = text or title, maxLines = 4, holdMs = holdMs })
+        UI.Toast.show({ title = text and title or nil, message = text or title, maxLines = 6, holdMs = holdMs })
         return
     end
     local player = getPlayer()
@@ -123,7 +123,9 @@ function Handlers.packed(args)
         or "IGUI_MinidoracatCapsule_PackFailed"), text)
 end
 
--- A thrown empty capsule (mode "capture"): a toast either way; a miss says why and where the capsule went.
+-- A thrown empty capsule (mode "capture"): a toast either way; a miss says why and where the capsule went. The reason
+-- goes in the message, which wraps: the toast title is one line the framework never wraps, and the French reason ran
+-- past the toast's edge (vcap-capture-fr-1013r).
 local function captured(args)
     if args.ok then
         local name = args.kind == "animal" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
@@ -134,8 +136,9 @@ local function captured(args)
     -- refused for permission: the same reason the vehicle menu row gives (VehicleManager's wording included)
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
-    Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed", text),
-        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept"), true, 8000)
+    Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed"),
+        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept", text),
+        true, 8000)
 end
 
 function Handlers.landed(args)

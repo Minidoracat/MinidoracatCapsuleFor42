@@ -2260,6 +2260,20 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     check(#shown == 2 and one.title == nil and one.message == "IGUI_MinidoracatCapsule_Unpacked"
         and two.title == "IGUI_MinidoracatCapsule_Unpacked" and two.message == "IGUI_MinidoracatCapsule_EmptyBack",
         "展開的 Toast：ReturnEmptyCapsule 關掉時只有一行（標題不再當內文重複），開著時標題＋空膠囊回來")
+    -- a missed capture: the reason goes in the message, which wraps; the title is one line the framework never wraps
+    -- (the French reason ran past the toast's edge, vcap-capture-fr-1013r)
+    local savedText, savedOrNull = getText, getTextOrNull
+    getText = function(key, a) return a and (key .. "(" .. a .. ")") or key end
+    getTextOrNull = function(key) return key end
+    M.onServerCommand("landed", { ok = false, mode = "capture", why = "NO_TARGET", dropped = true })
+    M.onServerCommand("landed", { ok = false, mode = "capture", why = "TOO_FAR" })
+    getText, getTextOrNull = savedText, savedOrNull
+    local drop, kept = shown[3] or {}, shown[4] or {}
+    check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"
+        and drop.message == "IGUI_MinidoracatCapsule_CaptureDropped(IGUI_MinidoracatCapsule_Why_NO_TARGET)"
+        and kept.title == "IGUI_MinidoracatCapsule_CaptureFailed"
+        and kept.message == "IGUI_MinidoracatCapsule_CaptureKept(IGUI_MinidoracatCapsule_Why_TOO_FAR)",
+        "沒抓到的 Toast：標題只有「沒抓到」，原因和膠囊在哪都在會換行的內文")
     MinidoracatUI, M.Info = saved, savedInfo
 end
 toastCases()

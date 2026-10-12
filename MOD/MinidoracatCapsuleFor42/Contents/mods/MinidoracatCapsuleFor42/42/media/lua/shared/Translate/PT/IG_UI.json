@@ -89,9 +89,9 @@
     "IGUI_MinidoracatCapsule_CaptureTarget": "Alvo: %1",
     "IGUI_MinidoracatCapsule_CaptureNoFit": "Não é possível capturar: %1",
     "IGUI_MinidoracatCapsule_Captured": "Capturado: %1",
-    "IGUI_MinidoracatCapsule_CaptureFailed": "Nada capturado: %1",
-    "IGUI_MinidoracatCapsule_CaptureDropped": "A cápsula vazia caiu no chão.",
+    "IGUI_MinidoracatCapsule_CaptureFailed": "Nada capturado",
+    "IGUI_MinidoracatCapsule_CaptureDropped": "%1. A cápsula vazia caiu no chão.",
     "IGUI_MinidoracatCapsule_DroppedAtFeet": "%1. A cápsula caiu aos seus pés.",
     "IGUI_MinidoracatCapsule_CapturedHere": "A cápsula ficou onde o alvo estava.",
-    "IGUI_MinidoracatCapsule_CaptureKept": "A cápsula vazia continua no seu inventário."
+    "IGUI_MinidoracatCapsule_CaptureKept": "%1. A cápsula vazia continua no seu inventário."
 }
