@@ -44,7 +44,7 @@
     "UI_MinidoracatCapsule_Why_WRITE_FAILED": "伺服器寫不進紀錄檔。",
     "UI_MinidoracatCapsule_Why_BAD_TRANSITION": "目前的狀態不能這樣改。",
     "UI_MinidoracatCapsule_Why_ERROR": "伺服器發生錯誤，請看伺服器日誌。",
-    "UI_MinidoracatCapsule_Ev_PACKED": "收車",
+    "UI_MinidoracatCapsule_Ev_PACKED": "收進膠囊",
     "UI_MinidoracatCapsule_Ev_UNPACKED": "展開",
     "UI_MinidoracatCapsule_Ev_REJECTED": "拒絕展開",
     "UI_MinidoracatCapsule_Ev_RESTORE_START": "開始補回",
@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "在 (%2, %3) 補回 %1？原本的膠囊之後不能再展開。",
     "UI_MinidoracatCapsule_AnimalLoaded": "伺服器在紀錄位置附近找得到動物 #%1",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "紀錄位置附近找不到動物 #%1",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "伺服器在紀錄位置附近找得到那隻動物：牠還在世界上。"
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "伺服器在紀錄位置附近找得到那隻動物：牠還在世界上。",
+    "UI_MinidoracatCapsule_RestoredAnimal": "已補回動物。"
 }

@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restaurer %1 en (%2, %3) ? L'ancienne capsule ne pourra plus jamais être déployée.",
     "UI_MinidoracatCapsule_AnimalLoaded": "l'animal #%1 est près de son lieu enregistré sur le serveur",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "l'animal #%1 n'est pas près de son lieu enregistré",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "L'animal enregistré est toujours près de son lieu enregistré : il est toujours dans le monde."
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "L'animal enregistré est toujours près de son lieu enregistré : il est toujours dans le monde.",
+    "UI_MinidoracatCapsule_RestoredAnimal": "Animal restauré."
 }

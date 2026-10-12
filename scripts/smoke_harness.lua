@@ -1929,7 +1929,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty" },
         IG_UI = { "PackAnimalFailed", "PackAnimalInfo", "BlockedTitleAnimal", "BlockedThrowAnimal", "BlockedPressAnimal",
             "Why_ANIMALS_OFF", "Why_NO_ANIMAL", "Why_ANIMAL_AWAY", "Why_ROPE", "Why_WATER" },
-        UI = { "RestoreAnimal", "RestoreAnimalConfirm", "AnimalLoaded", "AnimalNotLoaded", "Why_ANIMAL_EXISTS" },
+        UI = { "RestoreAnimal", "RestoreAnimalConfirm", "AnimalLoaded", "AnimalNotLoaded", "Why_ANIMAL_EXISTS", "RestoredAnimal" },
         Sandbox = { "AllowAnimals", "AllowAnimals_tooltip" },
     }
     local PREFIX = { Tooltip = "Tooltip_MinidoracatCapsule_", IG_UI = "IGUI_MinidoracatCapsule_",
@@ -1945,11 +1945,26 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
                 if type(data[PREFIX[file] .. k]) ~= "string" or data[PREFIX[file] .. k] == "" then missing[#missing + 1] = lang .. ":" .. k end
             end
         end
+        -- words shown for animal records too (tooltip "packed by", timeline PACKED): not "packed the vehicle" (CH and CN
+        -- said so until vcap-animal-mp-1012a showed it under a cow)
+        local function says(file, key)
+            local fh = io.open(dir .. file .. ".json", "rb")
+            local v = fh and Json.decode(fh:read("*a"))[key] or ""
+            if fh then fh:close() end
+            return v
+        end
         local f = io.open(dir .. "ItemName.json", "rb")
         local names = f:read("*a")
         f:close()
-        if names:find("收車", 1, true) or names:find("收车", 1, true) then missing[#missing + 1] = lang .. ":LoadedName(vehicle)" end
+        for _, s in ipairs({ names, says("Tooltip", "Tooltip_MinidoracatCapsule_PackedBy"), says("UI", "UI_MinidoracatCapsule_Ev_PACKED") }) do
+            if s:find("收車", 1, true) or s:find("收车", 1, true) then missing[#missing + 1] = lang .. ":vehicle-only wording" end
+        end
     end
+    -- the panel's message after an animal restore (Admin.restore answers animalId) is the animal one
+    local panel = io.open(MEDIA .. "/client/MinidoracatCapsule/AdminPanel.lua", "rb")
+    local panelSrc = panel:read("*a")
+    panel:close()
+    if not panelSrc:find('res.animalId and "RestoredAnimal"', 1, true) then missing[#missing + 1] = "AdminPanel:RestoredAnimal" end
     local sandboxTxt = io.open(MEDIA .. "/../sandbox-options.txt", "rb")
     local sbText = sandboxTxt:read("*a")
     sandboxTxt:close()

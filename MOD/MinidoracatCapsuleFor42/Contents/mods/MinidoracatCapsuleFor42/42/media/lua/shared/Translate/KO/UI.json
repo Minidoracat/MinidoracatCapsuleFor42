@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "%1을(를) (%2, %3)에 복구하시겠습니까? 이전 캡슐은 이후 다시 꺼낼 수 없습니다.",
     "UI_MinidoracatCapsule_AnimalLoaded": "동물 #%1이(가) 서버에서 기록 위치 근처에 있음",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "동물 #%1이(가) 기록 위치 근처에 없음",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "기록된 동물이 아직 기록 위치 근처에 있습니다. 동물은 아직 월드에 있습니다."
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "기록된 동물이 아직 기록 위치 근처에 있습니다. 동물은 아직 월드에 있습니다.",
+    "UI_MinidoracatCapsule_RestoredAnimal": "동물을 복구했습니다."
 }

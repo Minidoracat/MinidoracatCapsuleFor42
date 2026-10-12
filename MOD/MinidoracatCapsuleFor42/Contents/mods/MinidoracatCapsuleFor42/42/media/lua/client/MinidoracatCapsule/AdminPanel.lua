@@ -635,7 +635,9 @@ end
 function Win:onAction(cmd, res)
     self.busy = false
     if res.ok then
-        self:setMsg(U(cmd == "adminRestore" and "Restored" or "Resolved"), "accent")
+        -- an animal restore answers animalId (Admin.restore): "Animal restored", not "Vehicle restored"
+        local done = cmd ~= "adminRestore" and "Resolved" or (res.animalId and "RestoredAnimal" or "Restored")
+        self:setMsg(U(done), "accent")
         Kit.notify(U("PanelTitle"), self.msg)
     else
         self:setMsg(Panel.whyText(res.why), "errorText")

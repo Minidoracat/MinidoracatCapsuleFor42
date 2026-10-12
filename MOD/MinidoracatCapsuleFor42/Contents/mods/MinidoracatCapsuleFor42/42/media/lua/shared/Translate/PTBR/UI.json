@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "Restaurar %1 em (%2, %3)? A cápsula antiga nunca mais poderá ser liberada.",
     "UI_MinidoracatCapsule_AnimalLoaded": "o animal #%1 está perto do local registrado no servidor",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "o animal #%1 não está perto do local registrado",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "O animal registrado ainda está perto do local registrado: ele ainda está no mundo."
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "O animal registrado ainda está perto do local registrado: ele ainda está no mundo.",
+    "UI_MinidoracatCapsule_RestoredAnimal": "Animal restaurado."
 }

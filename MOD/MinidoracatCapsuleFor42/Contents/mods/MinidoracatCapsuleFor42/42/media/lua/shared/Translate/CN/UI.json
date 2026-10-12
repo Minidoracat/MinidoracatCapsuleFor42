@@ -44,7 +44,7 @@
     "UI_MinidoracatCapsule_Why_WRITE_FAILED": "服务器写不进纪录档。",
     "UI_MinidoracatCapsule_Why_BAD_TRANSITION": "目前的状态不能这样改。",
     "UI_MinidoracatCapsule_Why_ERROR": "服务器发生错误，请看服务器日志。",
-    "UI_MinidoracatCapsule_Ev_PACKED": "收车",
+    "UI_MinidoracatCapsule_Ev_PACKED": "收进胶囊",
     "UI_MinidoracatCapsule_Ev_UNPACKED": "展开",
     "UI_MinidoracatCapsule_Ev_REJECTED": "拒绝展开",
     "UI_MinidoracatCapsule_Ev_RESTORE_START": "开始补回",
@@ -132,5 +132,6 @@
     "UI_MinidoracatCapsule_RestoreAnimalConfirm": "在 (%2, %3) 补回 %1？原本的胶囊之后不能再展开。",
     "UI_MinidoracatCapsule_AnimalLoaded": "服务器在纪录位置附近找得到动物 #%1",
     "UI_MinidoracatCapsule_AnimalNotLoaded": "纪录位置附近找不到动物 #%1",
-    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "服务器在纪录位置附近找得到那只动物：它还在世界上。"
+    "UI_MinidoracatCapsule_Why_ANIMAL_EXISTS": "服务器在纪录位置附近找得到那只动物：它还在世界上。",
+    "UI_MinidoracatCapsule_RestoredAnimal": "已补回动物。"
 }

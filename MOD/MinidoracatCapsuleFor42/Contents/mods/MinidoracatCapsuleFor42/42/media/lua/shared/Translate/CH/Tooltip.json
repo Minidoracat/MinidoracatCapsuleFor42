@@ -27,7 +27,7 @@
     "Tooltip_MinidoracatCapsule_MissingCount": "%1 個零件",
     "Tooltip_MinidoracatCapsule_CargoLine": "%1 x%2",
     "Tooltip_MinidoracatCapsule_CargoMore": "還有 %1 種",
-    "Tooltip_MinidoracatCapsule_PackedBy": "收車者",
+    "Tooltip_MinidoracatCapsule_PackedBy": "收進的人",
     "Tooltip_MinidoracatCapsule_Type": "款式",
     "Tooltip_MinidoracatCapsule_TypeOff": "！管理員停用了這種膠囊，現在不能收車",
     "Tooltip_MinidoracatCapsule_ListSep": "、",
