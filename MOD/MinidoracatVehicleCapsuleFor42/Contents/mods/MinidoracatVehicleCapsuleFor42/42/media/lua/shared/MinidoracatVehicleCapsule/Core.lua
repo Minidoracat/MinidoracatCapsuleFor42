@@ -35,7 +35,7 @@ M.TYPES = {
     { id = "Magic", smoke = "smoke_S5_", frames = 15, frameMs = 90, px = 576, anchor = 0.66, flash = { 0.95, 0.8, 1 },
         throw = "VehicleCapsuleThrowMagic", pop = "VehicleCapsulePopMagic", pack = "VehicleCapsulePackMagic",
         button = "VehicleCapsuleButtonMagic" },
-    { id = "Shock", smoke = "smoke_S6_", frames = 12, frameMs = 85, px = 448, anchor = 0.6, flash = { 1, 0.97, 0.9 },
+    { id = "Shock", smoke = "smoke_S6_", frames = 18, frameMs = 90, px = 672, anchor = 0.75, flash = { 1, 0.85, 0.6 },
         throw = "VehicleCapsuleThrowShock", pop = "VehicleCapsulePopSmokeGrenade", pack = "VehicleCapsulePackShock",
         button = "VehicleCapsuleButtonShock" },
 }

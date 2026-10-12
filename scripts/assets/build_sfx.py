@@ -48,23 +48,24 @@ SPEC = {
     "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
     "VehicleCapsuleButton": ((0.15, 0.5), 4),
 }
-# 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條；2026-10-12 使用者看過演示頁 fx-v1：「效果都很好」）：
-# 演示頁套組的預設選擇（同一句提示詞裡長度合格、頻譜重心最低的 take，沒人耳挑過）。名稱＝VehicleCapsule＋提示詞 id。
+# 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條）。名稱＝VehicleCapsule＋提示詞 id。
+# 2026-10-12 使用者在試聽頁（scripts/assets/pick_sfx.py，配特效動畫）挑定：18 段維持原本的預設（同一句提示詞裡長度合格、
+# 頻譜重心最低的 take），換了 6 段（PackReal_3、PackSteam_4、PopSci_3、ThrowMagic_1、PopSmokeGrenade_2、PackShock_4）。
 THROW, POP, PACK, BUTTON = (0.25, 0.9), (0.3, 1.7), (0.4, 1.6), (0.06, 0.7)
 SPEC.update({
     "VehicleCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
     "VehicleCapsuleThrowReal2": (THROW, "v5:ThrowReal2_4"),
     "VehicleCapsuleThrowSci": (THROW, "v5:ThrowSci_3"),
-    "VehicleCapsuleThrowMagic": (THROW, "v5:ThrowMagic_4"),
+    "VehicleCapsuleThrowMagic": (THROW, "v5:ThrowMagic_1"),
     "VehicleCapsulePopReal": (POP, "v5:PopReal_4"),
     "VehicleCapsulePopHeavyDrop": (POP, "v5:PopHeavyDrop_4"),
     "VehicleCapsulePopSteam": (POP, "v5:PopSteam_1"),
-    "VehicleCapsulePopSci": (POP, "v5:PopSci_1"),
+    "VehicleCapsulePopSci": (POP, "v5:PopSci_3"),
     "VehicleCapsulePopMagic": (POP, "v5:PopMagic_1"),
-    "VehicleCapsulePopSmokeGrenade": (POP, "v5:PopSmokeGrenade_1"),
-    "VehicleCapsulePackReal": (PACK, "v5:PackReal_2"),
+    "VehicleCapsulePopSmokeGrenade": (POP, "v5:PopSmokeGrenade_2"),
+    "VehicleCapsulePackReal": (PACK, "v5:PackReal_3"),
     "VehicleCapsulePackHeavy": (PACK, "v5:PackHeavy_1"),
-    "VehicleCapsulePackSteam": (PACK, "v5:PackSteam_3"),
+    "VehicleCapsulePackSteam": (PACK, "v5:PackSteam_4"),
     "VehicleCapsulePackSci": (PACK, "v5:PackSci_4"),
     "VehicleCapsulePackMagic": (PACK, "v5:PackMagic_2"),
     "VehicleCapsuleButtonReal": (BUTTON, "v5:ButtonReal_3"),
@@ -72,16 +73,17 @@ SPEC.update({
     "VehicleCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
     "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_3"),
 })
-# 七種款式（設計稿 vcap-types-1012；2026-10-12 使用者：「28 段全部由你挑」、卡通維持）：原本借用別款的 5 段新錄
-# （提示詞 scripts/assets/sfx_v6.json，`v6:<ID>` 讀 sfx-v6/raw）。暫選同一條規則（長度合格、頻譜重心最低），等使用者在
-# 試聽頁（scripts/assets/pick_sfx.py）挑完，連同其他 19 段一起換成使用者選的 take。
+# 七種款式（設計稿 vcap-types-1012）原本借用別款的 5 段新錄：提示詞 scripts/assets/sfx_v6.json，`v6:<ID>` 讀 sfx-v6/raw。
 SPEC.update({
     "VehicleCapsuleThrowSteam": (THROW, "v6:ThrowSteam_1"),
     "VehicleCapsuleThrowShock": (THROW, "v6:ThrowShock_3"),
-    "VehicleCapsulePackShock": (PACK, "v6:PackShock_3"),
+    "VehicleCapsulePackShock": (PACK, "v6:PackShock_4"),
     "VehicleCapsuleButtonDust": (BUTTON, "v6:ButtonDust_1"),
     "VehicleCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
 })
+# 主聲比畫面晚的 take（使用者在試聽頁配特效聽出來）：剪掉原始 take 開頭這幾秒，主瞬態就落在觸發那一刻（出車、收車）。
+#   PopReal_4：前 0.39 s 是細的高頻嘶聲，砰在後面；PackShock_4：嗡聲蓄能 0.71 s 才炸開（3 kHz 以上的瞬態起點）。
+CUT = {"v5:PopReal_4": 0.385, "v6:PackShock_4": 0.705}
 # 先過 SOFT 再整理響度：原檔頻譜重心超過 4 kHz、而且是容易刺耳的音色（閃光、電子音；design_fx.py、pick_sfx.py 同一條規則）
 SOFTEN = {"VehicleCapsuleThrowSci", "VehicleCapsuleThrowMagic", "VehicleCapsulePackMagic", "VehicleCapsuleButtonShock"}
 SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
@@ -172,18 +174,20 @@ def soften(a):
     return np.frombuffer(out, dtype="<f4").astype(np.float64)
 
 
+def load(name, take):
+    """原始 take → 浮點波形，先剪掉 CUT 的開頭。write 與試聽頁（pick_sfx.py）都從這裡讀，聽到的就是裝進 MOD 的。"""
+    return decode(src_path(name, take))[int(CUT.get(str(take), 0.0) * SR):]
+
+
 def write(name, take):
-    src = src_path(name, take)
+    a = load(name, take)
+    if name in SOFTEN:
+        a = soften(a)
     os.makedirs(OUT, exist_ok=True)
     dst = os.path.join(OUT, f"{name}.ogg")
-    enc = ["-ac", "1", "-ar", str(SR), "-c:a", "libvorbis", "-q:a", "5", "-map_metadata", "-1", dst]
-    if name in SOFTEN:
-        a = soften(decode(src))
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0",
-                        "-af", level_af(stats(a), target_db(name)), *enc], input=a.astype("<f4").tobytes(), check=True)
-    else:
-        af = level_af(stats(decode(src)), target_db(name))
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", src, "-af", af, *enc], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "f32le", "-ar", str(SR), "-ac", "1", "-i", "pipe:0",
+                    "-af", level_af(stats(a), target_db(name)), "-ac", "1", "-ar", str(SR), "-c:a", "libvorbis",
+                    "-q:a", "5", "-map_metadata", "-1", dst], input=a.astype("<f4").tobytes(), check=True)
     o = stats(decode(dst))
     print(f"{name}: take {take} -> {os.path.relpath(dst, REPO)}  dur {o['dur']:.2f}s  peak {o['peak_db']:.1f} dB  "
           f"rms-peak {o['rms_peak_db']:.1f} dB  centroid {o['centroid']:.0f} Hz")

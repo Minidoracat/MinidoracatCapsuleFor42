@@ -54,7 +54,7 @@ NAMES = {  # id -> 中文, 效果說明（Tooltip Look_<id> 的繁中）
     "Steam": ("蒸汽", "白色蒸氣，蒸汽噴發聲"),
     "SciFi": ("科幻", "光柱與地面光環，能量聲"),
     "Magic": ("魔法", "淡紫色煙霧與星芒，魔法聲"),
-    "Shock": ("衝擊", "一閃白光與地面衝擊波，煙霧彈聲"),
+    "Shock": ("衝擊", "蘑菇雲與地面衝擊波，煙霧彈聲"),
 }
 ACTIONS = [("Throw", "丟出"), ("Pop", "彈開"), ("Pack", "收車"), ("Button", "按鈕")]
 RANGE = {"Throw": bs.THROW, "Pop": bs.POP, "Pack": bs.PACK, "Button": bs.BUTTON}
@@ -100,9 +100,9 @@ def mp3(args, data=None):
                           input=data, capture_output=True, check=True).stdout
 
 
-def candidate(name, path, text, seg):
-    """整理一條候選，回傳 (MP3 bytes, 有聲長度, 註記)。"""
-    a = bs.decode(path)
+def candidate(name, take, text, seg):
+    """整理一條候選（build_sfx.load：含 CUT 剪掉的開頭），回傳 (MP3 bytes, 有聲長度, 註記)。"""
+    a = bs.load(name, take)
     if bs.stats(a)["centroid"] > SOFT_ABOVE_HZ and SHRILL.search(text):
         a = bs.soften(a)
     s = bs.stats(a)
@@ -227,8 +227,7 @@ def build(bg):
                 slot = f"{tid}.{seg}"
                 chips = []
                 for n in range(1, 5):
-                    path = os.path.join(bs.REVIEW, f"sfx-{ver}", "raw", f"{pid}_{n}.wav")
-                    data, active, note = candidate(name, path, prompts[(ver, pid)], seg)
+                    data, active, note = candidate(name, f"{ver}:{pid}_{n}", prompts[(ver, pid)], seg)
                     key = f"{tid}_{seg}_{n}"
                     snd[key] = data_uri(data, "audio/mpeg")
                     tag = '<span class="cur">目前</span>' if n == cur_n else ""
