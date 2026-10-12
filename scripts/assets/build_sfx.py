@@ -83,9 +83,9 @@ SPEC.update({
     "VehicleCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
 })
 # 衝擊款的彈開換成爆炸聲（使用者 2026-10-12：「應該換大一點的爆炸聲」）：第 7 版提示詞 scripts/assets/sfx_v7.json，三種爆炸各
-# 4 條（`v7:<ID>` 讀 sfx-v7/raw），提示詞要求一開頭就炸，12 條主聲都在開頭 20 ms 內。暫選 PopBoom_2（1.48 s、低音與存在感
-# 平衡），等使用者在試聽頁挑。
-SPEC.update({"VehicleCapsulePopExplosion": (POP, "v7:PopBoom_2")})
+# 4 條（`v7:<ID>` 讀 sfx-v7/raw），提示詞要求一開頭就炸，12 條主聲都在開頭 20 ms 內。使用者在試聽頁挑定 PopMushroom_4
+# （蘑菇雲火球：低沉轟隆加火焰劈啪，1.6 s）。
+SPEC.update({"VehicleCapsulePopExplosion": (POP, "v7:PopMushroom_4")})
 # 主聲比畫面晚的 take（使用者在試聽頁配特效聽出來）：剪掉原始 take 開頭這幾秒，主瞬態就落在觸發那一刻（出車、收車）。
 #   PopReal_4：前 0.39 s 是細的高頻嘶聲，砰在後面；PackShock_4：嗡聲蓄能 0.71 s 才炸開（3 kHz 以上的瞬態起點）。
 CUT = {"v5:PopReal_4": 0.385, "v6:PackShock_4": 0.705}
