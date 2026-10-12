@@ -86,6 +86,7 @@ SLOTS = {
     ("Shock", "Button"): ("VehicleCapsuleButtonShock", "v6", "ButtonShock"),
 }
 GROUP = {"PopBoom": "厚重轟隆", "PopBlast": "電影感爆破", "PopMushroom": "蘑菇雲火球"}  # 多句提示詞那一列的分組標題
+FISH = "v8"  # Fish Audio 的候選（scripts/assets/fish_sfx.py 切出來的 sfx-v8/raw/<ID>_<n>.wav），接在同一列後面
 # stage scene -> (before shot, after shot); the capsule lies on the ground in press "before" (at C) and pack "after" (at T)
 SCENES = (("throw", "throw-empty", "throw-car"), ("press", "press-capsule", "press-car"), ("pack", "pack-car", "pack-empty"))
 PATCHED = {"press": ("before", "csx", "csy"), "pack": ("after", "tsx", "tsy")}
@@ -208,7 +209,7 @@ def build(bg):
         look[t["id"]] = {"frames": smoke_frames(t), "frameMs": t["frameMs"], "px": t["px"], "anchor": t["anchor"],
                          "sprite": data_uri(sprite, "image/png")}
     prompts = {}
-    for v in ("v5", "v6", "v7"):
+    for v in ("v5", "v6", "v7", FISH):
         for it in json.load(open(os.path.join(HERE, f"sfx_{v}.json"), encoding="utf-8")):
             prompts[(v, it["id"])] = it["text"]
     snd, rows_js, cur = {}, [], {}
@@ -222,7 +223,12 @@ def build(bg):
             for seg, label in ACTIONS:
                 name, ver, pids = SLOTS[(tid, seg)]
                 pids = (pids,) if isinstance(pids, str) else pids
-                takes = [f"{ver}:{p}_{k}" for p in pids for k in range(1, 5)]
+                groups = [(GROUP[p] if len(pids) > 1 else "ElevenLabs", [f"{ver}:{p}_{k}" for k in range(1, 5)]) for p in pids]
+                fish = [f"{FISH}:{p}_{k}" for p in pids for k in range(1, 9)  # up to 2 generations x 4 takes
+                        if os.path.exists(os.path.join(bs.REVIEW, f"sfx-{FISH}", "raw", f"{p}_{k}.wav"))]
+                if fish:
+                    groups.append(("Fish Audio", fish))
+                takes = [t for _, g in groups for t in g]
                 spec = str(bs.SPEC.get(name, (None, ""))[1] or "")
                 if spec not in takes:
                     sys.exit(f"build_sfx.SPEC {name} = {spec!r}: not one of this row's takes")
@@ -230,10 +236,14 @@ def build(bg):
                 slot = f"{tid}.{seg}"
                 chips = []
                 for n, take in enumerate(takes, 1):
-                    pid = take.split(":")[1].rsplit("_", 1)[0]
-                    if len(pids) > 1 and take.endswith("_1"):
-                        chips.append(f'<span class="grp">{GROUP[pid]}（{n}–{n + 3}）</span>')
-                    data, active, note = candidate(name, take, prompts[(ver, pid)], seg)
+                    tver, rest = take.split(":")
+                    pid = rest.rsplit("_", 1)[0]
+                    start = 1
+                    for glabel, g in groups:
+                        if len(groups) > 1 and take == g[0]:
+                            chips.append(f'<span class="grp">{glabel}（{start}–{start + len(g) - 1}）</span>')
+                        start += len(g)
+                    data, active, note = candidate(name, take, prompts[(tver, pid)], seg)
                     key = f"{tid}_{seg}_{n}"
                     snd[key] = data_uri(data, "audio/mpeg")
                     tag = '<span class="cur">目前</span>' if n == cur_n else ""
@@ -312,7 +322,7 @@ PAGE = """<!doctype html>
   <li>同一個畫面裡的另一段聲音，用那一列現在勾的那條。每款畫面下的三顆按鈕，用現在勾的組合整段播一次。</li>
   <li>背景是遊戲內截圖（正午、預設縮放），煙霧和飛行中的膠囊照遊戲的畫法與大小。遊戲裡的閃光白天看不出來，這裡不畫；遊戲裡的聲音還會隨距離變小。</li>
   <li>數字後面是有聲長度；丟出最好在 0.9 秒內。每列預先勾好 MOD 現在用的那條（標「目前」）。「都不喜歡」：那一列我重寫提示詞再生成一批。</li>
-  <li>衝擊・彈開換成 12 個新的爆炸聲，分三種：厚重轟隆、電影感爆破、蘑菇雲火球；「目前」那條是我暫選的。</li>
+  <li>每列最後一組是 <b>Fish Audio</b> 的候選：提示詞和前面 ElevenLabs 那組相同，每次生成切成 3–4 條。衝擊・彈開前面是 ElevenLabs 的三種爆炸。想換成 Fish 的就勾那條。</li>
   <li>選完按最下面「複製結果」貼回對話。<b>重新整理會清掉選擇</b>，請當場複製。iPhone 沒聲音時請關掉靜音模式。</li>
 </ul>
 <label class="opt"><input type="checkbox" id="solo"> 只播被點的那一段聲音（另一段只有畫面）</label>
