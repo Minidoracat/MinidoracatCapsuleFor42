@@ -185,7 +185,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]Two checks[/b]: the cursor and the server check before the throw; on landing the server looks for the target again within one square of the spot and checks the rules again.
 [*] [b]Captured[/b]: the empty capsule flies over, the packing smoke rises at the target and it goes into the capsule. The loaded capsule lies where the target stood and the screen says "Captured: <name>"; go and pick it up.
 [*] [b]Refused before the throw[/b]: the capsule doesn't leave your hand; the screen gives the reason and "The empty capsule is still in your inventory."
-[*] [b]Missed[/b]: the capsule takes a moment from release to landing. If the target moves more than a square away from where you aimed, dies, is picked up, or someone gets into the vehicle in that time, the throw misses. The empty capsule lies on the landing spot and the screen says "Nothing captured: <reason>"; pick it up and throw again.
+[*] [b]Missed[/b]: the capsule takes a moment from release to landing. If the target moves more than a square away from where you aimed, dies, is picked up, or someone gets into the vehicle in that time, the throw misses. The empty capsule lies on the landing spot and a "Nothing captured" message gives the reason and "The empty capsule fell on the ground."; pick it up and throw again.
 [*] [b]Landing spot in someone else's safehouse[/b]: a missed empty capsule falls at your feet instead.
 [/list]
 === 🧰 Safehouse protection
