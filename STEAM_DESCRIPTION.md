@@ -1,4 +1,4 @@
-[h1]🚗 Minidoracat 車輛膠囊 Vehicle Capsule[/h1]
+[h1]🚗 Minidoracat 萬用膠囊 Universal Capsule[/h1]
 [h3]By Minidoracat[/h3]
 
 [hr][/hr]
@@ -33,7 +33,7 @@
 [*] [b]紀錄與補回[/b]：每顆膠囊都有紀錄，也記得最後在哪裡看到；遺失時管理員查得到去向並補回車
 [*] [b]多種取得方式[/b]：經濟中心購買、管理員發放，或在修車相關地點搜刮
 [/list]
-📖 [b]收車權限、丟出與按下按鈕、貨物、伺服器設定、管理員補回與常見問題：[/b][url=首發後補]Vehicle Capsule 完整說明：收車、展開與補回[/url]
+📖 [b]收車權限、丟出與按下按鈕、貨物、伺服器設定、管理員補回與常見問題：[/b][url=首發後補]Universal Capsule 完整說明：收車、展開與補回[/url]
 
 [h2]🔗 Minidoracat 全系列[/h2]
 其他作品都在[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat 全系列收藏[/url]，依需求自選訂閱。
@@ -52,4 +52,4 @@ MOD 永遠免費。喜歡的話可以請我喝杯咖啡，贊助會用在伺服�
 [b]#Minidoracat[/b]
 
 Workshop ID: 首發後補
-Mod ID: MinidoracatVehicleCapsuleFor42
+Mod ID: MinidoracatCapsuleFor42

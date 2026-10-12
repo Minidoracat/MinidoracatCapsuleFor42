@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animNode>
+	<m_Name>MinidoracatCapsuleThrow</m_Name>
+	<m_AnimName>Bob_AttackThrowMolotov</m_AnimName>
+	<m_Looped>false</m_Looped>
+	<m_BlendTime>0.20</m_BlendTime>
+	<m_SpeedScale>0.80</m_SpeedScale>
+	<m_SyncTrackingEnabled>false</m_SyncTrackingEnabled>
+	<m_Conditions x_name="6f2d8c41-3b7e-4a95-8d10-c5e9a7b2f034">
+		<m_Name>PerformingAction</m_Name>
+		<m_Type>STRING</m_Type>
+		<m_Value>MinidoracatCapsuleThrow</m_Value>
+	</m_Conditions>
+	<m_Events x_name="1a9e4b72-c6d3-4f08-b5a1-3e7d0c9f6b28">
+		<m_EventName>CapsuleRelease</m_EventName>
+		<m_TimePc>0.3</m_TimePc>
+		<m_ParameterValue></m_ParameterValue>
+	</m_Events>
+	<m_Events x_name="d4c7f0e3-8b2a-4e61-9f35-7a0b1d6e2c95">
+		<m_EventName>CapsuleEnd</m_EventName>
+		<m_TimePc>0.75</m_TimePc>
+		<m_ParameterValue></m_ParameterValue>
+	</m_Events>
+	<m_SubStateBoneWeights>
+		<boneName>Dummy01</boneName>
+	</m_SubStateBoneWeights>
+	<m_SubStateBoneWeights>
+		<boneName>Translation_Data</boneName>
+	</m_SubStateBoneWeights>
+</animNode>

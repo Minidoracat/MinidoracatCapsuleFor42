@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pillow"]
 # ///
-"""Vehicle Capsule 的可重跑外層產線。
+"""Universal Capsule 的可重跑外層產線。
 
 用途：用固定 seed 的 PIL 直接畫 7 種膠囊（TYPES）各一組空／裝車 512 x 512 RGB
 atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖示原圖與預覽，
@@ -13,15 +13,15 @@ atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖�
     uv run scripts/assets/build_capsule.py --blender "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe"
 
 產物（<Id> 依序為 Cartoon、Real、Dust、Steam、SciFi、Magic、Shock）：
-    D:/github/MinidoracatVehicleCapsuleFor42/MOD/MinidoracatVehicleCapsuleFor42/
-      Contents/mods/MinidoracatVehicleCapsuleFor42/42/media/models_X/WorldItems/
-        MinidoracatVehicleCapsule.fbx（7 種共用）
-      .../media/textures/WorldItems/MinidoracatVehicleCapsule<Id>.png
-      .../media/textures/WorldItems/MinidoracatVehicleCapsule<Id>Loaded.png
-      .../media/textures/Item_MinidoracatVehicleCapsule<Id>.png
-      .../media/textures/Item_MinidoracatVehicleCapsule<Id>Loaded.png
-    舊的無 <Id> 檔名（MinidoracatVehicleCapsule[Loaded].png 兩組）每次執行都會刪掉。
-    D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/
+    MOD/MinidoracatCapsuleFor42/
+      Contents/mods/MinidoracatCapsuleFor42/42/media/models_X/WorldItems/
+        MinidoracatCapsule.fbx（7 種共用）
+      .../media/textures/WorldItems/MinidoracatCapsule<Id>.png
+      .../media/textures/WorldItems/MinidoracatCapsule<Id>Loaded.png
+      .../media/textures/Item_MinidoracatCapsule<Id>.png
+      .../media/textures/Item_MinidoracatCapsule<Id>Loaded.png
+    舊的無 <Id> 檔名（MinidoracatCapsule[Loaded].png 兩組）每次執行都會刪掉。
+    temp/assets-review/
       model_empty.png, model_loaded.png, side_neg_y.png, side_pos_y.png,
       ground_empty.png, ground_loaded.png（以上用 Cartoon），fbx_verify.txt,
       types_icons_4x.png（14 張圖示 1x/4x＋綠色盲模擬列）,
@@ -33,9 +33,9 @@ atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖�
 ``u_angle_offset``／``side_centers`` 固定，讓 child 端可讓 -Y 與 +Y
 兩面都正向閱讀。
 
-字型：D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/fonts/Barlow-SemiBold.ttf，
+字型：scripts/assets/fonts/Barlow-SemiBold.ttf，
 Barlow 的 SIL Open Font License 1.1；授權全文在
-D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/fonts/OFL-Barlow.txt。圖像中唯一
+scripts/assets/fonts/OFL-Barlow.txt。圖像中唯一
 烘入的文字是 ``07``，徽記的汽車剪影由本檔用 PIL 多邊形繪製。
 """
 
@@ -53,8 +53,8 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 
-REPO = Path("D:/github/MinidoracatVehicleCapsuleFor42")
-MEDIA = REPO / "MOD/MinidoracatVehicleCapsuleFor42/Contents/mods/MinidoracatVehicleCapsuleFor42/42/media"
+REPO = Path(__file__).resolve().parents[2]
+MEDIA = REPO / "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media"
 HERE = REPO / "scripts/assets"
 BLENDER_DEFAULT = Path("C:/Program Files/Blender Foundation/Blender 5.2/blender.exe")
 BLENDER_SCRIPT = HERE / "capsule_blender.py"
@@ -100,10 +100,10 @@ ATLAS_RECTS = {
 }
 # 單一型號時期的檔名；Cartoon 改用 <Id> 檔名後每次建置都刪掉。
 OLD_FILES = (
-    MEDIA / "textures/WorldItems/MinidoracatVehicleCapsule.png",
-    MEDIA / "textures/WorldItems/MinidoracatVehicleCapsuleLoaded.png",
-    MEDIA / "textures/Item_MinidoracatVehicleCapsule.png",
-    MEDIA / "textures/Item_MinidoracatVehicleCapsuleLoaded.png",
+    MEDIA / "textures/WorldItems/MinidoracatCapsule.png",
+    MEDIA / "textures/WorldItems/MinidoracatCapsuleLoaded.png",
+    MEDIA / "textures/Item_MinidoracatCapsule.png",
+    MEDIA / "textures/Item_MinidoracatCapsuleLoaded.png",
 )
 
 
@@ -516,7 +516,7 @@ def run(args: argparse.Namespace) -> None:
     atlases = []
     for ctype in TYPES:
         for loaded in (False, True):
-            path = texture_dir / f"MinidoracatVehicleCapsule{ctype[0]}{'Loaded' if loaded else ''}.png"
+            path = texture_dir / f"MinidoracatCapsule{ctype[0]}{'Loaded' if loaded else ''}.png"
             atlases.append((path, loaded, draw_atlas(path, loaded, ctype)))
     config = make_config(atlases, out, REVIEW, blender)
 
@@ -548,14 +548,14 @@ def run(args: argparse.Namespace) -> None:
         old.unlink(missing_ok=True)
     make_type_reviews(icons)
 
-    fbx = model_dir / "MinidoracatVehicleCapsule.fbx"
+    fbx = model_dir / "MinidoracatCapsule.fbx"
     validate_outputs([a for a, _, _ in atlases], icons, fbx)
     print("BUILD OK ->", MEDIA)
     print("review ->", REVIEW)
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="建立 Vehicle Capsule 的 atlas、FBX、PZ 物品圖示與預覽")
+    ap = argparse.ArgumentParser(description="建立 Universal Capsule 的 atlas、FBX、PZ 物品圖示與預覽")
     ap.add_argument("--blender", default=str(BLENDER_DEFAULT), help="Blender 5.2 可執行檔絕對路徑")
     run(ap.parse_args())
 

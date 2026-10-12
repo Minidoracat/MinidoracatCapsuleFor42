@@ -2,15 +2,15 @@
     "app_id": 108600,
     "published_file_id": null,
     "owner_steamid64": "76561198033176898",
-    "workshop_root": "MOD/MinidoracatVehicleCapsuleFor42",
-    "mod_info": "MOD/MinidoracatVehicleCapsuleFor42/Contents/mods/MinidoracatVehicleCapsuleFor42/42/mod.info",
-    "preview_gif": "MOD/MinidoracatVehicleCapsuleFor42/workshop/preview.gif",
+    "workshop_root": "MOD/MinidoracatCapsuleFor42",
+    "mod_info": "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/mod.info",
+    "preview_gif": "MOD/MinidoracatCapsuleFor42/workshop/preview.gif",
     "changelog": "STEAM_CHANGELOG.md",
     "titles": {
-        "english": "[B42] Vehicle Capsule by Minidoracat",
-        "tchinese": "[B42] 車輛膠囊 Vehicle Capsule by Minidoracat",
-        "schinese": "[B42] 车辆胶囊 Vehicle Capsule by Minidoracat",
-        "japanese": "[B42] 車両カプセル Vehicle Capsule by Minidoracat"
+        "english": "[B42] Universal Capsule by Minidoracat",
+        "tchinese": "[B42] 萬用膠囊 Universal Capsule by Minidoracat",
+        "schinese": "[B42] 万用胶囊 Universal Capsule by Minidoracat",
+        "japanese": "[B42] 万能カプセル Universal Capsule by Minidoracat"
     },
     "descriptions": {
         "english": "STEAM_DESCRIPTION_EN.md",

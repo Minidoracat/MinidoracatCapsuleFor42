@@ -1,1 +1,0 @@
-Placeholder so the B42 animation media scan (AdvancedAnimator, also on MP/dedicated servers) can enter this folder without logging a missing-directory error. MinidoracatVehicleCapsuleFor42 does not add any animation groups.

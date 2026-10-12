@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Vehicle Capsule 的 Blender headless 產線（Blender 5.2）。
+"""Universal Capsule 的 Blender headless 產線（Blender 5.2）。
 
 用法（由 repo 根目錄執行）：
     "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup \
-      --python D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/capsule_blender.py -- \
-      D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-model/config.json
+      --python scripts/assets/capsule_blender.py -- \
+      temp/assets-model/config.json
 
 config.json 必須提供 repo、media、out、review、atlas（含 empty/loaded/icons/size/rects）。
-產物：media/models_X/WorldItems/MinidoracatVehicleCapsule.fbx（所有型號共用一個 mesh）、
+產物：media/models_X/WorldItems/MinidoracatCapsule.fbx（所有型號共用一個 mesh）、
 atlas.icons 每張 512px 貼圖各一張 out/icon_<atlas 檔名>.png（外層腳本會安裝至 media/textures/；
 有 emit 的再多一張無光照的 out/icon_<atlas 檔名>_emit.png 供外層疊上發光花紋），
 以及 review 中用 atlas.empty/loaded 算的 model_*.png、side_neg_y.png、side_pos_y.png、
@@ -257,7 +257,7 @@ def build_capsule(rects, tex_size, image):
         return rect_uv(button_side_rect, tex_size, j / 16.0, 0.5)
 
     mb.button_surface(bprof, button_uv)
-    ob, mat, tex = mb.make_object("MinidoracatVehicleCapsule", image)
+    ob, mat, tex = mb.make_object("MinidoracatCapsule", image)
     return ob, mat, tex
 
 
@@ -556,7 +556,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     image = bpy.data.images.load(str(empty_path), check_existing=True)
     capsule, mat, tex_node = build_capsule(rects, tex_size, image)
-    fbx_path = media / "models_X" / "WorldItems" / "MinidoracatVehicleCapsule.fbx"
+    fbx_path = media / "models_X" / "WorldItems" / "MinidoracatCapsule.fbx"
     fbx_path.parent.mkdir(parents=True, exist_ok=True)
     export_fbx(capsule, str(fbx_path))
     # Side views are human QA only; render them once with the empty atlas.

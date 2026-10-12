@@ -21,7 +21,7 @@
 ]]
 
 -- 家族佈局固定，直接填死最省事；scaffold 時由模板替換佔位符
-local MEDIA = "MOD/MinidoracatVehicleCapsuleFor42/Contents/mods/MinidoracatVehicleCapsuleFor42/42/media/lua"
+local MEDIA = "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media/lua"
 
 -- ===== 假的 PZ 全域（依 MOD 實際用到的 API 增補）=====
 local nowMs = 5000000
@@ -99,7 +99,7 @@ local function newItem(fullType, isContainer)
 end
 function instanceof(o, cls) return cls == "InventoryContainer" and type(o) == "table" and o.inv ~= nil end
 function instanceItem(t)
-    return newItem(t, t:find("^MinidoracatVehicleCapsule%.LoadedCapsule") ~= nil or t == "Base.Bag_Schoolbag")
+    return newItem(t, t:find("^MinidoracatCapsule%.LoadedCapsule") ~= nil or t == "Base.Bag_Schoolbag")
 end
 function sendAddItemToContainer() end
 function sendRemoveItemFromContainer() end
@@ -175,12 +175,12 @@ function require(name)
     error("require 找不到: " .. name)
 end
 
-require "MinidoracatVehicleCapsule/Core"
-require "MinidoracatVehicleCapsule/Json"
-require "MinidoracatVehicleCapsule/Store"
-require "MinidoracatVehicleCapsule/Guard"
-require "MinidoracatVehicleCapsule/Admin"
-local M = MinidoracatVehicleCapsule
+require "MinidoracatCapsule/Core"
+require "MinidoracatCapsule/Json"
+require "MinidoracatCapsule/Store"
+require "MinidoracatCapsule/Guard"
+require "MinidoracatCapsule/Admin"
+local M = MinidoracatCapsule
 local Json, Store, Guard, Admin = M.Json, M.Store, M.Guard, M.Admin
 
 -- ===== 測試工具 =====
@@ -287,7 +287,7 @@ check(#dskip == 1, "循環參照在深度上限處截斷並記一條路徑")
 print("Store：寫後讀回、狀態只轉一次")
 local snap = { v = 1, state = "PACKED", settled = true, script = "Base.PickUpTruck", modData = nasty, history = {} }
 check(Store.write(42, snap) == true, "寫入並讀回一致")
-check(Store.dir() == "MinidoracatVehicleCapsule/MP_harness_world/" and files[Store.path(42, "a")] ~= nil
+check(Store.dir() == "MinidoracatCapsule/MP_harness_world/" and files[Store.path(42, "a")] ~= nil
     and files[Store.path(42, "a")]:find("\n42 {", 1, true) ~= nil, "落在這個世界的資料夾、42 號桶的 a 份（MP_<伺服器>）")
 local r = Store.read(42)
 check(r and diff(snap, r) == nil, "read 讀回與寫入相同")
@@ -645,7 +645,7 @@ do -- 拿出模式（AllowCargoTakeOut）：主程式的 local 已接近 200 個
     (function()
         print("Guard：伺服器允許拿出貨物時，跟著紀錄、不放回；沒落盤的照樣放回")
         owner.inv:Remove(cap) -- 上面貨物鎖那顆（水瓶裝備中）不參與
-        SandboxVars = { MinidoracatVehicleCapsule = { AllowCargoTakeOut = true } }
+        SandboxVars = { MinidoracatCapsule = { AllowCargoTakeOut = true } }
         quiet = true
         local open, water, bag, pencil = packedCapsule("PACKED", true)
         local s0 = Store.read(open.id)
@@ -723,11 +723,11 @@ do -- 回溯判斷：主程式的 local 已接近 200 個上限，放進函式
 end
 
 -- ===== Phase 3：落點範圍、收車權限、玩家身分（intent） =====
-require "MinidoracatVehicleCapsule/Footprint"
-require "MinidoracatVehicleCapsule/Rules"
+require "MinidoracatCapsule/Footprint"
+require "MinidoracatCapsule/Rules"
 local clientCommand
 Events.OnClientCommand = { Add = function(fn) clientCommand = fn end }
-require "MinidoracatVehicleCapsule/PlayerCommands"
+require "MinidoracatCapsule/PlayerCommands"
 local Footprint, Rules, Play = M.Footprint, M.Rules, M.Play
 
 print("Footprint：方向與範圍")
@@ -822,7 +822,7 @@ do
     kp.inv:AddItem(instanceItem(T4.empty))
     kp.inv:AddItem(instanceItem(T4.empty))
     kp.inv:AddItem(instanceItem(T1.empty))
-    SandboxVars = { MinidoracatVehicleCapsule = { TypeSteam = false } }
+    SandboxVars = { MinidoracatCapsule = { TypeSteam = false } }
     local kinds = Rules.emptyTypes(kp)
     check(#kinds == 2 and kinds[1].type == T1 and kinds[1].n == 1 and kinds[1].on and kinds[2].type == T4
         and kinds[2].n == 2 and not kinds[2].on, "emptyTypes：照 M.TYPES 順序列出帶著的款式、數量與是否啟用")
@@ -844,10 +844,10 @@ local keyHolder, stranger, admin3 = newPlayer("keyholder", false), newPlayer("st
 keyHolder.inv.haveThisKeyId = function(_, id) return id == 4242 and {} or nil end
 stranger.inv.haveThisKeyId = function() return nil end
 admin3.inv.haveThisKeyId = function() return nil end
-SandboxVars = { MinidoracatVehicleCapsule = { PackPermission = 1 } }
+SandboxVars = { MinidoracatCapsule = { PackPermission = 1 } }
 check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car), "模式 1：有鑰匙才行（背包）")
 check(Rules.mayPack(admin3, car) and select(2, Rules.mayPack(admin3, car)) == "ADMIN", "模式 1：管理員沒鑰匙也能收")
-SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
+SandboxVars.MinidoracatCapsule.PackPermission = 3
 check(not Rules.mayPack(stranger, car) and not Rules.mayPack(keyHolder, car), "模式 3：有鑰匙的一般玩家也不行")
 do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限（收車＝拖曳 TOW）
     local vmAsked
@@ -861,13 +861,13 @@ do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限�
     MinidoracatVehicleManagerAPI = vmStub({})
     check(not Rules.mayPack(admin3, car) and vmAsked == "TOW", "VehicleManager 綁定的車：問拖曳權限；管理員沒開越權也不行")
     MinidoracatVehicleManagerAPI = nil
-    SandboxVars.MinidoracatVehicleCapsule.PackPermission = 1
+    SandboxVars.MinidoracatCapsule.PackPermission = 1
     car.ignition = true
     check(Rules.mayPack(stranger, car), "模式 1：鑰匙插在點火孔，誰都能收")
     car.ignition = false
-    SandboxVars.MinidoracatVehicleCapsule.PackPermission = 2
+    SandboxVars.MinidoracatCapsule.PackPermission = 2
     check(Rules.mayPack(stranger, car), "模式 2：任何人")
-    SandboxVars.MinidoracatVehicleCapsule.PackPermission = 3
+    SandboxVars.MinidoracatCapsule.PackPermission = 3
     check(Rules.mayPack(admin3, car) and not Rules.mayPack(keyHolder, car), "模式 3：只有管理員")
     MinidoracatVehicleManagerAPI = vmStub({ [stranger] = { true, "OWNER" }, [keyHolder] = { true, "MEMBER" },
         [admin3] = { false, "RENT_LOCKED" } })
@@ -882,7 +882,7 @@ do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限�
     check(ovOk and ovMode == "ADMIN" and not Rules.mayPack(keyHolder, car),
         "VehicleManager 越權中的管理員算「管理員」；別人綁定的車，有鑰匙也不行")
     MinidoracatVehicleManagerAPI = { canUse = function() return true, "UNCLAIMED" end }
-    SandboxVars.MinidoracatVehicleCapsule.PackPermission = 1
+    SandboxVars.MinidoracatCapsule.PackPermission = 1
     local unOk, unMode = Rules.mayPack(admin3, car)
     check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car) and unOk and unMode == "ADMIN",
         "VehicleManager 沒綁定的車照沙盒：模式 1 要鑰匙，管理員照常")
@@ -940,7 +940,7 @@ end
 local sandbox = {}
 function getSandboxOptions()
     return { getOptionByName = function(_, name)
-        local k = name:match("^MinidoracatVehicleCapsule%.(.+)$")
+        local k = name:match("^MinidoracatCapsule%.(.+)$")
         if k == nil or sandbox[k] == nil then return nil end
         return { getValue = function() return sandbox[k] end }
     end }
@@ -951,10 +951,10 @@ function sendServerCommand(...) sent[#sent + 1] = { ... } end
 -- 把舊情境的紀錄清掉，Phase 4 從空的桶開始（Store 對桶檔的快取一起清）
 for path in pairs(files) do files[path] = nil end
 Store._resetForTests()
-require "MinidoracatVehicleCapsule/Index"
-require "MinidoracatVehicleCapsule/Query"
-require "MinidoracatVehicleCapsule/AdminCommands"
-require "MinidoracatVehicleCapsule/Loot"
+require "MinidoracatCapsule/Index"
+require "MinidoracatCapsule/Query"
+require "MinidoracatCapsule/AdminCommands"
+require "MinidoracatCapsule/Loot"
 local Index, Query, AdminCommands, Loot = M.Index, M.Query, M.AdminCommands, M.Loot
 
 print("Index：分頁 50 筆、搜尋編號與玩家、狀態篩選（含當機前未確認）")
@@ -1148,7 +1148,7 @@ do -- 桶檔、保留天數、最後看到：主程式的 local 已接近 200 �
         local spDir = Store.dir()
         isServer, getCore, getWorld = realIsServer, realGetCore, realGetWorld
         Store._resetForTests()
-        check(spDir == "MinidoracatVehicleCapsule/SP_Apocalypse_10-10-2026_12-00_x/" and Store.dir() ~= spDir, "單機：" .. spDir)
+        check(spDir == "MinidoracatCapsule/SP_Apocalypse_10-10-2026_12-00_x/" and Store.dir() ~= spDir, "單機：" .. spDir)
 
         print("Store：紀錄再多檔案數也固定（256 桶 × 兩份 + index.json）；刪紀錄是改寫桶，不會多出檔案")
         local many = {}
@@ -1351,7 +1351,7 @@ do (function()
         end,
     }
     MinidoracatEconomy = { v1 = eco }
-    require "MinidoracatVehicleCapsule/Trade"
+    require "MinidoracatCapsule/Trade"
     local Trade = M.Trade
     local seller, buyer = newPlayer("seller", false), newPlayer("buyer", false)
     local cap = instanceItem(M.TYPES[1].loaded)
@@ -1459,7 +1459,7 @@ do (function()
     check(ab.escrow == nil and ab.history[#ab.history].ev == "ESCROW_ABORTED", "Economy 中途放棄：清掉交易標記，歷史記一筆")
     local savedEv = Events.OnInitGlobalModData
     Events.OnInitGlobalModData = { Add = function(fn) initHook = fn end }
-    require "MinidoracatVehicleCapsule/Economy"
+    require "MinidoracatCapsule/Economy"
     Events.OnInitGlobalModData = savedEv
     local calls = {}
     eco.registerUniqueItemType = function(t, mod, h) calls[#calls + 1] = "unique:" .. t .. ":" .. mod; return h == Trade.handler end
@@ -1504,7 +1504,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
     local caps = MinidoracatUI.v1.CAPABILITIES
     caps.window, caps.controls, caps.virtualList, caps.slider = true, true, true, true -- widget 檔要遊戲 UI 類別；這裡只驗文字與排版
     caps.scrollPanel, caps.opaqueWindow = true, true
-    require "MinidoracatVehicleCapsule/UIKit"
+    require "MinidoracatCapsule/UIKit"
     local Kit = M.UIKit
     check(Kit.ok and caps.textWrap == true, "UIKit 接上框架（含 Text.wrap）")
     local function ui(lang)
@@ -1513,7 +1513,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
         fh:close()
         return t
     end
-    local P = "UI_MinidoracatVehicleCapsule_"
+    local P = "UI_MinidoracatCapsule_"
     local DW = 548 -- 980 寬面板的詳情欄
     local msgs = 0
     for _, lang in ipairs({ "EN", "FR", "RU" }) do
@@ -1568,22 +1568,22 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         return s
     end
     local function exists(path) return read(path) ~= nil end
-    local items = read(base .. "/scripts/MinidoracatVehicleCapsule_items.txt")
-    local models = read(base .. "/scripts/MinidoracatVehicleCapsule_models.txt")
+    local items = read(base .. "/scripts/MinidoracatCapsule_items.txt")
+    local models = read(base .. "/scripts/MinidoracatCapsule_models.txt")
     local sandboxTxt = read(base .. "/sandbox-options.txt")
     local sounds, used, bad = {}, {}, {}
-    for name, file in read(base .. "/scripts/MinidoracatVehicleCapsule_sounds.txt"):gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do
+    for name, file in read(base .. "/scripts/MinidoracatCapsule_sounds.txt"):gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do
         sounds[name] = file
     end
     for _, t in ipairs(M.TYPES) do
         local id = t.id
-        if not items:find("item Capsule" .. id .. "%s*{[^}]-Icon = MinidoracatVehicleCapsule" .. id .. ",") then bad[#bad + 1] = id .. ".empty item" end
-        if not items:find("item LoadedCapsule" .. id .. "%s*{[^}]-Icon = MinidoracatVehicleCapsule" .. id .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
+        if not items:find("item Capsule" .. id .. "%s*{[^}]-Icon = MinidoracatCapsule" .. id .. ",") then bad[#bad + 1] = id .. ".empty item" end
+        if not items:find("item LoadedCapsule" .. id .. "%s*{[^}]-Icon = MinidoracatCapsule" .. id .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
         for _, suffix in ipairs({ "", "Loaded", "Hand", "LoadedHand" }) do
-            if not models:find("model VehicleCapsule" .. id .. suffix .. "%s*{") then bad[#bad + 1] = id .. ".model" .. suffix end
+            if not models:find("model UniversalCapsule" .. id .. suffix .. "%s*{") then bad[#bad + 1] = id .. ".model" .. suffix end
         end
-        for _, png in ipairs({ "textures/Item_MinidoracatVehicleCapsule" .. id .. ".png", "textures/Item_MinidoracatVehicleCapsule" .. id .. "Loaded.png",
-            "textures/WorldItems/MinidoracatVehicleCapsule" .. id .. ".png", "textures/WorldItems/MinidoracatVehicleCapsule" .. id .. "Loaded.png" }) do
+        for _, png in ipairs({ "textures/Item_MinidoracatCapsule" .. id .. ".png", "textures/Item_MinidoracatCapsule" .. id .. "Loaded.png",
+            "textures/WorldItems/MinidoracatCapsule" .. id .. ".png", "textures/WorldItems/MinidoracatCapsule" .. id .. "Loaded.png" }) do
             if not exists(base .. "/" .. png) then bad[#bad + 1] = png end
         end
         for _, k in ipairs({ "throw", "pop", "pack", "button" }) do
@@ -1593,11 +1593,11 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
             used[t[k]] = id .. "." .. k
         end
         for i = 1, t.frames + 1 do
-            local has = exists(base .. "/textures/MinidoracatVehicleCapsule/" .. t.smoke .. i .. ".png")
+            local has = exists(base .. "/textures/MinidoracatCapsule/" .. t.smoke .. i .. ".png")
             if has ~= (i <= t.frames) then bad[#bad + 1] = id .. " frame " .. i end
         end
         for _, opt in ipairs({ "Type" .. id, "Type" .. id .. "Loot" }) do
-            if not sandboxTxt:find("option MinidoracatVehicleCapsule%." .. opt .. "%s*{[^}]-page = MinidoracatVehicleCapsuleTypes") then
+            if not sandboxTxt:find("option MinidoracatCapsule%." .. opt .. "%s*{[^}]-page = MinidoracatCapsuleTypes") then
                 bad[#bad + 1] = "sandbox " .. opt
             end
         end
@@ -1614,9 +1614,9 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         for _, t in ipairs(M.TYPES) do
             for _, k in ipairs({ t.empty, t.loaded }) do if not itemNames[k] then missing[#missing + 1] = lang .. ":" .. k end end
             for _, k in ipairs({ "Type" .. t.id, "Type" .. t.id .. "_tooltip", "Type" .. t.id .. "Loot", "Type" .. t.id .. "Loot_tooltip" }) do
-                if not sb["Sandbox_MinidoracatVehicleCapsule_" .. k] then missing[#missing + 1] = lang .. ":" .. k end
+                if not sb["Sandbox_MinidoracatCapsule_" .. k] then missing[#missing + 1] = lang .. ":" .. k end
             end
-            if not tip["Tooltip_MinidoracatVehicleCapsule_Look_" .. t.id] then missing[#missing + 1] = lang .. ":Look_" .. t.id end
+            if not tip["Tooltip_MinidoracatCapsule_Look_" .. t.id] then missing[#missing + 1] = lang .. ":Look_" .. t.id end
         end
         for k in pairs(sb) do if k:find("EffectStyle", 1, true) then missing[#missing + 1] = lang .. ":" .. k .. "(old)" end end
     end

@@ -1,13 +1,13 @@
 <!-- Steam 指南稿源（繁中）：MOD 的完整說明以本指南為準，簡介只放摘要。格式與同步方式見 pz-family-docs/release.md「完整說明：Steam 指南」 -->
-<!-- 標題：📖 車輛膠囊 Vehicle Capsule MOD 完整說明：收車、展開與補回 -->
-<!-- 摘要：Minidoracat 車輛膠囊 MOD 的完整說明：取得空膠囊、收車、丟出膠囊與按下按鈕、貨物、提示框與 3D 預覽、在經濟中心買賣車，以及沙盒選項、管理面板、補回車輛與當機後的處理。 -->
+<!-- 標題：📖 萬用膠囊 Universal Capsule MOD 完整說明：收車、展開與補回 -->
+<!-- 摘要：Minidoracat 萬用膠囊 MOD 的完整說明：取得空膠囊、收車、丟出膠囊與按下按鈕、貨物、提示框與 3D 預覽、在經濟中心買賣車，以及沙盒選項、管理面板、補回車輛與當機後的處理。 -->
 === 🚀 快速上手
-[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_EN]Vehicle Capsule Mod Guide[/url]
+[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_EN]Universal Capsule Mod Guide[/url]
 
 MOD 本體（Steam Workshop）：
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
-車輛膠囊讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。收起來的車不在世界上，車多的基地也比較順。
+萬用膠囊讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。收起來的車不在世界上，車多的基地也比較順。
 [olist]
 [*] [b]取得空膠囊[/b]：搜刮、管理員發放或經濟中心，見「取得空膠囊」。
 [*] [b]收車[/b]：車停好、熄火、車上沒人，背包裡帶著空膠囊，右鍵車輛選「收進膠囊」。約 10 秒後車收進膠囊，膠囊掉在車原本的位置。
@@ -17,7 +17,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 === 🧰 取得空膠囊
 [list]
 [*] [b]戰利品[/b]：七種空膠囊都會出現在修車廠、汽車用品店、加油站修車區的容器裡；住家車庫預設關閉。每個地點的量由開著的款式平分。伺服器可以各自開關與調整權重，見「沙盒選項與預設值」。
-[*] [b]經濟中心[/b]：有裝 Minidoracat Economy 時，管理員把空膠囊（物品 ID [b]MinidoracatVehicleCapsule.Capsule<款式>[/b]，例如 CapsuleCartoon）上架即可販售；管理面板「種類」分頁的「上架...」會在經濟中心直接打開那種空膠囊的商品草稿。
+[*] [b]經濟中心[/b]：有裝 Minidoracat Economy 時，管理員把空膠囊（物品 ID [b]MinidoracatCapsule.Capsule<款式>[/b]，例如 CapsuleCartoon）上架即可販售；管理面板「種類」分頁的「上架...」會在經濟中心直接打開那種空膠囊的商品草稿。
 [*] [b]裝了車的膠囊[/b]：也能在市場上架或拍賣，見「在經濟中心買賣車」。
 [*] [b]管理員發放[/b]：用原版的物品清單或 /additem 指令給空膠囊。
 [/list]
@@ -165,8 +165,8 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]收車解決不了的部分[/b]：行駛中的車、沒收起來的車照舊；展開那一刻可能會頓一下。
 [/list]
 === ⚙️ 沙盒選項與預設值
-沙盒在「Minidoracat 車輛膠囊」「Minidoracat 車輛膠囊 - 種類」「Minidoracat 車輛膠囊 - 戰利品」三頁；管理面板的「設定」「種類」「戰利品」分頁改的也是這些選項。
-[h3]Minidoracat 車輛膠囊[/h3]
+沙盒在「Minidoracat 萬用膠囊」「Minidoracat 萬用膠囊 - 種類」「Minidoracat 萬用膠囊 - 戰利品」三頁；管理面板的「設定」「種類」「戰利品」分頁改的也是這些選項。
+[h3]Minidoracat 萬用膠囊[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]說明[/th][/tr]
 [tr][td]展開後歸還空膠囊[/td][td]開[/td][td]膠囊展開後，有一顆同款的空膠囊回到丟的人背包[/td][/tr]
@@ -178,7 +178,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [list]
 [*] [b]誰能收車[/b]：管理員不受限制。有裝 Vehicle Manager 時，已綁定的車改由它判斷（車主和被分享「拖曳」權限的人），這個選項只管沒綁定的車。
 [/list]
-[h3]Minidoracat 車輛膠囊 - 種類[/h3]
+[h3]Minidoracat 萬用膠囊 - 種類[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]說明[/th][/tr]
 [tr][td]<款式>：可以收車[/td][td]開[/td][td]關掉後不能用這種膠囊收車；已裝車的照樣能丟出、按按鈕展開，展開後還的也是同一種[/td][/tr]
@@ -188,7 +188,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]七種各兩個[/b]：卡通、寫實、塵土、蒸汽、科幻、魔法、衝擊各一組。
 [*] [b]戰利品平分[/b]：每個地點的權重由開著的款式平分，總量不變。
 [/list]
-[h3]Minidoracat 車輛膠囊 - 戰利品[/h3]
+[h3]Minidoracat 萬用膠囊 - 戰利品[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]權重[/th][/tr]
 [tr][td]空膠囊出現在戰利品（總開關）[/td][td]開[/td][td]—[/td][/tr]
@@ -204,7 +204,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === ⚙️ 管理面板
 [list]
-[*] [b]打開[/b]：管理員在家族工具列會看到車輛膠囊的按鈕，點開「車輛膠囊管理」。
+[*] [b]打開[/b]：管理員在家族工具列會看到萬用膠囊的按鈕，點開「萬用膠囊管理」。
 [*] [b]隱藏按鈕[/b]：不想顯示可以在選項關掉。
 [*] [b]誰看得到[/b]：管理員；一般玩家看不到。
 [/list]
@@ -275,9 +275,9 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === ⚙️ 建議設定
 [list]
-[*] [b]搭配 Minidoracat Cleaner[/b]：在它的沙盒「物品保護清單」加上七種裝了車的膠囊：[b]MinidoracatVehicleCapsule.LoadedCapsuleCartoon[/b]、LoadedCapsuleReal、LoadedCapsuleDust、LoadedCapsuleSteam、LoadedCapsuleSciFi、LoadedCapsuleMagic、LoadedCapsuleShock（都加上 MinidoracatVehicleCapsule. 前綴），地上裝了車的膠囊就不會被清掉。
+[*] [b]搭配 Minidoracat Cleaner[/b]：在它的沙盒「物品保護清單」加上七種裝了車的膠囊：[b]MinidoracatCapsule.LoadedCapsuleCartoon[/b]、LoadedCapsuleReal、LoadedCapsuleDust、LoadedCapsuleSteam、LoadedCapsuleSciFi、LoadedCapsuleMagic、LoadedCapsuleShock（都加上 MinidoracatCapsule. 前綴），地上裝了車的膠囊就不會被清掉。
 [*] [b]其他清地上物品的 MOD[/b]：也請把這七種物品排除。
-[*] [b]列入備份[/b]：每顆膠囊的紀錄與車況存在伺服器的 [b]Zomboid/Lua/MinidoracatVehicleCapsule/[/b] 資料夾（每個世界一個子資料夾，單人是 SP_<模式>_<存檔>），不在世界存檔裡。
+[*] [b]列入備份[/b]：每顆膠囊的紀錄與車況存在伺服器的 [b]Zomboid/Lua/MinidoracatCapsule/[/b] 資料夾（每個世界一個子資料夾，單人是 SP_<模式>_<存檔>），不在世界存檔裡。
 [*] [b]資料夾被刪掉[/b]：收起中的車都補不回。
 [*] [b]一起備份、一起還原[/b]：和世界存檔一起；只還原世界存檔的話，已經展開過的膠囊要由管理員逐筆確認。
 [/list]

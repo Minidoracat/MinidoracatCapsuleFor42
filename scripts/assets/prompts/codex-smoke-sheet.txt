@@ -1,8 +1,8 @@
 請使用 imagegen 技能（內建 image_gen 工具，1536x1024，quality high）生成一張圖，存成 PNG 寫到這個絕對路徑：
-D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/smoke_sheet.png
+<REPO>/scripts/assets/smoke_sheet.png
 只需輸出一張，不要變體。生成後自己打開檢查下面「檢查」各項，不符合就重生，最多重生 2 次。除了上面這個檔案，不要新增或修改任何檔案（另一個開發者正在同時修改這個 repo），不要 git commit／push。完成後回報檔案路徑、像素尺寸、重生了幾次。
 
-【用途】Project Zomboid（Build 42）MOD「Vehicle Capsule」的特效動畫幀：膠囊落地彈開時冒出一團卡通「砰」煙霧。程式會把這張圖切成 8 格、把品紅底去背，逐格播放成動畫，在遊戲裡縮到很小（約 64–128 px）顯示。
+【用途】Project Zomboid（Build 42）MOD「Universal Capsule」的特效動畫幀：膠囊落地彈開時冒出一團卡通「砰」煙霧。程式會把這張圖切成 8 格、把品紅底去背，逐格播放成動畫，在遊戲裡縮到很小（約 64–128 px）顯示。
 
 【版面】一張 sprite sheet：4 欄 × 2 列，共 8 格，每格 384×512 px（整張 1536×1024），格子之間不要畫格線或邊框。播放順序是第一列左到右（第 1–4 格），再第二列左到右（第 5–8 格）。每格裡只有一團煙，置中，煙的外緣到格子邊至少留 40 px 純底色，任何一團都不能碰到或越過格子邊界，也不能和隔壁格相連。
 整張背景是純品紅 #FF00FF 的平塗色，完全均勻、沒有漸層、沒有陰影、沒有雜訊、沒有地面。

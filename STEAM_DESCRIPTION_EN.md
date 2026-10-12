@@ -1,4 +1,4 @@
-[h1]🚗 Minidoracat Vehicle Capsule[/h1]
+[h1]🚗 Minidoracat Universal Capsule[/h1]
 [h3]By Minidoracat[/h3]
 
 [hr][/hr]
@@ -33,7 +33,7 @@ Pack a parked vehicle into a capsule and throw it to bring the vehicle back, wit
 [*] [b]Records and recovery[/b]: every capsule is logged, along with where it was last seen; if one goes missing, admins can trace it and restore the vehicle
 [*] [b]Several ways to get capsules[/b]: buy them in the Economy Center, get them from admins, or loot them at mechanic spots
 [/list]
-📖 [b]Who can pack, throwing and pressing, cargo, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Vehicle Capsule Guide: Packing, Unpacking & Recovery[/url]
+📖 [b]Who can pack, throwing and pressing, cargo, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Universal Capsule Guide: Packing, Unpacking & Recovery[/url]
 
 [h2]🔗 All Minidoracat Mods[/h2]
 Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat collection[/url] and subscribe to what you need.
@@ -52,4 +52,4 @@ The mod is always free. If you like it, you can buy me a coffee; donations go to
 [b]#Minidoracat[/b]
 
 Workshop ID: TBD after first upload
-Mod ID: MinidoracatVehicleCapsuleFor42
+Mod ID: MinidoracatCapsuleFor42

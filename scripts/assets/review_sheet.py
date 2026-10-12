@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 REVIEW = os.path.join(REPO, "temp", "assets-review")
-TEX = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
+TEX = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
                    "42", "media", "textures")
 FONT = ImageFont.truetype(os.path.join(HERE, "fonts", "Barlow-SemiBold.ttf"), 22)
 BG, PANEL, INK = (30, 31, 34), (96, 100, 96), (225, 225, 225)
@@ -31,8 +31,8 @@ def main():
     W = 1600
     renders = [Image.open(os.path.join(REVIEW, f"model_{k}.png")).convert("RGBA") for k in ("empty", "loaded")]
     ground = [Image.open(os.path.join(REVIEW, f"ground_{k}.png")).convert("RGBA") for k in ("empty", "loaded")]
-    icons = [Image.open(os.path.join(TEX, f"Item_MinidoracatVehicleCapsule{s}.png")).convert("RGBA") for s in ("Cartoon", "CartoonLoaded")]
-    smoke = [Image.open(os.path.join(TEX, "MinidoracatVehicleCapsule", f"smoke_{i}.png")).convert("RGBA") for i in range(1, 9)]
+    icons = [Image.open(os.path.join(TEX, f"Item_MinidoracatCapsule{s}.png")).convert("RGBA") for s in ("Cartoon", "CartoonLoaded")]
+    smoke = [Image.open(os.path.join(TEX, "MinidoracatCapsule", f"smoke_{i}.png")).convert("RGBA") for i in range(1, 9)]
     sheet = Image.new("RGB", (W, 1460), BG)
     d = ImageDraw.Draw(sheet)
 

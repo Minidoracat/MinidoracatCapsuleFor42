@@ -1,0 +1,171 @@
+module MinidoracatCapsule
+{
+    imports
+    {
+        Base
+    }
+
+    /* One empty and one loaded capsule per type, in the order of M.TYPES (shared/MinidoracatCapsule/Core.lua).
+       The types differ only in looks and sounds. Icons and models come from scripts/assets/build_capsule.py
+       (MinidoracatCapsule_models.txt). */
+
+    item CapsuleCartoon
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleCartoon,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleCartoon,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleCartoonHand,
+    }
+
+    item CapsuleReal
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleReal,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleReal,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleRealHand,
+    }
+
+    item CapsuleDust
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleDust,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleDust,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleDustHand,
+    }
+
+    item CapsuleSteam
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleSteam,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleSteam,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleSteamHand,
+    }
+
+    item CapsuleSciFi
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleSciFi,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleSciFi,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleSciFiHand,
+    }
+
+    item CapsuleMagic
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleMagic,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleMagic,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleMagicHand,
+    }
+
+    item CapsuleShock
+    {
+        DisplayCategory = Tool,
+        ItemType = base:normal,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleShock,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleShock,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleShockHand,
+    }
+
+    /* Capsules holding a vehicle. Cargo travels inside as the original items; full weight counts (no WeightReduction).
+       MaxItemSize keeps players from putting anything in; the server adds cargo with AddItem, which skips the check.
+       Container, not Tool: Minidoracat Economy rebuilds traded items with a new item ID (the record key), and its
+       default and production whitelists leave Container out; server/Economy.lua registers each type with Economy
+       (API rev 6) or blocks it (rev 5). */
+
+    item LoadedCapsuleCartoon
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleCartoonLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleCartoonLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleCartoonLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleReal
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleRealLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleRealLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleRealLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleDust
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleDustLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleDustLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleDustLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleSteam
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleSteamLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleSteamLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleSteamLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleSciFi
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleSciFiLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleSciFiLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleSciFiLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleMagic
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleMagicLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleMagicLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleMagicLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+
+    item LoadedCapsuleShock
+    {
+        DisplayCategory = Container,
+        ItemType = base:container,
+        Weight = 0.2,
+        Icon = MinidoracatCapsuleShockLoaded,
+        WorldStaticModel = MinidoracatCapsule.UniversalCapsuleShockLoaded,
+        StaticModel = MinidoracatCapsule.UniversalCapsuleShockLoadedHand,
+        Capacity = 1,
+        MaxItemSize = 0.01,
+    }
+}

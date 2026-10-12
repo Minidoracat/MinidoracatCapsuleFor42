@@ -1,0 +1,209 @@
+module MinidoracatCapsule
+{
+    /*
+        Capsule models (built by scripts/assets/build_capsule.py). One mesh for every capsule; each type and state only
+        swaps the texture (the type's end cap colour, and on a loaded capsule the type's patterned band). FBX vertices
+        are metres with identity node transforms, so scale = 1.0 is the real 7 cm capsule (PZ reads FBX with assimp:
+        node Lcl Scaling applies, UnitScaleFactor does not).
+        Ground models are 5x so the capsule (35 x 13 cm on the floor) reads at default zoom (3x was ~15 px, E2E
+        vcap-pack-1010a); hand models are 1.5x.
+        Items must reference these by full name: getModelScript without a dot only looks in Base
+        (ScriptBucketCollection.java:72-89).
+    */
+
+    model UniversalCapsuleCartoon
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoon,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleCartoonLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoonLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleCartoonHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoon,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleCartoonLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoonLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleReal
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleReal,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleRealLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleRealLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleRealHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleReal,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleRealLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleRealLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleDust
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDust,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleDustLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDustLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleDustHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDust,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleDustLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDustLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleSteam
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteam,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleSteamLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteamLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleSteamHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteam,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleSteamLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteamLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleSciFi
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFi,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleSciFiLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFiLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleSciFiHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFi,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleSciFiLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFiLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleMagic
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagic,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleMagicLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagicLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleMagicHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagic,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleMagicLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagicLoaded,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleShock
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShock,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleShockLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShockLoaded,
+        scale = 5.0,
+    }
+
+    model UniversalCapsuleShockHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShock,
+        scale = 1.5,
+    }
+
+    model UniversalCapsuleShockLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShockLoaded,
+        scale = 1.5,
+    }
+}

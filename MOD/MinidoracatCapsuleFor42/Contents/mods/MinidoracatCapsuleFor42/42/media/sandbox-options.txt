@@ -1,0 +1,111 @@
+VERSION = 1,
+
+/* 萬用膠囊。選項鍵不可改名。三頁的值也是管理面板「設定」「種類」「戰利品」分頁改的那一組（不另存設定）。 */
+
+/* ===== MinidoracatCapsule：一般 ===== */
+
+/* 展開後把一顆空膠囊還給丟的人 */
+option MinidoracatCapsule.ReturnEmptyCapsule
+{type = boolean, default = true, page = MinidoracatCapsule, translation = MinidoracatCapsule_ReturnEmptyCapsule,}
+
+/* 誰能收車（Vehicle Manager 沒綁定的車才看這個；綁定的車問它的 canUse(TOW)）：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員 */
+option MinidoracatCapsule.PackPermission
+{type = enum, numValues = 3, default = 1, page = MinidoracatCapsule, translation = MinidoracatCapsule_PackPermission,}
+
+/* 膠囊彈開的聲音引來殭屍的半徑（格）；0 不引殭屍 */
+option MinidoracatCapsule.ZombieSoundRadius
+{type = integer, min = 0, max = 50, default = 0, page = MinidoracatCapsule, translation = MinidoracatCapsule_ZombieSoundRadius,}
+
+/* 不用展開車也能從裝了車的膠囊拿出貨物（只能拿出，放不進去）。紀錄要已落盤：剛收好約 5 秒內、當機前未確認、已展開的膠囊照樣鎖住（Rules.cargoOpen） */
+option MinidoracatCapsule.AllowCargoTakeOut
+{type = boolean, default = false, page = MinidoracatCapsule, translation = MinidoracatCapsule_AllowCargoTakeOut,}
+
+/* 已結束的紀錄（已展開且落盤、已補回、作廢）最後一筆事件超過幾天就從紀錄檔刪掉（Index.prune）；收起中與當機前未確認的永遠保留 */
+option MinidoracatCapsule.RecordRetentionDays
+{type = integer, min = 1, max = 90, default = 30, page = MinidoracatCapsule, translation = MinidoracatCapsule_RecordRetentionDays,}
+
+/* ===== MinidoracatCapsuleTypes：膠囊種類（shared/Core.lua M.TYPES 依序；每種兩個：可以用來收車、出現在戰利品）。
+   關掉「使用」只擋收車：已裝車的照樣能丟出、按按鈕展開，也照樣還同一種空膠囊（Rules.typeOn）；戰利品要兩個都開才掉（Loot.items），
+   地點的權重由會掉的種類平分。預設七種全開（設計稿 vcap-types-1012 使用者裁定） ===== */
+
+/* 卡通 */
+option MinidoracatCapsule.TypeCartoon
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeCartoon,}
+
+option MinidoracatCapsule.TypeCartoonLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeCartoonLoot,}
+
+/* 寫實 */
+option MinidoracatCapsule.TypeReal
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeReal,}
+
+option MinidoracatCapsule.TypeRealLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeRealLoot,}
+
+/* 塵土 */
+option MinidoracatCapsule.TypeDust
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeDust,}
+
+option MinidoracatCapsule.TypeDustLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeDustLoot,}
+
+/* 蒸汽 */
+option MinidoracatCapsule.TypeSteam
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeSteam,}
+
+option MinidoracatCapsule.TypeSteamLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeSteamLoot,}
+
+/* 科幻 */
+option MinidoracatCapsule.TypeSciFi
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeSciFi,}
+
+option MinidoracatCapsule.TypeSciFiLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeSciFiLoot,}
+
+/* 魔法 */
+option MinidoracatCapsule.TypeMagic
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeMagic,}
+
+option MinidoracatCapsule.TypeMagicLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeMagicLoot,}
+
+/* 衝擊 */
+option MinidoracatCapsule.TypeShock
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeShock,}
+
+option MinidoracatCapsule.TypeShockLoot
+{type = boolean, default = true, page = MinidoracatCapsuleTypes, translation = MinidoracatCapsule_TypeShockLoot,}
+
+/* ===== MinidoracatCapsuleLoot：戰利品（四個地點各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
+
+option MinidoracatCapsule.LootEnabled
+{type = boolean, default = true, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootEnabled,}
+
+/* 修車廠：MechanicShelfTools、CrateMechanics */
+option MinidoracatCapsule.LootMechanic
+{type = boolean, default = true, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootMechanic,}
+
+option MinidoracatCapsule.LootMechanicWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootMechanicWeight,}
+
+/* 汽車用品店：CarSupplyTools */
+option MinidoracatCapsule.LootCarSupply
+{type = boolean, default = true, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootCarSupply,}
+
+option MinidoracatCapsule.LootCarSupplyWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootCarSupplyWeight,}
+
+/* 加油站修車區：GasStorageMechanics */
+option MinidoracatCapsule.LootGasStation
+{type = boolean, default = true, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootGasStation,}
+
+option MinidoracatCapsule.LootGasStationWeight
+{type = double, min = 0.0, max = 10.0, default = 0.3, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootGasStationWeight,}
+
+/* 住家車庫：GarageMechanics（預設關） */
+option MinidoracatCapsule.LootGarage
+{type = boolean, default = false, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootGarage,}
+
+option MinidoracatCapsule.LootGarageWeight
+{type = double, min = 0.0, max = 10.0, default = 0.2, page = MinidoracatCapsuleLoot, translation = MinidoracatCapsule_LootGarageWeight,}

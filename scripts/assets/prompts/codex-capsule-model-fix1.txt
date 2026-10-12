@@ -1,15 +1,15 @@
-修正 D:/github/MinidoracatVehicleCapsuleFor42 的膠囊產線一個貼圖方向錯誤，然後重跑並自己看圖確認。所有路徑用絕對路徑。
+修正 <REPO> 的膠囊產線一個貼圖方向錯誤，然後重跑並自己看圖確認。所有路徑用絕對路徑。
 
-背景：產線是 D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/build_capsule.py（PIL 畫 atlas、做圖示）與 capsule_blender.py（Blender 建模、UV、匯出、算圖），在 repo 根用 `uv run scripts/assets/build_capsule.py` 一鍵重建（若 uv cache 權限有問題，照你上次的做法跑同一條產線即可）。原始需求在 D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/prompts/codex-capsule-model.txt，概念圖 D:/github/MinidoracatVehicleCapsuleFor42/docs/design/capsule-concept.png。
+背景：產線是 <REPO>/scripts/assets/build_capsule.py（PIL 畫 atlas、做圖示）與 capsule_blender.py（Blender 建模、UV、匯出、算圖），在 repo 根用 `uv run scripts/assets/build_capsule.py` 一鍵重建（若 uv cache 權限有問題，照你上次的做法跑同一條產線即可）。原始需求在 <REPO>/scripts/assets/prompts/codex-capsule-model.txt，概念圖 <REPO>/docs/design/capsule-concept.png。
 
-【錯誤】看 D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/model_empty.png：機身上的「07」是鏡像的（7 上下翻轉，看起來像 0⅃），徽記裡的汽車剪影也上下顛倒（輪子朝上）。原因：build_capsule.py 的 _draw_side_badge 把同一張 patch 用同一個 rotate(90) 貼到 -Y 與 +Y 兩側，但圓柱 UV 的 u（圓周方向）對貼圖是鏡像的，而且兩側在圓周上相差 180°，所以兩側需要的方向不同：兩側各自要算出正確的旋轉／翻轉，不能共用同一張。
+【錯誤】看 <REPO>/temp/assets-review/model_empty.png：機身上的「07」是鏡像的（7 上下翻轉，看起來像 0⅃），徽記裡的汽車剪影也上下顛倒（輪子朝上）。原因：build_capsule.py 的 _draw_side_badge 把同一張 patch 用同一個 rotate(90) 貼到 -Y 與 +Y 兩側，但圓柱 UV 的 u（圓周方向）對貼圖是鏡像的，而且兩側在圓周上相差 180°，所以兩側需要的方向不同：兩側各自要算出正確的旋轉／翻轉，不能共用同一張。
 
 【要求】
 1. 膠囊平躺在地（長軸沿 X、按鈕在 +X 端）時，從 -Y 側正面看與從 +Y 側正面看，「07」都要正讀（不鏡像、字頂朝 +Z），汽車剪影都要輪子朝下、車頂朝 +Z，徽記都在靠按鈕那一側、07 在徽記旁遠離按鈕的那一側（照概念圖：按鈕在左時，左到右是 接縫環、徽記、07）。
 2. 「裝了車」版本的橘色環帶位置不變。其他外型、尺寸、FBX 匯出參數、檔名都不改。
-3. 在 capsule_blender.py 的預覽算圖加兩張正交側視圖（只給人看，不進 MOD）：D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/side_neg_y.png（相機在 -Y 往 +Y 看，Z 朝上）與 side_pos_y.png（相機在 +Y 往 -Y 看，Z 朝上），空膠囊即可，Workbench 或 EEVEE 都行，800×400 左右。重跑後自己打開這兩張與 model_empty.png、model_loaded.png 確認上面第 1 點兩側都成立；不成立就再改，直到成立。
+3. 在 capsule_blender.py 的預覽算圖加兩張正交側視圖（只給人看，不進 MOD）：<REPO>/temp/assets-review/side_neg_y.png（相機在 -Y 往 +Y 看，Z 朝上）與 side_pos_y.png（相機在 +Y 往 -Y 看，Z 朝上），空膠囊即可，Workbench 或 EEVEE 都行，800×400 左右。重跑後自己打開這兩張與 model_empty.png、model_loaded.png 確認上面第 1 點兩側都成立；不成立就再改，直到成立。
 4. 圖示（MEDIA/textures/Item_*.png）照原流程重新產生即可。
 
-【規則】只能改 scripts/assets/build_capsule.py、scripts/assets/capsule_blender.py，以及產線本來就會覆寫的產物（MOD 裡的 .fbx、textures/WorldItems/*.png、textures/Item_MinidoracatVehicleCapsule*.png，temp/ 底下的預覽）。不要動任何其他檔案（另一個開發者正在改這個 repo 的 Lua，scripts/assets/ 底下的其他腳本也是別人的）。MOD 目錄不能留暫存檔。不要 git commit／push、不要執行會改動 git 狀態的指令。
+【規則】只能改 scripts/assets/build_capsule.py、scripts/assets/capsule_blender.py，以及產線本來就會覆寫的產物（MOD 裡的 .fbx、textures/WorldItems/*.png、textures/Item_MinidoracatCapsule*.png，temp/ 底下的預覽）。不要動任何其他檔案（另一個開發者正在改這個 repo 的 Lua，scripts/assets/ 底下的其他腳本也是別人的）。MOD 目錄不能留暫存檔。不要 git commit／push、不要執行會改動 git 狀態的指令。
 
 【回報】改了哪幾行、兩張側視圖的確認結果、還有沒做到的地方。

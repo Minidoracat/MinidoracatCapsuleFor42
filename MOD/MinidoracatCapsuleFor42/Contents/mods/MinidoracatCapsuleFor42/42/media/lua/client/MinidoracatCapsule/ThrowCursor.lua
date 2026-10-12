@@ -1,0 +1,245 @@
+-- Universal Capsule (client): the landing cursor for "throw capsule" and "press the button", and the admin panel's
+-- "restore at a picked spot". A build cursor (ISBuildingObject, like vanilla ISFarmingCursorMouse): the engine calls
+-- isValid/render every frame and create on a left click (only when valid); right click opens the world menu, which
+-- drops the drag (ISWorldObjectContextMenu createMenu -> setDrag(nil)); a gamepad moves it and presses A / B. The
+-- vehicle's ground is drawn tile by tile in the good / bad highlight colour with a tooltip that says why. The server
+-- checks the same rules again (Footprint.lua), so this is only what the player sees.
+require "MinidoracatCapsule/Rules"
+require "MinidoracatCapsule/Footprint"
+require "MinidoracatCapsule/Notify"
+require "TimedActions/ISThrowCapsuleAction"
+require "TimedActions/ISPressCapsuleAction"
+local M = MinidoracatCapsule
+local Rules, Footprint, Notify = M.Rules, M.Footprint, M.Notify
+-- Methods live here; the ISBuildingObject subclass is derived on first use (Cursor.new): ISBuildingObject is in the
+-- server folder, which an MP client loads after the client folder, so requiring it from here fails at load time.
+local Cursor = {}
+M.ThrowCursor = Cursor
+local Class
+
+local scripts = {} -- capsuleId -> vehicle script name, false = the server has no record
+local HINT = { throw = "IGUI_MinidoracatCapsule_HintThrow", press = "IGUI_MinidoracatCapsule_HintPress",
+    restore = "IGUI_MinidoracatCapsule_HintRestore" }
+local PROMPT = { throw = "ContextMenu_MinidoracatCapsule_Throw", press = "ContextMenu_MinidoracatCapsule_Press",
+    restore = "UI_MinidoracatCapsule_Restore" }
+
+function Cursor.onInfo(args)
+    if args.capsuleId then scripts[args.capsuleId] = args.ok and args.script or false end
+end
+
+local function sendIntent(player, kind, id)
+    if isClient() then sendClientCommand(player, M.MODULE, "intent", { kind = kind, id = id }) end
+end
+
+-- mode: "throw" (capsule in the player's inventory) or "press" (capsule on the ground).
+function Cursor.open(player, item, mode)
+    local id = item:getID()
+    if type(scripts[id]) ~= "string" then
+        scripts[id] = nil
+        if isClient() then
+            sendClientCommand(player, M.MODULE, "capsuleInfo", { capsuleId = id })
+        elseif M.Play then
+            M.Play.capsuleInfo(player, id)
+        end
+    end
+    local cursor = Cursor.new(player, item, mode)
+    Cursor.current = cursor
+    getCell():setDrag(cursor, player:getPlayerNum())
+    return cursor
+end
+
+-- Admin restore ("Restore vehicle"): the vehicle `script` goes where the admin clicks, facing away from them, on any
+-- loaded square (no throw range, no line of sight). `home` { x, y, z } is the recorded spot, the default choice: its
+-- ground is drawn as a white frame (as the vehicle would stand if clicked there) and the tooltip names it. Both boxes
+-- and both tooltip lines are made here: render runs every frame. onDone(x, y, z, dir) after a click, onDone(nil) when
+-- the cursor goes away without one.
+function Cursor.openRestore(player, script, home, onDone)
+    local cursor = Cursor.new(player, nil, "restore")
+    cursor.script, cursor.onDone = script, onDone
+    local w, l = Footprint.size(script and getScriptManager():getVehicle(script))
+    if home and w then
+        local x, y = tostring(home.x), tostring(home.y)
+        cursor.home = { x = home.x, y = home.y, z = home.z or 0,
+            ns = Footprint.box(home.x, home.y, "N", w, l), ew = Footprint.box(home.x, home.y, "E", w, l),
+            near = getText("IGUI_MinidoracatCapsule_RestoreHome", x, y),
+            far = getText("IGUI_MinidoracatCapsule_RestoreHomeFar", x, y) }
+    end
+    Cursor.current = cursor
+    getCell():setDrag(cursor, player:getPlayerNum())
+    return cursor
+end
+
+-- Where the capsule starts from: the thrower, or the pressed capsule's square.
+function Cursor:origin()
+    if self.mode == "press" then
+        local wo = self.item:getWorldItem()
+        local sq = wo and wo:getSquare()
+        if not sq then return nil end
+        return sq:getX() + 0.5, sq:getY() + 0.5, sq:getZ(), Rules.PRESS_RANGE, false
+    end
+    local c = self.character
+    if self.mode == "restore" then return c:getX(), c:getY(), c:getZ() end
+    return c:getX(), c:getY(), c:getZ(), Rules.THROW_RANGE, true
+end
+
+-- Reason the vehicle cannot land on square, or nil; keeps self.box / self.dir for render.
+function Cursor:judge(square)
+    self.box = nil
+    local script = self.script or scripts[self.capsuleId]
+    if script == nil then return "LOADING" end
+    if script == false then return "NO_SNAPSHOT" end
+    local ox, oy, oz, range, sight = self:origin()
+    if not ox then return "NO_CAPSULE" end
+    local x, y, z = square:getX(), square:getY(), square:getZ()
+    self.dir = Footprint.dirOf(x - ox, y - oy)
+    local sc = getScriptManager():getVehicle(script)
+    if not sc then return "SCRIPT_MISSING" end
+    local clear, box = Footprint.clear(sc, x, y, z, self.dir)
+    self.box = box
+    return (range and Footprint.reach(ox, oy, oz, x, y, z, range, sight)) or clear
+end
+
+function Cursor:isValid(square)
+    self.why = self:judge(square)
+    return self.why == nil
+end
+
+function Cursor:render(x, y, z, square)
+    local c = self.why == nil and getCore():getGoodHighlitedColor() or getCore():getBadHighlitedColor()
+    local sprite = self:getFloorCursorSprite()
+    local h = self.home
+    if h and getCell():getGridSquare(h.x, h.y, h.z) then
+        local p = self.character
+        local d = Footprint.dirOf(h.x - p:getX(), h.y - p:getY()) -- the facing a click there would give
+        local hb = (d == "E" or d == "W") and h.ew or h.ns
+        for bx = hb.x1, hb.x2 do
+            for by = hb.y1, hb.y2 do sprite:RenderGhostTileColor(bx, by, h.z, 1, 1, 1, 0.3) end
+        end
+    end
+    local b = self.box
+    if b then
+        for bx = b.x1, b.x2 do
+            for by = b.y1, b.y2 do sprite:RenderGhostTileColor(bx, by, z, c:getR(), c:getG(), c:getB(), 0.5) end
+        end
+    end
+    sprite:RenderGhostTileColor(x, y, z, 1, 1, 1, 0.8)
+    self:renderTooltip(square)
+end
+
+function Cursor:tooltipText()
+    local script = self.script or scripts[self.capsuleId]
+    local text
+    if self.why == nil then
+        text = Notify.row(true, getText("IGUI_MinidoracatCapsule_Fits", Notify.vehicleName(script)))
+    elseif self.why == "LOADING" then
+        text = " " .. getText("IGUI_MinidoracatCapsule_Loading") .. " <LINE> "
+    else
+        text = Notify.row(false, getText("IGUI_MinidoracatCapsule_NoFit", Notify.reason(self.why)))
+    end
+    local h = self.home
+    if h then
+        text = text .. " <RGB:0.85,0.85,0.85> " .. (getCell():getGridSquare(h.x, h.y, h.z) and h.near or h.far) .. " <LINE> "
+    end
+    if not self.joypad then
+        text = text .. " <RGB:1,1,1> " .. getText(HINT[self.mode])
+    end
+    return text
+end
+
+function Cursor:renderTooltip(square)
+    local text = self:tooltipText()
+    if not self.tooltip then
+        self.tooltip = ISWorldObjectContextMenu.addToolTip()
+        self.tooltip:setVisible(true)
+        self.tooltip:addToUIManager()
+        self.tooltip.followMouse = not self.joypad
+        self.tooltip.maxLineWidth = 1000
+        self.tooltip.backgroundColor.a = 1 -- opaque under the vanilla 0.7 layer: the red reason row stays readable
+        -- over the world (3.35:1 before, design vcap-types-1012 review); addToolTip resets it for the next user
+    end
+    self.tooltip.description = text
+    if self.joypad and square then
+        self.tooltip:setX(isoToScreenX(self.player, square:getX(), square:getY(), square:getZ()))
+        self.tooltip:setY(isoToScreenY(self.player, square:getX(), square:getY(), square:getZ()))
+    end
+end
+
+function Cursor:hideTooltip()
+    if self.tooltip then
+        self.tooltip:removeFromUIManager()
+        self.tooltip:setVisible(false)
+        self.tooltip = nil
+    end
+end
+
+-- Called by IsoCell.setDrag when the cursor goes away (after a click too: dragNilAfterPlace).
+function Cursor:deactivate()
+    self:hideTooltip()
+    if Cursor.current == self then Cursor.current = nil end
+    if self.onDone and not self.picked then
+        self.picked = true
+        self.onDone(nil)
+    end
+end
+
+-- Left click / A on a valid square (ISBuildingObject:tryBuild with skipBuildAction).
+function Cursor:create(x, y, z)
+    self:hideTooltip()
+    if self.mode == "restore" then
+        self.picked = true
+        self.onDone(x, y, z, self.dir)
+        return
+    end
+    Cursor.queue(self.character, self.item, self.mode, x, y, z)
+end
+
+-- Queues the throw or the press (also used by E2E scenarios). The intent tells the server who really asked.
+function Cursor.queue(player, item, mode, x, y, z)
+    local id = item:getID()
+    if mode == "press" then
+        local wo = item:getWorldItem()
+        if wo and wo:getSquare() then luautils.walkAdj(player, wo:getSquare(), true) end -- normally already beside it
+        sendIntent(player, "press", id)
+        local action = ISPressCapsuleAction:new(player, id, x, y, z)
+        action.item = item
+        ISTimedActionQueue.add(action)
+        return action
+    end
+    ISInventoryPaneContextMenu.transferIfNeeded(player, item)
+    sendIntent(player, "throw", id)
+    local action = ISThrowCapsuleAction:new(player, item, x, y, z)
+    ISTimedActionQueue.add(action)
+    return action
+end
+
+function Cursor:getAPrompt()
+    if self.why ~= nil then return nil end
+    return getText(PROMPT[self.mode])
+end
+
+function Cursor:getLBPrompt() return nil end
+function Cursor:getRBPrompt() return nil end
+
+function Cursor.new(player, item, mode)
+    if not Class then
+        Class = ISBuildingObject:derive("MinidoracatCapsuleCursor")
+        for k, v in pairs(Cursor) do Class[k] = v end
+    end
+    local o = {}
+    setmetatable(o, Class)
+    Class.__index = Class
+    o:init()
+    o.character = player
+    o.player = player:getPlayerNum()
+    o.item = item
+    o.capsuleId = item and item:getID()
+    o.mode = mode
+    o.joypad = JoypadState.players[o.player + 1] ~= nil
+    o.skipBuildAction = true
+    o.skipWalk2 = true
+    o.noNeedHammer = true
+    o.dragNilAfterPlace = true
+    return o
+end
+
+return Cursor

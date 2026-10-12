@@ -1,42 +1,42 @@
-請在這個 repo 寫一條可重跑的 Blender headless 產線，做出 Project Zomboid（Build 42）MOD「Vehicle Capsule」的膠囊 3D 模型、貼圖與 32×32 物品圖示，並實際執行、自己檢查產物。所有路徑都用下面的絕對路徑。
+請在這個 repo 寫一條可重跑的 Blender headless 產線，做出 Project Zomboid（Build 42）MOD「Universal Capsule」的膠囊 3D 模型、貼圖與 32×32 物品圖示，並實際執行、自己檢查產物。所有路徑都用下面的絕對路徑。
 
-REPO  = D:/github/MinidoracatVehicleCapsuleFor42
-MEDIA = D:/github/MinidoracatVehicleCapsuleFor42/MOD/MinidoracatVehicleCapsuleFor42/Contents/mods/MinidoracatVehicleCapsuleFor42/42/media
+REPO  = <本 repo 根目錄>
+MEDIA = <REPO>/MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media
 Blender = C:/Program Files/Blender Foundation/Blender 5.2/blender.exe（一律 `blender -b --factory-startup --python <腳本> -- <參數>`）
 外層 Python 用 `uv run`（PEP 723 inline 依賴 pillow），照 D:/github/MinidoracatKnoxPassFor42/scripts/blender/build.py 與 build_models.py 的寫法（先讀這兩個檔，照抄它們的 MB 網格建構、rect_uv、export、render_icon、icon() 的做法；不要跨 repo 執行它們）。
 
-【外型依據】先打開概念圖 D:/github/MinidoracatVehicleCapsuleFor42/docs/design/capsule-concept.png 看清楚（左：空膠囊；右：裝了車，中段多一條橘色環帶）。照它建模：
+【外型依據】先打開概念圖 <REPO>/docs/design/capsule-concept.png 看清楚（左：空膠囊；右：裝了車，中段多一條橘色環帶）。照它建模：
 - 橫放的短圓柱，兩端半球形圓頭（膠囊形）。實物尺寸：全長 0.070 m、直徑 0.027 m（拇指大小）。網格平躺在地，長軸沿 Blender +X，原點在底面中心（最低點 z=0、x/y 置中）。
 - 一端（+X 端）的半球頂端有一顆圓形小按鈕：拉絲金屬（亮灰 #b9bcc0 到 #8d9196 的細同心拉絲紋），半徑約 0.0045 m，凸出半球表面約 0.002 m，側邊有小倒角。
 - 靠按鈕那一端、圓柱與半球交界處有一圈深灰接縫環（#3a3b3e，寬約 1.2 mm，略為內凹 0.3 mm 的溝）；另一端交界處有一圈很淡的細接縫線（只用貼圖畫即可）。
 - 機身霧面白（#e6e4df 左右，暖白），帶輕微使用痕跡：細小刮痕、淡淡髒污、邊緣微磨損（用固定 seed 的 PIL 雜訊畫，低對比，不要蓋過主色）。
-- 機身側面印原創徽記與編號：一個圓圈（深灰 #3a3b3e 線條）裡面是汽車側面剪影（轎車，簡潔、單色深灰，用 PIL 多邊形自己畫，不可用任何現成圖），旁邊印「07」（字型只能用 D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/fonts/Barlow-SemiBold.ttf，SIL OFL；4 倍超取樣畫再 LANCZOS 縮）。徽記＋07 在圓柱的 -Y 與 +Y 兩側各印一組（地上的物品朝向不固定），字不能鏡像、不能被拉伸變形，從各自那一側看都要正著讀。徽記在靠按鈕那側、07 在另一側，排列照概念圖。
+- 機身側面印原創徽記與編號：一個圓圈（深灰 #3a3b3e 線條）裡面是汽車側面剪影（轎車，簡潔、單色深灰，用 PIL 多邊形自己畫，不可用任何現成圖），旁邊印「07」（字型只能用 <REPO>/scripts/assets/fonts/Barlow-SemiBold.ttf，SIL OFL；4 倍超取樣畫再 LANCZOS 縮）。徽記＋07 在圓柱的 -Y 與 +Y 兩側各印一組（地上的物品朝向不固定），字不能鏡像、不能被拉伸變形，從各自那一側看都要正著讀。徽記在靠按鈕那側、07 在另一側，排列照概念圖。
 - 「裝了車」版本：同一個網格，只換貼圖：圓柱中段多一條亮橘色環帶 #E8742A（寬約圓柱段長度的 28%，位置照概念圖：在接縫環與徽記之間，環帶不壓到徽記和 07），環帶也有同樣的輕微使用痕跡。空膠囊與裝了車的膠囊除了這條環帶以外完全相同。
 - 絕對不可出現：七龍珠、Capsule Corporation 的標誌／文字／名稱、「Hoi-Poi」、任何字母或其他文字。整顆膠囊上唯一的文字是「07」。
 - 面數控制在 3000 三角形以內；圓周 32 段、每個半球 8 段左右。曲面要 smooth shading（膠囊本體、按鈕側面），按鈕頂面與倒角邊可以 sharp。
 
 【貼圖】PIL 畫，一個版本一張 512×512 RGB atlas（無透明、色塊外圍不留透明），UV 在 Python 直接對到像素矩形（不用 Blender 烘焙），照 Knox Pass 的 rect_uv 做法。圓柱段用圓周展開（u＝繞軸角度、v＝沿長軸），兩端半球用合理的投影，接縫不要剛好落在徽記上。按鈕與接縫環可以用單色色塊或小區塊。徽記、07 在展開圖上的寬高比要算進圓周長度，貼上去才不會變形。
 輸出：
-- MEDIA/textures/WorldItems/MinidoracatVehicleCapsule.png（空膠囊）
-- MEDIA/textures/WorldItems/MinidoracatVehicleCapsuleLoaded.png（裝了車）
+- MEDIA/textures/WorldItems/MinidoracatCapsule.png（空膠囊）
+- MEDIA/textures/WorldItems/MinidoracatCapsuleLoaded.png（裝了車）
 
-【FBX 匯出】只匯出一個網格（兩個版本共用）：MEDIA/models_X/WorldItems/MinidoracatVehicleCapsule.fbx。參數一字不改：
+【FBX 匯出】只匯出一個網格（兩個版本共用）：MEDIA/models_X/WorldItems/MinidoracatCapsule.fbx。參數一字不改：
 bpy.ops.export_scene.fbx(filepath=..., use_selection=True, object_types={"MESH"}, apply_scale_options="FBX_SCALE_UNITS", bake_space_transform=True, axis_forward="-Z", axis_up="Y", mesh_smooth_type="FACE", add_leaf_bones=False, bake_anim=False, path_mode="STRIP")
-匯出後在空場景重新匯入驗證：印出物件 matrix_world、尺寸（應為 0.070 × 0.027 × 0.027 m 對應的軸，注意匯入器會加旋轉、要除以 UnitScaleFactor/100 還原）、三角形數、UV 層數、材質數；寫進 D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/fbx_verify.txt。
+匯出後在空場景重新匯入驗證：印出物件 matrix_world、尺寸（應為 0.070 × 0.027 × 0.027 m 對應的軸，注意匯入器會加旋轉、要除以 UnitScaleFactor/100 還原）、三角形數、UV 層數、材質數；寫進 <REPO>/temp/assets-review/fbx_verify.txt。
 
 【物品圖示】照 Knox Pass build.py 的 icon()：Blender Workbench、STUDIO 光、color_type TEXTURE、正交相機、256 px 透明底算圖 → PIL 裁到內容、縮到最長邊 28 px、alpha 二值化、置中於 32×32、MaxFilter(3) 做 1 px 外框，外框色 #1c1a18。膠囊在圖示裡斜放（長軸大約對角線方向、按鈕朝右上），略微俯視，讓橘色環帶看得到。輸出：
-- MEDIA/textures/Item_MinidoracatVehicleCapsule.png
-- MEDIA/textures/Item_MinidoracatVehicleCapsuleLoaded.png
+- MEDIA/textures/Item_MinidoracatCapsule.png
+- MEDIA/textures/Item_MinidoracatCapsuleLoaded.png
 做完把兩張圖示用 NEAREST 放大 4 倍並排看：32 px 下要一眼分得出哪顆有橘色環帶；分不出來就調整視角或環帶寬度／飽和度再做（最多調 3 輪）。
 
-【預覽算圖（給人看，不進 MOD）】寫到 D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-review/：
+【預覽算圖（給人看，不進 MOD）】寫到 <REPO>/temp/assets-review/：
 - model_empty.png、model_loaded.png：EEVEE（或 Cycles 低取樣）1024×768，深灰到炭黑背景（約 #1E1F22），3/4 視角略俯視、主光左上，構圖接近概念圖，各一顆。
 - ground_empty.png、ground_loaded.png：PZ 遊戲投影（正交、方位 45°、仰角 30°），模型乘上 3.0 倍（遊戲裡地上模型的 model script scale），1 公尺＝90.5 px 的像素比例算圖，透明底，用來判斷預設縮放下看不看得到。
 - icons_4x.png：兩張 32 px 圖示 1 倍與 NEAREST 4 倍並排。
 
 【檔案與規則】
-- 腳本放 D:/github/MinidoracatVehicleCapsuleFor42/scripts/assets/：build_capsule.py（外層 uv run：畫貼圖 → 呼叫 Blender → 做圖示 → 預覽）、capsule_blender.py（Blender 端：建模、UV、匯出、驗證、算圖）。在 repo 根執行 `uv run scripts/assets/build_capsule.py` 就能一鍵重建全部產物。檔頭用繁體中文寫用途、用法、產物路徑、座標慣例、字型授權（Barlow，SIL OFL 1.1，授權全文在 scripts/assets/fonts/OFL-Barlow.txt）。
-- 中間產物放 D:/github/MinidoracatVehicleCapsuleFor42/temp/assets-model/（已 gitignore）；MOD 目錄裡只能留上面列的 .fbx 與 .png，不能有 .blend、.blend1、暫存圖或其他雜物。
+- 腳本放 <REPO>/scripts/assets/：build_capsule.py（外層 uv run：畫貼圖 → 呼叫 Blender → 做圖示 → 預覽）、capsule_blender.py（Blender 端：建模、UV、匯出、驗證、算圖）。在 repo 根執行 `uv run scripts/assets/build_capsule.py` 就能一鍵重建全部產物。檔頭用繁體中文寫用途、用法、產物路徑、座標慣例、字型授權（Barlow，SIL OFL 1.1，授權全文在 scripts/assets/fonts/OFL-Barlow.txt）。
+- 中間產物放 <REPO>/temp/assets-model/（已 gitignore）；MOD 目錄裡只能留上面列的 .fbx 與 .png，不能有 .blend、.blend1、暫存圖或其他雜物。
 - 只能新增上面列出的檔案。不要修改任何既有檔案（特別是 .lua、media/scripts/ 底下的任何 .txt、翻譯檔、AGENTS.md、.claude/）；另一個開發者正在同時修改這個 repo 的 Lua，碰到不認得的改動不要動它。不要建立 media/scripts/ 底下的檔案（model script 由別人寫）。不要 git commit、不要 git push、不要執行任何會改動 git 狀態的指令。
 - Lua／文字檔 UTF-8 無 BOM、LF。
 

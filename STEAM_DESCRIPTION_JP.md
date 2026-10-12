@@ -1,4 +1,4 @@
-[h1]🚗 Minidoracat 車両カプセル Vehicle Capsule[/h1]
+[h1]🚗 Minidoracat 万能カプセル Universal Capsule[/h1]
 [h3]By Minidoracat[/h3]
 
 [hr][/hr]
@@ -33,7 +33,7 @@
 [*] [b]記録と復旧[/b]：すべてのカプセルを記録し、最後に見かけた場所も残します。なくしても管理者が行方を調べて車を戻せます
 [*] [b]いろいろな入手方法[/b]：経済センターで購入、管理者からの配布、整備関係の場所で拾得
 [/list]
-📖 [b]しまえる人、投げ方とボタン、積み荷、サーバー設定、管理者の復旧、よくある質問：[/b][url=初回公開後に記入]Vehicle Capsule Guide: Packing, Unpacking & Recovery[/url]（英語）
+📖 [b]しまえる人、投げ方とボタン、積み荷、サーバー設定、管理者の復旧、よくある質問：[/b][url=初回公開後に記入]Universal Capsule Guide: Packing, Unpacking & Recovery[/url]（英語）
 
 [h2]🔗 Minidoracat 全シリーズ[/h2]
 ほかの作品は[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat コレクション[/url]からどうぞ。必要なものだけ購読してください。
@@ -52,4 +52,4 @@
 [b]#Minidoracat[/b]
 
 Workshop ID: 初回公開後に記入
-Mod ID: MinidoracatVehicleCapsuleFor42
+Mod ID: MinidoracatCapsuleFor42

@@ -1,0 +1,16 @@
+{
+    "MinidoracatCapsule.CapsuleCartoon": "카툰 캡슐",
+    "MinidoracatCapsule.CapsuleReal": "리얼 캡슐",
+    "MinidoracatCapsule.CapsuleDust": "흙먼지 캡슐",
+    "MinidoracatCapsule.CapsuleSteam": "증기 캡슐",
+    "MinidoracatCapsule.CapsuleSciFi": "SF 캡슐",
+    "MinidoracatCapsule.CapsuleMagic": "마법 캡슐",
+    "MinidoracatCapsule.CapsuleShock": "충격파 캡슐",
+    "MinidoracatCapsule.LoadedCapsuleCartoon": "카툰 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleReal": "리얼 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleDust": "흙먼지 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleSteam": "증기 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleSciFi": "SF 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleMagic": "마법 캡슐 (적재됨)",
+    "MinidoracatCapsule.LoadedCapsuleShock": "충격파 캡슐 (적재됨)"
+}

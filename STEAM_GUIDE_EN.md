@@ -1,13 +1,13 @@
 <!-- Steam guide source (English): the full reference for this mod; the Workshop description only summarizes. Format and sync: pz-family-docs/release.md「完整說明：Steam 指南」 -->
-<!-- 標題：📖 Vehicle Capsule Mod Guide: Packing, Unpacking & Recovery -->
-<!-- 摘要：Guide to the Minidoracat Vehicle Capsule mod: getting empty capsules, packing vehicles, throwing capsules and Press the Button, cargo, the tooltip and 3D preview, trading vehicles in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and what happens after a crash. -->
+<!-- 標題：📖 Universal Capsule Mod Guide: Packing, Unpacking & Recovery -->
+<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules, packing vehicles, throwing capsules and Press the Button, cargo, the tooltip and 3D preview, trading vehicles in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and what happens after a crash. -->
 === 🚀 Quick start
-[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]車輛膠囊 MOD 完整說明[/url]
+[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]萬用膠囊 MOD 完整說明[/url]
 
 The mod on Steam Workshop:
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
-Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need the vehicle, and it appears exactly as it was, with its mods, condition and cargo. Packed vehicles are not in the world, so busy bases run smoother too.
+Universal Capsule lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need the vehicle, and it appears exactly as it was, with its mods, condition and cargo. Packed vehicles are not in the world, so busy bases run smoother too.
 [olist]
 [*] [b]Get an empty capsule[/b]: loot, an admin or the Economy Center; see "Getting capsules".
 [*] [b]Pack[/b]: park, turn the engine off, make sure nobody is inside, carry an empty capsule, then right-click the vehicle and choose "Pack into Capsule". After about 10 seconds the vehicle is packed and the capsule drops where the vehicle stood.
@@ -17,7 +17,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 === 🧰 Getting capsules
 [list]
 [*] [b]Loot[/b]: all seven kinds of empty capsule show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Each location's share is split evenly over the types that are on. Servers can toggle each location and tune its weight; see "Sandbox options and defaults".
-[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatVehicleCapsule.Capsule<Type>[/b], for example CapsuleCartoon) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule in the Economy Center.
+[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatCapsule.Capsule<Type>[/b], for example CapsuleCartoon) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule in the Economy Center.
 [*] [b]Loaded capsules[/b]: can be listed or auctioned too; see "Trading vehicles in the Economy Center".
 [*] [b]From admins[/b]: hand out empty capsules with the vanilla item list or the /additem command.
 [/list]
@@ -165,8 +165,8 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]What packing can't fix[/b]: vehicles being driven and vehicles that aren't packed cost the same as before, and the moment a vehicle is unpacked may hitch briefly.
 [/list]
 === ⚙️ Sandbox options and defaults
-The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat Vehicle Capsule - Types" and "Minidoracat Vehicle Capsule - Loot"; the admin panel's "Settings", "Types" and "Loot" tabs edit these same options.
-[h3]Minidoracat Vehicle Capsule[/h3]
+The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidoracat Universal Capsule - Types" and "Minidoracat Universal Capsule - Loot"; the admin panel's "Settings", "Types" and "Loot" tabs edit these same options.
+[h3]Minidoracat Universal Capsule[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
 [tr][td]Return an empty capsule after unpacking[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory[/td][/tr]
@@ -178,7 +178,7 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat
 [list]
 [*] [b]Who can pack vehicles[/b]: admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead (the owner and players with Tow shared) and this option covers unclaimed vehicles.
 [/list]
-[h3]Minidoracat Vehicle Capsule - Types[/h3]
+[h3]Minidoracat Universal Capsule - Types[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
 [tr][td]<Type>: can pack[/td][td]On[/td][td]Off: players can't pack vehicles with this type; loaded ones still throw or unpack with the button, and the empty capsule given back is the same type[/td][/tr]
@@ -188,7 +188,7 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat
 [*] [b]Two per type[/b]: one pair each for Cartoon, Realistic, Dust, Steam, Sci-Fi, Magic and Shockwave.
 [*] [b]Loot shared evenly[/b]: each location's weight is split over the types that are on; the total stays the same.
 [/list]
-[h3]Minidoracat Vehicle Capsule - Loot[/h3]
+[h3]Minidoracat Universal Capsule - Loot[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Weight[/th][/tr]
 [tr][td]Empty capsules appear as loot (master switch)[/td][td]On[/td][td]—[/td][/tr]
@@ -204,7 +204,7 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat
 [/list]
 === ⚙️ Admin panel
 [list]
-[*] [b]Opening it[/b]: admins see a Vehicle Capsule button on the family toolbar that opens "Vehicle Capsule Admin".
+[*] [b]Opening it[/b]: admins see a Universal Capsule button on the family toolbar that opens "Universal Capsule Admin".
 [*] [b]Hiding the button[/b]: it can be hidden in the options.
 [*] [b]Who sees it[/b]: admins; regular players don't see it.
 [/list]
@@ -275,9 +275,9 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === ⚙️ Recommended setup
 [list]
-[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up: [b]MinidoracatVehicleCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic and LoadedCapsuleShock (each with the MinidoracatVehicleCapsule. prefix).
+[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules to its "Protected item list" sandbox option so loaded capsules on the ground are never cleaned up: [b]MinidoracatCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic and LoadedCapsuleShock (each with the MinidoracatCapsule. prefix).
 [*] [b]Other ground-cleanup mods[/b]: please exclude these seven items there too.
-[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatVehicleCapsule/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
+[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatCapsule/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
 [*] [b]If that folder is deleted[/b]: packed vehicles can't be restored.
 [*] [b]Back up and restore together[/b]: with the world save; if only the world save is restored, an admin has to check the already-unpacked capsules one by one.
 [/list]

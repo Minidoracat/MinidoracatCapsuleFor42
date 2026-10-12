@@ -7,7 +7,7 @@
 用法（repo 根目錄）：
     uv run scripts/assets/build_smoke.py
 來源：scripts/assets/smoke_sheet.png（1536x1024，每格 384x512；提示詞 scripts/assets/prompts/codex-smoke-sheet.txt）。
-產物：media/textures/MinidoracatVehicleCapsule/smoke_1.png … smoke_8.png（RGBA，透明底）。
+產物：media/textures/MinidoracatCapsule/smoke_1.png … smoke_8.png（RGBA，透明底）。
 
 去背：煙只有白到灰（R≈G≈B），底是品紅（R=B=255、G=0）。把像素看成 a·煙 + (1-a)·品紅，
 G 不受品紅影響，所以 1-a ≈ ((R+B)/2 - G) / 255；再用 a 反解出煙本身的顏色（去掉品紅溢色）。
@@ -21,8 +21,8 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 SRC = os.path.join(HERE, "smoke_sheet.png")
-OUT = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
-                   "42", "media", "textures", "MinidoracatVehicleCapsule")
+OUT = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
+                   "42", "media", "textures", "MinidoracatCapsule")
 COLS, ROWS, SIZE = 4, 2, 256
 KEY = np.array([255.0, 0.0, 255.0])
 

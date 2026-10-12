@@ -2,23 +2,23 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy"]
 # ///
-"""車輛膠囊音效：檢查 ElevenLabs 產生的候選檔，挑定的那一條做響度整理後轉成 MOD 用的 .ogg。
+"""萬用膠囊音效：檢查 ElevenLabs 產生的候選檔，挑定的那一條做響度整理後轉成 MOD 用的 .ogg。
 
 步驟（repo 根目錄；生成器見 skill elevenlabs-tts，提示詞在 scripts/assets/sfx.json）：
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx.json \
         --out-dir temp/assets-review/sfx-takes --format wav --variants 4
     uv run scripts/assets/build_sfx.py              # 只列每條候選的長度、峰值、RMS、起音、尾巴、頻譜重心
-    uv run scripts/assets/build_sfx.py --write      # 用 SPEC 選定的候選寫進 MOD 的 media/sound/MinidoracatVehicleCapsule/
+    uv run scripts/assets/build_sfx.py --write      # 用 SPEC 選定的候選寫進 MOD 的 media/sound/MinidoracatCapsule/
 
 第 2–4 版候選（提示詞 scripts/assets/sfx_v2.json–sfx_v4.json，混音與合成 scripts/assets/design_sfx.py，試聽頁
 temp/assets-review/sfx-v<N>/index.html）用 `v<N>:<ID>` 指定 temp/assets-review/sfx-v<N>/<Name>_<ID>.wav，例如：
-    uv run scripts/assets/build_sfx.py --write --pick VehicleCapsulePop=v4:P19
+    uv run scripts/assets/build_sfx.py --write --pick UniversalCapsulePop=v4:P19
 第 5 版（效果樣式，提示詞 scripts/assets/sfx_v5.json，演示頁 scripts/assets/design_fx.py）、第 6 版（七種款式補錄的 5 段，
 scripts/assets/sfx_v6.json）與第 7 版（衝擊款的爆炸聲，scripts/assets/sfx_v7.json；試聽挑選頁都是 scripts/assets/pick_sfx.py）
 沒有 <Name>_<ID>.wav，`v<N>:<ID>` 直接讀 ElevenLabs 原始 take temp/assets-review/sfx-v<N>/raw/<ID>.wav。只寫某幾條：--write 後面接名稱。
 整理：先剪掉 CUT 指定的開頭（主聲比畫面晚到的 take），4 ms 淡入、60 ms 淡出，增益調到 RMS 峰值（50 ms 窗）TARGET_RMS_DB
-（-18 dBFS；出車的 VehicleCapsulePop* 用 LOUDER_DB），
-再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatVehicleCapsule_sounds.txt。
+（-18 dBFS；出車的 UniversalCapsulePop* 用 LOUDER_DB），
+再 alimiter 限在 -1 dBFS；44.1 kHz 單聲道 Vorbis q5。sound script 在 media/scripts/MinidoracatCapsule_sounds.txt。
 """
 import argparse
 import os
@@ -30,8 +30,8 @@ import numpy as np
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TAKES = os.path.join(REPO, "temp", "assets-review", "sfx-takes")
 REVIEW = os.path.join(REPO, "temp", "assets-review")
-OUT = os.path.join(REPO, "MOD", "MinidoracatVehicleCapsuleFor42", "Contents", "mods", "MinidoracatVehicleCapsuleFor42",
-                   "42", "media", "sound", "MinidoracatVehicleCapsule")
+OUT = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
+                   "42", "media", "sound", "MinidoracatCapsule")
 SR = 44100
 # 名稱 → (可接受的有聲長度範圍 s, 選定的候選)。候選：sfx-takes 的編號，或 "v<N>:<ID>"；None = 還沒選，--write 時略過。
 # 規格：Throw 0.3–0.8 s（膠囊固定飛 500 ms）、Pop 0.25–1.6 s（開瓶砰聲較短）、Pack 約 1.0–1.5 s、Button 約 0.3 s。
@@ -44,61 +44,61 @@ SR = 44100
 #   Throw v3:T1：使用者試聽第 3 輪後選定（ElevenLabs 滑哨咻聲，約 1.4 kHz 往下劃到 0.5 kHz，0.59 s）；膠囊固定飛 500 ms，
 #     所以一條聲音配所有距離。
 SPEC = {
-    "VehicleCapsuleThrow": ((0.3, 0.8), "v3:T1"),
-    "VehicleCapsulePop": ((0.25, 1.6), "v4:P23"),
-    "VehicleCapsulePack": ((1.0, 1.5), "v2:K3"),
-    "VehicleCapsuleButton": ((0.15, 0.5), 4),
+    "UniversalCapsuleThrow": ((0.3, 0.8), "v3:T1"),
+    "UniversalCapsulePop": ((0.25, 1.6), "v4:P23"),
+    "UniversalCapsulePack": ((1.0, 1.5), "v2:K3"),
+    "UniversalCapsuleButton": ((0.15, 0.5), 4),
 }
-# 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條）。名稱＝VehicleCapsule＋提示詞 id。
+# 卡通以外的六種款式（shared/Core.lua 的 M.TYPES 列出每種用哪四條）。名稱＝UniversalCapsule＋提示詞 id。
 # 2026-10-12 使用者在試聽頁（scripts/assets/pick_sfx.py，配特效動畫）挑了兩輪：17 段維持原本的預設（同一句提示詞裡長度合格、
 # 頻譜重心最低的 take），換了 6 段（PackReal_3、PackSteam_4、PopSci_3、ThrowMagic_1、ButtonMagic_4、PackShock_4）；
 # 衝擊款的彈開改成爆炸聲（下面第 7 版）。
 THROW, POP, PACK, BUTTON = (0.25, 0.9), (0.3, 1.7), (0.4, 1.6), (0.06, 0.7)
 SPEC.update({
-    "VehicleCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
-    "VehicleCapsuleThrowReal2": (THROW, "v5:ThrowReal2_4"),
-    "VehicleCapsuleThrowSci": (THROW, "v5:ThrowSci_3"),
-    "VehicleCapsuleThrowMagic": (THROW, "v5:ThrowMagic_1"),
-    "VehicleCapsulePopReal": (POP, "v5:PopReal_4"),
-    "VehicleCapsulePopHeavyDrop": (POP, "v5:PopHeavyDrop_4"),
-    "VehicleCapsulePopSteam": (POP, "v5:PopSteam_1"),
-    "VehicleCapsulePopSci": (POP, "v5:PopSci_3"),
-    "VehicleCapsulePopMagic": (POP, "v5:PopMagic_1"),
-    "VehicleCapsulePackReal": (PACK, "v5:PackReal_3"),
-    "VehicleCapsulePackHeavy": (PACK, "v5:PackHeavy_1"),
-    "VehicleCapsulePackSteam": (PACK, "v5:PackSteam_4"),
-    "VehicleCapsulePackSci": (PACK, "v5:PackSci_4"),
-    "VehicleCapsulePackMagic": (PACK, "v5:PackMagic_2"),
-    "VehicleCapsuleButtonReal": (BUTTON, "v5:ButtonReal_3"),
-    "VehicleCapsuleButtonSwitch": (BUTTON, "v5:ButtonSwitch_2"),
-    "VehicleCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
-    "VehicleCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_4"),
+    "UniversalCapsuleThrowReal": (THROW, "v5:ThrowReal_3"),
+    "UniversalCapsuleThrowReal2": (THROW, "v5:ThrowReal2_4"),
+    "UniversalCapsuleThrowSci": (THROW, "v5:ThrowSci_3"),
+    "UniversalCapsuleThrowMagic": (THROW, "v5:ThrowMagic_1"),
+    "UniversalCapsulePopReal": (POP, "v5:PopReal_4"),
+    "UniversalCapsulePopHeavyDrop": (POP, "v5:PopHeavyDrop_4"),
+    "UniversalCapsulePopSteam": (POP, "v5:PopSteam_1"),
+    "UniversalCapsulePopSci": (POP, "v5:PopSci_3"),
+    "UniversalCapsulePopMagic": (POP, "v5:PopMagic_1"),
+    "UniversalCapsulePackReal": (PACK, "v5:PackReal_3"),
+    "UniversalCapsulePackHeavy": (PACK, "v5:PackHeavy_1"),
+    "UniversalCapsulePackSteam": (PACK, "v5:PackSteam_4"),
+    "UniversalCapsulePackSci": (PACK, "v5:PackSci_4"),
+    "UniversalCapsulePackMagic": (PACK, "v5:PackMagic_2"),
+    "UniversalCapsuleButtonReal": (BUTTON, "v5:ButtonReal_3"),
+    "UniversalCapsuleButtonSwitch": (BUTTON, "v5:ButtonSwitch_2"),
+    "UniversalCapsuleButtonSci": (BUTTON, "v5:ButtonSci_3"),
+    "UniversalCapsuleButtonMagic": (BUTTON, "v5:ButtonMagic_4"),
 })
 # 七種款式（設計稿 vcap-types-1012）原本借用別款的 5 段新錄：提示詞 scripts/assets/sfx_v6.json，`v6:<ID>` 讀 sfx-v6/raw。
 SPEC.update({
-    "VehicleCapsuleThrowSteam": (THROW, "v6:ThrowSteam_1"),
-    "VehicleCapsuleThrowShock": (THROW, "v6:ThrowShock_3"),
-    "VehicleCapsulePackShock": (PACK, "v6:PackShock_4"),
-    "VehicleCapsuleButtonDust": (BUTTON, "v6:ButtonDust_1"),
-    "VehicleCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
+    "UniversalCapsuleThrowSteam": (THROW, "v6:ThrowSteam_1"),
+    "UniversalCapsuleThrowShock": (THROW, "v6:ThrowShock_3"),
+    "UniversalCapsulePackShock": (PACK, "v6:PackShock_4"),
+    "UniversalCapsuleButtonDust": (BUTTON, "v6:ButtonDust_1"),
+    "UniversalCapsuleButtonShock": (BUTTON, "v6:ButtonShock_3"),
 })
 # 衝擊款的彈開換成爆炸聲（使用者 2026-10-12：「應該換大一點的爆炸聲」）：第 7 版提示詞 scripts/assets/sfx_v7.json，三種爆炸各
 # 4 條（`v7:<ID>` 讀 sfx-v7/raw），提示詞要求一開頭就炸，12 條主聲都在開頭 20 ms 內。使用者在試聽頁挑定 PopMushroom_4
 # （蘑菇雲火球：低沉轟隆加火焰劈啪，1.6 s）。
-SPEC.update({"VehicleCapsulePopExplosion": (POP, "v7:PopMushroom_4")})
+SPEC.update({"UniversalCapsulePopExplosion": (POP, "v7:PopMushroom_4")})
 # 主聲比畫面晚的 take（使用者在試聽頁配特效聽出來）：剪掉原始 take 開頭這幾秒，主瞬態就落在觸發那一刻（出車、收車）。
 #   PopReal_4：前 0.39 s 是細的高頻嘶聲，砰在後面；PackShock_4：嗡聲蓄能 0.71 s 才炸開（3 kHz 以上的瞬態起點）。
 CUT = {"v5:PopReal_4": 0.385, "v6:PackShock_4": 0.705}
 # 先過 SOFT 再整理響度：原檔頻譜重心超過 4 kHz、而且是容易刺耳的音色（閃光、電子音；design_fx.py、pick_sfx.py 同一條規則）
-SOFTEN = {"VehicleCapsuleThrowSci", "VehicleCapsuleThrowMagic", "VehicleCapsulePackMagic", "VehicleCapsuleButtonShock"}
+SOFTEN = {"UniversalCapsuleThrowSci", "UniversalCapsuleThrowMagic", "UniversalCapsulePackMagic", "UniversalCapsuleButtonShock"}
 SOFT = "highpass=f=80,equalizer=f=3000:t=o:w=1.5:g=-5,equalizer=f=6500:t=o:w=1:g=-4,lowpass=f=5000,lowpass=f=5000"
 TARGET_RMS_DB = -18.0
-# 第 4 輪使用者：「蹦的聲音可以大一點，要有炸開的感覺」，出車的蹦聲（每個效果樣式的 VehicleCapsulePop*）提高 4 dB。
+# 第 4 輪使用者：「蹦的聲音可以大一點，要有炸開的感覺」，出車的蹦聲（每個效果樣式的 UniversalCapsulePop*）提高 4 dB。
 LOUDER_DB = -14.0
 
 
 def target_db(name):
-    return LOUDER_DB if name.startswith("VehicleCapsulePop") else TARGET_RMS_DB
+    return LOUDER_DB if name.startswith("UniversalCapsulePop") else TARGET_RMS_DB
 
 
 def decode(path):

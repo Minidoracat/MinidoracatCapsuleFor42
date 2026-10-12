@@ -1,0 +1,16 @@
+{
+    "MinidoracatCapsule.CapsuleCartoon": "カートゥーンカプセル",
+    "MinidoracatCapsule.CapsuleReal": "リアルカプセル",
+    "MinidoracatCapsule.CapsuleDust": "土ぼこりカプセル",
+    "MinidoracatCapsule.CapsuleSteam": "蒸気カプセル",
+    "MinidoracatCapsule.CapsuleSciFi": "SFカプセル",
+    "MinidoracatCapsule.CapsuleMagic": "魔法カプセル",
+    "MinidoracatCapsule.CapsuleShock": "衝撃波カプセル",
+    "MinidoracatCapsule.LoadedCapsuleCartoon": "カートゥーンカプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleReal": "リアルカプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleDust": "土ぼこりカプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleSteam": "蒸気カプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleSciFi": "SFカプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleMagic": "魔法カプセル（収納済み）",
+    "MinidoracatCapsule.LoadedCapsuleShock": "衝撃波カプセル（収納済み）"
+}

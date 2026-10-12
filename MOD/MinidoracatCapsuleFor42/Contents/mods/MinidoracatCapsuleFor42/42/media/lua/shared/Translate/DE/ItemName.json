@@ -1,0 +1,16 @@
+{
+    "MinidoracatCapsule.CapsuleCartoon": "Cartoon-Kapsel",
+    "MinidoracatCapsule.CapsuleReal": "Realistische Kapsel",
+    "MinidoracatCapsule.CapsuleDust": "Staubkapsel",
+    "MinidoracatCapsule.CapsuleSteam": "Dampfkapsel",
+    "MinidoracatCapsule.CapsuleSciFi": "Sci-Fi-Kapsel",
+    "MinidoracatCapsule.CapsuleMagic": "Magiekapsel",
+    "MinidoracatCapsule.CapsuleShock": "Druckwellenkapsel",
+    "MinidoracatCapsule.LoadedCapsuleCartoon": "Cartoon-Kapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleReal": "Realistische Kapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleDust": "Staubkapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleSteam": "Dampfkapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleSciFi": "Sci-Fi-Kapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleMagic": "Magiekapsel (beladen)",
+    "MinidoracatCapsule.LoadedCapsuleShock": "Druckwellenkapsel (beladen)"
+}
