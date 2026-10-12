@@ -32,7 +32,7 @@
     "Tooltip_MinidoracatVehicleCapsule_TypeOff": "! An admin switched this type off: it cannot pack vehicles now",
     "Tooltip_MinidoracatVehicleCapsule_ListSep": ", ",
     "Tooltip_MinidoracatVehicleCapsule_Look_Cartoon": "White cartoon smoke and cartoon sounds",
-    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Grey smoke, mechanical and air pressure sounds",
+    "Tooltip_MinidoracatVehicleCapsule_Look_Real": "Grey smoke, mechanical and pneumatic sounds",
     "Tooltip_MinidoracatVehicleCapsule_Look_Dust": "A dust burst along the ground, a heavy landing thud",
     "Tooltip_MinidoracatVehicleCapsule_Look_Steam": "White steam, a steam blast",
     "Tooltip_MinidoracatVehicleCapsule_Look_SciFi": "A light column and a ring on the ground, energy sounds",

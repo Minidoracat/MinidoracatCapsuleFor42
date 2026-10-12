@@ -23,7 +23,7 @@ Vehicle Capsule lets you pack a parked vehicle into a capsule and carry it aroun
 [/list]
 [h3]Seven capsule types[/h3]
 [list]
-[*] [b]Types[/b]: Cartoon, Realistic, Dust, Steam, Sci-fi, Magic and Shockwave. The end cap color tells the type; a loaded capsule adds a patterned band.
+[*] [b]Types[/b]: Cartoon, Realistic, Dust, Steam, Sci-Fi, Magic and Shockwave. The end cap color tells the type; a loaded capsule adds a patterned band.
 [*] [b]Same function[/b]: requirements, time, permission and records are the same; only the look, the smoke and the four sounds (throw, pop, pack, button) differ.
 [*] [b]Everyone sees the same type[/b]: the type you pack with is the smoke nearby players see when packing, throwing and unpacking.
 [*] [b]After unpacking[/b]: the empty capsule you get back is the same type.
@@ -185,7 +185,7 @@ The options are on the sandbox pages "Minidoracat Vehicle Capsule", "Minidoracat
 [tr][td]<Type>: in loot[/td][td]On[/td][td]Whether this empty capsule turns up in loot; never while "can pack" is off[/td][/tr]
 [/table]
 [list]
-[*] [b]Two per type[/b]: one pair each for Cartoon, Realistic, Dust, Steam, Sci-fi, Magic and Shockwave.
+[*] [b]Two per type[/b]: one pair each for Cartoon, Realistic, Dust, Steam, Sci-Fi, Magic and Shockwave.
 [*] [b]Loot shared evenly[/b]: each location's weight is split over the types that are on; the total stays the same.
 [/list]
 [h3]Minidoracat Vehicle Capsule - Loot[/h3]

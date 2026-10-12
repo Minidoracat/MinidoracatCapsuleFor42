@@ -57,8 +57,8 @@
     "Sandbox_MinidoracatVehicleCapsule_TypeMagic_tooltip": "Wyłączone: gracze nie mogą pakować pojazdów do kapsuł magicznych. Pełne nadal można rzucić lub rozpakować przyciskiem, a zwrócona pusta kapsuła też będzie magiczna.",
     "Sandbox_MinidoracatVehicleCapsule_TypeMagicLoot": "Kapsuła magiczna: do znalezienia",
     "Sandbox_MinidoracatVehicleCapsule_TypeMagicLoot_tooltip": "Włączone: puste kapsuły magiczne można znaleźć wśród przedmiotów; dzielą wagę każdego miejsca z innymi włączonymi typami. Nigdy, gdy „można pakować” jest wyłączone.",
-    "Sandbox_MinidoracatVehicleCapsule_TypeShock": "Kapsuła uderzeniowa: można pakować",
-    "Sandbox_MinidoracatVehicleCapsule_TypeShock_tooltip": "Wyłączone: gracze nie mogą pakować pojazdów do kapsuł uderzeniowych. Pełne nadal można rzucić lub rozpakować przyciskiem, a zwrócona pusta kapsuła też będzie uderzeniowa.",
-    "Sandbox_MinidoracatVehicleCapsule_TypeShockLoot": "Kapsuła uderzeniowa: do znalezienia",
-    "Sandbox_MinidoracatVehicleCapsule_TypeShockLoot_tooltip": "Włączone: puste kapsuły uderzeniowe można znaleźć wśród przedmiotów; dzielą wagę każdego miejsca z innymi włączonymi typami. Nigdy, gdy „można pakować” jest wyłączone."
+    "Sandbox_MinidoracatVehicleCapsule_TypeShock": "Kapsuła wybuchowa: można pakować",
+    "Sandbox_MinidoracatVehicleCapsule_TypeShock_tooltip": "Wyłączone: gracze nie mogą pakować pojazdów do kapsuł wybuchowych. Pełne nadal można rzucić lub rozpakować przyciskiem, a zwrócona pusta kapsuła też będzie wybuchowa.",
+    "Sandbox_MinidoracatVehicleCapsule_TypeShockLoot": "Kapsuła wybuchowa: do znalezienia",
+    "Sandbox_MinidoracatVehicleCapsule_TypeShockLoot_tooltip": "Włączone: puste kapsuły wybuchowe można znaleźć wśród przedmiotów; dzielą wagę każdego miejsca z innymi włączonymi typami. Nigdy, gdy „można pakować” jest wyłączone."
 }
