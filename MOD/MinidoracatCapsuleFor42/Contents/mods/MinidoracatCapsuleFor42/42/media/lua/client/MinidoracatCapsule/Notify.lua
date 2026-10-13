@@ -172,11 +172,12 @@ local function captured(args)
 end
 
 -- A landing (throw, press) or a Pal Sphere's release. A release says "Released: <name>" and names the tier that came
--- back; a refused one (NO_ROOM, IN_VEHICLE, a spot blocked at the last moment) its own title.
+-- back; a refused one (NO_ROOM, IN_VEHICLE, a spot blocked at the last moment, or a loaded sphere sent to be thrown or
+-- pressed: WRONG_ITEM) its own title.
 function Handlers.landed(args)
     if args.mode == "capture" then return captured(args) end
     local animal = args.kind == "animal" and "Animal" or ""
-    local release = args.mode == "release"
+    local release = args.mode == "release" or args.why == "WRONG_ITEM"
     if args.ok then
         local name = animal ~= "" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
         local t = M.TYPE_BY_ID[tostring(args.type)]

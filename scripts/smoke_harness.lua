@@ -2785,9 +2785,11 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "WRONG_ITEM", kind = "animal" })
     M.onServerCommand("landed", { ok = false, mode = "release", why = "NO_ROOM", kind = "animal" })
     M.onServerCommand("landed", { ok = true, mode = "release", kind = "animal", animal = cow, returned = true, type = "SphereMega" })
+    M.onServerCommand("landed", { ok = false, mode = "throw", why = "WRONG_ITEM", capsuleId = 5 }) -- a forged sphere throw
     SandboxVars = nil
     local n = #dialogs
-    local animalDlg, vehicleDlg, roomDlg = dialogs[n - 2] or {}, dialogs[n - 1] or {}, dialogs[n] or {}
+    local animalDlg, vehicleDlg, roomDlg = dialogs[n - 3] or {}, dialogs[n - 2] or {}, dialogs[n - 1] or {}
+    local throwDlg = dialogs[n] or {}
     local wrongToast, releasedToast = shown[#shown - 1] or {}, shown[#shown] or {}
     check(factorRow:find("IGUI_MinidoracatCapsule_WildChance(85)", 1, true) ~= nil
         and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(name:MinidoracatCapsule.SphereMega)", 1, true) ~= nil
@@ -2802,8 +2804,10 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
         "WRONG_ITEM：膠囊收動物寫「要用帕魯球」、帕魯球收車寫「帕魯球收不了車」（選單與抓取）")
     check(roomDlg.title == "IGUI_MinidoracatCapsule_ReleaseFailed" and roomDlg.text == "IGUI_MinidoracatCapsule_Why_NO_ROOM"
         and releasedToast.title == "IGUI_MinidoracatCapsule_Released(E2E Bessie)"
-        and releasedToast.message == "IGUI_MinidoracatCapsule_SphereBack(name:MinidoracatCapsule.SphereMega)",
-        "放出：沒空地的對話框寫「沒有放出動物：旁邊沒有空地」；成功的 Toast 寫已放出與同等級的空帕魯球回來")
+        and releasedToast.message == "IGUI_MinidoracatCapsule_SphereBack(name:MinidoracatCapsule.SphereMega)"
+        and throwDlg.title == "IGUI_MinidoracatCapsule_ReleaseFailed" and throwDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM_RELEASE",
+        "放出：沒空地的對話框寫「沒有放出動物：旁邊沒有空地」；成功的 Toast 寫已放出與同等級的空帕魯球回來；"
+            .. "硬送丟出帕魯球被拒的對話框也是「沒有放出動物」＋「從物品欄放出」")
     getText, getTextOrNull = savedText, savedOrNull
     local drop, kept, esc, dlg = shown[3] or {}, shown[4] or {}, shown[5] or {}, dialogs[1] or {}
     check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"
