@@ -64,5 +64,7 @@
     "Sandbox_MinidoracatCapsule_AllowAnimals": "동물 넣기 허용",
     "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "켜면 플레이어가 월드의 살아 있는 동물(야생이든 길들인 동물이든, 새끼든 성체든)을 동물 메뉴에서 빈 캡슐에 넣을 수 있습니다. 끄면 동물 넣기만 막습니다. 이미 동물이 든 캡슐은 계속 던지고, 버튼으로 꺼내고, 관리자가 복구할 수 있습니다.",
     "Sandbox_MinidoracatCapsule_WildCaptureChance": "야생 동물 포획 확률",
-    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "야생 동물을 넣는 데 성공할 확률(퍼센트)입니다. 동물 메뉴로 넣을 때와 빈 캡슐을 던져 포획할 때 모두 적용됩니다. 실패하면 동물이 빠져나가 그 자리에 남고 빈 캡슐은 쓰이지 않습니다(던진 캡슐은 떨어진 곳에 남습니다). 0이면 야생 동물을 넣을 수 없고 100이면 항상 성공합니다. 길들인 동물과 차량에는 영향이 없습니다."
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "야생 동물을 넣는 데 성공할 확률(퍼센트)입니다. 동물 메뉴로 넣을 때와 빈 캡슐을 던져 포획할 때 모두 적용됩니다. 실패하면 동물이 빠져나가 그 자리에 남고 빈 캡슐은 쓰이지 않습니다(던진 캡슐은 떨어진 곳에 남습니다). 0이면 야생 동물을 넣을 수 없고 100이면 항상 성공합니다. 길들인 동물과 차량에는 영향이 없습니다. '포획 실패 시 캡슐 소멸'을 켜면 실패할 때 캡슐도 사라집니다.",
+    "Sandbox_MinidoracatCapsule_WildCaptureFailConsumes": "포획 실패 시 캡슐 소멸",
+    "Sandbox_MinidoracatCapsule_WildCaptureFailConsumes_tooltip": "켜면 야생 동물 포획 판정에 실패해 동물이 빠져나갈 때 빈 캡슐도 사라집니다. 동물 메뉴로 넣을 때는 소지품에서 없어지고, 던진 캡슐은 떨어진 곳에 남지 않습니다. 판정 실패만 해당하며, 대상이 달아나거나 착지점이 막히는 등 다른 실패에서는 캡슐이 남습니다. 길들인 동물과 차량에는 영향이 없습니다."
 }

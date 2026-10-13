@@ -1723,6 +1723,23 @@ local function wildCases(live, packer)
     check(hit.ok and rolls[2] == 50 and hare.log[1] == "setWild:false" and hare.log[#hare.log] == "remove"
         and Store.read(hit.capsuleId).animal.wild == false and packer.inv:getItemWithIDRecursiv(cap.id) == nil,
         "強制成功：照舊收好、setWild(false)、紀錄 wild=false、空膠囊用掉")
+    -- WildCaptureFailConsumes on: the forced miss takes the capsule this pack used (consumed = true); a refusal that
+    -- is not the roll (WILD_OFF here) keeps it; off (above) nothing is used up
+    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = true
+    Rules.rollWild = function() return false end
+    local hare2, cap2, cap3 = live({ wild = true, square = spot }), empty(), empty()
+    local before2 = #ground
+    quiet = true
+    local gone = Pack.packAnimal(packer, hare2, { capsule = cap2, typeId = "Steam" })
+    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    local offKept = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = cap3, typeId = "Steam" })
+    quiet = false
+    check(gone.ok == false and gone.why == "ESCAPED" and gone.consumed == true and gone.chance == 50
+        and packer.inv:getItemWithIDRecursiv(cap2.id) == nil and #hare2.log == 0 and #ground == before2
+        and miss.consumed == nil and offKept.why == "WILD_OFF" and offKept.consumed == nil
+        and packer.inv:getItemWithIDRecursiv(cap3.id) == cap3,
+        "沒抓到時膠囊消失（開）：強制失敗 consumed=true、用的空膠囊從背包移除、動物不動；關著時與非擲骰的拒絕（WILD_OFF）膠囊照舊")
+    packer.inv:Remove(cap3)
     -- 100% with the real roll catches on the highest die; a tame animal never rolls (a forced miss changes nothing)
     Rules.rollWild = savedRoll
     chance(100)
@@ -1751,8 +1768,12 @@ local function wildCases(live, packer)
     local pAllow, pWild, pKeep = panel:find('key = "AllowAnimals"', 1, true),
         panel:find('{ key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true }', 1, true),
         panel:find('key = "RecordRetentionDays"', 1, true)
+    local sGone, pGone = sb:find("option MinidoracatCapsule%.WildCaptureFailConsumes%s*{type = boolean, default = false, page = MinidoracatCapsule,"),
+        panel:find('{ key = "WildCaptureFailConsumes", kind = "bool", default = false }', 1, true)
     check(allow and wild and keep and allow < wild and wild < keep and pAllow and pWild and pKeep and pAllow < pWild
         and pWild < pKeep, "沙盒 WildCaptureChance 整數 0–100、預設 50、主頁緊接 AllowAnimals；設定分頁同一位置、顯示成百分比")
+    check(sGone and wild < sGone and sGone < keep and pGone and pWild < pGone and pGone < pKeep,
+        "沙盒 WildCaptureFailConsumes 布林、預設關、緊接成功率；設定分頁同一位置（開關）")
     check(src("client/MinidoracatCapsule/Menu.lua"):find("Notify.chanceRow(animal)", 1, true)
         and src("client/MinidoracatCapsule/ThrowCursor.lua"):find("Notify.chanceRow(tgt.thing)", 1, true),
         "動物選單與抓取游標的提示框都加成功率列（Notify.chanceRow）")
@@ -1760,12 +1781,13 @@ local function wildCases(live, packer)
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
         local ui = Json.decode(src("shared/Translate/" .. lang .. "/IG_UI.json"))
         local box = Json.decode(src("shared/Translate/" .. lang .. "/Sandbox.json"))
-        for _, k in ipairs({ "Why_ESCAPED", "WildChance" }) do
+        for _, k in ipairs({ "Why_ESCAPED", "WildChance", "WildChanceGone", "EscapedGone" }) do
             local s = ui["IGUI_MinidoracatCapsule_" .. k] or ""
             if not (s:find("%1", 1, true) and s:find("%%", 1, true)) then missing[#missing + 1] = lang .. ":" .. k end
         end
         if (ui.IGUI_MinidoracatCapsule_Why_WILD_OFF or "") == "" then missing[#missing + 1] = lang .. ":Why_WILD_OFF" end
-        for _, k in ipairs({ "WildCaptureChance", "WildCaptureChance_tooltip" }) do
+        for _, k in ipairs({ "WildCaptureChance", "WildCaptureChance_tooltip", "WildCaptureFailConsumes",
+            "WildCaptureFailConsumes_tooltip" }) do
             local s = box["Sandbox_MinidoracatCapsule_" .. k] or ""
             if s == "" or s:find("%", 1, true) then missing[#missing + 1] = lang .. ":" .. k end
         end
@@ -2311,6 +2333,26 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(escSent.ok == false and escSent.why == "ESCAPED" and escSent.chance == 50 and escSent.dropped == true
         and hareDrop[1] == c6 and sq(10, 30).animals[1] == hare,
         "抓取時野生動物掙脫：回覆 ESCAPED 帶成功率 50，空膠囊掉在落點，野兔還在")
+    -- WildCaptureFailConsumes on: the hare breaking free takes the thrown capsule (no drop, not in the inventory,
+    -- consumed); a miss that is not the roll (the target is not there: NO_TARGET) still drops it at the aim point
+    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = true
+    Rules.rollWild = function() return false end
+    local c7, c8 = capsuleFor(hunter), capsuleFor(hunter)
+    local goneDrop, awayDrop = drops(sq(10, 30)), drops(sq(10, 33))
+    quiet = true
+    Throw.land({ player = hunter, capsuleId = c7.id, x = 10, y = 30, z = 0, mode = "capture", cap = { kind = "animal", tid = 33 } })
+    local goneSent = lastSent()
+    Throw.land({ player = hunter, capsuleId = c8.id, x = 10, y = 33, z = 0, mode = "capture", cap = { kind = "animal", tid = 33 } })
+    local awaySent = lastSent()
+    quiet = false
+    Rules.rollWild = savedRoll
+    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = nil
+    check(goneSent.why == "ESCAPED" and goneSent.consumed == true and goneSent.dropped == nil and #goneDrop == 0
+        and hunter.inv:getItemWithIDRecursiv(c7.id) == nil and c7.container == nil and sq(10, 30).animals[1] == hare
+        and escSent.consumed == nil,
+        "沒抓到時膠囊消失（開）：抓取掙脫 consumed=true，丟出的空膠囊不在落點也不在背包，野兔還在；關著時照舊掉在落點")
+    check(awaySent.why == "NO_TARGET" and awaySent.consumed == nil and awaySent.dropped == true and awayDrop[1] == c8,
+        "沒抓到時膠囊消失（開）：不是擲骰失敗（目標不在）照舊掉在落點")
 
     -- releasing into a safehouse: throw drops at the thrower's feet, press keeps the capsule, the admin restore refuses
     local function animalRecord(item)
@@ -2410,7 +2452,22 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     local row, tameRow = M.Notify.chanceRow(wildOne), M.Notify.chanceRow(tameOne)
     SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
     local offRow = M.Notify.chanceRow(wildOne)
+    -- WildCaptureFailConsumes on: the row warns a miss takes the capsule (not at 100: no miss); a consumed escape says
+    -- the capsule is gone instead of where it lies
+    SandboxVars.MinidoracatCapsule = { WildCaptureChance = 35, WildCaptureFailConsumes = true }
+    local goneRow = M.Notify.chanceRow(wildOne)
+    SandboxVars.MinidoracatCapsule.WildCaptureChance = 100
+    local sureRow = M.Notify.chanceRow(wildOne)
+    M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, consumed = true })
+    M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35, consumed = true })
     SandboxVars = nil
+    local goneToast, goneDlg = shown[6] or {}, dialogs[2] or {}
+    check(goneRow:find("IGUI_MinidoracatCapsule_WildChanceGone(35)", 1, true) ~= nil
+        and sureRow:find("IGUI_MinidoracatCapsule_WildChance(100)", 1, true) ~= nil and row:find("Gone", 1, true) == nil
+        and goneToast.title == "IGUI_MinidoracatCapsule_CaptureFailed"
+        and goneToast.message == "IGUI_MinidoracatCapsule_EscapedGone(35)"
+        and goneDlg.text == "IGUI_MinidoracatCapsule_EscapedGone(35)",
+        "沒抓到時膠囊消失：開著時成功率列加「沒抓到膠囊會消失」（100 不加、關著不加）；掙脫的 Toast 與對話框寫膠囊也消失了")
     getText, getTextOrNull = savedText, savedOrNull
     local drop, kept, esc, dlg = shown[3] or {}, shown[4] or {}, shown[5] or {}, dialogs[1] or {}
     check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"

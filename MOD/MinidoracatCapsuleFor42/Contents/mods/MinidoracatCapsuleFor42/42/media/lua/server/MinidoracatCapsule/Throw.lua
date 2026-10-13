@@ -93,7 +93,8 @@ function Throw.capture(p)
         else
             res = M.Pack.pack(player, thing, { type = t, empty = capsule, range = Rules.CAPTURE_REACH })
         end
-        if not res.ok then res.dropped = dropAt(player, capsule, getCell():getGridSquare(p.x, p.y, p.z)) end
+        -- a wild animal that broke free with WildCaptureFailConsumes on took the capsule (consumed): nothing to drop
+        if not res.ok and not res.consumed then res.dropped = dropAt(player, capsule, getCell():getGridSquare(p.x, p.y, p.z)) end
         res.loadedId = res.ok and res.capsuleId or nil -- the loaded capsule now lying where the target stood
         res.kind = animal and "animal" or nil
         if thing and not animal then res.vehicleId = thing:getId() end -- a NOT_ALLOWED toast words its permission

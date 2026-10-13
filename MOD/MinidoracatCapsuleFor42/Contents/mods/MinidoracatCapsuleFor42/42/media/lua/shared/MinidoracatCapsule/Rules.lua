@@ -165,6 +165,12 @@ function Rules.wildChance()
     return math.max(0, math.min(100, n))
 end
 
+-- Sandbox WildCaptureFailConsumes (default off): a wild animal that breaks free (ESCAPED) also takes the empty capsule.
+-- Only that miss: every other refusal or miss keeps the capsule.
+function Rules.wildFailConsumes()
+    return Rules.sandbox().WildCaptureFailConsumes == true
+end
+
 -- The roll for a wild animal at `chance` percent: true = caught. A field so the harness and E2E can force it.
 function Rules.rollWild(chance)
     return ZombRand(100) < chance

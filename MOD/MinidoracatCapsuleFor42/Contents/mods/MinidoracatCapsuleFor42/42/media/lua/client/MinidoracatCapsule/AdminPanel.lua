@@ -1023,6 +1023,7 @@ Panel.GENERAL = {
     { key = "AllowCargoTakeOut", kind = "bool", default = false },
     { key = "AllowAnimals", kind = "bool", default = true },
     { key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true },
+    { key = "WildCaptureFailConsumes", kind = "bool", default = false },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
 

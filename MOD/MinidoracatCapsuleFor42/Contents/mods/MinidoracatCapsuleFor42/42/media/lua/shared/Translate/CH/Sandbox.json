@@ -64,5 +64,7 @@
     "Sandbox_MinidoracatCapsule_AllowAnimals": "可以收動物",
     "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "開啟時，玩家可以從動物選單把世界上任何活著的動物（野生或家養、幼崽或成年）收進空膠囊。關掉只擋收動物：已經裝了動物的膠囊照樣能丟出、按按鈕展開，也能由管理員補回。",
     "Sandbox_MinidoracatCapsule_WildCaptureChance": "抓野生動物成功率",
-    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "收野生動物成功的機率（百分比），用動物選單收或丟空膠囊抓取都算。失敗時動物掙脫、留在原地，空膠囊不會用掉（丟出的掉在落點）。0 不能收野生動物，100 一定成功。家養動物與車不受影響。"
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "收野生動物成功的機率（百分比），用動物選單收或丟空膠囊抓取都算。失敗時動物掙脫、留在原地，空膠囊不會用掉（丟出的掉在落點）。0 不能收野生動物，100 一定成功。家養動物與車不受影響。開啟「沒抓到時膠囊消失」時，失敗的空膠囊也會消失。",
+    "Sandbox_MinidoracatCapsule_WildCaptureFailConsumes": "沒抓到時膠囊消失",
+    "Sandbox_MinidoracatCapsule_WildCaptureFailConsumes_tooltip": "開啟時，抓野生動物擲骰失敗（牠掙脫了）時空膠囊也會消失：用動物選單收的那顆從背包移除，丟出抓取的那顆不會掉在落點。只有擲骰失敗才算；目標跑開、落點被擋等其他沒抓到的情況，空膠囊照舊留著。家養動物與車不受影響。"
 }

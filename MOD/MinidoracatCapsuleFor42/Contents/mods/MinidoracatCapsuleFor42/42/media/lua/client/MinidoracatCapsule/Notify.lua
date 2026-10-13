@@ -105,17 +105,23 @@ function Notify.row(ok, text)
 end
 
 -- The catch chance row of a pack or capture tooltip for a wild animal (white, no mark), or "" (a tame animal, or
--- wild ones switched off: WILD_OFF says so). The client's SandboxVars: the server sends every applied change.
+-- wild ones switched off: WILD_OFF says so). With WildCaptureFailConsumes on and a miss possible (below 100) it says
+-- a miss takes the capsule. The client's SandboxVars: the server sends every applied change.
 function Notify.chanceRow(animal)
     local chance = M.Rules.wildChance()
     if not (animal and animal:isWild()) or chance <= 0 then return "" end
-    return " <RGB:1,1,1> " .. getText("IGUI_MinidoracatCapsule_WildChance", chance) .. " <LINE> "
+    local key = (chance < 100 and M.Rules.wildFailConsumes()) and "IGUI_MinidoracatCapsule_WildChanceGone"
+        or "IGUI_MinidoracatCapsule_WildChance"
+    return " <RGB:1,1,1> " .. getText(key, chance) .. " <LINE> "
 end
 
--- Why a pack or a capture failed: a wild animal that broke free says the chance it had; a refused permission the
--- reason the vehicle menu row gives (VehicleManager's wording included).
+-- Why a pack or a capture failed: a wild animal that broke free says the chance it had (and that the capsule went
+-- with it: consumed); a refused permission the reason the vehicle menu row gives (VehicleManager's wording included).
 local function failure(args)
-    if args.why == "ESCAPED" then return getText("IGUI_MinidoracatCapsule_Why_ESCAPED", args.chance) end
+    if args.why == "ESCAPED" then
+        return getText(args.consumed and "IGUI_MinidoracatCapsule_EscapedGone" or "IGUI_MinidoracatCapsule_Why_ESCAPED",
+            args.chance)
+    end
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then return select(2, Notify.permission(getPlayer(), vehicle)) end
     return Notify.reason(args.why)
@@ -145,10 +151,11 @@ local function captured(args)
         Notify.toast(getText("IGUI_MinidoracatCapsule_Captured", name), getText("IGUI_MinidoracatCapsule_CapturedHere"))
         return
     end
-    Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed"),
-        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept",
-            failure(args)),
-        true, 8000)
+    -- a consumed capsule is neither on the ground nor kept: the reason already says it is gone
+    local text = args.consumed and failure(args)
+        or getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept",
+            failure(args))
+    Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed"), text, true, 8000)
 end
 
 function Handlers.landed(args)

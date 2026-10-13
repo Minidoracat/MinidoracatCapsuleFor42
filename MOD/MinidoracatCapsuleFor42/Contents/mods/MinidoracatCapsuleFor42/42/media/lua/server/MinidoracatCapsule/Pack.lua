@@ -87,12 +87,13 @@ end
 -- once the record is on disk; none for debug); opts.typeId: its M.TYPES id (default the first type); opts.range: as in
 -- Pack.pack.
 -- A wild animal rolls once every rule has passed (sandbox WildCaptureChance, Rules.rollWild): a miss touches nothing
--- (no record, the empty capsule not used up) and answers ESCAPED with the chance. A caught one is tamed like vanilla
+-- (no record; the empty capsule is used up only with WildCaptureFailConsumes on: consumed = true) and answers ESCAPED
+-- with the chance. A caught one is tamed like vanilla
 -- picking up (ISPickupAnimal.complete) when its kind can be (setWild(false) is a no-op for the others,
 -- IsoAnimal.java:3214-3225). The animal is removed last, once record and
 -- capsule are in place (IsoAnimal.remove deletes it and tells every client).
 -- Returns the vehicle result shape: { ok = true, capsuleId, x, y, z, type, kind = "animal", animal = { type, breed,
--- name } } or { ok = false, why, path?, chance? }.
+-- name } } or { ok = false, why, path?, chance?, consumed? }.
 function Pack.packAnimal(player, animal, opts)
     opts = opts or {}
     local why = M.Rules.animalWhyNot(player, animal, opts.range)
@@ -100,9 +101,12 @@ function Pack.packAnimal(player, animal, opts)
     if animal:isWild() then
         local chance = M.Rules.wildChance()
         if not M.Rules.rollWild(chance) then
+            -- sandbox WildCaptureFailConsumes: the empty capsule goes like a used one (menu: the one this action
+            -- used; capture: the thrown one, still in the inventory until it lands, so Throw.capture drops nothing)
+            local consumed = M.Rules.wildFailConsumes() and useUp(player, opts.capsule) or nil
             writeLine(M.LOG_PREFIX .. "ESCAPED animal=" .. tostring(animal:getAnimalID()) .. " chance=" .. chance
-                .. " by=" .. player:getUsername())
-            return { ok = false, why = "ESCAPED", chance = chance }
+                .. " by=" .. player:getUsername() .. (consumed and " consumed=true" or ""))
+            return { ok = false, why = "ESCAPED", chance = chance, consumed = consumed }
         end
     end
     local t = M.TYPE_BY_ID[tostring(opts.typeId)] or M.TYPES[1]
