@@ -206,4 +206,119 @@ module MinidoracatCapsule
         texture = WorldItems/MinidoracatCapsuleShockLoaded,
         scale = 1.5,
     }
+
+    /* Pal Sphere models (built by scripts/assets/build_sphere.py): one mesh for every tier, metres like the capsule's,
+       so the same scales give it the capsule's size on the ground and in the hand; each tier and state swaps the texture. */
+
+    model MinidoracatSphereBasic
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasic,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereBasicLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasicLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereBasicHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasic,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereBasicLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasicLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereMega
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMega,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereMegaLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMegaLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereMegaHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMega,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereMegaLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMegaLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereGiga
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGiga,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereGigaLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGigaLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereGigaHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGiga,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereGigaLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGigaLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereLegend
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegend,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereLegendLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegendLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereLegendHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegend,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereLegendLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegendLoaded,
+        scale = 1.5,
+    }
 }

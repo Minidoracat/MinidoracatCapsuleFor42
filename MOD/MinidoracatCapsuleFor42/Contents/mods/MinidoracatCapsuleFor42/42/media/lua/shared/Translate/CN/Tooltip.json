@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "读取胶囊资料...",
-    "Tooltip_MinidoracatCapsule_Empty": "空胶囊。站在停着的车旁，从车辆菜单收进胶囊；活着的动物从它的动物菜单收。",
+    "Tooltip_MinidoracatCapsule_Empty": "空胶囊。站在停着的车旁，从车辆菜单收进胶囊，或右键「丢出抓取」丢向车。",
     "Tooltip_MinidoracatCapsule_Far": "靠近一点才看得到胶囊里的东西。",
     "Tooltip_MinidoracatCapsule_NoRecord": "这颗胶囊的数据不在这台服务器上，请找管理员。",
     "Tooltip_MinidoracatCapsule_Vehicle": "车种",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "还有 %1 种",
     "Tooltip_MinidoracatCapsule_PackedBy": "收进的人",
     "Tooltip_MinidoracatCapsule_Type": "款式",
-    "Tooltip_MinidoracatCapsule_TypeOff": "！管理员停用了这种胶囊，现在不能收车辆或动物",
+    "Tooltip_MinidoracatCapsule_TypeOff": "！管理员停用了这一种，现在不能用它收东西",
     "Tooltip_MinidoracatCapsule_ListSep": "、",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "白色卡通烟雾与卡通音效",
     "Tooltip_MinidoracatCapsule_Look_Real": "灰色烟雾，机械与气压声",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 天",
     "Tooltip_MinidoracatCapsule_Weight": "体重",
     "Tooltip_MinidoracatCapsule_Milk": "奶量",
-    "Tooltip_MinidoracatCapsule_Wild": "野生"
+    "Tooltip_MinidoracatCapsule_Wild": "野生",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "科幻款的光柱与能量声，只抓动物",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "科幻款的光柱与能量声，抓野生动物成功率 +15",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "科幻款的光柱与能量声，抓野生动物成功率 +30",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "科幻款的光柱与能量声，抓野生动物成功率 +50",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "空帕鲁球。从动物菜单收进帕鲁球，或右键「丢出抓取」丢向动物；野生动物不一定抓得到。"
 }

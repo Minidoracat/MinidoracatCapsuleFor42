@@ -65,12 +65,14 @@ function Notify.vehicleName(scriptName)
 end
 
 -- Player-facing text for a reason code (cursor, dialogs, toasts). release: the code is about a landing spot (throw,
--- press, admin restore), worded by Why_<code>_RELEASE where there is one (SAFEHOUSE: packing says "in someone else's
--- safehouse", landing "the spot is in someone else's safehouse").
-function Notify.reason(code, release)
+-- press, admin restore, a sphere's release), worded by Why_<code>_RELEASE where there is one (SAFEHOUSE: packing says
+-- "in someone else's safehouse", landing "the spot is in someone else's safehouse"); vehicle: the target is a vehicle,
+-- worded by Why_<code>_VEHICLE where there is one (WRONG_ITEM: a capsule at an animal says "use a Pal Sphere", a
+-- sphere at a vehicle "a Pal Sphere can't take vehicles").
+function Notify.reason(code, release, vehicle)
     local key = "IGUI_MinidoracatCapsule_Why_" .. tostring(code)
-    return (release and getTextOrNull(key .. "_RELEASE")) or getTextOrNull(key)
-        or getText("IGUI_MinidoracatCapsule_Why_OTHER", tostring(code))
+    return (release and getTextOrNull(key .. "_RELEASE")) or (vehicle and getTextOrNull(key .. "_VEHICLE"))
+        or getTextOrNull(key) or getText("IGUI_MinidoracatCapsule_Why_OTHER", tostring(code))
 end
 
 -- Whether this player may pack this vehicle, and the permission text for the menu row and the refusal toast.
@@ -104,18 +106,29 @@ function Notify.row(ok, text)
         c:getR(), c:getG(), c:getB(), text)
 end
 
--- The catch chance row of a pack or capture tooltip for a wild animal (white, no mark), or "" (a tame animal, or
--- wild ones switched off: WILD_OFF says so). With WildCaptureFailConsumes on and a miss possible (below 100) it says
--- a miss takes the capsule. The client's SandboxVars: the server sends every applied change.
-function Notify.chanceRow(animal)
-    local chance = M.Rules.wildChance()
-    if not (animal and animal:isWild()) or chance <= 0 then return "" end
-    local key = (chance < 100 and M.Rules.wildFailConsumes()) and "IGUI_MinidoracatCapsule_WildChanceGone"
+-- The catch chance rows of a catch menu or capture tooltip for a wild animal with a sphere of type t (white, no mark):
+-- "Chance: 77%" and, under it, the non-zero bonuses ("Mega Sphere +15 · Injured +12"), from Rules.captureChance; or
+-- "" (a tame animal, or wild ones switched off: WILD_OFF says so). With WildCaptureFailConsumes on and a miss possible
+-- (below 100) the first row says a miss takes the sphere. The client's own view of the animal and its SandboxVars (the
+-- server sends every applied change); the server's numbers at the catch decide.
+function Notify.chanceRows(player, animal, t)
+    local c = animal and M.Rules.captureChance(player, animal, t and t.id)
+    if not c or c.total <= 0 then return "" end
+    local key = (c.total < 100 and M.Rules.wildFailConsumes()) and "IGUI_MinidoracatCapsule_WildChanceGone"
         or "IGUI_MinidoracatCapsule_WildChance"
-    return " <RGB:1,1,1> " .. getText(key, chance) .. " <LINE> "
+    local text = " <RGB:1,1,1> " .. getText(key, c.total) .. " <LINE> "
+    if #c.factors == 0 then return text end
+    local parts = {}
+    for i, f in ipairs(c.factors) do
+        local name = f[1] == "Tier" and t and M.Info.itemName(t.empty)
+            or getText("IGUI_MinidoracatCapsule_Factor_" .. f[1])
+        parts[i] = getText("IGUI_MinidoracatCapsule_ChanceFactor", name, f[2])
+    end
+    return text .. " <RGB:0.85,0.85,0.85> " .. table.concat(parts, getText("IGUI_MinidoracatCapsule_FactorSep"))
+        .. " <LINE> "
 end
 
--- Why a pack or a capture failed: a wild animal that broke free says the chance it had (and that the capsule went
+-- Why a pack or a capture failed: a wild animal that broke free says the chance it had (and that the sphere went
 -- with it: consumed); a refused permission the reason the vehicle menu row gives (VehicleManager's wording included).
 local function failure(args)
     if args.why == "ESCAPED" then
@@ -124,7 +137,7 @@ local function failure(args)
     end
     local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
     if vehicle then return select(2, Notify.permission(getPlayer(), vehicle)) end
-    return Notify.reason(args.why)
+    return Notify.reason(args.why, false, args.kind ~= "animal")
 end
 
 local Handlers = {}
@@ -158,18 +171,25 @@ local function captured(args)
     Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed"), text, true, 8000)
 end
 
+-- A landing (throw, press) or a Pal Sphere's release. A release says "Released: <name>" and names the tier that came
+-- back; a refused one (NO_ROOM, IN_VEHICLE, a spot blocked at the last moment) its own title.
 function Handlers.landed(args)
     if args.mode == "capture" then return captured(args) end
     local animal = args.kind == "animal" and "Animal" or ""
+    local release = args.mode == "release"
     if args.ok then
         local name = animal ~= "" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
-        Notify.toast(getText("IGUI_MinidoracatCapsule_Unpacked", name),
-            args.returned and getText("IGUI_MinidoracatCapsule_EmptyBack") or nil)
+        local t = M.TYPE_BY_ID[tostring(args.type)]
+        local back = args.returned and (release and t and getText("IGUI_MinidoracatCapsule_SphereBack",
+            M.Info.itemName(t.empty)) or getText("IGUI_MinidoracatCapsule_EmptyBack")) or nil
+        Notify.toast(getText(release and "IGUI_MinidoracatCapsule_Released" or "IGUI_MinidoracatCapsule_Unpacked", name),
+            back)
+    elseif args.why == "BLOCKED" and release then
+        Notify.dialog(getText("IGUI_MinidoracatCapsule_ReleaseFailed"), Notify.reason(args.reason, true))
     elseif args.why == "BLOCKED" then
         local body = args.mode == "press" and "IGUI_MinidoracatCapsule_BlockedPress"
             or "IGUI_MinidoracatCapsule_BlockedThrow"
-        Notify.dialog(getText("IGUI_MinidoracatCapsule_BlockedTitle" .. animal),
-            getText(body .. animal, Notify.reason(args.reason)))
+        Notify.dialog(getText("IGUI_MinidoracatCapsule_BlockedTitle"), getText(body, Notify.reason(args.reason)))
     elseif args.why == "UNCERTAIN" then
         Notify.dialog(getText("IGUI_MinidoracatCapsule_UncertainTitle"),
             getText("IGUI_MinidoracatCapsule_UncertainBody", tostring(args.capsuleId)))
@@ -181,7 +201,8 @@ function Handlers.landed(args)
     else
         local text = Notify.reason(args.why, true)
         if args.feet and args.dropped then text = getText("IGUI_MinidoracatCapsule_DroppedAtFeet", text) end
-        Notify.dialog(getText("IGUI_MinidoracatCapsule_UnpackFailed"), text)
+        Notify.dialog(getText(release and "IGUI_MinidoracatCapsule_ReleaseFailed"
+            or "IGUI_MinidoracatCapsule_UnpackFailed"), text)
     end
 end
 

@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Lecture de la capsule...",
-    "Tooltip_MinidoracatCapsule_Empty": "Capsule vide. Rangez un véhicule garé depuis son menu véhicule, ou un animal vivant depuis son menu animal.",
+    "Tooltip_MinidoracatCapsule_Empty": "Capsule vide. Rangez un véhicule garé depuis son menu véhicule, ou lancez-la dessus avec « Lancer pour capturer ».",
     "Tooltip_MinidoracatCapsule_Far": "Approchez-vous pour voir ce que contient la capsule.",
     "Tooltip_MinidoracatCapsule_NoRecord": "L'historique de cette capsule n'est pas sur ce serveur. Contactez un admin.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Véhicule",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "et %1 autres types",
     "Tooltip_MinidoracatCapsule_PackedBy": "Rangée par",
     "Tooltip_MinidoracatCapsule_Type": "Type",
-    "Tooltip_MinidoracatCapsule_TypeOff": "! Un admin a désactivé ce type : elle ne peut plus ranger de véhicule ni d'animal pour l'instant",
+    "Tooltip_MinidoracatCapsule_TypeOff": "! Un admin a désactivé ce type : elle ne peut plus rien ranger ni capturer pour l'instant",
     "Tooltip_MinidoracatCapsule_ListSep": ", ",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "Fumée blanche et sons de dessin animé",
     "Tooltip_MinidoracatCapsule_Look_Real": "Fumée grise, sons mécaniques et d'air comprimé",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 jours",
     "Tooltip_MinidoracatCapsule_Weight": "Poids",
     "Tooltip_MinidoracatCapsule_Milk": "Lait",
-    "Tooltip_MinidoracatCapsule_Wild": "Sauvage"
+    "Tooltip_MinidoracatCapsule_Wild": "Sauvage",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "Colonne de lumière et sons d'énergie de la capsule futuriste ; capture les animaux",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +15 de chance de capture (sauvage)",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +30 de chance de capture (sauvage)",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +50 de chance de capture (sauvage)",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "Sphère de Pal vide. Capturez un animal depuis son menu animal, ou lancez-la dessus avec « Lancer pour capturer » ; un animal sauvage peut s'échapper."
 }

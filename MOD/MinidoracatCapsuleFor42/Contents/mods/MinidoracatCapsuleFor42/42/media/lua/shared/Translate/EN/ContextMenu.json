@@ -3,5 +3,7 @@
     "ContextMenu_MinidoracatCapsule_Throw": "Throw Capsule",
     "ContextMenu_MinidoracatCapsule_Press": "Press the Button",
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
-    "ContextMenu_MinidoracatCapsule_Capture": "Throw to Capture"
+    "ContextMenu_MinidoracatCapsule_Capture": "Throw to Capture",
+    "ContextMenu_MinidoracatCapsule_PackSphere": "Catch in Pal Sphere",
+    "ContextMenu_MinidoracatCapsule_Release": "Release: %1"
 }

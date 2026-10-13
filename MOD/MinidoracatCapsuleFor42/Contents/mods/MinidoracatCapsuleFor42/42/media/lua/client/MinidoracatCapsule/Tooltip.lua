@@ -96,7 +96,7 @@ function Tooltip.rows(item)
         local key = t.id .. (on and "1" or "0")
         empties = empties or {}
         if not empties[key] then
-            local rows = { typeRow(t), { "", T("Empty"), "muted" } }
+            local rows = { typeRow(t), { "", T(t.sphere and "EmptySphere" or "Empty"), "muted" } }
             if not on then rows[#rows + 1] = { "", T("TypeOff"), "warn" } end -- the text starts with a "!" mark
             empties[key] = rows
         end

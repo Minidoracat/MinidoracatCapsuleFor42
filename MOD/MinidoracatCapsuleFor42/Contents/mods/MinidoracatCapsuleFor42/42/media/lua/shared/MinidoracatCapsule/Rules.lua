@@ -102,8 +102,8 @@ function Rules.mayPack(player, vehicle)
     return key, "KEY"
 end
 
--- Sandbox Type<id>: whether players may pack with this type. Off only stops packing; loaded capsules of the type are
--- still thrown and pressed, so no vehicle is ever shut in a capsule (design vcap-types-1012).
+-- Sandbox Type<id>: whether players may use this type (a capsule: pack vehicles; a sphere: catch animals). Off only
+-- stops that; loaded ones of the type still land or let their animal out, so nothing is ever shut in (vcap-types-1012).
 function Rules.typeOn(t)
     return t ~= nil and Rules.sandbox()["Type" .. t.id] ~= false
 end
@@ -113,11 +113,12 @@ function Rules.emptyCapsule(player, t)
     return t and player:getInventory():getFirstTypeRecurse(t.empty)
 end
 
--- Every type the player has empty capsules of, in M.TYPES order: { { type, n, on }, ... } (the pack menu).
-function Rules.emptyTypes(player)
+-- Every type the player has empty ones of, in M.TYPES order: { { type, n, on }, ... }; spheres: the Pal Sphere tiers
+-- (the animal menu), else the capsules (the vehicle menu).
+function Rules.emptyTypes(player, spheres)
     local inv, out = player:getInventory(), {}
     for _, t in ipairs(M.TYPES) do
-        local n = inv:getCountTypeRecurse(t.empty)
+        local n = t.sphere == (spheres == true) and inv:getCountTypeRecurse(t.empty) or 0
         if n > 0 then out[#out + 1] = { type = t, n = n, on = Rules.typeOn(t) } end
     end
     return out
@@ -143,11 +144,12 @@ function Rules.cargoCount(vehicle)
     return n
 end
 
--- Everything the server checks before a player's pack with a capsule of type t, or nil.
+-- Everything the server checks before a player's pack with a capsule of type t, or nil. A sphere takes no vehicle.
 function Rules.packWhyNot(player, vehicle, t)
     local why = Rules.vehicleWhyNot(player, vehicle)
     if why then return why end
     if not Rules.mayPack(player, vehicle) then return "NOT_ALLOWED" end
+    if t and t.sphere then return "WRONG_ITEM" end
     if not Rules.emptyCapsule(player, t) then return "NO_CAPSULE" end
     if not Rules.typeOn(t) then return "TYPE_OFF" end
     return nil
@@ -158,15 +160,20 @@ function Rules.animalsOn()
     return Rules.sandbox().AllowAnimals ~= false
 end
 
--- Sandbox WildCaptureChance: the percent chance (0-100, default 50) that packing a wild animal (menu or capture)
--- works; the server rolls in Pack.packAnimal. 0: wild animals can't be packed at all (WILD_OFF); tame ones never roll.
+-- Sandbox WildCaptureChance: the base percent chance (0-100, default 50) that catching a wild animal (menu or capture)
+-- works; Rules.captureChance adds the bonuses. 0: wild animals can't be caught at all (WILD_OFF); tame ones never roll.
 function Rules.wildChance()
-    local n = math.floor(tonumber(Rules.sandbox().WildCaptureChance) or 50)
+    return Rules.percent("WildCaptureChance", 50)
+end
+
+-- An integer sandbox option clamped to 0-100 (default when unset).
+function Rules.percent(key, default)
+    local n = math.floor(tonumber(Rules.sandbox()[key]) or default)
     return math.max(0, math.min(100, n))
 end
 
--- Sandbox WildCaptureFailConsumes (default off): a wild animal that breaks free (ESCAPED) also takes the empty capsule.
--- Only that miss: every other refusal or miss keeps the capsule.
+-- Sandbox WildCaptureFailConsumes (default off): a wild animal that breaks free (ESCAPED) also takes the empty sphere.
+-- Only that miss: every other refusal or miss keeps it.
 function Rules.wildFailConsumes()
     return Rules.sandbox().WildCaptureFailConsumes == true
 end
@@ -174,6 +181,42 @@ end
 -- The roll for a wild animal at `chance` percent: true = caught. A field so the harness and E2E can force it.
 function Rules.rollWild(chance)
     return ZombRand(100) < chance
+end
+
+-- Not aware of the player: not alerted (IsoAnimal.isAlerted, synced by AnimalEventPacket) and the player sneaking or
+-- behind it (the angle between its facing and the way to the player above 90 degrees: a negative dot product).
+function Rules.unaware(player, animal)
+    if animal:isAlerted() then return false end
+    if player:isSneaking() then return true end
+    local dx, dy = player:getX() - animal:getX(), player:getY() - animal:getY()
+    return animal:getForwardDirectionX() * dx + animal:getForwardDirectionY() * dy < 0
+end
+
+-- The one source of the catch chance (server roll, menu and cursor rows, the failure toast): nil for a tame animal
+-- (always caught, no chance shown), else { total, factors = { { key, value }, ... } } with the non-zero bonuses in a
+-- fixed order: Tier (the sphere type's bonus, typeId = its M.TYPES id), Injured (round((1 - health) x
+-- WildCaptureInjuredBonus)), Young (isBaby: WildCaptureYoungBonus), Unaware (Rules.unaware: WildCaptureUnawareBonus).
+-- total = base + bonuses, at most 100; a base of 0 stays 0 (WILD_OFF: no bonus brings it back). The client computes
+-- it from what it sees; the server's at the catch decides.
+function Rules.captureChance(player, animal, typeId)
+    if not (animal and animal:isWild()) then return nil end
+    local base = Rules.wildChance()
+    local out = { total = base, factors = {} }
+    if base <= 0 then return out end
+    local function add(key, value)
+        if value > 0 then
+            out.factors[#out.factors + 1] = { key, value }
+            out.total = out.total + value
+        end
+    end
+    local t = M.TYPE_BY_ID[tostring(typeId)]
+    add("Tier", t and t.bonus or 0)
+    local health = math.max(0, math.min(1, tonumber(animal:getHealth()) or 1))
+    add("Injured", math.floor((1 - health) * Rules.percent("WildCaptureInjuredBonus", 30) + 0.5))
+    add("Young", animal:isBaby() and Rules.percent("WildCaptureYoungBonus", 15) or 0)
+    add("Unaware", Rules.unaware(player, animal) and Rules.percent("WildCaptureUnawareBonus", 20) or 0)
+    out.total = math.min(100, out.total)
+    return out
 end
 
 -- Why this animal cannot be packed by anyone right now, or nil: the menu (client), the timed action and the server
@@ -196,19 +239,23 @@ function Rules.animalWhyNot(player, animal, range)
     return Rules.safehouseWhyNot(player, { x1 = sq:getX(), y1 = sq:getY(), x2 = sq:getX(), y2 = sq:getY() }, sq:getZ())
 end
 
--- Everything the server checks before a player packs an animal with a capsule of type t, or nil.
+-- Everything the server checks before a player catches an animal with a sphere of type t, or nil. A capsule takes no
+-- animal.
 function Rules.packAnimalWhyNot(player, animal, t)
     local why = Rules.animalWhyNot(player, animal)
     if why then return why end
+    if t and not t.sphere then return "WRONG_ITEM" end
     if not Rules.emptyCapsule(player, t) then return "NO_CAPSULE" end
     if not Rules.typeOn(t) then return "TYPE_OFF" end
     return nil
 end
 
--- Everything the server checks before a thrown empty capsule of type t takes this animal (isAnimal) or vehicle, or
--- nil (spec B): the menu's rules for the same thing (a vehicle: its state and who may pack it, both with the same
--- reasons), with CAPTURE_REACH for the distance, and the capsule's type switched on. The capsule is the thrown one.
+-- Everything the server checks before a thrown empty capsule or sphere of type t takes this animal (isAnimal) or
+-- vehicle, or nil (spec B): a sphere takes animals, a capsule vehicles (WRONG_ITEM first: the cursor's red frame says
+-- which one to use); then the menu's rules for the same thing (a vehicle: its state and who may pack it), with
+-- CAPTURE_REACH for the distance, and the type switched on. The capsule is the thrown one.
 function Rules.captureWhyNot(player, thing, isAnimal, t)
+    if t and t.sphere ~= (isAnimal == true) then return "WRONG_ITEM" end
     local why
     if isAnimal then
         why = Rules.animalWhyNot(player, thing, Rules.CAPTURE_REACH)
@@ -219,6 +266,33 @@ function Rules.captureWhyNot(player, thing, isAnimal, t)
     if why then return why end
     if not Rules.typeOn(t) then return "TYPE_OFF" end
     return nil
+end
+
+-- Where a Pal Sphere lets its animal out (Palworld v0.3.11: next to the player, no throw): the square the player faces
+-- first, then the other seven around them, nearest that facing first; each must be in sight (Footprint.reach), hold an
+-- animal (Footprint.animalClear) and lie outside other players' safehouses. Returns x, y, z or nil, "NO_ROOM".
+function Rules.releaseSpot(player)
+    local px, py, pz = player:getX(), player:getY(), player:getZ()
+    local fx, fy = player:getForwardDirectionX(), player:getForwardDirectionY()
+    local cx, cy, z = math.floor(px), math.floor(py), math.floor(pz)
+    local list = {}
+    for dy = -1, 1 do
+        for dx = -1, 1 do
+            if dx ~= 0 or dy ~= 0 then
+                local d = (dx * fx + dy * fy) / math.sqrt(dx * dx + dy * dy)
+                local i = #list + 1
+                while i > 1 and list[i - 1].d < d do list[i] = list[i - 1]; i = i - 1 end
+                list[i] = { x = cx + dx, y = cy + dy, d = d }
+            end
+        end
+    end
+    for _, c in ipairs(list) do
+        local why, box = M.Footprint.animalClear(c.x, c.y, z)
+        why = why or M.Footprint.reach(px, py, pz, c.x, c.y, z, 3, true) -- 3: a corner square's (x, y) from the far side
+            or (box and Rules.safehouseWhyNot(player, box, z))
+        if not why then return c.x, c.y, z end
+    end
+    return nil, "NO_ROOM"
 end
 
 return Rules

@@ -192,12 +192,13 @@ function Cursor:tooltipText()
     local text
     if self.mode == "capture" then
         local tgt = self.target
-        if self.why == nil then -- a wild animal: the chance it is caught under its name
+        if self.why == nil then -- a wild animal: the chance with this sphere's tier and its bonuses under its name
             text = Notify.row(true, getText("IGUI_MinidoracatCapsule_CaptureFits", tgt.name))
-                .. (tgt.animal and Notify.chanceRow(tgt.thing) or "")
+                .. (tgt.animal and Notify.chanceRows(self.character, tgt.thing, M.typeOf(self.item)) or "")
         else
             text = (tgt and " <RGB:1,1,1> " .. getText("IGUI_MinidoracatCapsule_CaptureTarget", tgt.name) .. " <LINE> " or "")
-                .. Notify.row(false, getText("IGUI_MinidoracatCapsule_CaptureNoFit", Notify.reason(self.why)))
+                .. Notify.row(false, getText("IGUI_MinidoracatCapsule_CaptureNoFit",
+                    Notify.reason(self.why, false, tgt ~= nil and not tgt.animal)))
         end
     elseif self.why == nil then
         local rec = self.rec or infos[self.capsuleId]

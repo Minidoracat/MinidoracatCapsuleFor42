@@ -4,10 +4,11 @@
 --     sighting, go to the recorded spot or to the last sighting, restore, and the verdicts "car is there, close" /
 --     "car is gone" for records a crash left uncertain.
 --     Every action is a server command (server/AdminCommands.lua) checked there; this file only shows replies.
---   Settings, Types and Loot: every sandbox option of the mod (Settings: return an empty capsule, who can pack, the
---     zombie radius of the capsule sound, taking cargo out, days to keep closed records; Types: per capsule type the
---     use and loot switches, "List..." into Minidoracat Economy's shop and a preview played here only; Loot: the
---     master switch and the four places with their weights). They are the sandbox options of the vanilla sandbox pages
+--   Settings, Types and Loot: every sandbox option of the mod (Settings: return an empty one, who can pack, the
+--     zombie radius of the capsule sound, taking cargo out, animals, the wild catch chance and its three bonuses, days
+--     to keep closed records; Types: per capsule type and Pal Sphere tier the use and loot switches, "List..." into
+--     Minidoracat Economy's shop and a preview played here only; Loot: the master switch and the seven places (four
+--     for capsules, three for spheres) with their weights). They are the sandbox options of the vanilla sandbox pages
 --     and are sent the same way (copy, set, sendToServer; ISServerSandboxOptionsUI.lua:762-771), so the server checks
 --     Capability.SandboxOptions; server/Loot.lua rebuilds the loot tables within a second.
 --   The window is opaque (text over other windows stayed under 4.5:1; design vcap-types-1012 review).
@@ -734,6 +735,9 @@ Panel.PLACES = {
     { "LootCarSupply", "LootCarSupplyWeight" },
     { "LootGasStation", "LootGasStationWeight" },
     { "LootGarage", "LootGarageWeight" },
+    { "LootSphereBarn", "LootSphereBarnWeight" },
+    { "LootSpherePet", "LootSpherePetWeight" },
+    { "LootSphereHunting", "LootSphereHuntingWeight" },
 }
 
 local function fmtWeight(v) return string.format("%.1f", v) end
@@ -858,7 +862,7 @@ function Win:buildTypes(p)
     for i, t in ipairs(M.TYPES) do
         local name = Info.itemName(t.empty)
         local row = { t = t, name = name, look = getText("Tooltip_MinidoracatCapsule_Look_" .. t.id),
-            icon = getTexture("media/textures/Item_MinidoracatCapsule" .. t.id .. ".png") }
+            icon = getTexture("media/textures/Item_" .. t.icon .. ".png") }
         row.use = UI.Checkbox.new({ width = TOGGLE_W, label = "", theme = theme, target = self, tooltip = U("TypeUseTip"),
             onChange = function(o) o:typesChanged() end })
         row.loot = UI.Checkbox.new({ width = TOGGLE_W, label = "", theme = theme, target = self,
@@ -1024,6 +1028,9 @@ Panel.GENERAL = {
     { key = "AllowAnimals", kind = "bool", default = true },
     { key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true },
     { key = "WildCaptureFailConsumes", kind = "bool", default = false },
+    { key = "WildCaptureInjuredBonus", kind = "int", min = 0, max = 100, default = 30, pct = true },
+    { key = "WildCaptureYoungBonus", kind = "int", min = 0, max = 100, default = 15, pct = true },
+    { key = "WildCaptureUnawareBonus", kind = "int", min = 0, max = 100, default = 20, pct = true },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
 

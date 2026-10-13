@@ -99,7 +99,7 @@ local function newItem(fullType, isContainer)
 end
 function instanceof(o, cls) return cls == "InventoryContainer" and type(o) == "table" and o.inv ~= nil end
 function instanceItem(t)
-    return newItem(t, t:find("^MinidoracatCapsule%.LoadedCapsule") ~= nil or t == "Base.Bag_Schoolbag")
+    return newItem(t, t:find("^MinidoracatCapsule%.Loaded") ~= nil or t == "Base.Bag_Schoolbag")
 end
 function sendAddItemToContainer() end
 function sendRemoveItemFromContainer() end
@@ -117,6 +117,10 @@ local function newPlayer(name, admin)
     function p:removeFromHands() end
     function p:isEquipped(it) return it.equipped == true end
     function p:isAttachedItem() return false end
+    function p:isSneaking() return self.sneak == true end
+    function p:getForwardDirectionX() return self.fx or 0 end
+    function p:getForwardDirectionY() return self.fy or 1 end
+    function p:getVehicle() return self.vehicle end
     return p
 end
 -- 假世界：已載入的車（sqlId）與已載入的格子
@@ -845,16 +849,19 @@ do
     kp.inv:AddItem(instanceItem(T4.empty))
     kp.inv:AddItem(instanceItem(T4.empty))
     kp.inv:AddItem(instanceItem(T1.empty))
+    kp.inv:AddItem(instanceItem(M.FIRST_SPHERE.empty))
     SandboxVars = { MinidoracatCapsule = { TypeSteam = false } }
-    local kinds = Rules.emptyTypes(kp)
+    local kinds, spheres = Rules.emptyTypes(kp), Rules.emptyTypes(kp, true)
     check(#kinds == 2 and kinds[1].type == T1 and kinds[1].n == 1 and kinds[1].on and kinds[2].type == T4
-        and kinds[2].n == 2 and not kinds[2].on, "emptyTypes：照 M.TYPES 順序列出帶著的款式、數量與是否啟用")
+        and kinds[2].n == 2 and not kinds[2].on and #spheres == 1 and spheres[1].type == M.FIRST_SPHERE,
+        "emptyTypes：照 M.TYPES 順序列出帶著的款式、數量與是否啟用；車輛選單只列膠囊、動物選單只列帕魯球")
     check(Rules.typeOn(T1) and not Rules.typeOn(T4) and not Rules.typeOn(nil), "typeOn：沙盒 Type<id> 關掉才算停用")
     local savedV, savedM = Rules.vehicleWhyNot, Rules.mayPack
     Rules.vehicleWhyNot, Rules.mayPack = function() return nil end, function() return true end
     check(Rules.packWhyNot(kp, {}, T4) == "TYPE_OFF" and Rules.packWhyNot(kp, {}, T6) == "NO_CAPSULE"
-        and Rules.packWhyNot(kp, {}, nil) == "NO_CAPSULE" and Rules.packWhyNot(kp, {}, T1) == nil,
-        "packWhyNot：停用的款式 TYPE_OFF、沒帶的或沒指定 NO_CAPSULE、帶著且啟用的放行")
+        and Rules.packWhyNot(kp, {}, nil) == "NO_CAPSULE" and Rules.packWhyNot(kp, {}, T1) == nil
+        and Rules.packWhyNot(kp, {}, M.FIRST_SPHERE) == "WRONG_ITEM",
+        "packWhyNot：停用的款式 TYPE_OFF、沒帶的或沒指定 NO_CAPSULE、帕魯球收不了車 WRONG_ITEM、帶著且啟用的放行")
     Rules.vehicleWhyNot, Rules.mayPack = savedV, savedM
     SandboxVars = nil
     check(Rules.typeOn(T4), "沒有沙盒值＝啟用（預設七種全開）")
@@ -1271,7 +1278,9 @@ check(det.ok and #det.history == 100 and det.historyTotal == 130 and det.history
 print("Loot：開關與權重照沙盒寫進表，會掉的款式平分、總量不變，重排不疊加，其他物品保留")
 local function fakeList()
     return { MechanicShelfTools = { items = { "Base.Wrench", 4 } }, CrateMechanics = { items = { "Base.Jack", 2 } },
-        CarSupplyTools = { items = {} }, GasStorageMechanics = { items = { "Base.Funnel", 1 } }, GarageMechanics = { items = {} } }
+        CarSupplyTools = { items = {} }, GasStorageMechanics = { items = { "Base.Funnel", 1 } }, GarageMechanics = { items = {} },
+        BarnTools = { items = { "Base.Fleshing_Tool", 10 } }, CrateAnimalFeed = { items = {} }, PetShopShelf = { items = {} },
+        CratePetSupplies = { items = {} }, HuntingLockers = { items = {} } }
 end
 -- Total capsule weight in a table (all types), and how many capsule entries it has.
 local function weightIn(list, t)
@@ -1285,7 +1294,7 @@ local L = fakeList()
 Loot.apply(L, Loot.wanted())
 check(weightIn(L, "MechanicShelfTools") == 0.5 and weightIn(L, "CrateMechanics") == 0.5 and weightIn(L, "CarSupplyTools") == 0.5
     and weightIn(L, "GasStorageMechanics") == 0.3 and weightIn(L, "GarageMechanics") == nil, "沒設沙盒＝預設值（住家車庫預設關）")
-check(select(2, weightIn(L, "MechanicShelfTools")) == #M.TYPES, "預設七種全開：每張表七筆，總量仍是地點的權重")
+check(select(2, weightIn(L, "MechanicShelfTools")) == #M.TYPES - 4, "預設七種膠囊全開：每張表七筆（沒有帕魯球），總量仍是地點的權重")
 sandbox = { LootEnabled = true, LootMechanic = true, LootMechanicWeight = 2.5, LootCarSupply = false, LootCarSupplyWeight = 9,
     LootGasStation = true, LootGasStationWeight = 0, LootGarage = true, LootGarageWeight = 1.2 }
 Loot.apply(L, Loot.wanted())
@@ -1305,17 +1314,45 @@ do
         local ft = L.MechanicShelfTools.items[i]
         if ft == M.TYPE_BY_ID.Magic.empty or ft == M.TYPE_BY_ID.Shock.empty then dropped = true end
     end
-    check(w5 == 2.5 and n5 == #M.TYPES - 2 and not dropped,
+    check(w5 == 2.5 and n5 == #M.TYPES - 4 - 2 and not dropped,
         "魔法關戰利品、衝擊停用：兩種都不掉，剩下的平分 2.5（" .. tostring(n5) .. " 筆，共 " .. tostring(w5) .. "）")
 end
 sandbox.LootEnabled = false
 Loot.apply(L, Loot.wanted())
 local any = false
 for t in pairs(L) do if weightIn(L, t) then any = true end end
-check(not any, "總開關關掉：五張表都沒有膠囊")
+check(not any, "總開關關掉：十張表都沒有膠囊或帕魯球")
 check(Loot.signature(Loot.wanted()) ~= Loot.signature((function() sandbox.LootEnabled = true; return Loot.wanted() end)()),
     "設定改了簽章就不同（觸發重排）")
 sandbox = {}
+do (function() -- Pal Sphere places (BarnTools, CrateAnimalFeed, PetShopShelf, CratePetSupplies, HuntingLockers)
+    local function share(list, name, ft)
+        local items = list[name].items
+        for i = 1, #items, 2 do if items[i] == ft then return math.floor(items[i + 1] * 10000 + 0.5) / 10000 end end
+        return nil
+    end
+    local S = fakeList()
+    Loot.apply(S, Loot.wanted())
+    local basic, mega, giga, legend = M.TYPE_BY_ID.SphereBasic, M.TYPE_BY_ID.SphereMega, M.TYPE_BY_ID.SphereGiga,
+        M.TYPE_BY_ID.SphereLegend
+    local capsInBarn, spheresInShop = false, false
+    for i = 1, #S.BarnTools.items, 2 do local t = M.EMPTY[S.BarnTools.items[i]]; if t and not t.sphere then capsInBarn = true end end
+    for i = 1, #S.MechanicShelfTools.items, 2 do local t = M.EMPTY[S.MechanicShelfTools.items[i]]; if t and t.sphere then spheresInShop = true end end
+    check(weightIn(S, "BarnTools") == 0.4 and weightIn(S, "CrateAnimalFeed") == 0.4 and weightIn(S, "PetShopShelf") == 0.4
+        and weightIn(S, "CratePetSupplies") == 0.4 and weightIn(S, "HuntingLockers") == 0.3 and select(2, weightIn(S, "BarnTools")) == 4
+        and not capsInBarn and not spheresInShop and S.BarnTools.items[1] == "Base.Fleshing_Tool",
+        "帕魯球三個地點（穀倉、寵物店、獵人置物櫃）預設 0.4／0.4／0.3，每張表四級各一筆；膠囊地點沒有帕魯球、帕魯球地點沒有膠囊")
+    check(share(S, "BarnTools", basic.empty) == 0.2133 and share(S, "BarnTools", mega.empty) == 0.1067
+        and share(S, "BarnTools", giga.empty) == 0.0533 and share(S, "BarnTools", legend.empty) == 0.0267,
+        "等級稀有度 8:4:2:1：穀倉 0.4 分成 0.2133／0.1067／0.0533／0.0267")
+    sandbox = { TypeSphereLegendLoot = false, TypeSphereGiga = false, LootSpherePet = false, LootSphereHuntingWeight = 1.5 }
+    Loot.apply(S, Loot.wanted())
+    check(weightIn(S, "BarnTools") == 0.4 and share(S, "BarnTools", basic.empty) == 0.2667 and share(S, "BarnTools", legend.empty) == nil
+        and share(S, "BarnTools", giga.empty) == nil and weightIn(S, "PetShopShelf") == nil and weightIn(S, "HuntingLockers") == 1.5
+        and weightIn(S, "MechanicShelfTools") == 0.5,
+        "傳奇關戰利品、優質停用：剩帕魯球 8、高級 4 分 0.4（0.2667／0.1333）；寵物店關掉不出現；獵人置物櫃 1.5；膠囊地點不受影響")
+    sandbox = {}
+end)() end
 
 print("Admin.restore：指定位置（方向、車身範圍）、交易中的膠囊不能補")
 do (function()
@@ -1521,8 +1558,10 @@ do (function()
         want[#want + 1] = "block:" .. t.loaded
     end
     for _, t in ipairs(M.TYPES) do want[#want + 1] = "block:" .. t.loaded end
-    check(table.concat(calls, ",") == table.concat(want, ","),
-        "rev 6 七種各註冊一次；被拒或只有 rev 5 時每種退回 blockItemType（" .. #calls .. " 次呼叫）")
+    check(table.concat(calls, ",") == table.concat(want, ",")
+        and table.concat(calls, ","):find("unique:MinidoracatCapsule.LoadedSphereLegend:" .. M.MOD_ID, 1, true) ~= nil,
+        "rev 6 七種膠囊與四級帕魯球（LoadedSphere<等級>）各註冊一次；被拒或只有 rev 5 時每種退回 blockItemType（"
+        .. #calls .. " 次呼叫）")
     MinidoracatEconomy = nil
 end)() end
 
@@ -1600,7 +1639,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
 end
 uiLayout()
 
-print("Types：七種膠囊的物品、模型、圖示、音效（全部不同）、煙霧幀、沙盒與 12 種語言都對得上")
+print("Types：七種膠囊與四級帕魯球的物品、模型、圖示、音效（膠囊全部不同，帕魯球用科幻款）、煙霧幀、沙盒與 12 種語言都對得上")
 local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200 個上限
     local base = MEDIA .. "/.."
     local function read(path)
@@ -1619,21 +1658,30 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         sounds[name] = file
     end
     for _, t in ipairs(M.TYPES) do
-        local id = t.id
-        if not items:find("item Capsule" .. id .. "%s*{[^}]-Icon = MinidoracatCapsule" .. id .. ",") then bad[#bad + 1] = id .. ".empty item" end
-        if not items:find("item LoadedCapsule" .. id .. "%s*{[^}]-Icon = MinidoracatCapsule" .. id .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
-        for _, suffix in ipairs({ "", "Loaded", "Hand", "LoadedHand" }) do
-            if not models:find("model UniversalCapsule" .. id .. suffix .. "%s*{") then bad[#bad + 1] = id .. ".model" .. suffix end
+        local id, item, loaded, model = t.id, "Capsule" .. t.id, "LoadedCapsule" .. t.id, "UniversalCapsule" .. t.id
+        if t.sphere then item, loaded, model = id, "Loaded" .. id, t.icon end
+        if not items:find("item " .. item .. "%s*{[^}]-Icon = " .. t.icon .. ",") then bad[#bad + 1] = id .. ".empty item" end
+        if not items:find("item " .. loaded .. "%s*{[^}]-Icon = " .. t.icon .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
+        if t.sphere and not items:find("item " .. loaded .. "%s*{[^}]-ItemType = base:container,") then
+            bad[#bad + 1] = id .. ".loaded container"
         end
-        for _, png in ipairs({ "textures/Item_MinidoracatCapsule" .. id .. ".png", "textures/Item_MinidoracatCapsule" .. id .. "Loaded.png",
-            "textures/WorldItems/MinidoracatCapsule" .. id .. ".png", "textures/WorldItems/MinidoracatCapsule" .. id .. "Loaded.png" }) do
+        for _, suffix in ipairs({ "", "Loaded", "Hand", "LoadedHand" }) do
+            if not models:find("model " .. model .. suffix .. "%s*{") then bad[#bad + 1] = id .. ".model" .. suffix end
+        end
+        local world = t.sphere and ("WorldItems/" .. t.icon) or ("WorldItems/MinidoracatCapsule" .. id)
+        for _, png in ipairs({ "textures/Item_" .. t.icon .. ".png", "textures/Item_" .. t.icon .. "Loaded.png",
+            "textures/" .. world .. ".png", "textures/" .. world .. "Loaded.png" }) do
             if not exists(base .. "/" .. png) then bad[#bad + 1] = png end
         end
-        for _, k in ipairs({ "throw", "pop", "pack", "button" }) do
-            local file = sounds[t[k]]
-            if not (file and exists(base .. "/../" .. file)) then bad[#bad + 1] = id .. "." .. k .. "=" .. tostring(t[k]) end
-            if used[t[k]] then bad[#bad + 1] = id .. "." .. k .. " shares " .. used[t[k]] end
-            used[t[k]] = id .. "." .. k
+        for _, k in ipairs({ "throw", "pop", "pack", "button", "smoke" }) do
+            if t.sphere then
+                if t[k] ~= M.TYPE_BY_ID.SciFi[k] then bad[#bad + 1] = id .. "." .. k .. " not SciFi" end
+            elseif k ~= "smoke" then
+                local file = sounds[t[k]]
+                if not (file and exists(base .. "/../" .. file)) then bad[#bad + 1] = id .. "." .. k .. "=" .. tostring(t[k]) end
+                if used[t[k]] then bad[#bad + 1] = id .. "." .. k .. " shares " .. used[t[k]] end
+                used[t[k]] = id .. "." .. k
+            end
         end
         for i = 1, t.frames + 1 do
             local has = exists(base .. "/textures/MinidoracatCapsule/" .. t.smoke .. i .. ".png")
@@ -1645,8 +1693,15 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
             end
         end
     end
-    check(#bad == 0, "每種都有兩個物品、四個模型、四張圖、四段音效（28 段互不共用、檔案都在）、煙霧幀、兩個沙盒選項（"
-        .. table.concat(bad, ",") .. "）")
+    if not exists(base .. "/models_X/WorldItems/MinidoracatSphere.fbx") then bad[#bad + 1] = "MinidoracatSphere.fbx" end
+    local tiers = {}
+    for _, t in ipairs(M.TYPES) do if t.sphere then tiers[#tiers + 1] = t.tier .. "+" .. t.bonus .. "/" .. t.rarity end end
+    check(#bad == 0, "每種都有兩個物品、四個模型、四張圖；膠囊四段音效（28 段互不共用、檔案都在），帕魯球用科幻款的煙霧與音效；"
+        .. "裝了動物的帕魯球是容器；煙霧幀、兩個沙盒選項（" .. table.concat(bad, ",") .. "）")
+    check(table.concat(tiers, ",") == "Basic+0/8,Mega+15/4,Giga+30/2,Legend+50/1"
+        and M.TYPE_BY_ID.SphereMega.empty == "MinidoracatCapsule.SphereMega"
+        and M.TYPE_BY_ID.SphereMega.loaded == "MinidoracatCapsule.LoadedSphereMega" and M.TYPES[5].id == "SciFi",
+        "帕魯球四級（等級加成／稀有度）寫死在 M.TYPES 尾端，物品 ID Sphere<等級>／LoadedSphere<等級>，膠囊的特效索引不變")
     check(not sandboxTxt:find("EffectStyle", 1, true), "沙盒不再有 EffectStyle")
     local missing = {}
     for _, lang in ipairs({ "CH", "CN", "DE", "EN", "ES", "FR", "JP", "KO", "PL", "PTBR", "RU", "TR" }) do
@@ -1673,7 +1728,7 @@ print("Animals：快照可存、寫回順序、規則、收進膠囊、展開、
 -- animal, packer a player next to it (101.5, 201.5).
 local function wildCases(live, packer)
     print("Wild：抓野生動物的成功率（WildCaptureChance、WILD_OFF、ESCAPED、提示框列）")
-    local Pack, Steam = M.Pack, M.TYPE_BY_ID.Steam
+    local Pack, Ball = M.Pack, M.FIRST_SPHERE
     local savedRand, savedRoll = ZombRand, Rules.rollWild
     local function chance(v)
         SandboxVars = { MinidoracatCapsule = { WildCaptureChance = v } }
@@ -1692,33 +1747,33 @@ local function wildCases(live, packer)
     local ground = {}
     local spot = { getX = function() return 101 end, getY = function() return 201 end, getZ = function() return 0 end,
         AddWorldInventoryItem = function(_, it) ground[#ground + 1] = it end }
-    local function empty() return packer.inv:AddItem(instanceItem(Steam.empty)) end
+    local function empty() return packer.inv:AddItem(instanceItem(Ball.empty)) end
     local rolls = {}
     local function forced(ok) Rules.rollWild = function(c) rolls[#rolls + 1] = c; return ok end end
     -- 0%: WILD_OFF on every path (menu, server, capture), nothing rolled; tame animals still go
     chance(0)
     forced(true)
     local hare, cap = live({ wild = true, square = spot }), empty()
-    local off = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
-    check(Rules.animalWhyNot(packer, hare) == "WILD_OFF" and Rules.packAnimalWhyNot(packer, hare, Steam) == "WILD_OFF"
-        and Rules.captureWhyNot(packer, hare, true, Steam) == "WILD_OFF" and Rules.animalWhyNot(packer, live()) == nil
+    local off = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "SphereBasic" })
+    check(Rules.animalWhyNot(packer, hare) == "WILD_OFF" and Rules.packAnimalWhyNot(packer, hare, Ball) == "WILD_OFF"
+        and Rules.captureWhyNot(packer, hare, true, Ball) == "WILD_OFF" and Rules.animalWhyNot(packer, live()) == nil
         and off.ok == false and off.why == "WILD_OFF" and #rolls == 0 and #hare.log == 0,
         "成功率 0：野生動物 WILD_OFF（選單、伺服器、抓取都擋，不擲骰）；家養的照收")
     -- a forced miss at 50%: ESCAPED with the chance; the animal, the capsule and the records untouched
     chance(50)
     forced(false)
-    local before = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Steam.empty) }
+    local before = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Ball.empty) }
     quiet = true
-    local miss = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
+    local miss = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "SphereBasic" })
     quiet = false
     check(miss.ok == false and miss.why == "ESCAPED" and miss.chance == 50 and rolls[1] == 50 and #hare.log == 0
-        and #ground == before.ground and packer.inv:getCountTypeRecurse(Steam.empty) == before.empties
+        and #ground == before.ground and packer.inv:getCountTypeRecurse(Ball.empty) == before.empties
         and packer.inv:getItemWithIDRecursiv(cap.id) == cap,
         "強制失敗：ESCAPED 帶成功率 50；動物沒被 setWild／remove，沒有紀錄、地上沒有膠囊，空膠囊沒用掉")
     -- a forced catch: packed as before and tamed
     forced(true)
     quiet = true
-    local hit = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
+    local hit = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "SphereBasic" })
     quiet = false
     check(hit.ok and rolls[2] == 50 and hare.log[1] == "setWild:false" and hare.log[#hare.log] == "remove"
         and Store.read(hit.capsuleId).animal.wild == false and packer.inv:getItemWithIDRecursiv(cap.id) == nil,
@@ -1730,9 +1785,9 @@ local function wildCases(live, packer)
     local hare2, cap2, cap3 = live({ wild = true, square = spot }), empty(), empty()
     local before2 = #ground
     quiet = true
-    local gone = Pack.packAnimal(packer, hare2, { capsule = cap2, typeId = "Steam" })
+    local gone = Pack.packAnimal(packer, hare2, { capsule = cap2, typeId = "SphereBasic" })
     SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
-    local offKept = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = cap3, typeId = "Steam" })
+    local offKept = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = cap3, typeId = "SphereBasic" })
     quiet = false
     check(gone.ok == false and gone.why == "ESCAPED" and gone.consumed == true and gone.chance == 50
         and packer.inv:getItemWithIDRecursiv(cap2.id) == nil and #hare2.log == 0 and #ground == before2
@@ -1745,10 +1800,10 @@ local function wildCases(live, packer)
     chance(100)
     ZombRand = function() return 99 end
     quiet = true
-    local sure = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = empty(), typeId = "Steam" })
+    local sure = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = empty(), typeId = "SphereBasic" })
     chance(50)
     forced(false)
-    local tame = Pack.packAnimal(packer, live({ square = spot }), { capsule = empty(), typeId = "Steam" })
+    local tame = Pack.packAnimal(packer, live({ square = spot }), { capsule = empty(), typeId = "SphereBasic" })
     quiet = false
     check(sure.ok and tame.ok and #rolls == 2, "成功率 100：最大的骰子也成功；家養動物不擲骰（強制失敗也照收）")
     ZombRand, Rules.rollWild = savedRand, savedRoll
@@ -1774,9 +1829,19 @@ local function wildCases(live, packer)
         and pWild < pKeep, "沙盒 WildCaptureChance 整數 0–100、預設 50、主頁緊接 AllowAnimals；設定分頁同一位置、顯示成百分比")
     check(sGone and wild < sGone and sGone < keep and pGone and pWild < pGone and pGone < pKeep,
         "沙盒 WildCaptureFailConsumes 布林、預設關、緊接成功率；設定分頁同一位置（開關）")
-    check(src("client/MinidoracatCapsule/Menu.lua"):find("Notify.chanceRow(animal)", 1, true)
-        and src("client/MinidoracatCapsule/ThrowCursor.lua"):find("Notify.chanceRow(tgt.thing)", 1, true),
-        "動物選單與抓取游標的提示框都加成功率列（Notify.chanceRow）")
+    local sPrev, pPrev, order = sGone, pGone, true
+    for _, b in ipairs({ { "WildCaptureInjuredBonus", 30 }, { "WildCaptureYoungBonus", 15 }, { "WildCaptureUnawareBonus", 20 } }) do
+        local s = sb:find("option MinidoracatCapsule%." .. b[1] .. "%s*{type = integer, min = 0, max = 100, default = " .. b[2]
+            .. ", page = MinidoracatCapsule,")
+        local p = panel:find('{ key = "' .. b[1] .. '", kind = "int", min = 0, max = 100, default = ' .. b[2] .. ', pct = true }', 1, true)
+        order = order and s ~= nil and p ~= nil and s > sPrev and p > pPrev
+        sPrev, pPrev = s or math.huge, p or math.huge
+    end
+    check(order and sPrev < keep and pPrev < pKeep,
+        "三個加成（受傷 30、幼崽 15、沒發現你 20）整數 0–100、主頁緊接 WildCaptureFailConsumes；設定分頁同順序、顯示成百分比")
+    check(src("client/MinidoracatCapsule/Menu.lua"):find("Notify.chanceRows(player, animal, t)", 1, true)
+        and src("client/MinidoracatCapsule/ThrowCursor.lua"):find("Notify.chanceRows(self.character, tgt.thing, M.typeOf(self.item))", 1, true),
+        "動物選單與抓取游標的提示框都加成功率與加成列（Notify.chanceRows，用該等級的帕魯球）")
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
         local ui = Json.decode(src("shared/Translate/" .. lang .. "/IG_UI.json"))
@@ -1787,7 +1852,9 @@ local function wildCases(live, packer)
         end
         if (ui.IGUI_MinidoracatCapsule_Why_WILD_OFF or "") == "" then missing[#missing + 1] = lang .. ":Why_WILD_OFF" end
         for _, k in ipairs({ "WildCaptureChance", "WildCaptureChance_tooltip", "WildCaptureFailConsumes",
-            "WildCaptureFailConsumes_tooltip" }) do
+            "WildCaptureFailConsumes_tooltip", "WildCaptureInjuredBonus", "WildCaptureInjuredBonus_tooltip",
+            "WildCaptureYoungBonus", "WildCaptureYoungBonus_tooltip", "WildCaptureUnawareBonus",
+            "WildCaptureUnawareBonus_tooltip" }) do
             local s = box["Sandbox_MinidoracatCapsule_" .. k] or ""
             if s == "" or s:find("%", 1, true) then missing[#missing + 1] = lang .. ":" .. k end
         end
@@ -1805,7 +1872,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     end
     local A, Pack, Unpack, Query, Index, AdminCommands, Trade = M.Animal, M.Pack, M.Unpack, M.Query, M.Index,
         M.AdminCommands, M.Trade
-    local Steam = M.TYPE_BY_ID.Steam
+    local Ball = M.FIRST_SPHERE
     CharacterStat = { HUNGER = "HUNGER", THIRST = "THIRST" }
     fakeSquare(30, 40) -- an earlier case left a bare table there; findLoadedAnimal scans around (10, 10)
     local function allele(v, r, gd)
@@ -1834,7 +1901,11 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         function a:getBreed() return { getName = function() return "holstein" end } end
         function a:isFemale() return true end
         function a:getHoursSurvived() return 960.5 end
-        function a:getHealth() return 0.73 end
+        function a:getHealth() return o.health or 1 end
+        function a:isBaby() return o.baby == true end
+        function a:isAlerted() return o.alerted ~= false end -- alerted unless a case says otherwise (no Unaware bonus)
+        function a:getForwardDirectionX() return o.fx or 0 end
+        function a:getForwardDirectionY() return o.fy or -1 end
         function a:getStats() return { get = function(_, k) return k == "HUNGER" and 0.31 or 0.27 end } end
         function a:getStress() return 23.5 end
         function a:getCustomName() return o.name end
@@ -1929,43 +2000,43 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         "animalWhyNot：死的或掛鉤上 NO_ANIMAL、被抱著／雞舍／拖車 ANIMAL_AWAY、繩子 ROPE、太遠 TOO_FAR；野生的照樣能收")
     SandboxVars.MinidoracatCapsule.AllowAnimals = false
     local off = why1({})
-    SandboxVars.MinidoracatCapsule = { TypeSteam = false }
-    local noCap = Rules.packAnimalWhyNot(packer, live(), Steam)
-    packer.inv:AddItem(instanceItem(Steam.empty))
-    local typeOff = Rules.packAnimalWhyNot(packer, live(), Steam)
+    SandboxVars.MinidoracatCapsule = { TypeSphereBasic = false }
+    local noCap = Rules.packAnimalWhyNot(packer, live(), Ball)
+    packer.inv:AddItem(instanceItem(Ball.empty))
+    local typeOff = Rules.packAnimalWhyNot(packer, live(), Ball)
     SandboxVars.MinidoracatCapsule = {}
-    check(off == "ANIMALS_OFF" and noCap == "NO_CAPSULE" and typeOff == "TYPE_OFF" and Rules.packAnimalWhyNot(packer, live(), Steam) == nil,
+    check(off == "ANIMALS_OFF" and noCap == "NO_CAPSULE" and typeOff == "TYPE_OFF" and Rules.packAnimalWhyNot(packer, live(), Ball) == nil,
         "沙盒 AllowAnimals 關掉 ANIMALS_OFF；沒有空膠囊 NO_CAPSULE；款式停用 TYPE_OFF；都過才放行")
 
     -- pack: record first, capsule on the square, the animal goes last
     local ground = {}
     local spot = { getX = function() return 101 end, getY = function() return 201 end, getZ = function() return 0 end,
         AddWorldInventoryItem = function(_, it) ground[#ground + 1] = it end }
-    local empty = Rules.emptyCapsule(packer, Steam)
+    local empty = Rules.emptyCapsule(packer, Ball)
     local cow = live({ name = "Bessie", wild = true, square = spot,
         onRemove = function() return ground[1] and Store.read(ground[1]:getID()) end })
     quiet = true
-    local dead = Pack.packAnimal(packer, live({ dead = true, square = spot }), { capsule = empty, typeId = "Steam" })
+    local dead = Pack.packAnimal(packer, live({ dead = true, square = spot }), { capsule = empty, typeId = "SphereBasic" })
     dropWrites = true
     local lost = live({ square = spot })
-    local failed = Pack.packAnimal(packer, lost, { capsule = empty, typeId = "Steam" })
+    local failed = Pack.packAnimal(packer, lost, { capsule = empty, typeId = "SphereBasic" })
     dropWrites = false
-    local afterFail = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Steam.empty) }
-    local res = Pack.packAnimal(packer, cow, { capsule = empty, typeId = "Steam" })
+    local afterFail = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Ball.empty) }
+    local res = Pack.packAnimal(packer, cow, { capsule = empty, typeId = "SphereBasic" })
     quiet = false
     check(dead.ok == false and dead.why == "NO_ANIMAL" and failed.ok == false and failed.why == "WRITE_FAILED"
         and #lost.log == 1 and afterFail.ground == 0 and afterFail.empties == 1,
         "收不了的動物不動；紀錄寫不進去：動物留在世界、空膠囊不用掉、地上沒有膠囊")
     local stored = res.ok and Store.read(res.capsuleId) or {}
-    check(res.ok and res.kind == "animal" and res.type == "Steam" and res.animal.name == "Bessie" and res.animal.type == "cow"
+    check(res.ok and res.kind == "animal" and res.type == "SphereBasic" and res.animal.name == "Bessie" and res.animal.type == "cow"
         and res.x == 101 and res.y == 201, "packAnimal 回傳和收車同一個形狀，另帶 kind 與動物名稱")
     check(stored.kind == "animal" and stored.state == "PACKED" and stored.animal.animalId == 4321 and stored.animal.wild == false
         and stored.history[1].ev == "PACKED" and stored.history[1].animal == 4321 and stored.history[1].car == nil
         and stored.script == nil, "紀錄 kind=animal、animal＝快照、PACKED 事件記動物編號不記 car")
     check(cow.log[1] == "setWild:false" and cow.log[#cow.log] == "remove" and cow.removedWith ~= nil
         and cow.removedWith.kind == "animal", "快照前 setWild(false)（照原版抱起）；紀錄與地上的膠囊都在之後才 remove 動物")
-    check(#ground == 1 and ground[1]:getFullType() == Steam.loaded and packer.inv:getCountTypeRecurse(Steam.empty) == 0,
-        "裝好的蒸汽膠囊放在動物那一格，玩家的蒸汽空膠囊用掉")
+    check(#ground == 1 and ground[1]:getFullType() == Ball.loaded and packer.inv:getCountTypeRecurse(Ball.empty) == 0,
+        "裝好的帕魯球放在動物那一格，玩家的空帕魯球用掉")
     wildCases(live, packer)
 
     -- unpack by the existing claim / spawn / event path
@@ -1979,7 +2050,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     check(u.ok and u.kind == "animal" and u.animalId == 4321 and u.onlineId == 77 and u.animal.name == "Bessie" and u.returned
         and u.script == nil and u.sqlId == nil, "展開動物膠囊：同一 tick 生出（addToWorld）、回傳 kind 與動物，還空膠囊")
     check(after.state == "UNPACKED" and ev.ev == "UNPACKED" and ev.animal == 4321 and ev.x == 10 and ev.car == nil
-        and packer.inv:getCountTypeRecurse(Steam.empty) == 1, "紀錄 UNPACKED，事件記動物編號與落點")
+        and packer.inv:getCountTypeRecurse(Ball.empty) == 1, "紀錄 UNPACKED，事件記動物編號與落點")
 
     -- the spawned animal is found by id near its recorded spot
     sq(11, 10).animals = { spawned }
@@ -2033,7 +2104,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local snaps = 0
     MinidoracatEconomy = { v1 = { snapshotItem = function() snaps = snaps + 1; return {} end,
         rebuildItem = function() return nil, "x" end } }
-    local listed = instanceItem(Steam.loaded)
+    local listed = instanceItem(Ball.loaded)
     function listed:getUnequippedWeight() return 0 end -- the dedicated server's reading (vcap-tam-1012c listed 0.0)
     function listed:getContentsWeight() return 0 end
     function listed:getScriptItem() return { getActualWeight = function() return 0.2 end } end
@@ -2044,7 +2115,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local okCheck = Trade.check(listed, packer)
     local ext = Trade.escrow(listed, packer, "market", "L-9")
     local held = Store.read(lid)
-    local fresh = instanceItem(Steam.loaded)
+    local fresh = instanceItem(Ball.loaded)
     local buyer = newPlayer("buyer", false)
     Trade.rebuilt(ext, fresh, buyer, { kind = "market", ref = "L-9" })
     Guard.check(buyer, fresh)
@@ -2053,7 +2124,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local v = ext and ext.view or {}
     check(okCheck == true and ext and ext.capsuleId == lid and ext.weight == 0.2 and snaps == 0 and held.escrow.active
         and held.escrow.cargo == nil, "動物膠囊能上架：escrow 不帶貨物")
-    check(v.kind == "animal" and v.style == "Steam" and v.animal.name == "Bessie" and v.animal.type == "cow"
+    check(v.kind == "animal" and v.style == "SphereBasic" and v.animal.name == "Bessie" and v.animal.type == "cow"
         and v.animal.pregnant == nil and v.script == nil, "上架 view：款式、動物名與摘要（不給懷孕）")
     check(fresh.id == lid and #fresh.inv.list == 0 and got.state == "PACKED" and got.escrow.active == nil
         and got.history[#got.history].ev == "TRADED", "rebuilt 改回膠囊編號，紀錄不動；買方身上看到才記 TRADED")
@@ -2062,14 +2133,21 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
 
     -- strings: every new key in the 16 languages; the loaded name no longer says "vehicle packed"
     local want = {
-        Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty" },
-        IG_UI = { "PackAnimalFailed", "PackAnimalInfo", "BlockedTitleAnimal", "BlockedThrowAnimal", "BlockedPressAnimal",
-            "Why_ANIMALS_OFF", "Why_NO_ANIMAL", "Why_ANIMAL_AWAY", "Why_ROPE", "Why_WATER" },
+        Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty", "EmptySphere" },
+        IG_UI = { "PackAnimalFailed", "PackAnimalInfo", "Why_ANIMALS_OFF", "Why_NO_ANIMAL", "Why_ANIMAL_AWAY", "Why_ROPE",
+            "Why_WATER", "HasSphereNo", "HasSphereKind", "TypeOffRowSphere", "Why_WRONG_ITEM", "Why_WRONG_ITEM_VEHICLE",
+            "Why_WRONG_ITEM_RELEASE", "Why_NO_ROOM", "Why_IN_VEHICLE", "ChanceFactor", "FactorSep", "Factor_Injured",
+            "Factor_Young", "Factor_Unaware", "Released", "SphereBack", "ReleaseFailed" },
         UI = { "RestoreAnimal", "RestoreAnimalConfirm", "AnimalLoaded", "AnimalNotLoaded", "Why_ANIMAL_EXISTS", "RestoredAnimal" },
-        Sandbox = { "AllowAnimals", "AllowAnimals_tooltip" },
+        Sandbox = { "AllowAnimals", "AllowAnimals_tooltip", "LootSphereBarn", "LootSphereBarn_tooltip", "LootSphereBarnWeight",
+            "LootSphereBarnWeight_tooltip", "LootSpherePet", "LootSpherePet_tooltip", "LootSpherePetWeight",
+            "LootSpherePetWeight_tooltip", "LootSphereHunting", "LootSphereHunting_tooltip", "LootSphereHuntingWeight",
+            "LootSphereHuntingWeight_tooltip" },
+        ContextMenu = { "PackSphere", "Release" },
     }
     local PREFIX = { Tooltip = "Tooltip_MinidoracatCapsule_", IG_UI = "IGUI_MinidoracatCapsule_",
-        UI = "UI_MinidoracatCapsule_", Sandbox = "Sandbox_MinidoracatCapsule_" }
+        UI = "UI_MinidoracatCapsule_", Sandbox = "Sandbox_MinidoracatCapsule_", ContextMenu = "ContextMenu_MinidoracatCapsule_" }
+    local gone = { "BlockedTitleAnimal", "BlockedThrowAnimal", "BlockedPressAnimal" } -- a sphere is never thrown nor pressed
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
         local dir = MEDIA .. "/shared/Translate/" .. lang .. "/"
@@ -2079,6 +2157,13 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
             if f then f:close() end
             for _, k in ipairs(keys) do
                 if type(data[PREFIX[file] .. k]) ~= "string" or data[PREFIX[file] .. k] == "" then missing[#missing + 1] = lang .. ":" .. k end
+            end
+            if file == "IG_UI" then
+                for _, k in ipairs(gone) do if data[PREFIX[file] .. k] then missing[#missing + 1] = lang .. ":" .. k .. "(old)" end end
+            end
+            for _, k in ipairs(file == "IG_UI" and { "ChanceFactor", "Released", "SphereBack", "HasSphereKind", "TypeOffRowSphere" }
+                or file == "ContextMenu" and { "Release" } or {}) do
+                if not (data[PREFIX[file] .. k] or ""):find("%1", 1, true) then missing[#missing + 1] = lang .. ":" .. k .. "(no %1)" end
             end
         end
         -- words shown for animal records too (tooltip "packed by", timeline PACKED): not "packed the vehicle" (CH and CN
@@ -2107,9 +2192,11 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
                     "VerdictMissing", "UncertainHelp", "TypeUseTip", "TypeOffLine" },
                 Sandbox = { "ReturnEmptyCapsule_tooltip", "RecordRetentionDays_tooltip" },
             }
-            for _, t in ipairs(M.TYPES) do
-                table.insert(shared.Sandbox, "Type" .. t.id)
-                table.insert(shared.Sandbox, "Type" .. t.id .. "_tooltip")
+            for _, t in ipairs(M.TYPES) do -- capsules take vehicles only (their switches say so); spheres animals
+                if t.sphere then
+                    table.insert(shared.Sandbox, "Type" .. t.id)
+                    table.insert(shared.Sandbox, "Type" .. t.id .. "_tooltip")
+                end
             end
             for file, keys in pairs(shared) do
                 for _, k in ipairs(keys) do
@@ -2136,7 +2223,7 @@ animals()
 
 print("Capture／Safehouse：丟空膠囊抓取（選目標、重找、規則、沒中）與安全屋（選單收、抓取、丟、按、補回）")
 local function captureCases() -- 獨立函式：主程式的 local 已接近 200 個上限
-    local Throw, Steam = M.Throw, M.TYPE_BY_ID.Steam
+    local Throw, Steam, Ball = M.Throw, M.TYPE_BY_ID.Steam, M.FIRST_SPHERE
     SandboxVars = { MinidoracatCapsule = { PackPermission = 1 } }
     -- 假安全屋：x 20..24、y 30..34，屋主 owner；屋主、成員以外只有 CanGoInsideSafehouses 能碰（SafeHouse.java:245-260）
     local zone, houses = { x1 = 20, y1 = 30, x2 = 24, y2 = 34 }, {}
@@ -2167,6 +2254,11 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         function a:isOnHook() return false end
         function a:isExistInTheWorld() return true end
         function a:isWild() return self.wild == true end
+        function a:getHealth() return 1 end
+        function a:isBaby() return false end
+        function a:isAlerted() return true end
+        function a:getForwardDirectionX() return 0 end
+        function a:getForwardDirectionY() return 1 end
         function a:getData() return { getAttachedPlayer = function() end, getAttachedTree = function() end } end
         sq(x, y).animals = { a }
         return a
@@ -2217,14 +2309,14 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
 
     -- capture rules: the menu's rules with CAPTURE_REACH, TYPE_OFF
     local far = at("far", 12, 10)
-    check(Rules.captureWhyNot(hunter, cow, true, Steam) == nil and Rules.captureWhyNot(far, cow, true, Steam) == "TOO_FAR"
+    check(Rules.captureWhyNot(hunter, cow, true, Ball) == nil and Rules.captureWhyNot(far, cow, true, Ball) == "TOO_FAR"
         and Rules.animalWhyNot(hunter, cow) == nil and Rules.animalWhyNot(at("h2", 1, 30), cow) == "TOO_FAR",
         "抓取距離用 CAPTURE_REACH（選單仍是 PACK_RANGE）")
     SandboxVars.MinidoracatCapsule.AllowAnimals = false
-    local off = Rules.captureWhyNot(hunter, cow, true, Steam)
-    SandboxVars.MinidoracatCapsule.AllowAnimals, SandboxVars.MinidoracatCapsule.TypeSteam = nil, false
-    local typeOff = Rules.captureWhyNot(hunter, cow, true, Steam)
-    SandboxVars.MinidoracatCapsule.TypeSteam = nil
+    local off = Rules.captureWhyNot(hunter, cow, true, Ball)
+    SandboxVars.MinidoracatCapsule.AllowAnimals, SandboxVars.MinidoracatCapsule.TypeSphereBasic = nil, false
+    local typeOff = Rules.captureWhyNot(hunter, cow, true, Ball)
+    SandboxVars.MinidoracatCapsule.TypeSphereBasic = nil
     local noKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
     hunter.inv.haveThisKeyId = function(_, id) return id == 7 and {} or nil end
     local withKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
@@ -2240,11 +2332,11 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local admin = at("boss", 19, 37, true)
     admin.canGoInside = true
     check(none == nil and Rules.animalWhyNot(stranger, cow2) == "SAFEHOUSE" and Rules.animalWhyNot(owner, cow2) == nil
-        and Rules.animalWhyNot(admin, cow2) == nil and Rules.packAnimalWhyNot(stranger, cow2, Steam) == "SAFEHOUSE",
+        and Rules.animalWhyNot(admin, cow2) == nil and Rules.packAnimalWhyNot(stranger, cow2, Ball) == "SAFEHOUSE",
         "安全屋：動物那格在別人的安全屋 SAFEHOUSE（選單收也擋）；屋主、有 CanGoInsideSafehouses 的管理員可以；沒有安全屋不擋")
     stranger.inv.haveThisKeyId, owner.inv.haveThisKeyId = hunter.inv.haveThisKeyId, hunter.inv.haveThisKeyId
     check(Rules.vehicleWhyNot(stranger, truck2) == "SAFEHOUSE" and Rules.vehicleWhyNot(owner, truck2) == nil
-        and Rules.vehicleWhyNot(stranger, truck3) == nil and Rules.captureWhyNot(stranger, cow2, true, Steam) == "SAFEHOUSE"
+        and Rules.vehicleWhyNot(stranger, truck3) == nil and Rules.captureWhyNot(stranger, cow2, true, Ball) == "SAFEHOUSE"
         and Rules.captureWhyNot(stranger, truck2, false, Steam) == "SAFEHOUSE",
         "安全屋：車身壓到安全屋的格子就擋（只壓到外框範圍不算）；丟出抓取同一條")
 
@@ -2254,7 +2346,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     Throw.schedule = function(p) scheduled[#scheduled + 1] = p end
     M.Fx.broadcast = function(kind, args) if kind == "flight" then flights[#flights + 1] = args end end
     getOnlinePlayers = function() return javaList({ hunter, stranger }) end
-    local function capsuleFor(p) return p.inv:AddItem(instanceItem(Steam.empty)) end
+    local function capsuleFor(p, t) return p.inv:AddItem(instanceItem((t or Ball).empty)) end -- a sphere unless t
     local function throwAt(p, item, x, y) return Play.throw({ character = p, item = item, x = x, y = y, z = 0 }) end
     local function lastSent() local s = sent[#sent]; return s and s[4] or {} end
     local c1 = capsuleFor(hunter)
@@ -2293,14 +2385,14 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local landing = drops(sq(12, 30))
     Throw.land({ player = hunter, capsuleId = c3.id, x = 12, y = 30, z = 0, mode = "capture", cap = { kind = "animal", tid = 31 } })
     local missSent = lastSent()
-    local c4 = capsuleFor(hunter)
+    local c4 = capsuleFor(hunter, Steam)
     Throw.land({ player = hunter, capsuleId = c4.id, x = 14, y = 30, z = 0, mode = "capture", cap = { kind = "vehicle", tid = 501 } })
     local c5 = capsuleFor(stranger)
     local feet, house = drops(sq(19, 37)), drops(sq(22, 31))
     Throw.land({ player = stranger, capsuleId = c5.id, x = 22, y = 31, z = 0, mode = "capture", cap = { kind = "animal", tid = 77 } })
     quiet = false
     local pa, pv = packed[1] or {}, packed[2] or {}
-    check(pa[2] == cow and pa[3].capsule == c1 and pa[3].typeId == "Steam" and pa[3].range == Rules.CAPTURE_REACH
+    check(pa[2] == cow and pa[3].capsule == c1 and pa[3].typeId == "SphereBasic" and pa[3].range == Rules.CAPTURE_REACH
         and okSent.ok and okSent.mode == "capture" and okSent.loadedId == 777 and okSent.capsuleId == c1.id,
         "抓到動物：走 Pack.packAnimal，用的是丟出去的那顆空膠囊、距離用 CAPTURE_REACH，回覆帶裝好的膠囊編號")
     check(missSent.ok == false and missSent.why == "NO_TARGET" and missSent.dropped == true and landing[1] == c3 and #packed == 2,
@@ -2374,6 +2466,14 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(pressSent.why == "SAFEHOUSE" and pressSent.dropped == nil and stranger.inv:getItemWithIDRecursiv(l2.id) == l2
         and Throw.safehouse(owner, Store.read(l2.id), 22, 31, 0, "E") == nil and Throw.safehouse(stranger, Store.read(l2.id), 12, 31, 0, "E") == nil,
         "按按鈕放進別人的安全屋被拒、膠囊不動；屋主或安全屋外可以")
+    local l3 = animalRecord(stranger.inv:AddItem(instanceItem(Ball.loaded)))
+    quiet = true
+    Throw.land({ player = stranger, capsuleId = l3.id, x = 22, y = 31, z = 0, mode = "release", dir = "E" })
+    local releaseSent = lastSent()
+    quiet = false
+    check(releaseSent.why == "SAFEHOUSE" and releaseSent.mode == "release" and releaseSent.dropped == nil
+        and stranger.inv:getItemWithIDRecursiv(l3.id) == l3 and Store.read(l3.id).state == "PACKED",
+        "帕魯球放出時那格剛好在別人的安全屋（落地再驗）：被拒，帕魯球留在背包，紀錄不動")
     local restorer = at("restorer", 19, 37, true)
     quiet = true
     local refused = Admin.restore(restorer, l2.id, 22, 31, 0, nil, nil, "E")
@@ -2416,6 +2516,198 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
 end
 captureCases()
 
+print("Sphere：帕魯球（成功率與三種加成、膠囊只收車／帕魯球只抓動物、放出在身旁、NO_ROOM、不能丟或按、還同等級）")
+local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local Ball, Mega, Legend, Steam = M.FIRST_SPHERE, M.TYPE_BY_ID.SphereMega, M.TYPE_BY_ID.SphereLegend, M.TYPE_BY_ID.Steam
+    local Throw, Unpack = M.Throw, M.Unpack
+    -- a live animal on (x, y) facing +y unless o says otherwise; alerted unless o.unaware
+    local function animal(o)
+        local a = { x = o.x or 12, y = o.y or 10 }
+        function a:getX() return self.x + 0.5 end
+        function a:getY() return self.y + 0.5 end
+        function a:getSquare() return sq(self.x, self.y) end
+        function a:isWild() return o.wild == true end
+        function a:getHealth() return o.health or 1 end
+        function a:isBaby() return o.baby == true end
+        function a:isAlerted() return not o.unaware end
+        function a:getForwardDirectionX() return o.fx or 0 end
+        function a:getForwardDirectionY() return o.fy or 1 end
+        function a:isDead() return false end
+        function a:isOnHook() return false end
+        function a:isExistInTheWorld() return true end
+        function a:getData() return { getAttachedPlayer = function() end, getAttachedTree = function() end } end
+        function a:getOnlineID() return 55 end
+        function a:getAnimalID() return 5555 end
+        return a
+    end
+    local function player(name, x, y)
+        local p = newPlayer(name, false)
+        function p:getX() return x + 0.5 end
+        function p:getY() return y + 0.5 end
+        function p:getCurrentSquare() return sq(x, y) end
+        p.inv.containsID = function(c, id) return c:getItemWithIDRecursiv(id) ~= nil end
+        return p
+    end
+    local me = player("me", 12, 7) -- three squares north of the animal: in front of one facing -y, behind one facing +y
+    local function chance(o, t, sb)
+        SandboxVars = { MinidoracatCapsule = sb or {} }
+        local c = Rules.captureChance(me, animal(o), t and t.id)
+        if not c then return "tame" end
+        local parts = { tostring(c.total) }
+        for _, f in ipairs(c.factors) do parts[#parts + 1] = f[1] .. f[2] end
+        return table.concat(parts, " ")
+    end
+    check(chance({}, Ball) == "tame" and chance({ wild = true }, Ball) == "50" and chance({ wild = true }, Mega) == "65 Tier15"
+        and chance({ wild = true }, M.TYPE_BY_ID.SphereGiga) == "80 Tier30" and chance({ wild = true }, Legend) == "100 Tier50",
+        "成功率：家養沒有（一律成功）；基本 50，帕魯球 +0、高級 +15、優質 +30、傳奇 +50")
+    check(chance({ wild = true, health = 0.6 }, Ball) == "62 Injured12" and chance({ wild = true, health = 0 }, Ball) == "80 Injured30"
+        and chance({ wild = true, health = 1.7 }, Ball) == "50" and chance({ wild = true, baby = true }, Ball) == "65 Young15",
+        "受傷：round((1 - 健康) × 30)（0.6 → +12、0 → +30，超過 1 不加）；幼崽 +15")
+    me.sneak = false
+    local behind = chance({ wild = true, unaware = true }, Ball)                       -- facing +y, me at -y: behind it
+    local front = chance({ wild = true, unaware = true, fy = -1 }, Ball)              -- facing me
+    local alerted = chance({ wild = true, fy = 1 }, Ball)                             -- behind it but alerted
+    me.sneak = true
+    local sneaking = chance({ wild = true, unaware = true, fy = -1 }, Ball)
+    local sneakAlerted = chance({ wild = true, fy = -1 }, Ball)
+    me.sneak = nil
+    check(behind == "70 Unaware20" and front == "50" and alerted == "50" and sneaking == "70 Unaware20" and sneakAlerted == "50",
+        "沒發現你：沒在警戒，而且在牠背後（夾角大於 90 度）或潛行才 +20；警戒中一律不加")
+    check(chance({ wild = true, health = 0.5, baby = true, unaware = true }, Mega) == "100 Tier15 Injured15 Young15 Unaware20"
+        and chance({ wild = true, health = 0.5, baby = true }, Mega, { WildCaptureChance = 10, WildCaptureInjuredBonus = 0,
+            WildCaptureYoungBonus = 40 }) == "65 Tier15 Young40"
+        and chance({ wild = true, health = 0.5, baby = true }, Legend, { WildCaptureChance = 0 }) == "0",
+        "上限 100；沙盒加成 0＝關掉那項（不列）、可調大；基本 0 時加成救不回來（WILD_OFF）")
+
+    -- capsules take vehicles, spheres animals: menu rules, the server's pack, the capture cursor
+    SandboxVars = { MinidoracatCapsule = { PackPermission = 2 } }
+    local hare = animal({ wild = true })
+    local car = { getId = function() return 9 end }
+    local p = player("p", 12, 9)
+    local steamEmpty, ballEmpty = p.inv:AddItem(instanceItem(Steam.empty)), p.inv:AddItem(instanceItem(Ball.empty))
+    local savedV = Rules.vehicleWhyNot
+    Rules.vehicleWhyNot = function() return nil end
+    check(Rules.packAnimalWhyNot(p, hare, Steam) == "WRONG_ITEM" and Rules.packAnimalWhyNot(p, hare, Ball) == nil
+        and Rules.captureWhyNot(p, hare, true, Steam) == "WRONG_ITEM" and Rules.captureWhyNot(p, hare, true, Ball) == nil
+        and Rules.captureWhyNot(p, car, false, Ball) == "WRONG_ITEM" and Rules.captureWhyNot(p, car, false, Steam) == nil
+        and Rules.packWhyNot(p, car, Ball) == "WRONG_ITEM",
+        "規則：膠囊收動物、帕魯球收車都是 WRONG_ITEM（選單、丟出抓取的游標與伺服器同一條）")
+    Rules.vehicleWhyNot = savedV
+    local byType = M.Pack.packAnimal(p, hare, { capsule = steamEmpty, typeId = "Steam" })
+    local byItem = M.Pack.packAnimal(p, hare, { capsule = steamEmpty, typeId = "SphereBasic" })
+    local sphereCar = M.Pack.pack(p, car, { type = Ball, empty = ballEmpty })
+    check(byType.why == "WRONG_ITEM" and byItem.why == "WRONG_ITEM" and sphereCar.why == "WRONG_ITEM"
+        and p.inv:getItemWithIDRecursiv(steamEmpty.id) == steamEmpty and p.inv:getItemWithIDRecursiv(ballEmpty.id) == ballEmpty,
+        "伺服器：Pack.packAnimal 只收帕魯球（款式或那顆是膠囊都拒）、Pack.pack 只收膠囊，拒絕時什麼都不動")
+
+    -- where the animal comes out: the faced square first, then the nearest to it; NO_ROOM when none fits
+    SafeHouse = nil
+    local r = player("r", 10, 10)
+    r.fx, r.fy = 1, 0 -- facing east
+    local function spot() local x, y = Rules.releaseSpot(r); return x and (x .. "," .. y) or y end
+    local first = spot()
+    sq(11, 10).free = false
+    local second = spot()
+    local ring = {}
+    for dx = -1, 1 do for dy = -1, 1 do if dx ~= 0 or dy ~= 0 then ring[#ring + 1] = sq(10 + dx, 10 + dy) end end end
+    for _, s in ipairs(ring) do s.free = false end
+    sq(9, 11).free = true
+    local last = spot()
+    sq(9, 11).water = true
+    local none = spot()
+    sq(9, 11).water = nil
+    for _, s in ipairs(ring) do s.free = true end
+    losBlocked = true
+    local blind = spot()
+    losBlocked = false
+    SafeHouse = { getSafehouseList = function() return javaList({ 1 }) end,
+        isSafehouseAllowInteract = function(s) return not (s:getX() == 11 and s:getY() == 10) end }
+    local house = spot()
+    SafeHouse = nil
+    check(first == "11,10" and second == "11,9" and last == "9,11" and none == "NO_ROOM" and blind == "NO_ROOM" and house == "11,9",
+        "放出的位置：面向的那格（東 11,10）優先，擋住就換最接近面向的（11,9），只剩背後也可以；八格都不行（水、家具、看不到）NO_ROOM；別人的安全屋那格跳過")
+
+    -- Play.release: intent, the spot, the landing at once (press path); refusals keep the sphere
+    local scheduled, savedSchedule = {}, Throw.schedule
+    Throw.schedule = function(pp, at) scheduled[#scheduled + 1] = { p = pp, at = at } end
+    local function loaded(t, owner)
+        local it = owner.inv:AddItem(instanceItem(t.loaded))
+        Store.write(it.id, { kind = "animal", animal = { type = "rabbit", breed = "swamp", name = "Hop", animalId = 77 },
+            state = "PACKED", settled = true, packedBy = "r", history = { { t = 1, ev = "PACKED", x = 5, y = 5, z = 0, animal = 77 } } })
+        return it
+    end
+    local function lastSent() local s = sent[#sent]; return s and s[4] or {} end
+    local ball = loaded(Mega, r)
+    quiet = true
+    local noIntent = Play.release(r, ball)
+    clientCommand(M.MODULE, "intent", r, { kind = "release", id = ball.id })
+    local ok = Play.release(r, ball)
+    r.vehicle = {}
+    clientCommand(M.MODULE, "intent", r, { kind = "release", id = ball.id })
+    local inCar = Play.release(r, ball)
+    local carSent = lastSent()
+    r.vehicle = nil
+    for _, s in ipairs(ring) do s.free = false end
+    clientCommand(M.MODULE, "intent", r, { kind = "release", id = ball.id })
+    local full = Play.release(r, ball)
+    local fullSent = lastSent()
+    for _, s in ipairs(ring) do s.free = true end
+    local capsule = r.inv:AddItem(instanceItem(Steam.loaded))
+    clientCommand(M.MODULE, "intent", r, { kind = "release", id = capsule.id })
+    local notSphere = Play.release(r, capsule)
+    -- a loaded sphere is never thrown nor pressed, even with a forged intent
+    clientCommand(M.MODULE, "intent", r, { kind = "throw", id = ball.id })
+    local thrown = Play.throw({ character = r, item = ball, x = 14, y = 10, z = 0 })
+    local throwSent = lastSent()
+    local savedWorld = ball.getWorldItem
+    ball.getWorldItem = function() return { getSquare = function() return sq(11, 10) end } end
+    clientCommand(M.MODULE, "intent", r, { kind = "press", id = ball.id })
+    local pressed = Play.press(r, ball.id, 12, 10, 0)
+    local pressSent = lastSent()
+    ball.getWorldItem = savedWorld
+    quiet = false
+    local sp = scheduled[1] and scheduled[1].p or {}
+    check(noIntent == false and ok == true and #scheduled == 1 and sp.mode == "release" and sp.x == 11 and sp.y == 10
+        and sp.capsuleId == ball.id and scheduled[1].at == nowMs,
+        "Play.release：要有 release intent；排一次 mode=release 的落地，就在面向那格、馬上（照按按鈕的流程）")
+    check(inCar == false and carSent.why == "IN_VEHICLE" and full == false and fullSent.why == "NO_ROOM" and fullSent.mode == "release"
+        and notSphere == false and #scheduled == 1 and r.inv:getItemWithIDRecursiv(ball.id) == ball,
+        "在車上不能放（IN_VEHICLE）；四周都擋住回 NO_ROOM；膠囊不能「放出」；帕魯球都留在背包")
+    check(thrown == false and throwSent.why == "WRONG_ITEM" and pressed == false and pressSent.why == "WRONG_ITEM" and #scheduled == 1,
+        "硬送裝了動物的帕魯球的 throw／press intent：伺服器拒絕 WRONG_ITEM，不排落地")
+    Throw.schedule = savedSchedule
+
+    -- the landing: Unpack as for a capsule; ReturnEmptyCapsule gives back an empty sphere of the same tier
+    local savedSpawn, savedFx, savedOnline = Unpack.spawn, M.Fx.broadcast, getOnlinePlayers
+    local fx = {}
+    Unpack.spawn = function(_, square)
+        return { getSquare = function() return square end, getAnimalID = function() return 77 end,
+            getOnlineID = function() return 701 end }, { home = 0, other = 0, ground = 0 }
+    end
+    M.Fx.broadcast = function(kind, args) fx[#fx + 1] = { kind, args } end
+    getOnlinePlayers = function() return javaList({ r }) end
+    SandboxVars = { MinidoracatCapsule = {} }
+    quiet = true
+    Throw.land(sp)
+    local landed = lastSent()
+    SandboxVars.MinidoracatCapsule.ReturnEmptyCapsule = false
+    local legend = loaded(Legend, r)
+    Throw.land({ player = r, capsuleId = legend.id, x = 11, y = 10, z = 0, mode = "release", dir = "E" })
+    local noBack = lastSent()
+    quiet = false
+    check(landed.ok and landed.mode == "release" and landed.kind == "animal" and landed.type == "SphereMega" and landed.returned
+        and r.inv:getItemWithIDRecursiv(ball.id) == nil and r.inv:getCountTypeRecurse(Mega.empty) == 1
+        and Store.read(ball.id).state == "UNPACKED" and fx[1] and fx[1][1] == "unpack" and fx[1][2].style == Mega.index,
+        "放出落地：紀錄 UNPACKED、帕魯球拿走、還一顆空的高級帕魯球（同等級），特效用它的款式（科幻）")
+    check(noBack.ok and not noBack.returned and r.inv:getCountTypeRecurse(Legend.empty) == 0,
+        "ReturnEmptyCapsule 關掉時不還空帕魯球")
+    check(Mega.smoke == M.TYPE_BY_ID.SciFi.smoke and Mega.pop == M.TYPE_BY_ID.SciFi.pop and Mega.pack == M.TYPE_BY_ID.SciFi.pack,
+        "帕魯球的煙霧與音效＝科幻款")
+    Unpack.spawn, M.Fx.broadcast, getOnlinePlayers = savedSpawn, savedFx, savedOnline
+    SandboxVars = nil
+end
+sphereCases()
+
 print("Notify：Toast 沒有第二行時只寫一次")
 local function toastCases() -- 獨立函式：主程式的 local 已接近 200 個上限
     local saved, shown, dialogs = MinidoracatUI, {}, {}
@@ -2426,7 +2718,7 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     -- Info and Effects pull in vanilla UI classes; the toast only needs the animal's name
     loaded["MinidoracatCapsule/Info"], loaded["MinidoracatCapsule/Effects"] = true, true
     local savedInfo = M.Info
-    M.Info = { animalName = function(a) return a.name end }
+    M.Info = { animalName = function(a) return a.name end, itemName = function(ft) return "name:" .. tostring(ft) end }
     require "MinidoracatCapsule/Notify"
     -- unpacked with ReturnEmptyCapsule off (no "empty capsule is back" line), then on
     local cow = { type = "cow", name = "E2E Bessie" }
@@ -2440,7 +2732,13 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     -- (the French reason ran past the toast's edge, vcap-capture-fr-1013r)
     local savedText, savedOrNull = getText, getTextOrNull
     getText = function(key, a) return a and (key .. "(" .. a .. ")") or key end
-    getTextOrNull = function(key) return key end
+    -- like the game: getTextOrNull is nil for a key no file has (only these _VEHICLE / _RELEASE variants exist)
+    local real = { IGUI_MinidoracatCapsule_Why_WRONG_ITEM_VEHICLE = true, IGUI_MinidoracatCapsule_Why_WRONG_ITEM_RELEASE = true,
+        IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE = true }
+    getTextOrNull = function(key)
+        if (key:find("_VEHICLE$") or key:find("_RELEASE$")) and not real[key] then return nil end
+        return key
+    end
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "NO_TARGET", dropped = true })
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "TOO_FAR" })
     -- a wild animal that broke free (ESCAPED) says the chance it had, thrown or by menu; the tooltip row for a wild
@@ -2448,16 +2746,24 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, dropped = true })
     M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35 })
     SandboxVars = { MinidoracatCapsule = { WildCaptureChance = 35 } }
-    local wildOne, tameOne = { isWild = function() return true end }, { isWild = function() return false end }
-    local row, tameRow = M.Notify.chanceRow(wildOne), M.Notify.chanceRow(tameOne)
+    local me = newPlayer("me", false)
+    local function beast(o)
+        local a = { isWild = function() return o.wild == true end, getHealth = function() return o.health or 1 end,
+            isBaby = function() return o.baby == true end, isAlerted = function() return true end,
+            getForwardDirectionX = function() return 0 end, getForwardDirectionY = function() return 1 end,
+            getX = function() return 100.5 end, getY = function() return 199.5 end }
+        return a
+    end
+    local wildOne, tameOne, Ball = beast({ wild = true }), beast({}), M.FIRST_SPHERE
+    local row, tameRow = M.Notify.chanceRows(me, wildOne, Ball), M.Notify.chanceRows(me, tameOne, Ball)
     SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
-    local offRow = M.Notify.chanceRow(wildOne)
-    -- WildCaptureFailConsumes on: the row warns a miss takes the capsule (not at 100: no miss); a consumed escape says
-    -- the capsule is gone instead of where it lies
+    local offRow = M.Notify.chanceRows(me, wildOne, Ball)
+    -- WildCaptureFailConsumes on: the row warns a miss takes the sphere (not at 100: no miss); a consumed escape says
+    -- the sphere is gone instead of where it lies
     SandboxVars.MinidoracatCapsule = { WildCaptureChance = 35, WildCaptureFailConsumes = true }
-    local goneRow = M.Notify.chanceRow(wildOne)
+    local goneRow = M.Notify.chanceRows(me, wildOne, Ball)
     SandboxVars.MinidoracatCapsule.WildCaptureChance = 100
-    local sureRow = M.Notify.chanceRow(wildOne)
+    local sureRow = M.Notify.chanceRows(me, wildOne, Ball)
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, consumed = true })
     M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35, consumed = true })
     SandboxVars = nil
@@ -2468,6 +2774,36 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
         and goneToast.message == "IGUI_MinidoracatCapsule_EscapedGone(35)"
         and goneDlg.text == "IGUI_MinidoracatCapsule_EscapedGone(35)",
         "沒抓到時膠囊消失：開著時成功率列加「沒抓到膠囊會消失」（100 不加、關著不加）；掙脫的 Toast 與對話框寫膠囊也消失了")
+    -- the factor row under the chance: the tier by its item name, then the non-zero bonuses
+    SandboxVars = { MinidoracatCapsule = { WildCaptureChance = 40 } }
+    local mega = M.TYPE_BY_ID.SphereMega
+    local factorRow = M.Notify.chanceRows(me, beast({ wild = true, health = 0.5, baby = true }), mega)
+    local plainRow = M.Notify.chanceRows(me, wildOne, Ball)
+    -- WRONG_ITEM: a capsule at an animal says "use a Pal Sphere", a sphere at a vehicle its own line; a release refused
+    M.onServerCommand("packed", { ok = false, kind = "animal", why = "WRONG_ITEM" })
+    M.onServerCommand("packed", { ok = false, why = "WRONG_ITEM" })
+    M.onServerCommand("landed", { ok = false, mode = "capture", why = "WRONG_ITEM", kind = "animal" })
+    M.onServerCommand("landed", { ok = false, mode = "release", why = "NO_ROOM", kind = "animal" })
+    M.onServerCommand("landed", { ok = true, mode = "release", kind = "animal", animal = cow, returned = true, type = "SphereMega" })
+    SandboxVars = nil
+    local n = #dialogs
+    local animalDlg, vehicleDlg, roomDlg = dialogs[n - 2] or {}, dialogs[n - 1] or {}, dialogs[n] or {}
+    local wrongToast, releasedToast = shown[#shown - 1] or {}, shown[#shown] or {}
+    check(factorRow:find("IGUI_MinidoracatCapsule_WildChance(85)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(name:MinidoracatCapsule.SphereMega)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(IGUI_MinidoracatCapsule_Factor_Injured)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(IGUI_MinidoracatCapsule_Factor_Young)", 1, true) ~= nil
+        and factorRow:find("Unaware", 1, true) == nil and factorRow:find("IGUI_MinidoracatCapsule_FactorSep", 1, true) ~= nil
+        and plainRow:find("ChanceFactor", 1, true) == nil,
+        "成功率列下面列出非 0 的加成（高級帕魯球、受傷、幼崽；40＋15＋15＋15＝85）；沒有加成就只有成功率一列")
+    check(animalDlg.title == "IGUI_MinidoracatCapsule_PackAnimalFailed" and animalDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM"
+        and vehicleDlg.title == "IGUI_MinidoracatCapsule_PackFailed" and vehicleDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM_VEHICLE"
+        and wrongToast.message == "IGUI_MinidoracatCapsule_CaptureKept(IGUI_MinidoracatCapsule_Why_WRONG_ITEM)",
+        "WRONG_ITEM：膠囊收動物寫「要用帕魯球」、帕魯球收車寫「帕魯球收不了車」（選單與抓取）")
+    check(roomDlg.title == "IGUI_MinidoracatCapsule_ReleaseFailed" and roomDlg.text == "IGUI_MinidoracatCapsule_Why_NO_ROOM"
+        and releasedToast.title == "IGUI_MinidoracatCapsule_Released(E2E Bessie)"
+        and releasedToast.message == "IGUI_MinidoracatCapsule_SphereBack(name:MinidoracatCapsule.SphereMega)",
+        "放出：沒空地的對話框寫「沒有放出動物：旁邊沒有空地」；成功的 Toast 寫已放出與同等級的空帕魯球回來")
     getText, getTextOrNull = savedText, savedOrNull
     local drop, kept, esc, dlg = shown[3] or {}, shown[4] or {}, shown[5] or {}, dialogs[1] or {}
     check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"

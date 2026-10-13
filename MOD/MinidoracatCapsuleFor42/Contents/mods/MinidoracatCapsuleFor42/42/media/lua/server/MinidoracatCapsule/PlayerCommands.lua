@@ -1,4 +1,5 @@
--- Universal Capsule: what players do (pack, throw, press), server side. SP runs the same functions locally.
+-- Universal Capsule: what players do (pack, throw, press, release a Pal Sphere), server side. SP runs the same
+-- functions locally.
 -- MP timed actions run complete() on the server only, rebuilt from the new() arguments the client sent
 -- (NetTimedAction.java:142-170), so `character` can name anyone. Identity comes from OnClientCommand (the server
 -- maps the connection to the player): the client sends an intent when it queues the action, and complete() only
@@ -19,7 +20,7 @@ M.Play = Play
 
 local INTENT_TTL_MS = 60000 -- queue (walk there) + action time
 local INTENTS_PER_PLAYER = 8
-local KINDS = { pack = true, packAnimal = true, throw = true, press = true, capture = true }
+local KINDS = { pack = true, packAnimal = true, throw = true, press = true, capture = true, release = true }
 local TARGETS = { animal = true, vehicle = true }
 
 -- Server -> one client. SP has no channel (sendServerCommand is a no-op there): hand it to the client code directly.
@@ -71,10 +72,11 @@ end
 -- ---------------------------------------------------------------- client commands
 local Handlers = {}
 
--- args: kind ("pack" / "packAnimal" / "throw" / "press" / "capture"), id (vehicle id for pack, the animal's online id
--- for packAnimal, capsule id otherwise), type (packing only: the id of the capsule type to pack with, M.TYPES; Play.pack
--- / Play.packAnimal check the player carries one and that it is enabled). capture also names its target: target
--- ("animal" / "vehicle") and tid (the animal's online id / the vehicle id); the landing finds it again near the aim.
+-- args: kind ("pack" / "packAnimal" / "throw" / "press" / "capture" / "release"), id (vehicle id for pack, the
+-- animal's online id for packAnimal, capsule id otherwise), type (packing only: the id of the capsule type to pack
+-- with, M.TYPES; Play.pack / Play.packAnimal check the player carries one and that it is enabled). capture also names
+-- its target: target ("animal" / "vehicle") and tid (the animal's online id / the vehicle id); the landing finds it
+-- again near the aim.
 function Handlers.intent(player, args)
     local id = tonumber(args.id)
     if not (KINDS[args.kind] and id) then return end
@@ -178,10 +180,16 @@ end
 
 local function intentKind(item) return M.isEmpty(item) and "capture" or "throw" end
 
+-- A loaded Pal Sphere is never thrown nor pressed: its animal comes out next to the player (Play.release).
+local function loadedSphere(item)
+    local t = M.typeOf(item)
+    return t ~= nil and t.sphere and M.isLoaded(item)
+end
+
 -- ISThrowCapsuleAction release (server / SP).
 function Play.released(action)
     local item = action.item
-    if not item then return end
+    if not item or loadedSphere(item) then return end
     local intent = {} -- SP: no intents (Play.takeIntent)
     if isServer() then intent = findIntent(action.character, intentKind(item), item:getID()) end
     if not intent or throwWhyNot(action, intent) then return end
@@ -197,6 +205,10 @@ function Play.throw(action)
         return refuse(player, "throw", "NO_CAPSULE", id)
     end
     local kind = intentKind(item)
+    if loadedSphere(item) then
+        Play.send(player, "landed", { ok = false, why = "WRONG_ITEM", capsuleId = id, mode = kind })
+        return refuse(player, kind, "WRONG_ITEM", id)
+    end
     local intent = Play.takeIntent(player, kind, id)
     if not intent then return refuse(player, kind, "NO_INTENT", id) end
     local why = throwWhyNot(action, intent)
@@ -220,6 +232,10 @@ function Play.press(player, capsuleId, x, y, z)
     local wo = capsule and capsule:getWorldItem()
     local sq = wo and wo:getSquare()
     if not (sq and M.isLoaded(capsule)) then return refuse(player, "press", "NO_CAPSULE", capsuleId) end
+    if loadedSphere(capsule) then
+        Play.send(player, "landed", { ok = false, why = "WRONG_ITEM", capsuleId = capsuleId, mode = "press" })
+        return refuse(player, "press", "WRONG_ITEM", capsuleId)
+    end
     local cx, cy = sq:getX() + 0.5, sq:getY() + 0.5
     local dir = Footprint.dirOf(x - cx, y - cy)
     local why = Footprint.reach(cx, cy, sq:getZ(), x, y, z, Rules.PRESS_RANGE + 0.5, false)
@@ -229,6 +245,30 @@ function Play.press(player, capsuleId, x, y, z)
         return refuse(player, "press", why, capsuleId)
     end
     Throw.schedule({ player = player, capsuleId = capsuleId, x = x, y = y, z = z, mode = "press", dir = dir }, now())
+    return true
+end
+
+-- ISReleaseSphereAction complete: a loaded Pal Sphere in the player's inventory lets its animal out next to them
+-- (Palworld v0.3.11: no throw). Rules.releaseSpot picks the square (none: NO_ROOM, the sphere stays); the landing is
+-- the press path (Throw.land mode "release": record check, Unpack, ReturnEmptyCapsule gives the same tier back).
+function Play.release(player, item)
+    local id = item and item:getID()
+    if not Play.takeIntent(player, "release", id) then return refuse(player, "release", "NO_INTENT", id) end
+    local why, x, y, z
+    if not (loadedSphere(item) and player:getInventory():containsID(id)) then
+        why = "NO_CAPSULE"
+    elseif player:getVehicle() then
+        why = "IN_VEHICLE"
+    else
+        x, y, z = Rules.releaseSpot(player)
+        if not x then why = y end
+    end
+    if why then
+        Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = "release", kind = "animal" })
+        return refuse(player, "release", why, id)
+    end
+    Throw.schedule({ player = player, capsuleId = id, x = x, y = y, z = z, mode = "release",
+        dir = Footprint.dirOf(x + 0.5 - player:getX(), y + 0.5 - player:getY()) }, now())
     return true
 end
 

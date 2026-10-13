@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Kapsel wird gelesen...",
-    "Tooltip_MinidoracatCapsule_Empty": "Leere Kapsel. Pack ein geparktes Fahrzeug über sein Fahrzeugmenü oder ein lebendes Tier über sein Tiermenü ein.",
+    "Tooltip_MinidoracatCapsule_Empty": "Leere Kapsel. Pack ein geparktes Fahrzeug über sein Fahrzeugmenü ein oder wirf sie mit „Werfen und fangen“ darauf.",
     "Tooltip_MinidoracatCapsule_Far": "Komm näher, um zu sehen, was in der Kapsel ist.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Der Eintrag dieser Kapsel ist nicht auf diesem Server. Wende dich an einen Admin.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Fahrzeug",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "und %1 weitere Arten",
     "Tooltip_MinidoracatCapsule_PackedBy": "Eingepackt von",
     "Tooltip_MinidoracatCapsule_Type": "Typ",
-    "Tooltip_MinidoracatCapsule_TypeOff": "! Ein Admin hat diesen Typ abgeschaltet: Damit lassen sich gerade keine Fahrzeuge oder Tiere einpacken",
+    "Tooltip_MinidoracatCapsule_TypeOff": "! Ein Admin hat diesen Typ abgeschaltet: Damit lässt sich gerade nichts einpacken oder fangen",
     "Tooltip_MinidoracatCapsule_ListSep": ", ",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "Weißer Cartoon-Rauch und Cartoon-Geräusche",
     "Tooltip_MinidoracatCapsule_Look_Real": "Grauer Rauch, Mechanik- und Druckluftgeräusche",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 Tage",
     "Tooltip_MinidoracatCapsule_Weight": "Gewicht",
     "Tooltip_MinidoracatCapsule_Milk": "Milch",
-    "Tooltip_MinidoracatCapsule_Wild": "Wild"
+    "Tooltip_MinidoracatCapsule_Wild": "Wild",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; fängt Tiere",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +15 Fangchance bei wilden Tieren",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +30 Fangchance bei wilden Tieren",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +50 Fangchance bei wilden Tieren",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "Leere Pal-Sphäre. Fang ein Tier über sein Tiermenü oder wirf sie mit „Werfen und fangen“ darauf; ein wildes kann sich losreißen."
 }

@@ -1,9 +1,11 @@
--- Universal Capsule: a thrown or pressed capsule lands (server authority; SP runs the same code locally).
--- The action's complete() schedules the landing; the capsule stays where it is (inventory or ground) until then.
+-- Universal Capsule: a thrown or pressed capsule lands, or a Pal Sphere lets its animal out (server authority; SP runs
+-- the same code locally). The action's complete() schedules the landing; the capsule stays where it is (inventory or
+-- ground) until then.
 -- Landing: a record that is not a usable PACKED one goes straight to Unpack (it refuses, logs and clears stale cargo);
 -- otherwise the ground must be clear (the vehicle's body, or one square for an animal) and outside other players'
 -- safehouses, then Unpack spawns it. A blocked throw drops the capsule on the landing square (a safehouse refusal: at
--- the thrower's feet); a pressed capsule stays where it lies. A thrown empty capsule captures instead (Throw.capture).
+-- the thrower's feet); a pressed capsule stays where it lies, a released sphere in the inventory. A thrown empty
+-- capsule or sphere captures instead (Throw.capture).
 if isClient() then return end
 require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Rules"
@@ -106,7 +108,7 @@ function Throw.capture(p)
     M.Play.send(player, "landed", res)
 end
 
--- p = { player, capsuleId, x, y, z, dir, mode = "throw" | "press" | "capture", cap (capture: the target) }
+-- p = { player, capsuleId, x, y, z, dir, mode = "throw" | "press" | "release" | "capture", cap (capture: the target) }
 function Throw.land(p)
     local player = p.player
     if not online(player) then
@@ -148,7 +150,7 @@ function Throw.land(p)
         end
         if res.why == "BLOCKED" and p.mode == "throw" and sq then res.dropped = dropAt(player, capsule, sq) end
     end
-    res.capsuleId, res.mode = p.capsuleId, p.mode
+    res.capsuleId, res.mode, res.type = p.capsuleId, p.mode, t and t.id
     if res.ok then Fx.broadcast("unpack", { x = p.x, y = p.y, z = p.z, style = t and t.index }) end
     M.log(string.format("LANDED capsule=%d by=%s mode=%s x=%d y=%d z=%d dir=%s ok=%s why=%s reason=%s dropped=%s",
         p.capsuleId, player:getUsername(), p.mode, p.x, p.y, p.z, tostring(p.dir), tostring(res.ok),

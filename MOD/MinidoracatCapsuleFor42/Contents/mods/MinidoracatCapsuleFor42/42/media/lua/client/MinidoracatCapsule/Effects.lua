@@ -26,8 +26,8 @@ local function frames(st)
     if not st.tex then
         st.tex = {}
         for i = 1, st.frames do st.tex[i] = getTexture(DIR .. st.smoke .. i .. ".png") end
-        st.sprite = getTexture("media/textures/Item_MinidoracatCapsule" .. st.id .. "Loaded.png")
-        st.spriteEmpty = getTexture("media/textures/Item_MinidoracatCapsule" .. st.id .. ".png")
+        st.sprite = getTexture("media/textures/Item_" .. st.icon .. "Loaded.png")
+        st.spriteEmpty = getTexture("media/textures/Item_" .. st.icon .. ".png")
     end
     return st.tex
 end

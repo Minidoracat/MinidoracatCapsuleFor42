@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "Buhar Kapsülü (Dolu)",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "Bilim Kurgu Kapsülü (Dolu)",
     "MinidoracatCapsule.LoadedCapsuleMagic": "Sihirli Kapsül (Dolu)",
-    "MinidoracatCapsule.LoadedCapsuleShock": "Şok Dalgası Kapsülü (Dolu)"
+    "MinidoracatCapsule.LoadedCapsuleShock": "Şok Dalgası Kapsülü (Dolu)",
+    "MinidoracatCapsule.SphereBasic": "Pal Küresi",
+    "MinidoracatCapsule.LoadedSphereBasic": "Pal Küresi (Dolu)",
+    "MinidoracatCapsule.SphereMega": "Mega Küre",
+    "MinidoracatCapsule.LoadedSphereMega": "Mega Küre (Dolu)",
+    "MinidoracatCapsule.SphereGiga": "Giga Küre",
+    "MinidoracatCapsule.LoadedSphereGiga": "Giga Küre (Dolu)",
+    "MinidoracatCapsule.SphereLegend": "Efsanevi Küre",
+    "MinidoracatCapsule.LoadedSphereLegend": "Efsanevi Küre (Dolu)"
 }

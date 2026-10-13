@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "Паровая капсула (заполнена)",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "Футуристическая капсула (заполнена)",
     "MinidoracatCapsule.LoadedCapsuleMagic": "Магическая капсула (заполнена)",
-    "MinidoracatCapsule.LoadedCapsuleShock": "Взрывная капсула (заполнена)"
+    "MinidoracatCapsule.LoadedCapsuleShock": "Взрывная капсула (заполнена)",
+    "MinidoracatCapsule.SphereBasic": "Пал-сфера",
+    "MinidoracatCapsule.LoadedSphereBasic": "Пал-сфера (заполнена)",
+    "MinidoracatCapsule.SphereMega": "Мегасфера",
+    "MinidoracatCapsule.LoadedSphereMega": "Мегасфера (заполнена)",
+    "MinidoracatCapsule.SphereGiga": "Гигасфера",
+    "MinidoracatCapsule.LoadedSphereGiga": "Гигасфера (заполнена)",
+    "MinidoracatCapsule.SphereLegend": "Легендарная сфера",
+    "MinidoracatCapsule.LoadedSphereLegend": "Легендарная сфера (заполнена)"
 }

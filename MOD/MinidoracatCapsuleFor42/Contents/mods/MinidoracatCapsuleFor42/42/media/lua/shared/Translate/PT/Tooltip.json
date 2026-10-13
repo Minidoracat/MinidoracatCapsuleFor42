@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Lendo a cápsula...",
-    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vazia. Guarde um veículo estacionado pelo menu do veículo, ou um animal vivo pelo menu do animal.",
+    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vazia. Guarde um veículo estacionado pelo menu do veículo, ou arremesse-a nele com «Arremessar para capturar».",
     "Tooltip_MinidoracatCapsule_Far": "Chegue mais perto para ver o que a cápsula guarda.",
     "Tooltip_MinidoracatCapsule_NoRecord": "O registro desta cápsula não está neste servidor. Fale com um administrador.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Veículo",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "e mais %1 tipos",
     "Tooltip_MinidoracatCapsule_PackedBy": "Guardada por",
     "Tooltip_MinidoracatCapsule_Type": "Tipo",
-    "Tooltip_MinidoracatCapsule_TypeOff": "! Um administrador desativou este tipo: agora ela não pode guardar veículos nem animais",
+    "Tooltip_MinidoracatCapsule_TypeOff": "! Um administrador desativou este tipo: agora ela não pode guardar nem capturar nada",
     "Tooltip_MinidoracatCapsule_ListSep": ", ",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "Fumaça branca e sons de desenho animado",
     "Tooltip_MinidoracatCapsule_Look_Real": "Fumaça cinza, sons mecânicos e de ar comprimido",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 dias",
     "Tooltip_MinidoracatCapsule_Weight": "Peso",
     "Tooltip_MinidoracatCapsule_Milk": "Leite",
-    "Tooltip_MinidoracatCapsule_Wild": "Selvagem"
+    "Tooltip_MinidoracatCapsule_Wild": "Selvagem",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "A coluna de luz futurista e sons de energia; captura animais",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "A coluna de luz futurista e sons de energia; +15 na chance de capturar animais selvagens",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "A coluna de luz futurista e sons de energia; +30 na chance de capturar animais selvagens",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "A coluna de luz futurista e sons de energia; +50 na chance de capturar animais selvagens",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "Esfera de Pal vazia. Capture um animal pelo menu do animal, ou arremesse-a nele com «Arremessar para capturar»; um selvagem pode escapar."
 }

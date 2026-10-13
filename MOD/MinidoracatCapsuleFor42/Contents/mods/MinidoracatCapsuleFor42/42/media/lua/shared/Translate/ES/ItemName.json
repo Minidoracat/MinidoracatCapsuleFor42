@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "Cápsula de vapor (cargada)",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "Cápsula futurista (cargada)",
     "MinidoracatCapsule.LoadedCapsuleMagic": "Cápsula mágica (cargada)",
-    "MinidoracatCapsule.LoadedCapsuleShock": "Cápsula de onda expansiva (cargada)"
+    "MinidoracatCapsule.LoadedCapsuleShock": "Cápsula de onda expansiva (cargada)",
+    "MinidoracatCapsule.SphereBasic": "Esfera Pal",
+    "MinidoracatCapsule.LoadedSphereBasic": "Esfera Pal (cargada)",
+    "MinidoracatCapsule.SphereMega": "Megaesfera",
+    "MinidoracatCapsule.LoadedSphereMega": "Megaesfera (cargada)",
+    "MinidoracatCapsule.SphereGiga": "Gigaesfera",
+    "MinidoracatCapsule.LoadedSphereGiga": "Gigaesfera (cargada)",
+    "MinidoracatCapsule.SphereLegend": "Mitoesfera",
+    "MinidoracatCapsule.LoadedSphereLegend": "Mitoesfera (cargada)"
 }

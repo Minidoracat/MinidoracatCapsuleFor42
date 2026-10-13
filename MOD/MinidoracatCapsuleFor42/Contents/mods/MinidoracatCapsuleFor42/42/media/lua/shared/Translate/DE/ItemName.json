@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "Dampfkapsel (beladen)",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "Sci-Fi-Kapsel (beladen)",
     "MinidoracatCapsule.LoadedCapsuleMagic": "Magiekapsel (beladen)",
-    "MinidoracatCapsule.LoadedCapsuleShock": "Druckwellenkapsel (beladen)"
+    "MinidoracatCapsule.LoadedCapsuleShock": "Druckwellenkapsel (beladen)",
+    "MinidoracatCapsule.SphereBasic": "Pal-Sphäre",
+    "MinidoracatCapsule.LoadedSphereBasic": "Pal-Sphäre (beladen)",
+    "MinidoracatCapsule.SphereMega": "Mega-Sphäre",
+    "MinidoracatCapsule.LoadedSphereMega": "Mega-Sphäre (beladen)",
+    "MinidoracatCapsule.SphereGiga": "Giga-Sphäre",
+    "MinidoracatCapsule.LoadedSphereGiga": "Giga-Sphäre (beladen)",
+    "MinidoracatCapsule.SphereLegend": "Legendäre Sphäre",
+    "MinidoracatCapsule.LoadedSphereLegend": "Legendäre Sphäre (beladen)"
 }

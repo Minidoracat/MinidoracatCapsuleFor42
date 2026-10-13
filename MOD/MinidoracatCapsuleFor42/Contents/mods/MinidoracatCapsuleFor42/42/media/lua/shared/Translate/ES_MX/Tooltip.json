@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Leyendo la cápsula...",
-    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vacía. Guarda un vehículo estacionado desde su menú de vehículo, o un animal vivo desde su menú de animal.",
+    "Tooltip_MinidoracatCapsule_Empty": "Cápsula vacía. Guarda un vehículo estacionado desde su menú de vehículo, o lánzala a uno con «Lanzar para capturar».",
     "Tooltip_MinidoracatCapsule_Far": "Acércate para ver qué contiene la cápsula.",
     "Tooltip_MinidoracatCapsule_NoRecord": "El registro de esta cápsula no está en este servidor. Contacta con un administrador.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Vehículo",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "y %1 tipos más",
     "Tooltip_MinidoracatCapsule_PackedBy": "Guardada por",
     "Tooltip_MinidoracatCapsule_Type": "Tipo",
-    "Tooltip_MinidoracatCapsule_TypeOff": "! Un administrador desactivó este tipo: ahora no puede guardar vehículos ni animales",
+    "Tooltip_MinidoracatCapsule_TypeOff": "! Un administrador desactivó este tipo: ahora no puede guardar ni capturar nada",
     "Tooltip_MinidoracatCapsule_ListSep": ", ",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "Humo blanco de caricatura y sonidos de caricatura",
     "Tooltip_MinidoracatCapsule_Look_Real": "Humo gris, sonidos mecánicos y de aire a presión",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 días",
     "Tooltip_MinidoracatCapsule_Weight": "Peso",
     "Tooltip_MinidoracatCapsule_Milk": "Leche",
-    "Tooltip_MinidoracatCapsule_Wild": "Silvestre"
+    "Tooltip_MinidoracatCapsule_Wild": "Silvestre",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "La columna de luz futurista y sonidos de energía; captura animales",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "La columna de luz futurista y sonidos de energía; +15 a la probabilidad de capturar animales silvestres",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "La columna de luz futurista y sonidos de energía; +30 a la probabilidad de capturar animales silvestres",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "La columna de luz futurista y sonidos de energía; +50 a la probabilidad de capturar animales silvestres",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "Esfera Pal vacía. Captura un animal desde su menú de animal, o lánzala a uno con «Lanzar para capturar»; uno silvestre puede escaparse."
 }

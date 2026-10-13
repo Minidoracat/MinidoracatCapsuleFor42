@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "カプセルを読み込み中...",
-    "Tooltip_MinidoracatCapsule_Empty": "空のカプセルです。停車中の車両は車両メニューから、生きている動物は動物メニューから収納できます。",
+    "Tooltip_MinidoracatCapsule_Empty": "空のカプセルです。停車中の車両を車両メニューから収納するか、「投げて捕獲」で車両に投げてください。",
     "Tooltip_MinidoracatCapsule_Far": "近づくとカプセルの中身が見えます。",
     "Tooltip_MinidoracatCapsule_NoRecord": "このカプセルの記録はこのサーバーにありません。管理者に連絡してください。",
     "Tooltip_MinidoracatCapsule_Vehicle": "車両",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "ほか %1 種類",
     "Tooltip_MinidoracatCapsule_PackedBy": "収納した人",
     "Tooltip_MinidoracatCapsule_Type": "種類",
-    "Tooltip_MinidoracatCapsule_TypeOff": "！管理者がこの種類を無効にしました。今は車両も動物も収納できません",
+    "Tooltip_MinidoracatCapsule_TypeOff": "！管理者がこの種類を無効にしました。今は何も収納・捕獲できません",
     "Tooltip_MinidoracatCapsule_ListSep": "、",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "白いカートゥーン調の煙とコミカルな効果音",
     "Tooltip_MinidoracatCapsule_Look_Real": "灰色の煙、機械と空気圧の音",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 日",
     "Tooltip_MinidoracatCapsule_Weight": "体重",
     "Tooltip_MinidoracatCapsule_Milk": "乳量",
-    "Tooltip_MinidoracatCapsule_Wild": "野生"
+    "Tooltip_MinidoracatCapsule_Wild": "野生",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "SFの光の柱とエネルギーの音、動物を捕獲",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +15",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +30",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +50",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "空のパルスフィアです。動物メニューから捕獲するか、「投げて捕獲」で動物に投げてください。野生動物には逃げられることがあります。"
 }

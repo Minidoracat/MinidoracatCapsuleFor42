@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "Capsule vapeur (chargée)",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "Capsule futuriste (chargée)",
     "MinidoracatCapsule.LoadedCapsuleMagic": "Capsule magique (chargée)",
-    "MinidoracatCapsule.LoadedCapsuleShock": "Capsule onde de choc (chargée)"
+    "MinidoracatCapsule.LoadedCapsuleShock": "Capsule onde de choc (chargée)",
+    "MinidoracatCapsule.SphereBasic": "Sphère de Pal",
+    "MinidoracatCapsule.LoadedSphereBasic": "Sphère de Pal (chargée)",
+    "MinidoracatCapsule.SphereMega": "Méga Sphère",
+    "MinidoracatCapsule.LoadedSphereMega": "Méga Sphère (chargée)",
+    "MinidoracatCapsule.SphereGiga": "Giga Sphère",
+    "MinidoracatCapsule.LoadedSphereGiga": "Giga Sphère (chargée)",
+    "MinidoracatCapsule.SphereLegend": "Sphère Légendaire",
+    "MinidoracatCapsule.LoadedSphereLegend": "Sphère Légendaire (chargée)"
 }

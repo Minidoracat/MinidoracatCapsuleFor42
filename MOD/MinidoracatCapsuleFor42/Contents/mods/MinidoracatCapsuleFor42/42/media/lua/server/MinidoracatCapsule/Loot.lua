@@ -1,7 +1,8 @@
--- Universal Capsule: empty capsules in four vanilla loot locations (server / SP; MP clients do not fill containers).
--- Switches and weights are sandbox options (page MinidoracatCapsuleLoot; which types drop: page
--- MinidoracatCapsuleTypes). A place's weight is split evenly over the dropping types and goes into
--- ProceduralDistributions as is. How a change takes effect, same as MiniMapWatch Loot.lua:
+-- Universal Capsule: empty capsules in four vanilla loot locations and empty Pal Spheres in three (server / SP; MP
+-- clients do not fill containers). Switches and weights are sandbox options (page MinidoracatCapsuleLoot; which types
+-- drop: page MinidoracatCapsuleTypes). A place's weight is shared by the dropping types of its kind (capsules evenly,
+-- spheres by tier rarity) and goes into ProceduralDistributions as is. How a change takes effect, same as MiniMapWatch
+-- Loot.lua:
 --   * game start: OnPostDistributionMerge edits the list before ItemPickerJava.Parse (IsoWorld.java:1886-1901);
 --     an SP save's sandbox loads after that (IsoWorld.java:1894-1896), the first poll catches up.
 --   * sandbox change: the vanilla page only re-parses on the side that applied it, and a dedicated server never
@@ -15,15 +16,21 @@ local Loot = {}
 M.Loot = Loot
 
 Loot.POLL_MS = 1000
--- Our entries: every type's empty capsule (apply removes them all first, so a type switched off leaves nothing behind).
+-- Our entries: every type's empty one (apply removes them all first, so a type switched off leaves nothing behind).
 Loot.ITEMS = {}
 for _, t in ipairs(M.TYPES) do Loot.ITEMS[t.empty] = true end
--- { switch option, weight option, default switch, default weight, loot tables }
+-- { switch option, weight option, default switch, default weight, loot tables, spheres (the place drops spheres) }.
+-- Sphere places (user 2026-10-14: farming, hunting, pets): vanilla media/lua/server/Items/ProceduralDistributions.lua
+-- BarnTools (:3412) and CrateAnimalFeed (:12695) in barns, PetShopShelf (:37458) and CratePetSupplies (:16550),
+-- HuntingLockers (:27626).
 Loot.PLACES = {
     { "LootMechanic", "LootMechanicWeight", true, 0.5, { "MechanicShelfTools", "CrateMechanics" } },
     { "LootCarSupply", "LootCarSupplyWeight", true, 0.5, { "CarSupplyTools" } },
     { "LootGasStation", "LootGasStationWeight", true, 0.3, { "GasStorageMechanics" } },
     { "LootGarage", "LootGarageWeight", false, 0.2, { "GarageMechanics" } },
+    { "LootSphereBarn", "LootSphereBarnWeight", true, 0.4, { "BarnTools", "CrateAnimalFeed" }, true },
+    { "LootSpherePet", "LootSpherePetWeight", true, 0.4, { "PetShopShelf", "CratePetSupplies" }, true },
+    { "LootSphereHunting", "LootSphereHuntingWeight", true, 0.3, { "HuntingLockers" }, true },
 }
 
 -- Native sandbox value, falling back to SandboxVars, then to `default`.
@@ -36,38 +43,51 @@ function Loot.option(key, default)
     return default
 end
 
--- The empty capsules that drop: types whose use and loot switches are both on (sandbox Type<id>, Type<id>Loot).
+-- The empty ones that drop: types whose use and loot switches are both on (sandbox Type<id>, Type<id>Loot).
 function Loot.items()
     local out = {}
     for _, t in ipairs(M.TYPES) do
         if Loot.option("Type" .. t.id, true) ~= false and Loot.option("Type" .. t.id .. "Loot", true) ~= false then
-            out[#out + 1] = t.empty
+            out[#out + 1] = t
         end
     end
     return out
 end
 
--- What should be in the tables right now: { items = { full type, ... }, weights = { [table] = weight per item } }.
--- A place's weight is shared evenly by the dropping types, so switching types never changes how often a capsule turns
--- up there (for small chances the expected count is the sum of the entries; design vcap-types-1012). Weight 0 or a
--- switch off means no entry.
+-- What should be in the tables right now: { items = { full type, ... }, entries = { [table] = { { full type, weight },
+-- ... } } }. A place's weight is shared by the dropping types of its kind in proportion to their rarity (capsules 1
+-- each, so evenly; spheres 8 / 4 / 2 / 1), so switching types never changes how often one turns up there (for small
+-- chances the expected count is the sum of the entries; design vcap-types-1012). Weight 0 or a switch off means no
+-- entry.
 function Loot.wanted()
-    local out = { items = Loot.items(), weights = {} }
-    if Loot.option("LootEnabled", true) == false or #out.items == 0 then return out end
+    local out = { items = {}, entries = {} }
+    local dropping = Loot.items()
+    for i, t in ipairs(dropping) do out.items[i] = t.empty end
+    if Loot.option("LootEnabled", true) == false then return out end
     for _, p in ipairs(Loot.PLACES) do
         local w = tonumber(Loot.option(p[2], p[4])) or p[4]
-        if Loot.option(p[1], p[3]) ~= false and w > 0 then
-            for _, t in ipairs(p[5]) do out.weights[t] = (out.weights[t] or 0) + w / #out.items end
+        local sum = 0
+        for _, t in ipairs(dropping) do if t.sphere == (p[6] == true) then sum = sum + t.rarity end end
+        if Loot.option(p[1], p[3]) ~= false and w > 0 and sum > 0 then
+            for _, name in ipairs(p[5]) do
+                local list = out.entries[name] or {}
+                out.entries[name] = list
+                for _, t in ipairs(dropping) do
+                    if t.sphere == (p[6] == true) then list[#list + 1] = { t.empty, w * t.rarity / sum } end
+                end
+            end
         end
     end
     return out
 end
 
--- Compared as a string: the dropping types, then the weights in a fixed order.
+-- Compared as a string: the dropping types, then every entry in a fixed order.
 function Loot.signature(wanted)
     local parts = { table.concat(wanted.items, ",") }
     for _, p in ipairs(Loot.PLACES) do
-        for _, t in ipairs(p[5]) do parts[#parts + 1] = t .. "=" .. tostring(wanted.weights[t] or 0) end
+        for _, name in ipairs(p[5]) do
+            for _, e in ipairs(wanted.entries[name] or {}) do parts[#parts + 1] = name .. ":" .. e[1] .. "=" .. e[2] end
+        end
     end
     return table.concat(parts, ";")
 end
@@ -89,13 +109,10 @@ function Loot.apply(list, wanted)
                     end
                 end
                 for k = n, j, -1 do items[k] = nil end
-                local w = wanted.weights[name]
-                if w and w > 0 then
-                    for _, ft in ipairs(wanted.items) do
-                        items[#items + 1] = ft
-                        items[#items + 1] = w
-                        added = added + 1
-                    end
+                for _, e in ipairs(wanted.entries[name] or {}) do
+                    items[#items + 1] = e[1]
+                    items[#items + 1] = e[2]
+                    added = added + 1
                 end
             elseif not missingLogged[name] then
                 missingLogged[name] = true

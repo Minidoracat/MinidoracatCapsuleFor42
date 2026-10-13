@@ -12,5 +12,13 @@
     "MinidoracatCapsule.LoadedCapsuleSteam": "蒸汽膠囊（已裝入）",
     "MinidoracatCapsule.LoadedCapsuleSciFi": "科幻膠囊（已裝入）",
     "MinidoracatCapsule.LoadedCapsuleMagic": "魔法膠囊（已裝入）",
-    "MinidoracatCapsule.LoadedCapsuleShock": "衝擊膠囊（已裝入）"
+    "MinidoracatCapsule.LoadedCapsuleShock": "衝擊膠囊（已裝入）",
+    "MinidoracatCapsule.SphereBasic": "帕魯球",
+    "MinidoracatCapsule.LoadedSphereBasic": "帕魯球（已裝入）",
+    "MinidoracatCapsule.SphereMega": "高級帕魯球",
+    "MinidoracatCapsule.LoadedSphereMega": "高級帕魯球（已裝入）",
+    "MinidoracatCapsule.SphereGiga": "優質帕魯球",
+    "MinidoracatCapsule.LoadedSphereGiga": "優質帕魯球（已裝入）",
+    "MinidoracatCapsule.SphereLegend": "傳奇帕魯球",
+    "MinidoracatCapsule.LoadedSphereLegend": "傳奇帕魯球（已裝入）"
 }

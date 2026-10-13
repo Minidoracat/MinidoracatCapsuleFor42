@@ -1,6 +1,6 @@
 {
     "Tooltip_MinidoracatCapsule_Loading": "Odczytywanie kapsuły...",
-    "Tooltip_MinidoracatCapsule_Empty": "Pusta kapsuła. Spakuj zaparkowany pojazd z jego menu albo żywe zwierzę z menu zwierzęcia.",
+    "Tooltip_MinidoracatCapsule_Empty": "Pusta kapsuła. Spakuj zaparkowany pojazd z jego menu albo rzuć w niego kapsułą przez „Rzuć, aby złapać”.",
     "Tooltip_MinidoracatCapsule_Far": "Podejdź bliżej, aby zobaczyć, co jest w kapsule.",
     "Tooltip_MinidoracatCapsule_NoRecord": "Zapisu tej kapsuły nie ma na tym serwerze. Skontaktuj się z administratorem.",
     "Tooltip_MinidoracatCapsule_Vehicle": "Pojazd",
@@ -29,7 +29,7 @@
     "Tooltip_MinidoracatCapsule_CargoMore": "i inne rodzaje: %1",
     "Tooltip_MinidoracatCapsule_PackedBy": "Spakował(a)",
     "Tooltip_MinidoracatCapsule_Type": "Typ",
-    "Tooltip_MinidoracatCapsule_TypeOff": "! Administrator wyłączył ten typ: teraz nie można nią pakować pojazdów ani zwierząt",
+    "Tooltip_MinidoracatCapsule_TypeOff": "! Administrator wyłączył ten typ: teraz nie można nią niczego pakować ani łapać",
     "Tooltip_MinidoracatCapsule_ListSep": ", ",
     "Tooltip_MinidoracatCapsule_Look_Cartoon": "Biały kreskówkowy dym i kreskówkowe dźwięki",
     "Tooltip_MinidoracatCapsule_Look_Real": "Szary dym, odgłosy mechaniki i sprężonego powietrza",
@@ -43,5 +43,10 @@
     "Tooltip_MinidoracatCapsule_AgeDays": "%1 dni",
     "Tooltip_MinidoracatCapsule_Weight": "Waga",
     "Tooltip_MinidoracatCapsule_Milk": "Mleko",
-    "Tooltip_MinidoracatCapsule_Wild": "Dzikie"
+    "Tooltip_MinidoracatCapsule_Wild": "Dzikie",
+    "Tooltip_MinidoracatCapsule_Look_SphereBasic": "Słup światła i dźwięki energii jak w kapsule sci-fi; łapie zwierzęta",
+    "Tooltip_MinidoracatCapsule_Look_SphereMega": "Słup światła i dźwięki energii jak w kapsule sci-fi; +15 do szansy złapania dzikich",
+    "Tooltip_MinidoracatCapsule_Look_SphereGiga": "Słup światła i dźwięki energii jak w kapsule sci-fi; +30 do szansy złapania dzikich",
+    "Tooltip_MinidoracatCapsule_Look_SphereLegend": "Słup światła i dźwięki energii jak w kapsule sci-fi; +50 do szansy złapania dzikich",
+    "Tooltip_MinidoracatCapsule_EmptySphere": "Pusta Pal Sfera. Złap zwierzę z menu zwierzęcia albo rzuć w nie sferą przez „Rzuć, aby złapać”; dzikie może się wyrwać."
 }

@@ -7,10 +7,11 @@ M.MODULE = "MinidoracatCapsule" -- client command module and item module
 M.LOG_PREFIX = "[MinidoracatCapsuleFor42] "
 M.PACK_RANGE = 8 -- tiles between player and vehicle (pack) or player and capsule on the ground (unpack)
 
--- The capsule types, in the order of the admin "Types" tab, the sandbox page and the style index the server sends with
--- an effect (Fx.broadcast args.style). id gives the rest: items Capsule<id> / LoadedCapsule<id>
--- (scripts/MinidoracatCapsule_items.txt), icons Item_MinidoracatCapsule<id>[Loaded].png
--- (scripts/assets/build_capsule.py), sandbox Type<id> (packing with it allowed) and Type<id>Loot (in loot), the
+-- The capsule types and the Pal Sphere tiers, in the order of the admin "Types" tab, the sandbox page and the style
+-- index the server sends with an effect (Fx.broadcast args.style). Capsules take vehicles only, spheres animals only
+-- (user 2026-10-14; a wrong one is WRONG_ITEM). id gives the rest: items Capsule<id> / LoadedCapsule<id>, a sphere
+-- <id> / Loaded<id> (scripts/MinidoracatCapsule_items.txt), icons Item_<icon>[Loaded].png (scripts/assets/
+-- build_capsule.py, build_sphere.py), sandbox Type<id> (using it allowed) and Type<id>Loot (in loot), the
 -- look-and-sound line Tooltip_MinidoracatCapsule_Look_<id>. Look and sounds (client/Effects.lua): smoke =
 -- texture name prefix of the frames <prefix>1.png .. <prefix><frames>.png (cartoon: scripts/assets/build_smoke.py, the
 -- others design_smoke.py), px = drawn size at zoom 1, anchor = share of that size above the ground point, flash =
@@ -39,13 +40,28 @@ M.TYPES = {
         throw = "UniversalCapsuleThrowShock", pop = "UniversalCapsulePopExplosion", pack = "UniversalCapsulePackShock",
         button = "UniversalCapsuleButtonShock" },
 }
+-- Pal Spheres (user 2026-10-14, after Palworld v0.3.11): caught by throwing an empty one, released next to the player
+-- (no throw, no press). bonus: percent added to a wild catch (Rules.captureChance); rarity: share of a sphere loot
+-- place (Loot.wanted). Fixed here, not sandbox options. Look and sounds: the SciFi capsule's, every tier alike.
+local SCIFI = M.TYPES[5]
+for _, s in ipairs({ { "Basic", 0, 8 }, { "Mega", 15, 4 }, { "Giga", 30, 2 }, { "Legend", 50, 1 } }) do
+    local t = { id = "Sphere" .. s[1], tier = s[1], sphere = true, bonus = s[2], rarity = s[3] }
+    for _, k in ipairs({ "smoke", "frames", "frameMs", "px", "anchor", "flash", "throw", "pop", "pack", "button" }) do
+        t[k] = SCIFI[k]
+    end
+    M.TYPES[#M.TYPES + 1] = t
+end
 M.EMPTY, M.LOADED, M.TYPE_BY_ID = {}, {}, {} -- empty / loaded full type -> type; id -> type
 for i, t in ipairs(M.TYPES) do
     t.index = i
-    t.empty = M.MODULE .. ".Capsule" .. t.id
-    t.loaded = M.MODULE .. ".LoadedCapsule" .. t.id
+    t.sphere = t.sphere == true
+    t.rarity = t.rarity or 1
+    t.empty = M.MODULE .. (t.sphere and "." or ".Capsule") .. t.id
+    t.loaded = M.MODULE .. (t.sphere and ".Loaded" or ".LoadedCapsule") .. t.id
+    t.icon = t.sphere and ("MinidoracatSphere" .. t.tier) or ("MinidoracatCapsule" .. t.id)
     M.EMPTY[t.empty], M.LOADED[t.loaded], M.TYPE_BY_ID[t.id] = t, t, t
 end
+M.FIRST_SPHERE = M.TYPE_BY_ID.SphereBasic
 
 -- The type of a capsule item (empty or loaded), or nil for anything else.
 function M.typeOf(item)

@@ -3,5 +3,7 @@
     "ContextMenu_MinidoracatCapsule_Throw": "丟出膠囊",
     "ContextMenu_MinidoracatCapsule_Press": "按下按鈕",
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
-    "ContextMenu_MinidoracatCapsule_Capture": "丟出抓取"
+    "ContextMenu_MinidoracatCapsule_Capture": "丟出抓取",
+    "ContextMenu_MinidoracatCapsule_PackSphere": "收進帕魯球",
+    "ContextMenu_MinidoracatCapsule_Release": "放出：%1"
 }
