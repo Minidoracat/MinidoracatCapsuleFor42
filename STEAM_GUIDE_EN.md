@@ -77,7 +77,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [h3]Menu and requirements[/h3]
 [list]
 [*] [b]The menu[/b]: right-click a live animal in the world. The vanilla menu has one entry per animal; open that animal's submenu and "Pack into Capsule" is at the end.
-[*] [b]Each requirement listed[/b]: hover the option; the tooltip shows the empty capsule in your inventory and the animal's state, says what is wrong, and the option stays grayed out until it's fixed.
+[*] [b]Each requirement listed[/b]: hover the option; the tooltip shows the empty capsule in your inventory and the animal's state, says what is wrong, and the option stays grayed out until it's fixed. A wild animal gets one more row, "Success chance: 50%" (see "Catch chance for wild animals" below).
 [*] [b]Requirements[/b]:
 [list]
 [*] An empty capsule in your inventory (bags count) of a type an admin has not switched off
@@ -122,6 +122,13 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]The switch[/b]: the sandbox option "Allow packing animals" (on by default), also in the admin panel's "Settings" tab.
 [*] [b]When off[/b]: the option is grayed out with "An admin switched off packing animals"; throwing to capture can't take animals either (vehicles still can).
 [*] [b]Capsules already holding an animal[/b]: can still be thrown, pressed and restored by admins.
+[/list]
+[h3]Catch chance for wild animals[/h3]
+[list]
+[*] [b]The setting[/b]: the sandbox option "Wild animal capture chance" (0–100, 50 by default), also in the admin panel's "Settings" tab. Only wild animals roll, the same for the menu and for throwing to capture; tame animals and vehicles always go in.
+[*] [b]Shown before you try[/b]: the tooltip of "Pack into Capsule" in the animal's menu and the capture cursor's tooltip show one more row for a wild animal: "Success chance: 50%".
+[*] [b]On a miss[/b]: the animal breaks free and stays where it is, with "It broke free (success chance 50%)". The empty capsule is not used up: after the menu it is still in your inventory, a thrown one lies where it landed; pick it up and try again.
+[*] [b]0 and 100[/b]: at 0 wild animals can't be packed (the option is grayed out, the cursor red, with "An admin switched off catching wild animals"); at 100 it always works.
 [/list]
 === 🧰 Throwing and pressing
 [h3]Throwing a capsule[/h3]
@@ -170,8 +177,8 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]The menu[/b]: with an empty capsule on you (bags count), right-click it in the inventory and choose "Throw to Capture" to get the capture cursor. Left-click to throw, right-click to cancel.
 [*] [b]Target[/b]: an animal or a vehicle on the square under the cursor or right next to it; any square of a vehicle's body counts. With both an animal and a vehicle there, the animal comes first.
 [*] [b]Range[/b]: the spot you aim at must be within about 8 tiles of you and in sight.
-[*] [b]Green outline[/b]: marks the target (the animal's square or the whole vehicle) with "Capture: <name>".
-[*] [b]Red outline[/b]: it can't be captured, with the reason: no animal or vehicle there, too far, can't see there, an admin switched off packing animals or this capsule type, in someone else's safehouse, or the same state and permission reasons as packing from the menu.
+[*] [b]Green outline[/b]: marks the target (the animal's square or the whole vehicle) with "Capture: <name>"; a wild animal adds "Success chance: 50%" under it.
+[*] [b]Red outline[/b]: it can't be captured, with the reason: no animal or vehicle there, too far, can't see there, an admin switched off packing animals, catching wild animals or this capsule type, in someone else's safehouse, or the same state and permission reasons as packing from the menu.
 [/list]
 [h3]What can be captured[/h3]
 [list]
@@ -186,6 +193,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]Captured[/b]: the empty capsule flies over, the packing smoke rises at the target and it goes into the capsule. The loaded capsule lies where the target stood and the screen says "Captured: <name>"; go and pick it up.
 [*] [b]Refused before the throw[/b]: the capsule doesn't leave your hand; the screen gives the reason and "The empty capsule is still in your inventory."
 [*] [b]Missed[/b]: the capsule takes a moment from release to landing. If the target moves more than a square away from where you aimed, dies, is picked up, or someone gets into the vehicle in that time, the throw misses. The empty capsule lies on the landing spot and a "Nothing captured" message gives the reason and "The empty capsule fell on the ground."; pick it up and throw again.
+[*] [b]A wild animal broke free[/b]: even a hit can fail by the catch chance. A "Nothing captured" message says "It broke free (success chance 50%)" and "The empty capsule fell on the ground."; the animal is still there, so pick up the capsule and throw again.
 [*] [b]Landing spot in someone else's safehouse[/b]: a missed empty capsule falls at your feet instead.
 [/list]
 === 🧰 Safehouse protection
@@ -292,6 +300,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
 [tr][td]Allow packing animals[/td][td]On[/td][td]Players can pack live animals into capsules from the animal's menu; off only stops packing animals, and capsules already holding one can still be thrown, pressed and restored by admins[/td][/tr]
+[tr][td]Wild animal capture chance[/td][td]50 (0–100)[/td][td]Chance in percent that packing a wild animal works, from the menu or by throwing to capture; on a miss the animal breaks free and the empty capsule is not used up. 0: wild animals can't be packed; 100: always works. Tame animals and vehicles are not affected[/td][/tr]
 [tr][td]Days to keep closed records[/td][td]30 days (1–90)[/td][td]Records of capsules that were unpacked, restored or voided are deleted once their last event is older than this; packed and unconfirmed records are always kept[/td][/tr]
 [/table]
 [list]
@@ -340,7 +349,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [/list]
 [h3]Settings, Types and Loot[/h3]
 [list]
-[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, allow packing animals, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
+[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule after unpacking, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, allow packing animals, wild animal capture chance, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
 [*] [b]Types[/b]: one row per capsule type with its "Use" (packing) and "Loot" switches.
 [*] [b]Preview[/b]: press a row's "Preview": the panel steps aside and a capsule of that type is thrown beside you, seen by you only. It works before you press "Apply" too.
 [*] [b]List...[/b]: with Minidoracat Economy installed, opens a product draft for that empty capsule on the Economy Center's shop page; set the price there. A type already on sale is skipped.
@@ -490,7 +499,12 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 [h3]Why can't I pack this animal?[/h3]
 [list]
-[*] Hover the option and read the tooltip: the server may have "Allow packing animals" off, you may have no empty capsule, or the animal is being carried, in a hutch or a trailer, or tied with a rope.
+[*] Hover the option and read the tooltip: the server may have "Allow packing animals" off or "Wild animal capture chance" at 0, you may have no empty capsule, or the animal is being carried, in a hutch or a trailer, or tied with a rope.
+[/list]
+[h3]Why did a wild animal get away when I hit it?[/h3]
+[list]
+[*] Wild animals have a catch chance (a server setting, 50% by default): a hit or a finished menu pack can still fail. The tooltip shows "Success chance" before you try.
+[*] The animal stays where it is and the empty capsule is not used up; pick it up and try again. Tame animals and vehicles are not affected.
 [/list]
 [h3]Why did my capsule miss?[/h3]
 [list]

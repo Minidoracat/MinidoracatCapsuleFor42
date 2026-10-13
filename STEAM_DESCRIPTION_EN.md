@@ -25,7 +25,7 @@ Pack a parked vehicle or a live animal into a capsule, then throw the capsule to
 [h2]✨ Features[/h2]
 [list]
 [*] [b]Pack into a capsule[/b]: right-click a vehicle or an animal to pack it into a capsule labeled with its name
-[*] [b]Throw to capture[/b]: throw an empty capsule at an animal or a vehicle to pack it, even a wild animal that runs from you
+[*] [b]Throw to capture[/b]: throw an empty capsule at an animal or a vehicle to pack it, even a wild animal that runs from you; admins set the catch chance for wild animals, shown before you throw
 [*] [b]Throw to bring it back[/b]: the cursor marks the landing spot, the capsule lands in a puff of smoke and the vehicle or animal appears as it was
 [*] [b]Seven capsule types[/b]: from cartoon and realistic to sci-fi and magic, each with its own smoke and sounds
 [*] [b]Kept as they were[/b]: a vehicle's mods, condition and cargo, an animal's breed, age, genes and pregnancy
