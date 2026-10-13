@@ -40,14 +40,14 @@
 
 [h2]💬 フィードバック[/h2]
 [list]
-[*] GitHub Issues：https://github.com/Minidoracat/MinidoracatVehicleCapsuleFor42/issues
+[*] GitHub Issues：https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues
 [*] Discord：https://discord.gg/Gur2V67
 [/list]
 
 [h2]☕ 作者を応援[/h2]
 役に立ったら、このページに 👍 と GitHub に ⭐ をお願いします。より多くのプレイヤーに届きやすくなります。
 この MOD は今後もずっと無料です。気に入ったらコーヒーを一杯おごってください。支援はサーバーと MOD 開発に使います。ソースは GitHub で公開しています。
-[url=https://ko-fi.com/minidoracat][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_kofi.png[/img][/url] [url=https://github.com/Minidoracat/MinidoracatVehicleCapsuleFor42][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_github.png[/img][/url]
+[url=https://ko-fi.com/minidoracat][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_kofi.png[/img][/url] [url=https://github.com/Minidoracat/MinidoracatCapsuleFor42][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_github.png[/img][/url]
 
 [b]#Minidoracat[/b]
 

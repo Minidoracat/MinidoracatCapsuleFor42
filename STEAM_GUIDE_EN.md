@@ -520,7 +520,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === 💬 Feedback
 [list]
-[*] [b][url=https://github.com/Minidoracat/MinidoracatVehicleCapsuleFor42/issues]GitHub Issues[/url][/b]
+[*] [b][url=https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues]GitHub Issues[/url][/b]
 [*] [b][url=https://discord.gg/Gur2V67]Discord[/url][/b]
 [*] [b]Please include[/b]:
 [list]

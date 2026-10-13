@@ -520,7 +520,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === 💬 回報方式
 [list]
-[*] [b][url=https://github.com/Minidoracat/MinidoracatVehicleCapsuleFor42/issues]GitHub Issues[/url][/b]
+[*] [b][url=https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues]GitHub Issues[/url][/b]
 [*] [b][url=https://discord.gg/Gur2V67]Discord 社群[/url][/b]
 [*] [b]回報時請附上[/b]：
 [list]

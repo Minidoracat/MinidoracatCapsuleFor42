@@ -2,7 +2,7 @@
 
 把停著的車或活著的動物收進膠囊，丟出去就原樣出現；空膠囊丟向動物或車也能直接抓進去。車的改裝、車況與貨物，動物的品種、年齡、基因與懷孕都一起保存；收起來的車不在世界上，KI5 這類吃效能的車也能收起來減輕負擔。單人與多人皆可用。
 
-舊名：車輛膠囊（Vehicle Capsule，舊 Mod ID `MinidoracatVehicleCapsuleFor42`），首發前改名；GitHub repo 仍是舊名。
+舊名：車輛膠囊（Vehicle Capsule，舊 Mod ID `MinidoracatVehicleCapsuleFor42`），首發前改名；GitHub repo 也已改名（舊網址會自動轉到這裡）。
 
 Project Zomboid Build 42 MOD。**開發中，尚未發布**（首發版 0.1.0 準備中）。
 
