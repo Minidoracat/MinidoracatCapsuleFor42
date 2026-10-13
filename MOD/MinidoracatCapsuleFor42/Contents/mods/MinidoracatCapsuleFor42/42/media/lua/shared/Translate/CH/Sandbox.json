@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "衝擊膠囊：出現在戰利品",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "開著時空的衝擊膠囊會出現在戰利品，和其他開著的款式平分各地點的比重；「可以收車」關掉時不會出現。",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "可以收動物",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "開啟時，玩家可以從動物選單把世界上任何活著的動物（野生或家養、幼崽或成年）收進空膠囊。關掉只擋收動物：已經裝了動物的膠囊照樣能丟出、按按鈕展開，也能由管理員補回。"
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "開啟時，玩家可以從動物選單把世界上任何活著的動物（野生或家養、幼崽或成年）收進空膠囊。關掉只擋收動物：已經裝了動物的膠囊照樣能丟出、按按鈕展開，也能由管理員補回。",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "抓野生動物成功率",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "收野生動物成功的機率（百分比），用動物選單收或丟空膠囊抓取都算。失敗時動物掙脫、留在原地，空膠囊不會用掉（丟出的掉在落點）。0 不能收野生動物，100 一定成功。家養動物與車不受影響。"
 }

@@ -57,14 +57,15 @@ function Menu.packTooltip(player, vehicle, t, single)
 end
 
 -- Tooltip rows for packing this animal with a capsule of type t: packing animals switched off, the capsule, then the
--- animal's own state (held, tied, gone). Anyone may pack an animal. Returns ok, rich text.
+-- animal's own state (held, tied, gone), and for a wild one the chance it is caught. Anyone may pack an animal.
+-- Returns ok, rich text.
 function Menu.packAnimalTooltip(player, animal, t, single)
     local why = Rules.animalWhyNot(player, animal)
     local text = why == "ANIMALS_OFF" and Notify.row(false, Notify.reason(why)) or ""
     local capsule, row = capsuleRow(t, single)
     text = text .. row
     if why and why ~= "ANIMALS_OFF" then text = text .. Notify.row(false, Notify.reason(why)) end
-    text = text .. " <RGB:1,1,1> <LINE> " .. tr("PackAnimalInfo", Rules.PACK_SECONDS)
+    text = text .. Notify.chanceRow(animal) .. " <RGB:1,1,1> <LINE> " .. tr("PackAnimalInfo", Rules.PACK_SECONDS)
     return why == nil and capsule, text
 end
 

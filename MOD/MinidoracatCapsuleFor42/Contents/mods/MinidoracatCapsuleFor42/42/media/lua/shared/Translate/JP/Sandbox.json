@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "衝撃波カプセル：戦利品に出現",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "オンにすると、空の衝撃波カプセルが戦利品として出現し、各場所の重みをオンになっている他の種類と分け合います。「収納に使える」がオフのときは出現しません。",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "動物を収納できる",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "オンにすると、プレイヤーはワールドにいる生きた動物（野生でも飼育中でも、子どもでも成体でも）を動物メニューから空のカプセルに収納できます。オフにしても止まるのは動物の収納だけです。すでに動物が入っているカプセルは、投げる、ボタンで展開する、管理者が復元することができます。"
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "オンにすると、プレイヤーはワールドにいる生きた動物（野生でも飼育中でも、子どもでも成体でも）を動物メニューから空のカプセルに収納できます。オフにしても止まるのは動物の収納だけです。すでに動物が入っているカプセルは、投げる、ボタンで展開する、管理者が復元することができます。",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "野生動物の捕獲成功率",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "野生動物の収納が成功する確率（パーセント）。動物メニューからの収納にも、空のカプセルを投げる捕獲にも適用されます。失敗すると動物は逃れてその場に残り、空のカプセルは消費されません（投げたものは着地点に落ちます）。0 では野生動物を収納できず、100 では必ず成功します。家畜と車には影響しません。"
 }

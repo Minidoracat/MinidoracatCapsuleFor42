@@ -105,6 +105,8 @@ function sendAddItemToContainer() end
 function sendRemoveItemFromContainer() end
 Capability = { ManipulateVehicle = "ManipulateVehicle" }
 function checkPermissions(p) return p.admin == true end
+-- the lowest roll: a wild animal is caught at any chance above 0 (wildCases forces both outcomes)
+function ZombRand() return 0 end
 local function newPlayer(name, admin)
     local p = { admin = admin, inv = newContainer(nil) }
     function p:getUsername() return name end
@@ -1667,6 +1669,111 @@ end
 capsuleTypes()
 
 print("Animals：快照可存、寫回順序、規則、收進膠囊、展開、紀錄分 kind、管理員、Economy、16 種語言")
+-- Wild catch chance (WildCaptureChance, WILD_OFF, ESCAPED, the tooltip rows), run inside animals(): live is its fake
+-- animal, packer a player next to it (101.5, 201.5).
+local function wildCases(live, packer)
+    print("Wild：抓野生動物的成功率（WildCaptureChance、WILD_OFF、ESCAPED、提示框列）")
+    local Pack, Steam = M.Pack, M.TYPE_BY_ID.Steam
+    local savedRand, savedRoll = ZombRand, Rules.rollWild
+    local function chance(v)
+        SandboxVars = { MinidoracatCapsule = { WildCaptureChance = v } }
+        return Rules.wildChance()
+    end
+    check(chance(nil) == 50 and chance(0) == 0 and chance(100) == 100 and chance(150) == 100 and chance(-5) == 0
+        and chance(33.7) == 33, "WildCaptureChance：預設 50，夾在 0–100、取整數")
+    local function roll(c, v)
+        ZombRand = function(n) return n == 100 and v or -1 end
+        return Rules.rollWild(c)
+    end
+    check(roll(50, 49) and not roll(50, 50) and not roll(0, 0) and roll(100, 99) and roll(1, 0) and not roll(1, 1),
+        "rollWild：ZombRand(100) 小於成功率才成功（0 一定失敗、100 一定成功）")
+    ZombRand = savedRand
+
+    local ground = {}
+    local spot = { getX = function() return 101 end, getY = function() return 201 end, getZ = function() return 0 end,
+        AddWorldInventoryItem = function(_, it) ground[#ground + 1] = it end }
+    local function empty() return packer.inv:AddItem(instanceItem(Steam.empty)) end
+    local rolls = {}
+    local function forced(ok) Rules.rollWild = function(c) rolls[#rolls + 1] = c; return ok end end
+    -- 0%: WILD_OFF on every path (menu, server, capture), nothing rolled; tame animals still go
+    chance(0)
+    forced(true)
+    local hare, cap = live({ wild = true, square = spot }), empty()
+    local off = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
+    check(Rules.animalWhyNot(packer, hare) == "WILD_OFF" and Rules.packAnimalWhyNot(packer, hare, Steam) == "WILD_OFF"
+        and Rules.captureWhyNot(packer, hare, true, Steam) == "WILD_OFF" and Rules.animalWhyNot(packer, live()) == nil
+        and off.ok == false and off.why == "WILD_OFF" and #rolls == 0 and #hare.log == 0,
+        "成功率 0：野生動物 WILD_OFF（選單、伺服器、抓取都擋，不擲骰）；家養的照收")
+    -- a forced miss at 50%: ESCAPED with the chance; the animal, the capsule and the records untouched
+    chance(50)
+    forced(false)
+    local before = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Steam.empty) }
+    quiet = true
+    local miss = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
+    quiet = false
+    check(miss.ok == false and miss.why == "ESCAPED" and miss.chance == 50 and rolls[1] == 50 and #hare.log == 0
+        and #ground == before.ground and packer.inv:getCountTypeRecurse(Steam.empty) == before.empties
+        and packer.inv:getItemWithIDRecursiv(cap.id) == cap,
+        "強制失敗：ESCAPED 帶成功率 50；動物沒被 setWild／remove，沒有紀錄、地上沒有膠囊，空膠囊沒用掉")
+    -- a forced catch: packed as before and tamed
+    forced(true)
+    quiet = true
+    local hit = Pack.packAnimal(packer, hare, { capsule = cap, typeId = "Steam" })
+    quiet = false
+    check(hit.ok and rolls[2] == 50 and hare.log[1] == "setWild:false" and hare.log[#hare.log] == "remove"
+        and Store.read(hit.capsuleId).animal.wild == false and packer.inv:getItemWithIDRecursiv(cap.id) == nil,
+        "強制成功：照舊收好、setWild(false)、紀錄 wild=false、空膠囊用掉")
+    -- 100% with the real roll catches on the highest die; a tame animal never rolls (a forced miss changes nothing)
+    Rules.rollWild = savedRoll
+    chance(100)
+    ZombRand = function() return 99 end
+    quiet = true
+    local sure = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = empty(), typeId = "Steam" })
+    chance(50)
+    forced(false)
+    local tame = Pack.packAnimal(packer, live({ square = spot }), { capsule = empty(), typeId = "Steam" })
+    quiet = false
+    check(sure.ok and tame.ok and #rolls == 2, "成功率 100：最大的骰子也成功；家養動物不擲骰（強制失敗也照收）")
+    ZombRand, Rules.rollWild = savedRand, savedRoll
+    SandboxVars = { MinidoracatCapsule = {} }
+
+    -- the option, its settings row, the tooltip rows and the strings
+    local function src(path)
+        local f = io.open(MEDIA .. "/" .. path, "rb")
+        local s = f:read("*a")
+        f:close()
+        return s
+    end
+    local sb, panel = src("../sandbox-options.txt"), src("client/MinidoracatCapsule/AdminPanel.lua")
+    local allow, wild, keep = sb:find("option MinidoracatCapsule.AllowAnimals", 1, true),
+        sb:find("option MinidoracatCapsule%.WildCaptureChance%s*{type = integer, min = 0, max = 100, default = 50, page = MinidoracatCapsule,"),
+        sb:find("option MinidoracatCapsule.RecordRetentionDays", 1, true)
+    local pAllow, pWild, pKeep = panel:find('key = "AllowAnimals"', 1, true),
+        panel:find('{ key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true }', 1, true),
+        panel:find('key = "RecordRetentionDays"', 1, true)
+    check(allow and wild and keep and allow < wild and wild < keep and pAllow and pWild and pKeep and pAllow < pWild
+        and pWild < pKeep, "沙盒 WildCaptureChance 整數 0–100、預設 50、主頁緊接 AllowAnimals；設定分頁同一位置、顯示成百分比")
+    check(src("client/MinidoracatCapsule/Menu.lua"):find("Notify.chanceRow(animal)", 1, true)
+        and src("client/MinidoracatCapsule/ThrowCursor.lua"):find("Notify.chanceRow(tgt.thing)", 1, true),
+        "動物選單與抓取游標的提示框都加成功率列（Notify.chanceRow）")
+    local missing = {}
+    for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
+        local ui = Json.decode(src("shared/Translate/" .. lang .. "/IG_UI.json"))
+        local box = Json.decode(src("shared/Translate/" .. lang .. "/Sandbox.json"))
+        for _, k in ipairs({ "Why_ESCAPED", "WildChance" }) do
+            local s = ui["IGUI_MinidoracatCapsule_" .. k] or ""
+            if not (s:find("%1", 1, true) and s:find("%%", 1, true)) then missing[#missing + 1] = lang .. ":" .. k end
+        end
+        if (ui.IGUI_MinidoracatCapsule_Why_WILD_OFF or "") == "" then missing[#missing + 1] = lang .. ":Why_WILD_OFF" end
+        for _, k in ipairs({ "WildCaptureChance", "WildCaptureChance_tooltip" }) do
+            local s = box["Sandbox_MinidoracatCapsule_" .. k] or ""
+            if s == "" or s:find("%", 1, true) then missing[#missing + 1] = lang .. ":" .. k end
+        end
+    end
+    check(#missing == 0, "16 種語言：成功率列與掙脫原因帶 %1 與字面 %%，WILD_OFF，沙盒標籤與說明不用 % 符號（"
+        .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
+end
+
 local function animals() -- 獨立函式：主程式的 local 已接近 200 個上限
     require "MinidoracatCapsule/Pack"
     do -- an earlier case replaced Unpack.spawn for good: put the real one back (modules hold the M.Unpack table)
@@ -1837,6 +1944,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         and cow.removedWith.kind == "animal", "快照前 setWild(false)（照原版抱起）；紀錄與地上的膠囊都在之後才 remove 動物")
     check(#ground == 1 and ground[1]:getFullType() == Steam.loaded and packer.inv:getCountTypeRecurse(Steam.empty) == 0,
         "裝好的蒸汽膠囊放在動物那一格，玩家的蒸汽空膠囊用掉")
+    wildCases(live, packer)
 
     -- unpack by the existing claim / spawn / event path
     local capsule = packer.inv:AddItem(ground[1])
@@ -2036,6 +2144,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         function a:isDead() return false end
         function a:isOnHook() return false end
         function a:isExistInTheWorld() return true end
+        function a:isWild() return self.wild == true end
         function a:getData() return { getAttachedPlayer = function() end, getAttachedTree = function() end } end
         sq(x, y).animals = { a }
         return a
@@ -2179,6 +2288,30 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(feet[1] == c5 and #house == 0, "沒中且落點在別人的安全屋：空膠囊掉在丟的人腳下，不掉進安全屋")
     M.Pack.packAnimal, M.Pack.pack = savedPA, savedP
 
+    -- a wild target: at 0% the throw is refused before it flies (WILD_OFF); a miss of the roll at the landing (the real
+    -- Pack.packAnimal) drops the empty capsule at the aim point, the reply says ESCAPED with the chance, the hare stays
+    local hare = beast(10, 30, 33)
+    hare.wild = true
+    local c6 = capsuleFor(hunter)
+    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    quiet = true
+    clientCommand(M.MODULE, "intent", hunter, { kind = "capture", id = c6.id, target = "animal", tid = 33 })
+    local offThrow = throwAt(hunter, c6, 10, 30)
+    local offSent = lastSent()
+    SandboxVars.MinidoracatCapsule.WildCaptureChance = nil
+    local savedRoll = Rules.rollWild
+    Rules.rollWild = function() return false end
+    local hareDrop = drops(sq(10, 30))
+    Throw.land({ player = hunter, capsuleId = c6.id, x = 10, y = 30, z = 0, mode = "capture", cap = { kind = "animal", tid = 33 } })
+    local escSent = lastSent()
+    Rules.rollWild = savedRoll
+    quiet = false
+    check(offThrow == false and offSent.why == "WILD_OFF" and #scheduled == 1,
+        "成功率 0：丟出抓取野生動物在丟擲前就被拒 WILD_OFF，不排落地")
+    check(escSent.ok == false and escSent.why == "ESCAPED" and escSent.chance == 50 and escSent.dropped == true
+        and hareDrop[1] == c6 and sq(10, 30).animals[1] == hare,
+        "抓取時野生動物掙脫：回覆 ESCAPED 帶成功率 50，空膠囊掉在落點，野兔還在")
+
     -- releasing into a safehouse: throw drops at the thrower's feet, press keeps the capsule, the admin restore refuses
     local function animalRecord(item)
         Store.write(item.id, { kind = "animal", animal = { type = "cow", breed = "holstein", animalId = 4321 }, state = "PACKED",
@@ -2213,7 +2346,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     Throw.schedule, M.Fx.broadcast, getOnlinePlayers = savedSchedule, savedFx, savedOnline
     houses[1] = nil
     SafeHouse, SandboxVars = nil, nil
-    for _, s in ipairs({ sq(12, 34), sq(22, 31) }) do s.animals = nil end
+    for _, s in ipairs({ sq(12, 34), sq(22, 31), sq(10, 30) }) do s.animals = nil end
     for x = 14, 22 do for y = 28, 36 do sq(x, y).vehicle = nil end end
 
     -- strings in the 16 languages
@@ -2243,9 +2376,10 @@ captureCases()
 
 print("Notify：Toast 沒有第二行時只寫一次")
 local function toastCases() -- 獨立函式：主程式的 local 已接近 200 個上限
-    local saved, shown = MinidoracatUI, {}
-    MinidoracatUI = { v1 = { API_MAJOR = 1, API_REVISION = 18, CAPABILITIES = { toast = true },
-        Toast = { show = function(o) shown[#shown + 1] = o end } } }
+    local saved, shown, dialogs = MinidoracatUI, {}, {}
+    MinidoracatUI = { v1 = { API_MAJOR = 1, API_REVISION = 18, CAPABILITIES = { toast = true, dialog = true },
+        Toast = { show = function(o) shown[#shown + 1] = o end },
+        Dialog = { show = function(o) dialogs[#dialogs + 1] = o end } } }
     loaded["MinidoracatUI/V1"] = true
     -- Info and Effects pull in vanilla UI classes; the toast only needs the animal's name
     loaded["MinidoracatCapsule/Info"], loaded["MinidoracatCapsule/Effects"] = true, true
@@ -2267,13 +2401,29 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     getTextOrNull = function(key) return key end
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "NO_TARGET", dropped = true })
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "TOO_FAR" })
+    -- a wild animal that broke free (ESCAPED) says the chance it had, thrown or by menu; the tooltip row for a wild
+    -- animal only, and none while wild ones are switched off (WILD_OFF is the reason row then)
+    M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, dropped = true })
+    M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35 })
+    SandboxVars = { MinidoracatCapsule = { WildCaptureChance = 35 } }
+    local wildOne, tameOne = { isWild = function() return true end }, { isWild = function() return false end }
+    local row, tameRow = M.Notify.chanceRow(wildOne), M.Notify.chanceRow(tameOne)
+    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    local offRow = M.Notify.chanceRow(wildOne)
+    SandboxVars = nil
     getText, getTextOrNull = savedText, savedOrNull
-    local drop, kept = shown[3] or {}, shown[4] or {}
+    local drop, kept, esc, dlg = shown[3] or {}, shown[4] or {}, shown[5] or {}, dialogs[1] or {}
     check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"
         and drop.message == "IGUI_MinidoracatCapsule_CaptureDropped(IGUI_MinidoracatCapsule_Why_NO_TARGET)"
         and kept.title == "IGUI_MinidoracatCapsule_CaptureFailed"
         and kept.message == "IGUI_MinidoracatCapsule_CaptureKept(IGUI_MinidoracatCapsule_Why_TOO_FAR)",
         "沒抓到的 Toast：標題只有「沒抓到」，原因和膠囊在哪都在會換行的內文")
+    check(esc.title == "IGUI_MinidoracatCapsule_CaptureFailed"
+        and esc.message == "IGUI_MinidoracatCapsule_CaptureDropped(IGUI_MinidoracatCapsule_Why_ESCAPED(35))"
+        and dlg.title == "IGUI_MinidoracatCapsule_PackAnimalFailed" and dlg.text == "IGUI_MinidoracatCapsule_Why_ESCAPED(35)",
+        "野生動物掙脫：抓取的 Toast 與選單收的通知都寫出成功率")
+    check(row:find("IGUI_MinidoracatCapsule_WildChance(35)", 1, true) ~= nil and tameRow == "" and offRow == "",
+        "成功率列：野生動物才有、寫出沙盒的成功率；家養動物與成功率 0 沒有")
     MinidoracatUI, M.Info = saved, savedInfo
 end
 toastCases()

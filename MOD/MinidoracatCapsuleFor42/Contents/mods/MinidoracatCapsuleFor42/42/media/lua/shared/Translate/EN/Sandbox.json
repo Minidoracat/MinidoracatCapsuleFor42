@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Shockwave Capsule: in loot",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "On: empty Shockwave Capsules turn up in loot, sharing each place's weight with the other types that are on. Never while \"can pack\" is off.",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "Allow packing animals",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "When on, players can pack any live animal in the world (wild or tame, young or grown) into an empty capsule from the animal's menu. Off only stops packing animals: capsules that already hold one can still be thrown, unpacked with the button and restored by admins."
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "When on, players can pack any live animal in the world (wild or tame, young or grown) into an empty capsule from the animal's menu. Off only stops packing animals: capsules that already hold one can still be thrown, unpacked with the button and restored by admins.",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "Wild animal capture chance",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "Chance, in percent, that packing a wild animal works, from the animal's menu or by throwing an empty capsule. On a miss the animal breaks free and stays where it is, and the empty capsule is not used up (a thrown one falls where it landed). 0: wild animals can't be packed; 100: always works. Tame animals and vehicles are not affected."
 }

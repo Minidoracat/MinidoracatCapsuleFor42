@@ -104,6 +104,23 @@ function Notify.row(ok, text)
         c:getR(), c:getG(), c:getB(), text)
 end
 
+-- The catch chance row of a pack or capture tooltip for a wild animal (white, no mark), or "" (a tame animal, or
+-- wild ones switched off: WILD_OFF says so). The client's SandboxVars: the server sends every applied change.
+function Notify.chanceRow(animal)
+    local chance = M.Rules.wildChance()
+    if not (animal and animal:isWild()) or chance <= 0 then return "" end
+    return " <RGB:1,1,1> " .. getText("IGUI_MinidoracatCapsule_WildChance", chance) .. " <LINE> "
+end
+
+-- Why a pack or a capture failed: a wild animal that broke free says the chance it had; a refused permission the
+-- reason the vehicle menu row gives (VehicleManager's wording included).
+local function failure(args)
+    if args.why == "ESCAPED" then return getText("IGUI_MinidoracatCapsule_Why_ESCAPED", args.chance) end
+    local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
+    if vehicle then return select(2, Notify.permission(getPlayer(), vehicle)) end
+    return Notify.reason(args.why)
+end
+
 local Handlers = {}
 
 function Handlers.fx(args) M.Effects.play(args) end
@@ -115,12 +132,8 @@ end
 -- A refused pack stays until the player closes it (a toast faded in 3 s while they looked elsewhere; review).
 function Handlers.packed(args)
     if args.ok then return end
-    local text = Notify.reason(args.why)
-    -- refused for permission: the same reason the menu row gives (VehicleManager's wording included)
-    local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
-    if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
     Notify.dialog(getText(args.kind == "animal" and "IGUI_MinidoracatCapsule_PackAnimalFailed"
-        or "IGUI_MinidoracatCapsule_PackFailed"), text)
+        or "IGUI_MinidoracatCapsule_PackFailed"), failure(args))
 end
 
 -- A thrown empty capsule (mode "capture"): a toast either way; a miss says why and where the capsule went. The reason
@@ -132,12 +145,9 @@ local function captured(args)
         Notify.toast(getText("IGUI_MinidoracatCapsule_Captured", name), getText("IGUI_MinidoracatCapsule_CapturedHere"))
         return
     end
-    local text = Notify.reason(args.why)
-    -- refused for permission: the same reason the vehicle menu row gives (VehicleManager's wording included)
-    local vehicle = args.why == "NOT_ALLOWED" and args.vehicleId and getVehicleById(args.vehicleId)
-    if vehicle then text = select(2, Notify.permission(getPlayer(), vehicle)) end
     Notify.toast(getText("IGUI_MinidoracatCapsule_CaptureFailed"),
-        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept", text),
+        getText(args.dropped and "IGUI_MinidoracatCapsule_CaptureDropped" or "IGUI_MinidoracatCapsule_CaptureKept",
+            failure(args)),
         true, 8000)
 end
 

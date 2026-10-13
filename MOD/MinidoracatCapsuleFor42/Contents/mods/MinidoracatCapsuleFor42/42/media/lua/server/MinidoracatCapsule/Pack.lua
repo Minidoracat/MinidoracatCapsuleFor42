@@ -86,15 +86,25 @@ end
 -- thrown empty capsule share this. opts.capsule: the player's empty capsule, already checked by the caller (used up
 -- once the record is on disk; none for debug); opts.typeId: its M.TYPES id (default the first type); opts.range: as in
 -- Pack.pack.
--- Like vanilla picking up (ISPickupAnimal.complete), a wild animal of a kind that can be tamed becomes tame
--- (setWild(false) is a no-op for the others, IsoAnimal.java:3214-3225). The animal is removed last, once record and
+-- A wild animal rolls once every rule has passed (sandbox WildCaptureChance, Rules.rollWild): a miss touches nothing
+-- (no record, the empty capsule not used up) and answers ESCAPED with the chance. A caught one is tamed like vanilla
+-- picking up (ISPickupAnimal.complete) when its kind can be (setWild(false) is a no-op for the others,
+-- IsoAnimal.java:3214-3225). The animal is removed last, once record and
 -- capsule are in place (IsoAnimal.remove deletes it and tells every client).
 -- Returns the vehicle result shape: { ok = true, capsuleId, x, y, z, type, kind = "animal", animal = { type, breed,
--- name } } or { ok = false, why, path? }.
+-- name } } or { ok = false, why, path?, chance? }.
 function Pack.packAnimal(player, animal, opts)
     opts = opts or {}
     local why = M.Rules.animalWhyNot(player, animal, opts.range)
     if why then return { ok = false, why = why } end
+    if animal:isWild() then
+        local chance = M.Rules.wildChance()
+        if not M.Rules.rollWild(chance) then
+            writeLine(M.LOG_PREFIX .. "ESCAPED animal=" .. tostring(animal:getAnimalID()) .. " chance=" .. chance
+                .. " by=" .. player:getUsername())
+            return { ok = false, why = "ESCAPED", chance = chance }
+        end
+    end
     local t = M.TYPE_BY_ID[tostring(opts.typeId)] or M.TYPES[1]
     local capsule = instanceItem(t.loaded)
     if not capsule then return { ok = false, why = "NO_ITEM" } end

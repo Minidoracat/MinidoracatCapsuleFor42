@@ -1015,17 +1015,19 @@ end
 -- ------------------------------------------------ settings tab
 
 -- The general sandbox page, in the order of sandbox-options.txt. kind: bool (checkbox), choice (one chip per value of
--- an enum option) or int (slider).
+-- an enum option) or int (slider; pct: its value shown as a percentage).
 Panel.GENERAL = {
     { key = "ReturnEmptyCapsule", kind = "bool", default = true },
     { key = "PackPermission", kind = "choice", count = 3, default = 1 },
     { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
     { key = "AllowCargoTakeOut", kind = "bool", default = false },
     { key = "AllowAnimals", kind = "bool", default = true },
+    { key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true },
     { key = "RecordRetentionDays", kind = "int", min = 1, max = 90, default = 30 },
 }
 
 local function fmtInt(v) return tostring(math.floor(v + 0.5)) end
+local function fmtPct(v) return getText("Tooltip_MinidoracatCapsule_Percent", math.floor(v + 0.5)) end
 
 -- Each option: its control (the label is the checkbox's own, or drawn left of a slider or the chips) and its whole
 -- vanilla tooltip under it. A choice option shows the first paragraph there and gives each chip its own line as a
@@ -1051,7 +1053,7 @@ function Win:buildSettings(p)
         elseif f.kind == "int" then
             controlX = w - PAD - sliderW
             row.slider = UI.Slider.new({ x = controlX, y = y, width = sliderW, min = f.min, max = f.max, step = 1,
-                value = f.default, theme = theme, format = fmtInt, target = self,
+                value = f.default, theme = theme, format = f.pct and fmtPct or fmtInt, target = self,
                 onChange = function(t) t:settingsChanged() end })
             row.slider._focusLabel = label
             s:addChild(row.slider)

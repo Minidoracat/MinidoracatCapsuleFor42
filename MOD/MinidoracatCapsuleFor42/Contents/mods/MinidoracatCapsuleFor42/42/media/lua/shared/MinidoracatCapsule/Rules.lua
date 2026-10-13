@@ -158,14 +158,28 @@ function Rules.animalsOn()
     return Rules.sandbox().AllowAnimals ~= false
 end
 
+-- Sandbox WildCaptureChance: the percent chance (0-100, default 50) that packing a wild animal (menu or capture)
+-- works; the server rolls in Pack.packAnimal. 0: wild animals can't be packed at all (WILD_OFF); tame ones never roll.
+function Rules.wildChance()
+    local n = math.floor(tonumber(Rules.sandbox().WildCaptureChance) or 50)
+    return math.max(0, math.min(100, n))
+end
+
+-- The roll for a wild animal at `chance` percent: true = caught. A field so the harness and E2E can force it.
+function Rules.rollWild(chance)
+    return ZombRand(100) < chance
+end
+
 -- Why this animal cannot be packed by anyone right now, or nil: the menu (client), the timed action and the server
--- (Pack.packAnimal) ask the same. Any live animal in the world may be packed, wild or tame, young or grown. Not in
+-- (Pack.packAnimal) ask the same. Any live animal in the world may be packed, wild or tame, young or grown; a wild one
+-- not while WildCaptureChance is 0 (WILD_OFF), else it may break free (Pack.packAnimal). Not in
 -- the world (isExistInTheWorld: carried, in a hutch or a trailer, IsoAnimal.java:2369) is ANIMAL_AWAY; a carcass or
 -- an animal on a butcher hook is NO_ANIMAL; a rope to a player or a post has to come off first (ROPE); its square in
 -- someone else's safehouse is SAFEHOUSE. range: as in vehicleWhyNot.
 function Rules.animalWhyNot(player, animal, range)
     if not animal or animal:isDead() or animal:isOnHook() then return "NO_ANIMAL" end
     if not Rules.animalsOn() then return "ANIMALS_OFF" end
+    if animal:isWild() and Rules.wildChance() <= 0 then return "WILD_OFF" end
     if not animal:isExistInTheWorld() then return "ANIMAL_AWAY" end
     local d = animal:getData()
     if d:getAttachedPlayer() or d:getAttachedTree() then return "ROPE" end

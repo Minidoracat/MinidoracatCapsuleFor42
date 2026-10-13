@@ -24,6 +24,10 @@ option MinidoracatCapsule.AllowCargoTakeOut
 option MinidoracatCapsule.AllowAnimals
 {type = boolean, default = true, page = MinidoracatCapsule, translation = MinidoracatCapsule_AllowAnimals,}
 
+/* 收野生動物（選單收與丟出抓取都算）的成功率（百分比）；伺服器在 Pack.packAnimal 擲骰（Rules.rollWild），失敗＝牠掙脫、什麼都不動。0＝不能收野生動物（WILD_OFF）；家養動物與車不擲骰 */
+option MinidoracatCapsule.WildCaptureChance
+{type = integer, min = 0, max = 100, default = 50, page = MinidoracatCapsule, translation = MinidoracatCapsule_WildCaptureChance,}
+
 /* 已結束的紀錄（已展開且落盤、已補回、作廢）最後一筆事件超過幾天就從紀錄檔刪掉（Index.prune）；收起中與當機前未確認的永遠保留 */
 option MinidoracatCapsule.RecordRetentionDays
 {type = integer, min = 1, max = 90, default = 30, page = MinidoracatCapsule, translation = MinidoracatCapsule_RecordRetentionDays,}

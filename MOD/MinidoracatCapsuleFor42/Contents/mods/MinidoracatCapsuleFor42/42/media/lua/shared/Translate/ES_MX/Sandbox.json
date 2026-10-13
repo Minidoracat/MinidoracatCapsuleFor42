@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Cápsula de onda expansiva: en el botín",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Activado: aparecen cápsulas de onda expansiva vacías en el botín, que reparten el peso de cada lugar con los demás tipos activados. Nunca mientras «puede guardar» esté desactivado.",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "Permitir guardar animales",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Si está activado, los jugadores pueden guardar en una cápsula vacía cualquier animal vivo del mundo (salvaje o domesticado, cría o adulto) desde el menú del animal. Desactivarlo solo impide guardar animales: las cápsulas que ya tienen uno se pueden seguir lanzando, desplegando con el botón y restaurando por un administrador."
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Si está activado, los jugadores pueden guardar en una cápsula vacía cualquier animal vivo del mundo (salvaje o domesticado, cría o adulto) desde el menú del animal. Desactivarlo solo impide guardar animales: las cápsulas que ya tienen uno se pueden seguir lanzando, desplegando con el botón y restaurando por un administrador.",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "Probabilidad de capturar animales silvestres",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "Probabilidad, en porcentaje, de que guardar un animal silvestre funcione, desde el menú del animal o lanzando una cápsula vacía. Si falla, el animal se escapa y se queda donde está, y la cápsula vacía no se gasta (la lanzada cae donde aterrizó). 0: no se pueden guardar animales silvestres; 100: siempre funciona. Los animales domésticos y los vehículos no se ven afectados."
 }

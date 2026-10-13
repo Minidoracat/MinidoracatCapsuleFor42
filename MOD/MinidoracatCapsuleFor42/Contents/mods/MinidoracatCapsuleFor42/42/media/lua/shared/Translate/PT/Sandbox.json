@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Cápsula de Onda de Choque: aparece nos itens",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Ativado: Cápsulas de Onda de Choque vazias aparecem nos itens, dividindo o peso de cada local com os outros tipos ativados. Nunca enquanto “pode guardar” estiver desativado.",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "Permitir guardar animais",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Ligado, os jogadores podem guardar numa cápsula vazia qualquer animal vivo do mundo (selvagem ou domesticado, filhote ou adulto) pelo menu do animal. Desligado só impede guardar animais: cápsulas que já têm um ainda podem ser arremessadas, liberadas pelo botão e restauradas por um administrador."
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Ligado, os jogadores podem guardar numa cápsula vazia qualquer animal vivo do mundo (selvagem ou domesticado, filhote ou adulto) pelo menu do animal. Desligado só impede guardar animais: cápsulas que já têm um ainda podem ser arremessadas, liberadas pelo botão e restauradas por um administrador.",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "Chance de capturar animais selvagens",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "Chance, em percentagem, de guardar um animal selvagem dar certo, pelo menu do animal ou lançando uma cápsula vazia. Se falhar, o animal escapa e fica onde está, e a cápsula vazia não é gasta (a lançada cai onde pousou). 0: não é possível guardar animais selvagens; 100: sempre dá certo. Animais domésticos e veículos não são afetados."
 }

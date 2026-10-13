@@ -62,5 +62,7 @@
     "Sandbox_MinidoracatCapsule_TypeShockLoot": "Şok Dalgası Kapsülü: ganimette çıkar",
     "Sandbox_MinidoracatCapsule_TypeShockLoot_tooltip": "Açıkken boş Şok Dalgası Kapsülü ganimette çıkar ve her yerin ağırlığını açık olan diğer türlerle paylaşır. “Araç koyabilir” kapalıyken hiç çıkmaz.",
     "Sandbox_MinidoracatCapsule_AllowAnimals": "Hayvanları kapsüle koymaya izin ver",
-    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Açıkken oyuncular dünyadaki her canlı hayvanı (yabani ya da evcil, yavru ya da yetişkin) hayvan menüsünden boş bir kapsüle koyabilir. Kapatmak yalnızca hayvanları kapsüle koymayı engeller: içinde zaten hayvan olan kapsüller yine fırlatılabilir, düğmeyle açılabilir ve yöneticiler tarafından geri getirilebilir."
+    "Sandbox_MinidoracatCapsule_AllowAnimals_tooltip": "Açıkken oyuncular dünyadaki her canlı hayvanı (yabani ya da evcil, yavru ya da yetişkin) hayvan menüsünden boş bir kapsüle koyabilir. Kapatmak yalnızca hayvanları kapsüle koymayı engeller: içinde zaten hayvan olan kapsüller yine fırlatılabilir, düğmeyle açılabilir ve yöneticiler tarafından geri getirilebilir.",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance": "Yabani hayvan yakalama şansı",
+    "Sandbox_MinidoracatCapsule_WildCaptureChance_tooltip": "Yabani bir hayvanı kapsüle koymanın başarılı olma şansı (yüzde olarak); hayvan menüsünden koymak da boş kapsül fırlatıp yakalamak da sayılır. Başarısız olursa hayvan kurtulur ve olduğu yerde kalır, boş kapsül harcanmaz (fırlatılan, düştüğü yerde kalır). 0: yabani hayvanlar kapsüle konamaz; 100: her zaman başarılı olur. Evcil hayvanlar ve araçlar etkilenmez."
 }
