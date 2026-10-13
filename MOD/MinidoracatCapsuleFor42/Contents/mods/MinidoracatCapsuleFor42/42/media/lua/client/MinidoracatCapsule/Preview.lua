@@ -19,13 +19,13 @@ local function U(key, a, b)
     return getText(k, a, b)
 end
 
--- Context menu entry; needs the framework (the window is a UI.Window). None for an animal capsule (no 3D view of
--- animals); its summary is already cached by then (the capsule was named from it when its window listed it).
+-- Context menu entry; needs the framework (the window is a UI.Window). None for a Pal Sphere or any animal record (no
+-- 3D view of animals); its summary is already cached by then (the capsule was named from it when its window listed it).
 local function onFill(playerNum, context, items)
     for _, item in ipairs(ISInventoryPane.getActualItems(items)) do
         if M.isLoaded(item) and not M.inCapsule(item) then
             local r = Info.get(item:getID())
-            if r and r.kind == "animal" then return end
+            if M.typeOf(item).sphere or (r and r.kind == "animal") then return end
             local option = context:addOption(U("Preview"), item:getID(), Preview.open)
             if not Kit.ok then
                 option.notAvailable = true
