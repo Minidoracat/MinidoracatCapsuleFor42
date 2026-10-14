@@ -105,6 +105,9 @@ function Throw.capture(p)
     M.log(string.format("CAPTURED capsule=%d by=%s target=%s:%s x=%d y=%d z=%d ok=%s why=%s loaded=%s dropped=%s",
         p.capsuleId, player:getUsername(), tostring(p.cap.kind), tostring(p.cap.tid), p.x, p.y, p.z, tostring(res.ok),
         tostring(res.why), tostring(res.loadedId), tostring(res.dropped)))
+    -- a miss: the flying capsule stops resting at once (it lies on the ground now, or is gone); after dropAt, so the
+    -- ground item goes out first. A catch keeps its rest: the pack smoke at the target covers it.
+    if not res.ok then Fx.broadcast("miss", { x = p.x, y = p.y, z = p.z, capsuleId = p.capsuleId }) end
     M.Play.send(player, "landed", res)
 end
 

@@ -11,11 +11,12 @@ M.Fx = Fx
 Fx.RANGE = 30 -- tiles from the effect to a player who gets it
 local nextId = 0
 
--- kind: "pack" | "unpack" (x, y, z) or "flight" (x0, y0, z0 -> x, y, z).
+-- kind: "pack" | "unpack" (x, y, z), "flight" (x0, y0, z0 -> x, y, z, capsuleId) or "miss" (x, y, z, capsuleId: that
+-- capture caught nothing, its flight ends now). Only pack and unpack make the zombie sound.
 function Fx.broadcast(kind, args)
     nextId = nextId + 1
     args.kind, args.id = kind, nextId
-    local radius = kind == "flight" and 0 or (tonumber(M.Rules.sandbox().ZombieSoundRadius) or 0)
+    local radius = (kind == "pack" or kind == "unpack") and (tonumber(M.Rules.sandbox().ZombieSoundRadius) or 0) or 0
     if radius > 0 then addSound(nil, math.floor(args.x), math.floor(args.y), math.floor(args.z), radius, radius) end
     local to = {}
     if isServer() then

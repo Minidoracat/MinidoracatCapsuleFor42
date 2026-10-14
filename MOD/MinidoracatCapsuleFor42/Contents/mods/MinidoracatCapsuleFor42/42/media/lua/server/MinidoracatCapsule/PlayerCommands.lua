@@ -147,11 +147,13 @@ function Play.packAnimal(player, animal, typeId)
 end
 
 -- The capsule leaves the hand: every client nearby sees it fly, drawn and heard as its own type (an empty one: plain).
+-- capsuleId ties the flight to its landing: a capture that misses ends it (Throw.capture, Fx "miss").
 local function fly(action)
     local player, t = action.character, M.typeOf(action.item)
     action.flightAt = now()
     Fx.broadcast("flight", { x0 = player:getX(), y0 = player:getY(), z0 = player:getZ(),
-        x = action.x, y = action.y, z = action.z, style = t and t.index, empty = M.isEmpty(action.item) or nil })
+        x = action.x, y = action.y, z = action.z, style = t and t.index, empty = M.isEmpty(action.item) or nil,
+        capsuleId = action.item:getID() })
 end
 
 -- The target of a capture: MP from the intent (the client named it), SP from the action (Cursor.queue sets it).
@@ -213,6 +215,8 @@ function Play.throw(action)
     if not intent then return refuse(player, kind, "NO_INTENT", id) end
     local why = throwWhyNot(action, intent)
     if why then
+        -- the release may already have shown a capture flying (the target changed in between): end it, it stayed here
+        if kind == "capture" and action.flightAt then Fx.broadcast("miss", { x = x, y = y, z = z, capsuleId = id }) end
         Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = kind })
         return refuse(player, kind, why, id)
     end

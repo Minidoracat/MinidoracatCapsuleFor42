@@ -2344,7 +2344,11 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local savedSchedule, savedFx, savedOnline = Throw.schedule, M.Fx.broadcast, getOnlinePlayers
     local scheduled, flights = {}, {}
     Throw.schedule = function(p) scheduled[#scheduled + 1] = p end
-    M.Fx.broadcast = function(kind, args) if kind == "flight" then flights[#flights + 1] = args end end
+    local misses, landingNow = {}, function() return 0 end
+    M.Fx.broadcast = function(kind, args)
+        if kind == "flight" then flights[#flights + 1] = args end
+        if kind == "miss" then misses[#misses + 1] = { id = args.capsuleId, dropsBefore = landingNow() } end
+    end
     getOnlinePlayers = function() return javaList({ hunter, stranger }) end
     local function capsuleFor(p, t) return p.inv:AddItem(instanceItem((t or Ball).empty)) end -- a sphere unless t
     local function throwAt(p, item, x, y) return Play.throw({ character = p, item = item, x = x, y = y, z = 0 }) end
@@ -2367,7 +2371,8 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         and hunter.inv:getItemWithIDRecursiv(c1.id) == c1, "抓取 intent 沒帶目標不收；目標不在瞄準點：complete 拒絕 NO_TARGET，膠囊留在背包")
     local sp = scheduled[1] or {}
     check(thrown == true and #scheduled == 1 and sp.mode == "capture" and sp.cap and sp.cap.kind == "animal" and sp.cap.tid == 31
-        and flights[1] and flights[1].empty == true, "抓取：排落地（mode capture、帶目標），飛行特效畫空膠囊")
+        and flights[1] and flights[1].empty == true and flights[1].capsuleId == c1.id,
+        "抓取：排落地（mode capture、帶目標），飛行特效畫空膠囊、帶膠囊編號（沒中時好收掉）")
     check(inHouse == false and houseSent.why == "SAFEHOUSE" and #scheduled == 1 and stranger.inv:getItemWithIDRecursiv(c2.id) == c2,
         "丟出抓取別人安全屋裡的動物：丟擲前就被拒 SAFEHOUSE，膠囊留在背包、不排落地")
 
@@ -2383,6 +2388,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local c3 = capsuleFor(hunter)
     move(cow, 12, 34) -- the target ran off before the capsule landed
     local landing = drops(sq(12, 30))
+    landingNow = function() return #landing end
     Throw.land({ player = hunter, capsuleId = c3.id, x = 12, y = 30, z = 0, mode = "capture", cap = { kind = "animal", tid = 31 } })
     local missSent = lastSent()
     local c4 = capsuleFor(hunter, Steam)
@@ -2400,6 +2406,8 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(pv[2] == truck1 and pv[3].empty == c4 and pv[3].type == Steam and pv[3].range == Rules.CAPTURE_REACH,
         "抓到車：走 Pack.pack（同選單收車），用丟出去的空膠囊")
     check(feet[1] == c5 and #house == 0, "沒中且落點在別人的安全屋：空膠囊掉在丟的人腳下，不掉進安全屋")
+    check(#misses == 2 and misses[1].id == c3.id and misses[1].dropsBefore == 1 and misses[2].id == c5.id,
+        "沒中（目標跑開、安全屋）各廣播一次 miss（帶那顆的編號、在掉到地上之後），抓到的兩次不廣播：飛行圖示不再停 1.5 秒")
     M.Pack.packAnimal, M.Pack.pack = savedPA, savedP
 
     -- a wild target: at 0% the throw is refused before it flies (WILD_OFF); a miss of the roll at the landing (the real
@@ -2913,6 +2921,56 @@ local function infoCases() -- 獨立函式：主程式的 local 已接近 200 �
         saved.getText, saved.gsp, saved.send
 end
 infoCases()
+
+print("Effects：抓取沒中時飛行圖示馬上收掉（不再停 1.5 秒），抓到與丟出照舊")
+local function effectsCases() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local saved = { Events = Events, getCell = getCell }
+    local draw
+    Events = setmetatable({ OnPreUIDraw = { Add = function(fn) draw = fn end } },
+        { __index = function() return { Add = function() end } end })
+    getTexture = function(p) return p end
+    getCell = function() return { addLamppost = function() end } end
+    IsoLightSource = { new = function() return {} end }
+    getSoundManager = function() return { PlayWorldSoundImpl = function() end } end
+    getNumActivePlayers = function() return 0 end
+    UIManager = { DrawTexture = function() end }
+    loadfile(MEDIA .. "/client/MinidoracatCapsule/Effects.lua")()
+    local E = M.Effects
+    local function at(ms) nowMs = nowMs + ms; draw() end
+    local function fly(id, capsuleId) E.play({ id = id, kind = "flight", x0 = 1, y0 = 1, z0 = 0, x = 5, y = 1, z = 0, capsuleId = capsuleId }) end
+    -- landed miss after arrival: gone at the reply
+    fly("f1", 7)
+    at(600)
+    local before = E.active.f1 ~= nil
+    E.play({ id = "m1", kind = "miss", x = 5, y = 1, z = 0, capsuleId = 7 })
+    at(1)
+    local missGone = E.active.f1 == nil and E.active.m1 == nil
+    -- no miss (a catch, a vehicle throw): rests the full 1.5 s as before
+    fly("f2", 8)
+    at(500 + 1500 - 10)
+    local restsOn = E.active.f2 ~= nil
+    at(20)
+    local restEnds = E.active.f2 == nil
+    -- a miss while still in the air: it finishes flying, then goes (no jump back mid-air)
+    fly("f3", 9)
+    at(200)
+    local age = E.miss(9)
+    at(200)
+    local stillFlying = E.active.f3 ~= nil
+    at(110)
+    local landedGone = E.active.f3 == nil
+    -- another capsule's miss does not touch this flight
+    fly("f4", 10)
+    at(700)
+    local unknown = E.miss(11)
+    at(1)
+    check(before and missGone and restsOn and restEnds and age == 200 and stillFlying and landedGone and unknown == nil
+        and E.active.f4 ~= nil,
+        "沒中：落地後回覆一到就收掉；回覆比落地早就飛完再收；別的膠囊的 miss 不影響；抓到或丟出（沒有 miss）照舊停 1.5 秒")
+    E.active = {}
+    Events, getCell = saved.Events, saved.getCell
+end
+effectsCases()
 
 print()
 if failures > 0 then
