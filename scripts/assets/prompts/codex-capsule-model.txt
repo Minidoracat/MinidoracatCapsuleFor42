@@ -1,7 +1,7 @@
 請在這個 repo 寫一條可重跑的 Blender headless 產線，做出 Project Zomboid（Build 42）MOD「Pack & Throw」的膠囊 3D 模型、貼圖與 32×32 物品圖示，並實際執行、自己檢查產物。所有路徑都用下面的絕對路徑。
 
 REPO  = <本 repo 根目錄>
-MEDIA = <REPO>/MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media
+MEDIA = <REPO>/MOD/MinidoracatPackThrowFor42/Contents/mods/MinidoracatPackThrowFor42/42/media
 Blender = C:/Program Files/Blender Foundation/Blender 5.2/blender.exe（一律 `blender -b --factory-startup --python <腳本> -- <參數>`）
 外層 Python 用 `uv run`（PEP 723 inline 依賴 pillow），照 D:/github/MinidoracatKnoxPassFor42/scripts/blender/build.py 與 build_models.py 的寫法（先讀這兩個檔，照抄它們的 MB 網格建構、rect_uv、export、render_icon、icon() 的做法；不要跨 repo 執行它們）。
 

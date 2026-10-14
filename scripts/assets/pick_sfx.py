@@ -38,7 +38,7 @@ import design_fx as fx  # noqa: E402  (timeline constants and the background cro
 
 OUT = os.path.join(bs.REVIEW, "sfx-pick")
 SOUNDS = bs.OUT
-CORE = os.path.join(fx.MOD_MEDIA, "lua", "shared", "MinidoracatCapsule", "Core.lua")
+CORE = os.path.join(fx.MOD_MEDIA, "lua", "shared", "MinidoracatPackThrow", "Core.lua")
 TEX = os.path.join(fx.MOD_MEDIA, "textures")
 SOFT_ABOVE_HZ = 4000  # design_fx.py 同一條：頻譜重心超過、而且提示詞是容易刺耳的音色才柔化
 SHRILL = re.compile(r"shimmer|sparkl|twinkl|chime|blip|zap|whir|electric", re.I)
@@ -60,30 +60,30 @@ ACTIONS = [("Throw", "丟出"), ("Pop", "彈開"), ("Pack", "收車"), ("Button"
 RANGE = {"Throw": bs.THROW, "Pop": bs.POP, "Pack": bs.PACK, "Button": bs.BUTTON}
 # (款式, 段) -> (MOD 音效名, 候選版本, 提示詞 id；一列放幾句提示詞時是 tuple，每句 4 條，依序編號)
 SLOTS = {
-    ("Real", "Throw"): ("UniversalCapsuleThrowReal", "v5", "ThrowReal"),
-    ("Real", "Pop"): ("UniversalCapsulePopReal", "v5", "PopReal"),
-    ("Real", "Pack"): ("UniversalCapsulePackReal", "v5", "PackReal"),
-    ("Real", "Button"): ("UniversalCapsuleButtonReal", "v5", "ButtonReal"),
-    ("Dust", "Throw"): ("UniversalCapsuleThrowReal2", "v5", "ThrowReal2"),
-    ("Dust", "Pop"): ("UniversalCapsulePopHeavyDrop", "v5", "PopHeavyDrop"),
-    ("Dust", "Pack"): ("UniversalCapsulePackHeavy", "v5", "PackHeavy"),
-    ("Dust", "Button"): ("UniversalCapsuleButtonDust", "v6", "ButtonDust"),
-    ("Steam", "Throw"): ("UniversalCapsuleThrowSteam", "v6", "ThrowSteam"),
-    ("Steam", "Pop"): ("UniversalCapsulePopSteam", "v5", "PopSteam"),
-    ("Steam", "Pack"): ("UniversalCapsulePackSteam", "v5", "PackSteam"),
-    ("Steam", "Button"): ("UniversalCapsuleButtonSwitch", "v5", "ButtonSwitch"),
-    ("SciFi", "Throw"): ("UniversalCapsuleThrowSci", "v5", "ThrowSci"),
-    ("SciFi", "Pop"): ("UniversalCapsulePopSci", "v5", "PopSci"),
-    ("SciFi", "Pack"): ("UniversalCapsulePackSci", "v5", "PackSci"),
-    ("SciFi", "Button"): ("UniversalCapsuleButtonSci", "v5", "ButtonSci"),
-    ("Magic", "Throw"): ("UniversalCapsuleThrowMagic", "v5", "ThrowMagic"),
-    ("Magic", "Pop"): ("UniversalCapsulePopMagic", "v5", "PopMagic"),
-    ("Magic", "Pack"): ("UniversalCapsulePackMagic", "v5", "PackMagic"),
-    ("Magic", "Button"): ("UniversalCapsuleButtonMagic", "v5", "ButtonMagic"),
-    ("Shock", "Throw"): ("UniversalCapsuleThrowShock", "v6", "ThrowShock"),
-    ("Shock", "Pop"): ("UniversalCapsulePopExplosion", "v7", ("PopBoom", "PopBlast", "PopMushroom")),
-    ("Shock", "Pack"): ("UniversalCapsulePackShock", "v6", "PackShock"),
-    ("Shock", "Button"): ("UniversalCapsuleButtonShock", "v6", "ButtonShock"),
+    ("Real", "Throw"): ("PackThrowThrowReal", "v5", "ThrowReal"),
+    ("Real", "Pop"): ("PackThrowPopReal", "v5", "PopReal"),
+    ("Real", "Pack"): ("PackThrowPackReal", "v5", "PackReal"),
+    ("Real", "Button"): ("PackThrowButtonReal", "v5", "ButtonReal"),
+    ("Dust", "Throw"): ("PackThrowThrowReal2", "v5", "ThrowReal2"),
+    ("Dust", "Pop"): ("PackThrowPopHeavyDrop", "v5", "PopHeavyDrop"),
+    ("Dust", "Pack"): ("PackThrowPackHeavy", "v5", "PackHeavy"),
+    ("Dust", "Button"): ("PackThrowButtonDust", "v6", "ButtonDust"),
+    ("Steam", "Throw"): ("PackThrowThrowSteam", "v6", "ThrowSteam"),
+    ("Steam", "Pop"): ("PackThrowPopSteam", "v5", "PopSteam"),
+    ("Steam", "Pack"): ("PackThrowPackSteam", "v5", "PackSteam"),
+    ("Steam", "Button"): ("PackThrowButtonSwitch", "v5", "ButtonSwitch"),
+    ("SciFi", "Throw"): ("PackThrowThrowSci", "v5", "ThrowSci"),
+    ("SciFi", "Pop"): ("PackThrowPopSci", "v5", "PopSci"),
+    ("SciFi", "Pack"): ("PackThrowPackSci", "v5", "PackSci"),
+    ("SciFi", "Button"): ("PackThrowButtonSci", "v5", "ButtonSci"),
+    ("Magic", "Throw"): ("PackThrowThrowMagic", "v5", "ThrowMagic"),
+    ("Magic", "Pop"): ("PackThrowPopMagic", "v5", "PopMagic"),
+    ("Magic", "Pack"): ("PackThrowPackMagic", "v5", "PackMagic"),
+    ("Magic", "Button"): ("PackThrowButtonMagic", "v5", "ButtonMagic"),
+    ("Shock", "Throw"): ("PackThrowThrowShock", "v6", "ThrowShock"),
+    ("Shock", "Pop"): ("PackThrowPopExplosion", "v7", ("PopBoom", "PopBlast", "PopMushroom")),
+    ("Shock", "Pack"): ("PackThrowPackShock", "v6", "PackShock"),
+    ("Shock", "Button"): ("PackThrowButtonShock", "v6", "ButtonShock"),
 }
 GROUP = {"PopBoom": "厚重轟隆", "PopBlast": "電影感爆破", "PopMushroom": "蘑菇雲火球"}  # 多句提示詞那一列的分組標題
 # stage scene -> (before shot, after shot); the capsule lies on the ground in press "before" (at C) and pack "after" (at T)
@@ -139,7 +139,7 @@ def smoke_frames(t):
     out = []
     for i in range(1, t["frames"] + 1):
         b = io.BytesIO()
-        Image.open(os.path.join(TEX, "MinidoracatCapsule", f"{t['smoke']}{i}.png")).convert("RGBA").save(
+        Image.open(os.path.join(TEX, "MinidoracatPackThrow", f"{t['smoke']}{i}.png")).convert("RGBA").save(
             b, "WEBP", quality=80, method=4)
         out.append(data_uri(b.getvalue(), "image/webp"))
     return out
@@ -213,7 +213,7 @@ def build(bg):
             prompts[(v, it["id"])] = it["text"]
     snd, rows_js, cur = {}, [], {}
     for seg, _ in ACTIONS:
-        snd[f"Cartoon_{seg}"] = data_uri(mp3(["-i", os.path.join(SOUNDS, f"UniversalCapsule{seg}.ogg")]), "audio/mpeg")
+        snd[f"Cartoon_{seg}"] = data_uri(mp3(["-i", os.path.join(SOUNDS, f"PackThrow{seg}.ogg")]), "audio/mpeg")
     sections = []
     for tid in type_ids:
         tname, desc = NAMES[tid]

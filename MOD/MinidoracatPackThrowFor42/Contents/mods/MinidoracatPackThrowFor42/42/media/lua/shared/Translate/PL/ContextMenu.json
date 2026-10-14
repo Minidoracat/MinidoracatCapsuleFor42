@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "Spakuj do kapsuły",
+    "ContextMenu_MinidoracatPackThrow_Throw": "Rzuć kapsułę",
+    "ContextMenu_MinidoracatPackThrow_Press": "Naciśnij przycisk",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "Rzuć, aby złapać",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "Złap do Pal Sfery",
+    "ContextMenu_MinidoracatPackThrow_Release": "Wypuść: %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "Wypuść"
+}

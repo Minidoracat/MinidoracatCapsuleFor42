@@ -13,8 +13,8 @@ atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖�
     uv run scripts/assets/build_capsule.py --blender "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe"
 
 產物（<Id> 依序為 Cartoon、Real、Dust、Steam、SciFi、Magic、Shock）：
-    MOD/MinidoracatCapsuleFor42/
-      Contents/mods/MinidoracatCapsuleFor42/42/media/models_X/WorldItems/
+    MOD/MinidoracatPackThrowFor42/
+      Contents/mods/MinidoracatPackThrowFor42/42/media/models_X/WorldItems/
         MinidoracatCapsule.fbx（7 種共用）
       .../media/textures/WorldItems/MinidoracatCapsule<Id>.png
       .../media/textures/WorldItems/MinidoracatCapsule<Id>Loaded.png
@@ -54,7 +54,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFo
 
 
 REPO = Path(__file__).resolve().parents[2]
-MEDIA = REPO / "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media"
+MEDIA = REPO / "MOD/MinidoracatPackThrowFor42/Contents/mods/MinidoracatPackThrowFor42/42/media"
 HERE = REPO / "scripts/assets"
 BLENDER_DEFAULT = Path("C:/Program Files/Blender Foundation/Blender 5.2/blender.exe")
 BLENDER_SCRIPT = HERE / "capsule_blender.py"

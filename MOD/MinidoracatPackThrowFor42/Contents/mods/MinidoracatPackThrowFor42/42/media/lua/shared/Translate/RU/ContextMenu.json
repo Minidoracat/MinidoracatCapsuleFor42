@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "Упаковать в капсулу",
+    "ContextMenu_MinidoracatPackThrow_Throw": "Бросить капсулу",
+    "ContextMenu_MinidoracatPackThrow_Press": "Нажать кнопку",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "Бросить, чтобы поймать",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "Поймать в Пал-сферу",
+    "ContextMenu_MinidoracatPackThrow_Release": "Выпустить: %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "Выпустить"
+}

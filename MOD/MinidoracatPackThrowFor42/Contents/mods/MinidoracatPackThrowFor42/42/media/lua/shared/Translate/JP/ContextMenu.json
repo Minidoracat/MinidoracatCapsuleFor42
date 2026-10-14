@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "カプセルに収納",
+    "ContextMenu_MinidoracatPackThrow_Throw": "カプセルを投げる",
+    "ContextMenu_MinidoracatPackThrow_Press": "ボタンを押す",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "投げて捕獲",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "パルスフィアで捕獲",
+    "ContextMenu_MinidoracatPackThrow_Release": "出す：%1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "出す"
+}

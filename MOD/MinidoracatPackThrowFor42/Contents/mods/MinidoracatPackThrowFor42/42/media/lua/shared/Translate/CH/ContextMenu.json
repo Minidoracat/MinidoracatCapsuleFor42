@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "收進膠囊",
+    "ContextMenu_MinidoracatPackThrow_Throw": "丟出膠囊",
+    "ContextMenu_MinidoracatPackThrow_Press": "按下按鈕",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "丟出抓取",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "收進帕魯球",
+    "ContextMenu_MinidoracatPackThrow_Release": "放出：%1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "放出"
+}

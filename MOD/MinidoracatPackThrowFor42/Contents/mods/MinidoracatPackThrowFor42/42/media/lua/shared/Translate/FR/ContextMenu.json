@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "Ranger dans la capsule",
+    "ContextMenu_MinidoracatPackThrow_Throw": "Lancer la capsule",
+    "ContextMenu_MinidoracatPackThrow_Press": "Appuyer sur le bouton",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "Lancer pour capturer",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "Capturer dans une Sphère de Pal",
+    "ContextMenu_MinidoracatPackThrow_Release": "Libérer : %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "Libérer"
+}

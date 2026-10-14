@@ -14,7 +14,7 @@
     uv run scripts/assets/build_sfx.py        # 列表模式檢查長度；選定後 --write --pick <Name>=v4:<ID>
 
 第 2 版：Pop／Pack／Button 各一組（Pack 已選 K3）。第 3 版（使用者：丟出＋彈開要更誇大的卡通化，丟出「咻～」、落地「蹦！」）：
-新的 UniversalCapsuleThrow（膠囊固定飛 500 ms，已選 T1）、更誇張的 Pop P10 起，以及「咻在 0 s、蹦在 0.5 s」的組合 Combo_C<n>.wav。
+新的 PackThrowThrow（膠囊固定飛 500 ms，已選 T1）、更誇張的 Pop P10 起，以及「咻在 0 s、蹦在 0.5 s」的組合 Combo_C<n>.wav。
 第 4 版（使用者：蹦要大一點、有炸開的感覺）：Pop P19 起，響度用 build_sfx.LOUDER 的 -14 dBFS，每條附「T1＋蹦」組合。
 每條候選都照 build_sfx.level_af 整理（剪前面靜音、淡入淡出、RMS 峰值 -18 dBFS（第 4 版 Pop -14）、限幅 -1 dBFS），試聽才公平。
 ElevenLabs 的 take 高頻偏多（開瓶嘶聲、按鈕喀聲、zip 重心 5–10 kHz），SOFT 照 elevenlabs-tts 技能的刺耳處理削掉。
@@ -214,7 +214,7 @@ def explode():
 PUNCH = "volume=10dB,asoftclip=type=tanh,acompressor=threshold=-18dB:ratio=4:attack=2:release=120"  # 飽和＋壓縮，讓尾巴更飽、更衝
 
 
-POP, PACK, BTN, THROW = "UniversalCapsulePop", "UniversalCapsulePack", "UniversalCapsuleButton", "UniversalCapsuleThrow"
+POP, PACK, BTN, THROW = "PackThrowPop", "PackThrowPack", "PackThrowButton", "PackThrowThrow"
 # 第 2 版：(名稱, ID, 做法, 配方, 照提示詞與波形推測的聽感, 產生函式)，寫進 sfx-v2
 V2_CANDIDATES = [
     (POP, "P1", "ElevenLabs＋後製", "PopChampagne_3（寫實香檳開瓶）過 SOFT 柔化",
@@ -353,8 +353,8 @@ V2_NOW = {  # 第 2 版頁上的「目前使用」：當時 build_sfx.SPEC 選�
     PACK: (7, "持續的吸入咻聲 0.8 s → 停 0.2 s → 啵"),
     BTN: (4, "按下「喀」→ 0.2 s 後彈回「嚓」"),
 }
-TITLES = {THROW: "丟出膠囊的咻聲（UniversalCapsuleThrow，新）", POP: "丟出膠囊、彈開出車（UniversalCapsulePop）",
-          PACK: "把車收進膠囊（UniversalCapsulePack）", BTN: "按膠囊按鈕（UniversalCapsuleButton）"}
+TITLES = {THROW: "丟出膠囊的咻聲（PackThrowThrow，新）", POP: "丟出膠囊、彈開出車（PackThrowPop）",
+          PACK: "把車收進膠囊（PackThrowPack）", BTN: "按膠囊按鈕（PackThrowButton）"}
 NOTE = ("所有候選都對齊響度（剪掉前面靜音、RMS 峰值 -18 dBFS、限幅 -1 dBFS），可以直接比較。"
         "「聽起來像」一欄<strong>沒有人耳試聽過</strong>，是照提示詞與波形（包絡、頻譜）推測的。")
 
@@ -409,7 +409,7 @@ def build_v2():
     for name, cid, how, recipe, guess, make in V2_CANDIDATES:
         rows[name].append(row(cid, f"{name}_{cid}.wav", how, recipe, guess, save("v2", name, cid, make())))
     page("v2", "丟出收納音效候選（第 2 版）",
-         NOTE + "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsulePop=v2:P3</code>（換成你選的 ID）。",
+         NOTE + "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick PackThrowPop=v2:P3</code>（換成你選的 ID）。",
          [(TITLES[n], rows[n]) for n in (POP, PACK, BTN)])
     return rows
 
@@ -438,7 +438,7 @@ def build_v3(v2rows):
                           save("v3", "Combo", cid, out)))
     page("v3", "丟出收納音效候選（第 3 版）",
          NOTE + "組合只供試聽整個丟出的感覺（咻從 0 s、蹦從 0.5 s 開始）；裝進 MOD 時分別選咻（T）與蹦（P）："
-         "<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsuleThrow=v3:T1 UniversalCapsulePop=v3:P13</code>"
+         "<code>uv run scripts/assets/build_sfx.py --write --pick PackThrowThrow=v3:T1 PackThrowPop=v3:P13</code>"
          "（換成你選的 ID；第 2 版的 P1–P9 用 <code>v2:P3</code> 這種寫法）。",
          [("丟出＋彈開組合（咻 0 s → 蹦 0.5 s）", combos), (TITLES[THROW], rows[THROW]), (TITLES[POP], rows[POP]),
           (TITLES[PACK], [ref(v2[PACK, "K3"], "已選 K3", "now"), ref(v2[PACK, "目前使用"], "舊版（第 1 版 take 7）")]),
@@ -473,7 +473,7 @@ def build_v4(v2, v3):
     page("v4", "丟出收納音效候選（第 4 版）：蹦要大一點、有炸開的感覺",
          NOTE.replace("RMS 峰值 -18 dBFS", "RMS 峰值 -14 dBFS（Pop；咻、Pack、Button 照舊 -18）")
          + "「T1＋蹦」欄是已選的咻 T1（0 s）接這條蹦（0.5 s），只當聽感參考。「對照」一組用來分辨差別是內容還是音量。"
-         "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsulePop=v4:P19</code>（換成你選的 ID；"
+         "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick PackThrowPop=v4:P19</code>（換成你選的 ID；"
          "裝進 MOD 時 Pop 一律整理到 -14 dBFS）。",
          [(f"新蹦聲：{TITLES[POP]}，-14 dBFS", new), ("對照：目前使用與第 3 版 P14／P15 用 -14 dBFS 重新整理", compare),
           (TITLES[THROW].replace("，新", ""), [ref(v3[THROW, "T1"], "v3", "已選 T1", "now")]),

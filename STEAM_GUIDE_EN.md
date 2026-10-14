@@ -21,7 +21,7 @@ The Pal Sphere names and looks are a tribute to Palworld; this mod is not affili
 === 🧰 Getting capsules and Pal Spheres
 [list]
 [*] [b]Loot[/b]: all seven kinds of empty capsule show up in containers at mechanic shops, car supply stores and gas station repair bays; home garages are off by default. Each location's share is split evenly over the types that are on. Empty Pal Spheres have three locations of their own: barns, pet stores and hunting lockers (all on by default), and the four tiers are split 8:4:2:1 by rarity, so the better ones are rarer. Servers can toggle each location and tune its weight; see "Sandbox options and defaults".
-[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatCapsule.Capsule<Type>[/b], for example CapsuleCartoon) or empty Pal Sphere ([b]MinidoracatCapsule.Sphere<Tier>[/b], for example SphereBasic) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule or Pal Sphere in the Economy Center.
+[*] [b]Economy Center[/b]: with Minidoracat Economy installed, admins list the empty capsule (item ID [b]MinidoracatPackThrow.Capsule<Type>[/b], for example CapsuleCartoon) or empty Pal Sphere ([b]MinidoracatPackThrow.Sphere<Tier>[/b], for example SphereBasic) to sell it; "List..." in the admin panel's "Types" tab opens a product draft for that capsule or Pal Sphere in the Economy Center.
 [*] [b]Capsules holding a vehicle and Pal Spheres holding an animal[/b]: can be listed or auctioned too; see "Trading vehicles and animals in the Economy Center".
 [*] [b]From admins[/b]: hand out empty capsules and Pal Spheres with the vanilla item list or the /additem command.
 [/list]
@@ -450,9 +450,9 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === ⚙️ Recommended setup
 [list]
-[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules holding vehicles and the four loaded Pal Spheres holding animals to its "Protected item list" sandbox option so they are never cleaned up from the ground: [b]MinidoracatCapsule.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic, LoadedCapsuleShock, and [b]MinidoracatCapsule.LoadedSphereBasic[/b], LoadedSphereMega, LoadedSphereGiga and LoadedSphereLegend (each with the MinidoracatCapsule. prefix).
+[*] [b]With Minidoracat Cleaner[/b]: add the seven loaded capsules holding vehicles and the four loaded Pal Spheres holding animals to its "Protected item list" sandbox option so they are never cleaned up from the ground: [b]MinidoracatPackThrow.LoadedCapsuleCartoon[/b], LoadedCapsuleReal, LoadedCapsuleDust, LoadedCapsuleSteam, LoadedCapsuleSciFi, LoadedCapsuleMagic, LoadedCapsuleShock, and [b]MinidoracatPackThrow.LoadedSphereBasic[/b], LoadedSphereMega, LoadedSphereGiga and LoadedSphereLegend (each with the MinidoracatPackThrow. prefix).
 [*] [b]Other ground-cleanup mods[/b]: please exclude these eleven items there too.
-[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatCapsule/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
+[*] [b]Back it up[/b]: every capsule's record and vehicle data live in the server's [b]Zomboid/Lua/MinidoracatPackThrow/[/b] folder (one subfolder per world; SP_<mode>_<save> in single player), not in the world save.
 [*] [b]If that folder is deleted[/b]: packed vehicles can't be restored.
 [*] [b]Back up and restore together[/b]: with the world save; if only the world save is restored, an admin has to check the already-unpacked capsules one by one.
 [/list]
@@ -563,7 +563,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [/list]
 === 💬 Feedback
 [list]
-[*] [b][url=https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues]GitHub Issues[/url][/b]
+[*] [b][url=https://github.com/Minidoracat/MinidoracatPackThrowFor42/issues]GitHub Issues[/url][/b]
 [*] [b][url=https://discord.gg/Gur2V67]Discord[/url][/b]
 [*] [b]Please include[/b]:
 [list]

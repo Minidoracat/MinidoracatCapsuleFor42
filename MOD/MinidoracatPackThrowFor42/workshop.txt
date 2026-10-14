@@ -1,0 +1,60 @@
+version=1
+title=[B42] Pack & Throw by Minidoracat
+description=[h1]🚗 Minidoracat Pack & Throw[/h1]
+description=[h3]By Minidoracat[/h3]
+description=
+description=[hr][/hr]
+description=
+description=Pack a parked vehicle into a capsule and catch animals in Pal Spheres, then bring them back just as they were. Packed vehicles are not in the world, so heavy vehicles such as KI5's can be packed away to lighten the load.
+description=The Pal Sphere names and looks are a tribute to Palworld; this mod is not affiliated with Pocketpair.
+description=
+description=[h2]📦 Requirements[/h2]
+description=[list]
+description=[*] [b]Required:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3789836701]Minidoracat UI Library[/url]
+description=[*] [b]Optional:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3813972279]Minidoracat Vehicle Manager[/url] (a claimed vehicle can only be packed by its owner and players they shared Tow with)
+description=[*] [b]Optional:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3801482125]Minidoracat Economy[/url] (admins can list empty capsules and Pal Spheres in the Economy Center; capsules holding a vehicle and Pal Spheres holding an animal can be listed or auctioned, and the listing shows the vehicle's condition or the animal's details)
+description=[*] [b]Add/remove mid-save:[/b] safe to add; read the guide before removing it: packed vehicles and animals vanish with their capsules and Pal Spheres, and after reinstalling only the vehicles and animals can be restored
+description=[*] [b]Languages:[/b] 繁體中文, 简体中文, English, 日本語, 한국어, Русский, Español, Português, Türkçe, Français, Polski, Deutsch (please report any translation issues)
+description=[/list]
+description=
+description=[h2]🚀 Quick Start[/h2]
+description=[olist]
+description=[*] Get empty capsules and Pal Spheres: loot mechanic shops, car supply stores, barns, pet stores and hunting lockers, or get them from an admin or the Economy Center
+description=[*] Park, turn the engine off and make sure nobody is inside, then right-click the vehicle and choose [b]Pack into Capsule[/b]; right-click a live animal, open its submenu and choose [b]Catch in Pal Sphere[/b]; or right-click an empty capsule or Pal Sphere in your inventory and choose [b]Throw to Capture[/b]
+description=[*] For a vehicle, right-click the capsule, choose [b]Throw Capsule[/b], pick a landing spot with the cursor and left-click; too heavy to pick up? Right-click it on the ground and choose [b]Press the Button[/b]
+description=[*] For an animal, right-click the Pal Sphere holding it in your inventory and choose [b]Release[/b]; the animal appears right next to you
+description=[/olist]
+description=
+description=[h2]✨ Features[/h2]
+description=[list]
+description=[*] [b]Pack vehicles in capsules[/b]: right-click a vehicle to pack it; seven capsule types, each with its own smoke and sounds
+description=[*] [b]Catch animals in Pal Spheres[/b]: right-click an animal to catch it, and release it right next to you
+description=[*] [b]Four Pal Sphere tiers[/b]: better tiers catch better, and the wild catch chance is shown before you try
+description=[*] [b]Throw to capture[/b]: throw an empty capsule at a vehicle or an empty Pal Sphere at an animal, even a wild one that runs from you
+description=[*] [b]Kept as they were[/b]: a vehicle's mods, condition and cargo, an animal's breed, age, genes and pregnancy
+description=[*] [b]Tooltip and 3D preview[/b]: hover a capsule or Pal Sphere to see a vehicle's condition or an animal's details, and spin a 3D view of a vehicle
+description=[*] [b]Safehouse protection[/b]: vehicles and animals in someone else's safehouse can't be packed, and nothing can be released there
+description=[*] [b]No copies, nothing lost[/b]: a crash or a rolled-back save never creates an extra vehicle, animal or cargo, and admins can trace a lost capsule and restore what it held
+description=[/list]
+description=📖 [b]Packing vehicles, catching and releasing animals, throwing to capture, safehouses, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]
+description=
+description=[h2]🔗 All Minidoracat Mods[/h2]
+description=Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat collection[/url] and subscribe to what you need.
+description=
+description=[h2]💬 Feedback[/h2]
+description=[list]
+description=[*] GitHub Issues: https://github.com/Minidoracat/MinidoracatPackThrowFor42/issues
+description=[*] Discord: https://discord.gg/Gur2V67
+description=[/list]
+description=
+description=[h2]☕ Support[/h2]
+description=If this helps, please give it a 👍 here and a ⭐ on GitHub so more players can find it.
+description=The mod is always free. If you like it, you can buy me a coffee; donations go toward servers and mod development. The source is on GitHub.
+description=[url=https://ko-fi.com/minidoracat][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_kofi.png[/img][/url] [url=https://github.com/Minidoracat/MinidoracatPackThrowFor42][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_github.png[/img][/url]
+description=
+description=[b]#Minidoracat[/b]
+description=
+description=Workshop ID: TBD after first upload
+description=Mod ID: MinidoracatPackThrowFor42
+tags=Build 42;Items;Vehicles;Multiplayer
+visibility=public

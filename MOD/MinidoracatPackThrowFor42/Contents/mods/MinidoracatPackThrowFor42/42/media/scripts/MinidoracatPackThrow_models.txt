@@ -1,0 +1,324 @@
+module MinidoracatPackThrow
+{
+    /*
+        Capsule models (built by scripts/assets/build_capsule.py). One mesh for every capsule; each type and state only
+        swaps the texture (the type's end cap colour, and on a loaded capsule the type's patterned band). FBX vertices
+        are metres with identity node transforms, so scale = 1.0 is the real 7 cm capsule (PZ reads FBX with assimp:
+        node Lcl Scaling applies, UnitScaleFactor does not).
+        Ground models are 5x so the capsule (35 x 13 cm on the floor) reads at default zoom (3x was ~15 px, E2E
+        vcap-pack-1010a); hand models are 1.5x.
+        Items must reference these by full name: getModelScript without a dot only looks in Base
+        (ScriptBucketCollection.java:72-89).
+    */
+
+    model PackThrowCartoon
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoon,
+        scale = 5.0,
+    }
+
+    model PackThrowCartoonLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoonLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowCartoonHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoon,
+        scale = 1.5,
+    }
+
+    model PackThrowCartoonLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleCartoonLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowReal
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleReal,
+        scale = 5.0,
+    }
+
+    model PackThrowRealLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleRealLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowRealHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleReal,
+        scale = 1.5,
+    }
+
+    model PackThrowRealLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleRealLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowDust
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDust,
+        scale = 5.0,
+    }
+
+    model PackThrowDustLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDustLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowDustHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDust,
+        scale = 1.5,
+    }
+
+    model PackThrowDustLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleDustLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowSteam
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteam,
+        scale = 5.0,
+    }
+
+    model PackThrowSteamLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteamLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowSteamHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteam,
+        scale = 1.5,
+    }
+
+    model PackThrowSteamLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSteamLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowSciFi
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFi,
+        scale = 5.0,
+    }
+
+    model PackThrowSciFiLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFiLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowSciFiHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFi,
+        scale = 1.5,
+    }
+
+    model PackThrowSciFiLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleSciFiLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowMagic
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagic,
+        scale = 5.0,
+    }
+
+    model PackThrowMagicLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagicLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowMagicHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagic,
+        scale = 1.5,
+    }
+
+    model PackThrowMagicLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleMagicLoaded,
+        scale = 1.5,
+    }
+
+    model PackThrowShock
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShock,
+        scale = 5.0,
+    }
+
+    model PackThrowShockLoaded
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShockLoaded,
+        scale = 5.0,
+    }
+
+    model PackThrowShockHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShock,
+        scale = 1.5,
+    }
+
+    model PackThrowShockLoadedHand
+    {
+        mesh = WorldItems/MinidoracatCapsule,
+        texture = WorldItems/MinidoracatCapsuleShockLoaded,
+        scale = 1.5,
+    }
+
+    /* Pal Sphere models (built by scripts/assets/build_sphere.py): one mesh for every tier, metres like the capsule's,
+       so the same scales give it the capsule's size on the ground and in the hand; each tier and state swaps the texture. */
+
+    model MinidoracatSphereBasic
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasic,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereBasicLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasicLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereBasicHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasic,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereBasicLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereBasicLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereMega
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMega,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereMegaLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMegaLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereMegaHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMega,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereMegaLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereMegaLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereGiga
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGiga,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereGigaLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGigaLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereGigaHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGiga,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereGigaLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereGigaLoaded,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereLegend
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegend,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereLegendLoaded
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegendLoaded,
+        scale = 5.0,
+    }
+
+    model MinidoracatSphereLegendHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegend,
+        scale = 1.5,
+    }
+
+    model MinidoracatSphereLegendLoadedHand
+    {
+        mesh = WorldItems/MinidoracatSphere,
+        texture = WorldItems/MinidoracatSphereLegendLoaded,
+        scale = 1.5,
+    }
+}

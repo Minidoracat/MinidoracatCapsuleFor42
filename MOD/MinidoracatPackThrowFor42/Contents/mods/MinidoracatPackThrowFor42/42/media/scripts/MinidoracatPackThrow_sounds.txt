@@ -1,0 +1,291 @@
+module Base
+{
+    /*
+        Pack & Throw sound effects (ElevenLabs; prompts in scripts/assets/sfx.json and sfx_v2..v6.json, take
+        selection and loudness in scripts/assets/build_sfx.py). Play with getSoundManager():PlayWorldSoundImpl("<name>", ...).
+        Four per capsule type (throw, pop, pack, button), every one different; shared/MinidoracatPackThrow/Core.lua
+        M.TYPES names which type uses which. The four without a suffix are the cartoon type.
+        Keys parsed by GameSoundScript.java (category/is3D/master; clip file/distanceMax/volume).
+        Category Item like the vanilla throwables in sounds_throwable.txt; file clip like sounds_zombie_voice_tutorial.txt.
+        Sound files must exist when the mod loads: files written at runtime never play.
+    */
+    sound PackThrowThrow
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrow.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPop
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPop.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPack
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPack.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButton
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButton.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowReal
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopReal
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackReal
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonReal
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonReal.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowReal2
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowReal2.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopHeavyDrop
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopHeavyDrop.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackHeavy
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackHeavy.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonDust
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonDust.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowSteam
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopSteam
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackSteam
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackSteam.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonSwitch
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonSwitch.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonSci
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonSci.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonMagic
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonMagic.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowThrowShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowThrowShock.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPopExplosion
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPopExplosion.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowPackShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowPackShock.ogg,
+            distanceMax = 20,
+        }
+    }
+
+    sound PackThrowButtonShock
+    {
+        category = Item,
+        clip
+        {
+            file = media/sound/MinidoracatPackThrow/PackThrowButtonShock.ogg,
+            distanceMax = 20,
+        }
+    }
+}

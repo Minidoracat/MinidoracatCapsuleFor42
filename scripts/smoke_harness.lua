@@ -21,7 +21,7 @@
 ]]
 
 -- 家族佈局固定，直接填死最省事；scaffold 時由模板替換佔位符
-local MEDIA = "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/media/lua"
+local MEDIA = "MOD/MinidoracatPackThrowFor42/Contents/mods/MinidoracatPackThrowFor42/42/media/lua"
 
 -- ===== 假的 PZ 全域（依 MOD 實際用到的 API 增補）=====
 local nowMs = 5000000
@@ -99,7 +99,7 @@ local function newItem(fullType, isContainer)
 end
 function instanceof(o, cls) return cls == "InventoryContainer" and type(o) == "table" and o.inv ~= nil end
 function instanceItem(t)
-    return newItem(t, t:find("^MinidoracatCapsule%.Loaded") ~= nil or t == "Base.Bag_Schoolbag")
+    return newItem(t, t:find("^MinidoracatPackThrow%.Loaded") ~= nil or t == "Base.Bag_Schoolbag")
 end
 function sendAddItemToContainer() end
 function sendRemoveItemFromContainer() end
@@ -181,12 +181,12 @@ function require(name)
     error("require 找不到: " .. name)
 end
 
-require "MinidoracatCapsule/Core"
-require "MinidoracatCapsule/Json"
-require "MinidoracatCapsule/Store"
-require "MinidoracatCapsule/Guard"
-require "MinidoracatCapsule/Admin"
-local M = MinidoracatCapsule
+require "MinidoracatPackThrow/Core"
+require "MinidoracatPackThrow/Json"
+require "MinidoracatPackThrow/Store"
+require "MinidoracatPackThrow/Guard"
+require "MinidoracatPackThrow/Admin"
+local M = MinidoracatPackThrow
 local Json, Store, Guard, Admin = M.Json, M.Store, M.Guard, M.Admin
 
 -- ===== 測試工具 =====
@@ -293,7 +293,7 @@ check(#dskip == 1, "循環參照在深度上限處截斷並記一條路徑")
 print("Store：寫後讀回、狀態只轉一次")
 local snap = { v = 1, state = "PACKED", settled = true, script = "Base.PickUpTruck", modData = nasty, history = {} }
 check(Store.write(42, snap) == true, "寫入並讀回一致")
-check(Store.dir() == "MinidoracatCapsule/MP_harness_world/" and files[Store.path(42, "a")] ~= nil
+check(Store.dir() == "MinidoracatPackThrow/MP_harness_world/" and files[Store.path(42, "a")] ~= nil
     and files[Store.path(42, "a")]:find("\n42 {", 1, true) ~= nil, "落在這個世界的資料夾、42 號桶的 a 份（MP_<伺服器>）")
 local r = Store.read(42)
 check(r and diff(snap, r) == nil, "read 讀回與寫入相同")
@@ -651,7 +651,7 @@ do -- 拿出模式（AllowCargoTakeOut）：主程式的 local 已接近 200 個
     (function()
         print("Guard：伺服器允許拿出貨物時，跟著紀錄、不放回；沒落盤的照樣放回")
         owner.inv:Remove(cap) -- 上面貨物鎖那顆（水瓶裝備中）不參與
-        SandboxVars = { MinidoracatCapsule = { AllowCargoTakeOut = true } }
+        SandboxVars = { MinidoracatPackThrow = { AllowCargoTakeOut = true } }
         quiet = true
         local open, water, bag, pencil = packedCapsule("PACKED", true)
         local s0 = Store.read(open.id)
@@ -729,11 +729,11 @@ do -- 回溯判斷：主程式的 local 已接近 200 個上限，放進函式
 end
 
 -- ===== Phase 3：落點範圍、收車權限、玩家身分（intent） =====
-require "MinidoracatCapsule/Footprint"
-require "MinidoracatCapsule/Rules"
+require "MinidoracatPackThrow/Footprint"
+require "MinidoracatPackThrow/Rules"
 local clientCommand
 Events.OnClientCommand = { Add = function(fn) clientCommand = clientCommand or fn end } -- PlayerCommands' (the first)
-require "MinidoracatCapsule/PlayerCommands"
+require "MinidoracatPackThrow/PlayerCommands"
 local Footprint, Rules, Play = M.Footprint, M.Rules, M.Play
 
 print("Footprint：方向與範圍")
@@ -850,7 +850,7 @@ do
     kp.inv:AddItem(instanceItem(T4.empty))
     kp.inv:AddItem(instanceItem(T1.empty))
     kp.inv:AddItem(instanceItem(M.FIRST_SPHERE.empty))
-    SandboxVars = { MinidoracatCapsule = { TypeSteam = false } }
+    SandboxVars = { MinidoracatPackThrow = { TypeSteam = false } }
     local kinds, spheres = Rules.emptyTypes(kp), Rules.emptyTypes(kp, true)
     check(#kinds == 2 and kinds[1].type == T1 and kinds[1].n == 1 and kinds[1].on and kinds[2].type == T4
         and kinds[2].n == 2 and not kinds[2].on and #spheres == 1 and spheres[1].type == M.FIRST_SPHERE,
@@ -874,10 +874,10 @@ local keyHolder, stranger, admin3 = newPlayer("keyholder", false), newPlayer("st
 keyHolder.inv.haveThisKeyId = function(_, id) return id == 4242 and {} or nil end
 stranger.inv.haveThisKeyId = function() return nil end
 admin3.inv.haveThisKeyId = function() return nil end
-SandboxVars = { MinidoracatCapsule = { PackPermission = 1 } }
+SandboxVars = { MinidoracatPackThrow = { PackPermission = 1 } }
 check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car), "模式 1：有鑰匙才行（背包）")
 check(Rules.mayPack(admin3, car) and select(2, Rules.mayPack(admin3, car)) == "ADMIN", "模式 1：管理員沒鑰匙也能收")
-SandboxVars.MinidoracatCapsule.PackPermission = 3
+SandboxVars.MinidoracatPackThrow.PackPermission = 3
 check(not Rules.mayPack(stranger, car) and not Rules.mayPack(keyHolder, car), "模式 3：有鑰匙的一般玩家也不行")
 do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限（收車＝拖曳 TOW）
     local vmAsked
@@ -891,13 +891,13 @@ do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限�
     MinidoracatVehicleManagerAPI = vmStub({})
     check(not Rules.mayPack(admin3, car) and vmAsked == "TOW", "VehicleManager 綁定的車：問拖曳權限；管理員沒開越權也不行")
     MinidoracatVehicleManagerAPI = nil
-    SandboxVars.MinidoracatCapsule.PackPermission = 1
+    SandboxVars.MinidoracatPackThrow.PackPermission = 1
     car.ignition = true
     check(Rules.mayPack(stranger, car), "模式 1：鑰匙插在點火孔，誰都能收")
     car.ignition = false
-    SandboxVars.MinidoracatCapsule.PackPermission = 2
+    SandboxVars.MinidoracatPackThrow.PackPermission = 2
     check(Rules.mayPack(stranger, car), "模式 2：任何人")
-    SandboxVars.MinidoracatCapsule.PackPermission = 3
+    SandboxVars.MinidoracatPackThrow.PackPermission = 3
     check(Rules.mayPack(admin3, car) and not Rules.mayPack(keyHolder, car), "模式 3：只有管理員")
     MinidoracatVehicleManagerAPI = vmStub({ [stranger] = { true, "OWNER" }, [keyHolder] = { true, "MEMBER" },
         [admin3] = { false, "RENT_LOCKED" } })
@@ -912,7 +912,7 @@ do -- VehicleManager 假實作：照玩家回答，記下問的是哪個權限�
     check(ovOk and ovMode == "ADMIN" and not Rules.mayPack(keyHolder, car),
         "VehicleManager 越權中的管理員算「管理員」；別人綁定的車，有鑰匙也不行")
     MinidoracatVehicleManagerAPI = { canUse = function() return true, "UNCLAIMED" end }
-    SandboxVars.MinidoracatCapsule.PackPermission = 1
+    SandboxVars.MinidoracatPackThrow.PackPermission = 1
     local unOk, unMode = Rules.mayPack(admin3, car)
     check(Rules.mayPack(keyHolder, car) and not Rules.mayPack(stranger, car) and unOk and unMode == "ADMIN",
         "VehicleManager 沒綁定的車照沙盒：模式 1 要鑰匙，管理員照常")
@@ -986,7 +986,7 @@ end
 local sandbox = {}
 function getSandboxOptions()
     return { getOptionByName = function(_, name)
-        local k = name:match("^MinidoracatCapsule%.(.+)$")
+        local k = name:match("^MinidoracatPackThrow%.(.+)$")
         if k == nil or sandbox[k] == nil then return nil end
         return { getValue = function() return sandbox[k] end }
     end }
@@ -997,10 +997,10 @@ function sendServerCommand(...) sent[#sent + 1] = { ... } end
 -- 把舊情境的紀錄清掉，Phase 4 從空的桶開始（Store 對桶檔的快取一起清）
 for path in pairs(files) do files[path] = nil end
 Store._resetForTests()
-require "MinidoracatCapsule/Index"
-require "MinidoracatCapsule/Query"
-require "MinidoracatCapsule/AdminCommands"
-require "MinidoracatCapsule/Loot"
+require "MinidoracatPackThrow/Index"
+require "MinidoracatPackThrow/Query"
+require "MinidoracatPackThrow/AdminCommands"
+require "MinidoracatPackThrow/Loot"
 local Index, Query, AdminCommands, Loot = M.Index, M.Query, M.AdminCommands, M.Loot
 
 print("Index：分頁 50 筆、搜尋編號與玩家、狀態篩選（含當機前未確認）")
@@ -1194,7 +1194,7 @@ do -- 桶檔、保留天數、最後看到：主程式的 local 已接近 200 �
         local spDir = Store.dir()
         isServer, getCore, getWorld = realIsServer, realGetCore, realGetWorld
         Store._resetForTests()
-        check(spDir == "MinidoracatCapsule/SP_Apocalypse_10-10-2026_12-00_x/" and Store.dir() ~= spDir, "單機：" .. spDir)
+        check(spDir == "MinidoracatPackThrow/SP_Apocalypse_10-10-2026_12-00_x/" and Store.dir() ~= spDir, "單機：" .. spDir)
 
         print("Store：紀錄再多檔案數也固定（256 桶 × 兩份 + index.json）；刪紀錄是改寫桶，不會多出檔案")
         local many = {}
@@ -1427,7 +1427,7 @@ do (function()
         end,
     }
     MinidoracatEconomy = { v1 = eco }
-    require "MinidoracatCapsule/Trade"
+    require "MinidoracatPackThrow/Trade"
     local Trade = M.Trade
     local seller, buyer = newPlayer("seller", false), newPlayer("buyer", false)
     local cap = instanceItem(M.TYPES[1].loaded)
@@ -1539,7 +1539,7 @@ do (function()
     check(ab.escrow == nil and ab.history[#ab.history].ev == "ESCROW_ABORTED", "Economy 中途放棄：清掉交易標記，歷史記一筆")
     local savedEv = Events.OnInitGlobalModData
     Events.OnInitGlobalModData = { Add = function(fn) initHook = fn end }
-    require "MinidoracatCapsule/Economy"
+    require "MinidoracatPackThrow/Economy"
     Events.OnInitGlobalModData = savedEv
     local calls = {}
     eco.registerUniqueItemType = function(t, mod, h) calls[#calls + 1] = "unique:" .. t .. ":" .. mod; return h == Trade.handler end
@@ -1559,7 +1559,7 @@ do (function()
     end
     for _, t in ipairs(M.TYPES) do want[#want + 1] = "block:" .. t.loaded end
     check(table.concat(calls, ",") == table.concat(want, ",")
-        and table.concat(calls, ","):find("unique:MinidoracatCapsule.LoadedSphereLegend:" .. M.MOD_ID, 1, true) ~= nil,
+        and table.concat(calls, ","):find("unique:MinidoracatPackThrow.LoadedSphereLegend:" .. M.MOD_ID, 1, true) ~= nil,
         "rev 6 七種膠囊與四級帕魯球（LoadedSphere<等級>）各註冊一次；被拒或只有 rev 5 時每種退回 blockItemType（"
         .. #calls .. " 次呼叫）")
     MinidoracatEconomy = nil
@@ -1586,7 +1586,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
     local caps = MinidoracatUI.v1.CAPABILITIES
     caps.window, caps.controls, caps.virtualList, caps.slider = true, true, true, true -- widget 檔要遊戲 UI 類別；這裡只驗文字與排版
     caps.scrollPanel, caps.opaqueWindow = true, true
-    require "MinidoracatCapsule/UIKit"
+    require "MinidoracatPackThrow/UIKit"
     local Kit = M.UIKit
     check(Kit.ok and caps.textWrap == true, "UIKit 接上框架（含 Text.wrap）")
     local function ui(lang)
@@ -1595,7 +1595,7 @@ local function uiLayout() -- 獨立函式：主程式的 local 已接近 200 個
         fh:close()
         return t
     end
-    local P = "UI_MinidoracatCapsule_"
+    local P = "UI_MinidoracatPackThrow_"
     local DW = 548 -- 980 寬面板的詳情欄
     local msgs = 0
     for _, lang in ipairs({ "EN", "FR", "RU" }) do
@@ -1650,15 +1650,15 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         return s
     end
     local function exists(path) return read(path) ~= nil end
-    local items = read(base .. "/scripts/MinidoracatCapsule_items.txt")
-    local models = read(base .. "/scripts/MinidoracatCapsule_models.txt")
+    local items = read(base .. "/scripts/MinidoracatPackThrow_items.txt")
+    local models = read(base .. "/scripts/MinidoracatPackThrow_models.txt")
     local sandboxTxt = read(base .. "/sandbox-options.txt")
     local sounds, used, bad = {}, {}, {}
-    for name, file in read(base .. "/scripts/MinidoracatCapsule_sounds.txt"):gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do
+    for name, file in read(base .. "/scripts/MinidoracatPackThrow_sounds.txt"):gmatch("sound%s+([%w_]+)%s*{[^}]-file%s*=%s*([^,%s]+)") do
         sounds[name] = file
     end
     for _, t in ipairs(M.TYPES) do
-        local id, item, loaded, model = t.id, "Capsule" .. t.id, "LoadedCapsule" .. t.id, "UniversalCapsule" .. t.id
+        local id, item, loaded, model = t.id, "Capsule" .. t.id, "LoadedCapsule" .. t.id, "PackThrow" .. t.id
         if t.sphere then item, loaded, model = id, "Loaded" .. id, t.icon end
         if not items:find("item " .. item .. "%s*{[^}]-Icon = " .. t.icon .. ",") then bad[#bad + 1] = id .. ".empty item" end
         if not items:find("item " .. loaded .. "%s*{[^}]-Icon = " .. t.icon .. "Loaded,") then bad[#bad + 1] = id .. ".loaded item" end
@@ -1684,11 +1684,11 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
             end
         end
         for i = 1, t.frames + 1 do
-            local has = exists(base .. "/textures/MinidoracatCapsule/" .. t.smoke .. i .. ".png")
+            local has = exists(base .. "/textures/MinidoracatPackThrow/" .. t.smoke .. i .. ".png")
             if has ~= (i <= t.frames) then bad[#bad + 1] = id .. " frame " .. i end
         end
         for _, opt in ipairs({ "Type" .. id, "Type" .. id .. "Loot" }) do
-            if not sandboxTxt:find("option MinidoracatCapsule%." .. opt .. "%s*{[^}]-page = MinidoracatCapsuleTypes") then
+            if not sandboxTxt:find("option MinidoracatPackThrow%." .. opt .. "%s*{[^}]-page = MinidoracatPackThrowTypes") then
                 bad[#bad + 1] = "sandbox " .. opt
             end
         end
@@ -1699,8 +1699,8 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
     check(#bad == 0, "每種都有兩個物品、四個模型、四張圖；膠囊四段音效（28 段互不共用、檔案都在），帕魯球用科幻款的煙霧與音效；"
         .. "裝了動物的帕魯球是容器；煙霧幀、兩個沙盒選項（" .. table.concat(bad, ",") .. "）")
     check(table.concat(tiers, ",") == "Basic+0/8,Mega+15/4,Giga+30/2,Legend+50/1"
-        and M.TYPE_BY_ID.SphereMega.empty == "MinidoracatCapsule.SphereMega"
-        and M.TYPE_BY_ID.SphereMega.loaded == "MinidoracatCapsule.LoadedSphereMega" and M.TYPES[5].id == "SciFi",
+        and M.TYPE_BY_ID.SphereMega.empty == "MinidoracatPackThrow.SphereMega"
+        and M.TYPE_BY_ID.SphereMega.loaded == "MinidoracatPackThrow.LoadedSphereMega" and M.TYPES[5].id == "SciFi",
         "帕魯球四級（等級加成／稀有度）寫死在 M.TYPES 尾端，物品 ID Sphere<等級>／LoadedSphere<等級>，膠囊的特效索引不變")
     check(not sandboxTxt:find("EffectStyle", 1, true), "沙盒不再有 EffectStyle")
     local missing = {}
@@ -1712,9 +1712,9 @@ local function capsuleTypes() -- 獨立函式：主程式的 local 已接近 200
         for _, t in ipairs(M.TYPES) do
             for _, k in ipairs({ t.empty, t.loaded }) do if not itemNames[k] then missing[#missing + 1] = lang .. ":" .. k end end
             for _, k in ipairs({ "Type" .. t.id, "Type" .. t.id .. "_tooltip", "Type" .. t.id .. "Loot", "Type" .. t.id .. "Loot_tooltip" }) do
-                if not sb["Sandbox_MinidoracatCapsule_" .. k] then missing[#missing + 1] = lang .. ":" .. k end
+                if not sb["Sandbox_MinidoracatPackThrow_" .. k] then missing[#missing + 1] = lang .. ":" .. k end
             end
-            if not tip["Tooltip_MinidoracatCapsule_Look_" .. t.id] then missing[#missing + 1] = lang .. ":Look_" .. t.id end
+            if not tip["Tooltip_MinidoracatPackThrow_Look_" .. t.id] then missing[#missing + 1] = lang .. ":Look_" .. t.id end
         end
         for k in pairs(sb) do if k:find("EffectStyle", 1, true) then missing[#missing + 1] = lang .. ":" .. k .. "(old)" end end
     end
@@ -1731,7 +1731,7 @@ local function wildCases(live, packer)
     local Pack, Ball = M.Pack, M.FIRST_SPHERE
     local savedRand, savedRoll = ZombRand, Rules.rollWild
     local function chance(v)
-        SandboxVars = { MinidoracatCapsule = { WildCaptureChance = v } }
+        SandboxVars = { MinidoracatPackThrow = { WildCaptureChance = v } }
         return Rules.wildChance()
     end
     check(chance(nil) == 50 and chance(0) == 0 and chance(100) == 100 and chance(150) == 100 and chance(-5) == 0
@@ -1780,13 +1780,13 @@ local function wildCases(live, packer)
         "強制成功：照舊收好、setWild(false)、紀錄 wild=false、空膠囊用掉")
     -- WildCaptureFailConsumes on: the forced miss takes the capsule this pack used (consumed = true); a refusal that
     -- is not the roll (WILD_OFF here) keeps it; off (above) nothing is used up
-    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = true
+    SandboxVars.MinidoracatPackThrow.WildCaptureFailConsumes = true
     Rules.rollWild = function() return false end
     local hare2, cap2, cap3 = live({ wild = true, square = spot }), empty(), empty()
     local before2 = #ground
     quiet = true
     local gone = Pack.packAnimal(packer, hare2, { capsule = cap2, typeId = "SphereBasic" })
-    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    SandboxVars.MinidoracatPackThrow.WildCaptureChance = 0
     local offKept = Pack.packAnimal(packer, live({ wild = true, square = spot }), { capsule = cap3, typeId = "SphereBasic" })
     quiet = false
     check(gone.ok == false and gone.why == "ESCAPED" and gone.consumed == true and gone.chance == 50
@@ -1807,7 +1807,7 @@ local function wildCases(live, packer)
     quiet = false
     check(sure.ok and tame.ok and #rolls == 2, "成功率 100：最大的骰子也成功；家養動物不擲骰（強制失敗也照收）")
     ZombRand, Rules.rollWild = savedRand, savedRoll
-    SandboxVars = { MinidoracatCapsule = {} }
+    SandboxVars = { MinidoracatPackThrow = {} }
 
     -- the option, its settings row, the tooltip rows and the strings
     local function src(path)
@@ -1816,14 +1816,14 @@ local function wildCases(live, packer)
         f:close()
         return s
     end
-    local sb, panel = src("../sandbox-options.txt"), src("client/MinidoracatCapsule/AdminPanel.lua")
-    local allow, wild, keep = sb:find("option MinidoracatCapsule.AllowAnimals", 1, true),
-        sb:find("option MinidoracatCapsule%.WildCaptureChance%s*{type = integer, min = 0, max = 100, default = 50, page = MinidoracatCapsule,"),
-        sb:find("option MinidoracatCapsule.RecordRetentionDays", 1, true)
+    local sb, panel = src("../sandbox-options.txt"), src("client/MinidoracatPackThrow/AdminPanel.lua")
+    local allow, wild, keep = sb:find("option MinidoracatPackThrow.AllowAnimals", 1, true),
+        sb:find("option MinidoracatPackThrow%.WildCaptureChance%s*{type = integer, min = 0, max = 100, default = 50, page = MinidoracatPackThrow,"),
+        sb:find("option MinidoracatPackThrow.RecordRetentionDays", 1, true)
     local pAllow, pWild, pKeep = panel:find('key = "AllowAnimals"', 1, true),
         panel:find('{ key = "WildCaptureChance", kind = "int", min = 0, max = 100, default = 50, pct = true }', 1, true),
         panel:find('key = "RecordRetentionDays"', 1, true)
-    local sGone, pGone = sb:find("option MinidoracatCapsule%.WildCaptureFailConsumes%s*{type = boolean, default = false, page = MinidoracatCapsule,"),
+    local sGone, pGone = sb:find("option MinidoracatPackThrow%.WildCaptureFailConsumes%s*{type = boolean, default = false, page = MinidoracatPackThrow,"),
         panel:find('{ key = "WildCaptureFailConsumes", kind = "bool", default = false }', 1, true)
     check(allow and wild and keep and allow < wild and wild < keep and pAllow and pWild and pKeep and pAllow < pWild
         and pWild < pKeep, "沙盒 WildCaptureChance 整數 0–100、預設 50、主頁緊接 AllowAnimals；設定分頁同一位置、顯示成百分比")
@@ -1831,31 +1831,31 @@ local function wildCases(live, packer)
         "沙盒 WildCaptureFailConsumes 布林、預設關、緊接成功率；設定分頁同一位置（開關）")
     local sPrev, pPrev, order = sGone, pGone, true
     for _, b in ipairs({ { "WildCaptureInjuredBonus", 30 }, { "WildCaptureYoungBonus", 15 }, { "WildCaptureUnawareBonus", 20 } }) do
-        local s = sb:find("option MinidoracatCapsule%." .. b[1] .. "%s*{type = integer, min = 0, max = 100, default = " .. b[2]
-            .. ", page = MinidoracatCapsule,")
+        local s = sb:find("option MinidoracatPackThrow%." .. b[1] .. "%s*{type = integer, min = 0, max = 100, default = " .. b[2]
+            .. ", page = MinidoracatPackThrow,")
         local p = panel:find('{ key = "' .. b[1] .. '", kind = "int", min = 0, max = 100, default = ' .. b[2] .. ', pct = true }', 1, true)
         order = order and s ~= nil and p ~= nil and s > sPrev and p > pPrev
         sPrev, pPrev = s or math.huge, p or math.huge
     end
     check(order and sPrev < keep and pPrev < pKeep,
         "三個加成（受傷 30、幼崽 15、沒發現你 20）整數 0–100、主頁緊接 WildCaptureFailConsumes；設定分頁同順序、顯示成百分比")
-    check(src("client/MinidoracatCapsule/Menu.lua"):find("Notify.chanceRows(player, animal, t)", 1, true)
-        and src("client/MinidoracatCapsule/ThrowCursor.lua"):find("Notify.chanceRows(self.character, tgt.thing, M.typeOf(self.item))", 1, true),
+    check(src("client/MinidoracatPackThrow/Menu.lua"):find("Notify.chanceRows(player, animal, t)", 1, true)
+        and src("client/MinidoracatPackThrow/ThrowCursor.lua"):find("Notify.chanceRows(self.character, tgt.thing, M.typeOf(self.item))", 1, true),
         "動物選單與抓取游標的提示框都加成功率與加成列（Notify.chanceRows，用該等級的帕魯球）")
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
         local ui = Json.decode(src("shared/Translate/" .. lang .. "/IG_UI.json"))
         local box = Json.decode(src("shared/Translate/" .. lang .. "/Sandbox.json"))
         for _, k in ipairs({ "Why_ESCAPED", "WildChance", "WildChanceGone", "EscapedGone" }) do
-            local s = ui["IGUI_MinidoracatCapsule_" .. k] or ""
+            local s = ui["IGUI_MinidoracatPackThrow_" .. k] or ""
             if not (s:find("%1", 1, true) and s:find("%%", 1, true)) then missing[#missing + 1] = lang .. ":" .. k end
         end
-        if (ui.IGUI_MinidoracatCapsule_Why_WILD_OFF or "") == "" then missing[#missing + 1] = lang .. ":Why_WILD_OFF" end
+        if (ui.IGUI_MinidoracatPackThrow_Why_WILD_OFF or "") == "" then missing[#missing + 1] = lang .. ":Why_WILD_OFF" end
         for _, k in ipairs({ "WildCaptureChance", "WildCaptureChance_tooltip", "WildCaptureFailConsumes",
             "WildCaptureFailConsumes_tooltip", "WildCaptureInjuredBonus", "WildCaptureInjuredBonus_tooltip",
             "WildCaptureYoungBonus", "WildCaptureYoungBonus_tooltip", "WildCaptureUnawareBonus",
             "WildCaptureUnawareBonus_tooltip" }) do
-            local s = box["Sandbox_MinidoracatCapsule_" .. k] or ""
+            local s = box["Sandbox_MinidoracatPackThrow_" .. k] or ""
             if s == "" or s:find("%", 1, true) then missing[#missing + 1] = lang .. ":" .. k end
         end
     end
@@ -1864,10 +1864,10 @@ local function wildCases(live, packer)
 end
 
 local function animals() -- 獨立函式：主程式的 local 已接近 200 個上限
-    require "MinidoracatCapsule/Pack"
+    require "MinidoracatPackThrow/Pack"
     do -- an earlier case replaced Unpack.spawn for good: put the real one back (modules hold the M.Unpack table)
         local Unpack0 = M.Unpack
-        loadfile(MEDIA .. "/server/MinidoracatCapsule/Unpack.lua")()
+        loadfile(MEDIA .. "/server/MinidoracatPackThrow/Unpack.lua")()
         Unpack0.spawn, M.Unpack = M.Unpack.spawn, Unpack0
     end
     local A, Pack, Unpack, Query, Index, AdminCommands, Trade = M.Animal, M.Pack, M.Unpack, M.Query, M.Index,
@@ -1992,19 +1992,19 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     check(none == nil and why == "BLOCKED" and at("an.addToWorld(nil)") == math.huge, "水上 IsoAnimal.new 沒初始化（沒有種類）：BLOCKED、不放進世界")
 
     -- rules
-    SandboxVars = { MinidoracatCapsule = {} }
+    SandboxVars = { MinidoracatPackThrow = {} }
     local function why1(o2) return tostring(Rules.animalWhyNot(packer, o2 and live(o2) or nil)) end
     check(why1(nil) == "NO_ANIMAL" and why1({ dead = true }) == "NO_ANIMAL" and why1({ hook = true }) == "NO_ANIMAL"
         and why1({ away = true }) == "ANIMAL_AWAY" and why1({ rope = {} }) == "ROPE" and why1({ x = 150 }) == "TOO_FAR"
         and why1({ wild = true }) == "nil",
         "animalWhyNot：死的或掛鉤上 NO_ANIMAL、被抱著／雞舍／拖車 ANIMAL_AWAY、繩子 ROPE、太遠 TOO_FAR；野生的照樣能收")
-    SandboxVars.MinidoracatCapsule.AllowAnimals = false
+    SandboxVars.MinidoracatPackThrow.AllowAnimals = false
     local off = why1({})
-    SandboxVars.MinidoracatCapsule = { TypeSphereBasic = false }
+    SandboxVars.MinidoracatPackThrow = { TypeSphereBasic = false }
     local noCap = Rules.packAnimalWhyNot(packer, live(), Ball)
     packer.inv:AddItem(instanceItem(Ball.empty))
     local typeOff = Rules.packAnimalWhyNot(packer, live(), Ball)
-    SandboxVars.MinidoracatCapsule = {}
+    SandboxVars.MinidoracatPackThrow = {}
     check(off == "ANIMALS_OFF" and noCap == "NO_CAPSULE" and typeOff == "TYPE_OFF" and Rules.packAnimalWhyNot(packer, live(), Ball) == nil,
         "沙盒 AllowAnimals 關掉 ANIMALS_OFF；沒有空膠囊 NO_CAPSULE；款式停用 TYPE_OFF；都過才放行")
 
@@ -2145,8 +2145,8 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
             "LootSphereHuntingWeight_tooltip" },
         ContextMenu = { "PackSphere", "Release" },
     }
-    local PREFIX = { Tooltip = "Tooltip_MinidoracatCapsule_", IG_UI = "IGUI_MinidoracatCapsule_",
-        UI = "UI_MinidoracatCapsule_", Sandbox = "Sandbox_MinidoracatCapsule_", ContextMenu = "ContextMenu_MinidoracatCapsule_" }
+    local PREFIX = { Tooltip = "Tooltip_MinidoracatPackThrow_", IG_UI = "IGUI_MinidoracatPackThrow_",
+        UI = "UI_MinidoracatPackThrow_", Sandbox = "Sandbox_MinidoracatPackThrow_", ContextMenu = "ContextMenu_MinidoracatPackThrow_" }
     local gone = { "BlockedTitleAnimal", "BlockedThrowAnimal", "BlockedPressAnimal" } -- a sphere is never thrown nor pressed
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
@@ -2177,7 +2177,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         local f = io.open(dir .. "ItemName.json", "rb")
         local names = f:read("*a")
         f:close()
-        for _, s in ipairs({ names, says("Tooltip", "Tooltip_MinidoracatCapsule_PackedBy"), says("UI", "UI_MinidoracatCapsule_Ev_PACKED") }) do
+        for _, s in ipairs({ names, says("Tooltip", "Tooltip_MinidoracatPackThrow_PackedBy"), says("UI", "UI_MinidoracatPackThrow_Ev_PACKED") }) do
             if s:find("收車", 1, true) or s:find("收车", 1, true) then missing[#missing + 1] = lang .. ":vehicle-only wording" end
         end
         -- strings a player also sees on an animal record or capsule: in EN, CH and CN a vehicle word only together with
@@ -2208,14 +2208,14 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         end
     end
     -- the panel's message after an animal restore (Admin.restore answers animalId) is the animal one
-    local panel = io.open(MEDIA .. "/client/MinidoracatCapsule/AdminPanel.lua", "rb")
+    local panel = io.open(MEDIA .. "/client/MinidoracatPackThrow/AdminPanel.lua", "rb")
     local panelSrc = panel:read("*a")
     panel:close()
     if not panelSrc:find('res.animalId and "RestoredAnimal"', 1, true) then missing[#missing + 1] = "AdminPanel:RestoredAnimal" end
     local sandboxTxt = io.open(MEDIA .. "/../sandbox-options.txt", "rb")
     local sbText = sandboxTxt:read("*a")
     sandboxTxt:close()
-    check(#missing == 0 and sbText:find("option MinidoracatCapsule%.AllowAnimals%s*{type = boolean, default = true, page = MinidoracatCapsule,") ~= nil,
+    check(#missing == 0 and sbText:find("option MinidoracatPackThrow%.AllowAnimals%s*{type = boolean, default = true, page = MinidoracatPackThrow,") ~= nil,
         "16 種語言都有動物的新字串、裝填名稱不再寫「收車」、與動物共用的字串不只寫車（EN／CH／CN）；沙盒 AllowAnimals 布林、預設開、在主頁（"
         .. table.concat(missing, ",", 1, math.min(#missing, 12)) .. "）")
 end
@@ -2224,7 +2224,7 @@ animals()
 print("Capture／Safehouse：丟空膠囊抓取（選目標、重找、規則、沒中）與安全屋（選單收、抓取、丟、按、補回）")
 local function captureCases() -- 獨立函式：主程式的 local 已接近 200 個上限
     local Throw, Steam, Ball = M.Throw, M.TYPE_BY_ID.Steam, M.FIRST_SPHERE
-    SandboxVars = { MinidoracatCapsule = { PackPermission = 1 } }
+    SandboxVars = { MinidoracatPackThrow = { PackPermission = 1 } }
     -- 假安全屋：x 20..24、y 30..34，屋主 owner；屋主、成員以外只有 CanGoInsideSafehouses 能碰（SafeHouse.java:245-260）
     local zone, houses = { x1 = 20, y1 = 30, x2 = 24, y2 = 34 }, {}
     SafeHouse = {
@@ -2312,11 +2312,11 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     check(Rules.captureWhyNot(hunter, cow, true, Ball) == nil and Rules.captureWhyNot(far, cow, true, Ball) == "TOO_FAR"
         and Rules.animalWhyNot(hunter, cow) == nil and Rules.animalWhyNot(at("h2", 1, 30), cow) == "TOO_FAR",
         "抓取距離用 CAPTURE_REACH（選單仍是 PACK_RANGE）")
-    SandboxVars.MinidoracatCapsule.AllowAnimals = false
+    SandboxVars.MinidoracatPackThrow.AllowAnimals = false
     local off = Rules.captureWhyNot(hunter, cow, true, Ball)
-    SandboxVars.MinidoracatCapsule.AllowAnimals, SandboxVars.MinidoracatCapsule.TypeSphereBasic = nil, false
+    SandboxVars.MinidoracatPackThrow.AllowAnimals, SandboxVars.MinidoracatPackThrow.TypeSphereBasic = nil, false
     local typeOff = Rules.captureWhyNot(hunter, cow, true, Ball)
-    SandboxVars.MinidoracatCapsule.TypeSphereBasic = nil
+    SandboxVars.MinidoracatPackThrow.TypeSphereBasic = nil
     local noKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
     hunter.inv.haveThisKeyId = function(_, id) return id == 7 and {} or nil end
     local withKey = Rules.captureWhyNot(hunter, truck1, false, Steam)
@@ -2415,12 +2415,12 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local hare = beast(10, 30, 33)
     hare.wild = true
     local c6 = capsuleFor(hunter)
-    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    SandboxVars.MinidoracatPackThrow.WildCaptureChance = 0
     quiet = true
     clientCommand(M.MODULE, "intent", hunter, { kind = "capture", id = c6.id, target = "animal", tid = 33 })
     local offThrow = throwAt(hunter, c6, 10, 30)
     local offSent = lastSent()
-    SandboxVars.MinidoracatCapsule.WildCaptureChance = nil
+    SandboxVars.MinidoracatPackThrow.WildCaptureChance = nil
     local savedRoll = Rules.rollWild
     Rules.rollWild = function() return false end
     local hareDrop = drops(sq(10, 30))
@@ -2435,7 +2435,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
         "抓取時野生動物掙脫：回覆 ESCAPED 帶成功率 50，空膠囊掉在落點，野兔還在")
     -- WildCaptureFailConsumes on: the hare breaking free takes the thrown capsule (no drop, not in the inventory,
     -- consumed); a miss that is not the roll (the target is not there: NO_TARGET) still drops it at the aim point
-    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = true
+    SandboxVars.MinidoracatPackThrow.WildCaptureFailConsumes = true
     Rules.rollWild = function() return false end
     local c7, c8 = capsuleFor(hunter), capsuleFor(hunter)
     local goneDrop, awayDrop = drops(sq(10, 30)), drops(sq(10, 33))
@@ -2446,7 +2446,7 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local awaySent = lastSent()
     quiet = false
     Rules.rollWild = savedRoll
-    SandboxVars.MinidoracatCapsule.WildCaptureFailConsumes = nil
+    SandboxVars.MinidoracatPackThrow.WildCaptureFailConsumes = nil
     check(goneSent.why == "ESCAPED" and goneSent.consumed == true and goneSent.dropped == nil and #goneDrop == 0
         and hunter.inv:getItemWithIDRecursiv(c7.id) == nil and c7.container == nil and sq(10, 30).animals[1] == hare
         and escSent.consumed == nil,
@@ -2501,13 +2501,13 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
 
     -- strings in the 16 languages
     local want = {
-        IG_UI = { "IGUI_MinidoracatCapsule_Why_SAFEHOUSE", "IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE",
-            "IGUI_MinidoracatCapsule_Why_NO_TARGET", "IGUI_MinidoracatCapsule_CaptureFits", "IGUI_MinidoracatCapsule_CaptureTarget",
-            "IGUI_MinidoracatCapsule_CaptureNoFit", "IGUI_MinidoracatCapsule_Captured", "IGUI_MinidoracatCapsule_CaptureFailed",
-            "IGUI_MinidoracatCapsule_CaptureDropped", "IGUI_MinidoracatCapsule_DroppedAtFeet",
-            "IGUI_MinidoracatCapsule_CapturedHere", "IGUI_MinidoracatCapsule_CaptureKept" },
-        ContextMenu = { "ContextMenu_MinidoracatCapsule_Capture" },
-        UI = { "UI_MinidoracatCapsule_Why_SAFEHOUSE" },
+        IG_UI = { "IGUI_MinidoracatPackThrow_Why_SAFEHOUSE", "IGUI_MinidoracatPackThrow_Why_SAFEHOUSE_RELEASE",
+            "IGUI_MinidoracatPackThrow_Why_NO_TARGET", "IGUI_MinidoracatPackThrow_CaptureFits", "IGUI_MinidoracatPackThrow_CaptureTarget",
+            "IGUI_MinidoracatPackThrow_CaptureNoFit", "IGUI_MinidoracatPackThrow_Captured", "IGUI_MinidoracatPackThrow_CaptureFailed",
+            "IGUI_MinidoracatPackThrow_CaptureDropped", "IGUI_MinidoracatPackThrow_DroppedAtFeet",
+            "IGUI_MinidoracatPackThrow_CapturedHere", "IGUI_MinidoracatPackThrow_CaptureKept" },
+        ContextMenu = { "ContextMenu_MinidoracatPackThrow_Capture" },
+        UI = { "UI_MinidoracatPackThrow_Why_SAFEHOUSE" },
     }
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
@@ -2558,7 +2558,7 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
     end
     local me = player("me", 12, 7) -- three squares north of the animal: in front of one facing -y, behind one facing +y
     local function chance(o, t, sb)
-        SandboxVars = { MinidoracatCapsule = sb or {} }
+        SandboxVars = { MinidoracatPackThrow = sb or {} }
         local c = Rules.captureChance(me, animal(o), t and t.id)
         if not c then return "tame" end
         local parts = { tostring(c.total) }
@@ -2588,7 +2588,7 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
         "上限 100；沙盒加成 0＝關掉那項（不列）、可調大；基本 0 時加成救不回來（WILD_OFF）")
 
     -- capsules take vehicles, spheres animals: menu rules, the server's pack, the capture cursor
-    SandboxVars = { MinidoracatCapsule = { PackPermission = 2 } }
+    SandboxVars = { MinidoracatPackThrow = { PackPermission = 2 } }
     local hare = animal({ wild = true })
     local car = { getId = function() return 9 end }
     local p = player("p", 12, 9)
@@ -2694,11 +2694,11 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
     end
     M.Fx.broadcast = function(kind, args) fx[#fx + 1] = { kind, args } end
     getOnlinePlayers = function() return javaList({ r }) end
-    SandboxVars = { MinidoracatCapsule = {} }
+    SandboxVars = { MinidoracatPackThrow = {} }
     quiet = true
     Throw.land(sp)
     local landed = lastSent()
-    SandboxVars.MinidoracatCapsule.ReturnEmptyCapsule = false
+    SandboxVars.MinidoracatPackThrow.ReturnEmptyCapsule = false
     local legend = loaded(Legend, r)
     Throw.land({ player = r, capsuleId = legend.id, x = 11, y = 10, z = 0, mode = "release", dir = "E" })
     local noBack = lastSent()
@@ -2724,25 +2724,25 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
         Dialog = { show = function(o) dialogs[#dialogs + 1] = o end } } }
     loaded["MinidoracatUI/V1"] = true
     -- Info and Effects pull in vanilla UI classes; the toast only needs the animal's name
-    loaded["MinidoracatCapsule/Info"], loaded["MinidoracatCapsule/Effects"] = true, true
+    loaded["MinidoracatPackThrow/Info"], loaded["MinidoracatPackThrow/Effects"] = true, true
     local savedInfo = M.Info
     M.Info = { animalName = function(a) return a.name end, itemName = function(ft) return "name:" .. tostring(ft) end }
-    require "MinidoracatCapsule/Notify"
+    require "MinidoracatPackThrow/Notify"
     -- unpacked with ReturnEmptyCapsule off (no "empty capsule is back" line), then on
     local cow = { type = "cow", name = "E2E Bessie" }
     M.onServerCommand("landed", { ok = true, mode = "throw", kind = "animal", animal = cow })
     M.onServerCommand("landed", { ok = true, mode = "throw", kind = "animal", animal = cow, returned = true })
     local one, two = shown[1] or {}, shown[2] or {}
-    check(#shown == 2 and one.title == nil and one.message == "IGUI_MinidoracatCapsule_Unpacked"
-        and two.title == "IGUI_MinidoracatCapsule_Unpacked" and two.message == "IGUI_MinidoracatCapsule_EmptyBack",
+    check(#shown == 2 and one.title == nil and one.message == "IGUI_MinidoracatPackThrow_Unpacked"
+        and two.title == "IGUI_MinidoracatPackThrow_Unpacked" and two.message == "IGUI_MinidoracatPackThrow_EmptyBack",
         "展開的 Toast：ReturnEmptyCapsule 關掉時只有一行（標題不再當內文重複），開著時標題＋空膠囊回來")
     -- a missed capture: the reason goes in the message, which wraps; the title is one line the framework never wraps
     -- (the French reason ran past the toast's edge, vcap-capture-fr-1013r)
     local savedText, savedOrNull = getText, getTextOrNull
     getText = function(key, a) return a and (key .. "(" .. a .. ")") or key end
     -- like the game: getTextOrNull is nil for a key no file has (only these _VEHICLE / _RELEASE variants exist)
-    local real = { IGUI_MinidoracatCapsule_Why_WRONG_ITEM_VEHICLE = true, IGUI_MinidoracatCapsule_Why_WRONG_ITEM_RELEASE = true,
-        IGUI_MinidoracatCapsule_Why_SAFEHOUSE_RELEASE = true }
+    local real = { IGUI_MinidoracatPackThrow_Why_WRONG_ITEM_VEHICLE = true, IGUI_MinidoracatPackThrow_Why_WRONG_ITEM_RELEASE = true,
+        IGUI_MinidoracatPackThrow_Why_SAFEHOUSE_RELEASE = true }
     getTextOrNull = function(key)
         if (key:find("_VEHICLE$") or key:find("_RELEASE$")) and not real[key] then return nil end
         return key
@@ -2753,7 +2753,7 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     -- animal only, and none while wild ones are switched off (WILD_OFF is the reason row then)
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, dropped = true })
     M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35 })
-    SandboxVars = { MinidoracatCapsule = { WildCaptureChance = 35 } }
+    SandboxVars = { MinidoracatPackThrow = { WildCaptureChance = 35 } }
     local me = newPlayer("me", false)
     local function beast(o)
         local a = { isWild = function() return o.wild == true end, getHealth = function() return o.health or 1 end,
@@ -2764,26 +2764,26 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     end
     local wildOne, tameOne, Ball = beast({ wild = true }), beast({}), M.FIRST_SPHERE
     local row, tameRow = M.Notify.chanceRows(me, wildOne, Ball), M.Notify.chanceRows(me, tameOne, Ball)
-    SandboxVars.MinidoracatCapsule.WildCaptureChance = 0
+    SandboxVars.MinidoracatPackThrow.WildCaptureChance = 0
     local offRow = M.Notify.chanceRows(me, wildOne, Ball)
     -- WildCaptureFailConsumes on: the row warns a miss takes the sphere (not at 100: no miss); a consumed escape says
     -- the sphere is gone instead of where it lies
-    SandboxVars.MinidoracatCapsule = { WildCaptureChance = 35, WildCaptureFailConsumes = true }
+    SandboxVars.MinidoracatPackThrow = { WildCaptureChance = 35, WildCaptureFailConsumes = true }
     local goneRow = M.Notify.chanceRows(me, wildOne, Ball)
-    SandboxVars.MinidoracatCapsule.WildCaptureChance = 100
+    SandboxVars.MinidoracatPackThrow.WildCaptureChance = 100
     local sureRow = M.Notify.chanceRows(me, wildOne, Ball)
     M.onServerCommand("landed", { ok = false, mode = "capture", why = "ESCAPED", chance = 35, consumed = true })
     M.onServerCommand("packed", { ok = false, kind = "animal", why = "ESCAPED", chance = 35, consumed = true })
     SandboxVars = nil
     local goneToast, goneDlg = shown[6] or {}, dialogs[2] or {}
-    check(goneRow:find("IGUI_MinidoracatCapsule_WildChanceGone(35)", 1, true) ~= nil
-        and sureRow:find("IGUI_MinidoracatCapsule_WildChance(100)", 1, true) ~= nil and row:find("Gone", 1, true) == nil
-        and goneToast.title == "IGUI_MinidoracatCapsule_CaptureFailed"
-        and goneToast.message == "IGUI_MinidoracatCapsule_EscapedGone(35)"
-        and goneDlg.text == "IGUI_MinidoracatCapsule_EscapedGone(35)",
+    check(goneRow:find("IGUI_MinidoracatPackThrow_WildChanceGone(35)", 1, true) ~= nil
+        and sureRow:find("IGUI_MinidoracatPackThrow_WildChance(100)", 1, true) ~= nil and row:find("Gone", 1, true) == nil
+        and goneToast.title == "IGUI_MinidoracatPackThrow_CaptureFailed"
+        and goneToast.message == "IGUI_MinidoracatPackThrow_EscapedGone(35)"
+        and goneDlg.text == "IGUI_MinidoracatPackThrow_EscapedGone(35)",
         "沒抓到時膠囊消失：開著時成功率列加「沒抓到膠囊會消失」（100 不加、關著不加）；掙脫的 Toast 與對話框寫膠囊也消失了")
     -- the factor row under the chance: the tier by its item name, then the non-zero bonuses
-    SandboxVars = { MinidoracatCapsule = { WildCaptureChance = 40 } }
+    SandboxVars = { MinidoracatPackThrow = { WildCaptureChance = 40 } }
     local mega = M.TYPE_BY_ID.SphereMega
     local factorRow = M.Notify.chanceRows(me, beast({ wild = true, health = 0.5, baby = true }), mega)
     local plainRow = M.Notify.chanceRows(me, wildOne, Ball)
@@ -2799,35 +2799,35 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
     local animalDlg, vehicleDlg, roomDlg = dialogs[n - 3] or {}, dialogs[n - 2] or {}, dialogs[n - 1] or {}
     local throwDlg = dialogs[n] or {}
     local wrongToast, releasedToast = shown[#shown - 1] or {}, shown[#shown] or {}
-    check(factorRow:find("IGUI_MinidoracatCapsule_WildChance(85)", 1, true) ~= nil
-        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(name:MinidoracatCapsule.SphereMega)", 1, true) ~= nil
-        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(IGUI_MinidoracatCapsule_Factor_Injured)", 1, true) ~= nil
-        and factorRow:find("IGUI_MinidoracatCapsule_ChanceFactor(IGUI_MinidoracatCapsule_Factor_Young)", 1, true) ~= nil
-        and factorRow:find("Unaware", 1, true) == nil and factorRow:find("IGUI_MinidoracatCapsule_FactorSep", 1, true) ~= nil
+    check(factorRow:find("IGUI_MinidoracatPackThrow_WildChance(85)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatPackThrow_ChanceFactor(name:MinidoracatPackThrow.SphereMega)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatPackThrow_ChanceFactor(IGUI_MinidoracatPackThrow_Factor_Injured)", 1, true) ~= nil
+        and factorRow:find("IGUI_MinidoracatPackThrow_ChanceFactor(IGUI_MinidoracatPackThrow_Factor_Young)", 1, true) ~= nil
+        and factorRow:find("Unaware", 1, true) == nil and factorRow:find("IGUI_MinidoracatPackThrow_FactorSep", 1, true) ~= nil
         and plainRow:find("ChanceFactor", 1, true) == nil,
         "成功率列下面列出非 0 的加成（高級帕魯球、受傷、幼崽；40＋15＋15＋15＝85）；沒有加成就只有成功率一列")
-    check(animalDlg.title == "IGUI_MinidoracatCapsule_PackAnimalFailed" and animalDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM"
-        and vehicleDlg.title == "IGUI_MinidoracatCapsule_PackFailed" and vehicleDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM_VEHICLE"
-        and wrongToast.message == "IGUI_MinidoracatCapsule_CaptureKept(IGUI_MinidoracatCapsule_Why_WRONG_ITEM)",
+    check(animalDlg.title == "IGUI_MinidoracatPackThrow_PackAnimalFailed" and animalDlg.text == "IGUI_MinidoracatPackThrow_Why_WRONG_ITEM"
+        and vehicleDlg.title == "IGUI_MinidoracatPackThrow_PackFailed" and vehicleDlg.text == "IGUI_MinidoracatPackThrow_Why_WRONG_ITEM_VEHICLE"
+        and wrongToast.message == "IGUI_MinidoracatPackThrow_CaptureKept(IGUI_MinidoracatPackThrow_Why_WRONG_ITEM)",
         "WRONG_ITEM：膠囊收動物寫「要用帕魯球」、帕魯球收車寫「帕魯球收不了車」（選單與抓取）")
-    check(roomDlg.title == "IGUI_MinidoracatCapsule_ReleaseFailed" and roomDlg.text == "IGUI_MinidoracatCapsule_Why_NO_ROOM"
-        and releasedToast.title == "IGUI_MinidoracatCapsule_Released(E2E Bessie)"
-        and releasedToast.message == "IGUI_MinidoracatCapsule_SphereBack(name:MinidoracatCapsule.SphereMega)"
-        and throwDlg.title == "IGUI_MinidoracatCapsule_ReleaseFailed" and throwDlg.text == "IGUI_MinidoracatCapsule_Why_WRONG_ITEM_RELEASE",
+    check(roomDlg.title == "IGUI_MinidoracatPackThrow_ReleaseFailed" and roomDlg.text == "IGUI_MinidoracatPackThrow_Why_NO_ROOM"
+        and releasedToast.title == "IGUI_MinidoracatPackThrow_Released(E2E Bessie)"
+        and releasedToast.message == "IGUI_MinidoracatPackThrow_SphereBack(name:MinidoracatPackThrow.SphereMega)"
+        and throwDlg.title == "IGUI_MinidoracatPackThrow_ReleaseFailed" and throwDlg.text == "IGUI_MinidoracatPackThrow_Why_WRONG_ITEM_RELEASE",
         "放出：沒空地的對話框寫「沒有放出動物：旁邊沒有空地」；成功的 Toast 寫已放出與同等級的空帕魯球回來；"
             .. "硬送丟出帕魯球被拒的對話框也是「沒有放出動物」＋「從物品欄放出」")
     getText, getTextOrNull = savedText, savedOrNull
     local drop, kept, esc, dlg = shown[3] or {}, shown[4] or {}, shown[5] or {}, dialogs[1] or {}
-    check(drop.title == "IGUI_MinidoracatCapsule_CaptureFailed"
-        and drop.message == "IGUI_MinidoracatCapsule_CaptureDropped(IGUI_MinidoracatCapsule_Why_NO_TARGET)"
-        and kept.title == "IGUI_MinidoracatCapsule_CaptureFailed"
-        and kept.message == "IGUI_MinidoracatCapsule_CaptureKept(IGUI_MinidoracatCapsule_Why_TOO_FAR)",
+    check(drop.title == "IGUI_MinidoracatPackThrow_CaptureFailed"
+        and drop.message == "IGUI_MinidoracatPackThrow_CaptureDropped(IGUI_MinidoracatPackThrow_Why_NO_TARGET)"
+        and kept.title == "IGUI_MinidoracatPackThrow_CaptureFailed"
+        and kept.message == "IGUI_MinidoracatPackThrow_CaptureKept(IGUI_MinidoracatPackThrow_Why_TOO_FAR)",
         "沒抓到的 Toast：標題只有「沒抓到」，原因和膠囊在哪都在會換行的內文")
-    check(esc.title == "IGUI_MinidoracatCapsule_CaptureFailed"
-        and esc.message == "IGUI_MinidoracatCapsule_CaptureDropped(IGUI_MinidoracatCapsule_Why_ESCAPED(35))"
-        and dlg.title == "IGUI_MinidoracatCapsule_PackAnimalFailed" and dlg.text == "IGUI_MinidoracatCapsule_Why_ESCAPED(35)",
+    check(esc.title == "IGUI_MinidoracatPackThrow_CaptureFailed"
+        and esc.message == "IGUI_MinidoracatPackThrow_CaptureDropped(IGUI_MinidoracatPackThrow_Why_ESCAPED(35))"
+        and dlg.title == "IGUI_MinidoracatPackThrow_PackAnimalFailed" and dlg.text == "IGUI_MinidoracatPackThrow_Why_ESCAPED(35)",
         "野生動物掙脫：抓取的 Toast 與選單收的通知都寫出成功率")
-    check(row:find("IGUI_MinidoracatCapsule_WildChance(35)", 1, true) ~= nil and tameRow == "" and offRow == "",
+    check(row:find("IGUI_MinidoracatPackThrow_WildChance(35)", 1, true) ~= nil and tameRow == "" and offRow == "",
         "成功率列：野生動物才有、寫出沙盒的成功率；家養動物與成功率 0 沒有")
     MinidoracatUI, M.Info = saved, savedInfo
 end
@@ -2848,7 +2848,7 @@ local function infoCases() -- 獨立函式：主程式的 local 已接近 200 �
     getSpecificPlayer = function() return me end
     sendClientCommand = function(_, _, cmd, args) if cmd == "query" then batches[#batches + 1] = args.ids end end
     getText = function(key, a) return a and (key .. "(" .. tostring(a) .. ")") or key end
-    loadfile(MEDIA .. "/client/MinidoracatCapsule/Info.lua")()
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/Info.lua")()
     local Info = M.Info
     local function tick(ms) nowMs = nowMs + (ms or 0); for _, fn in ipairs(ticks) do fn() end end
     local function reply(items) srv(M.MODULE, "query", { items = items }) end
@@ -2879,14 +2879,14 @@ local function infoCases() -- 獨立函式：主程式的 local 已接近 200 �
         "紀錄改寫丟掉快取後，這個客戶端讀過的名字照樣記得（Info.knownName）")
 
     -- the release entry: never the item's own name, a plain "Release" until the summary comes, then renamed in place
-    for _, n in ipairs({ "Vehicles/ISUI/ISVehicleMenu", "ISUI/Animal/ISAnimalContextMenu", "MinidoracatCapsule/ThrowCursor",
+    for _, n in ipairs({ "Vehicles/ISUI/ISVehicleMenu", "ISUI/Animal/ISAnimalContextMenu", "MinidoracatPackThrow/ThrowCursor",
         "TimedActions/ISPackVehicleAction", "TimedActions/ISPackAnimalAction", "TimedActions/ISReleaseSphereAction" }) do
         loaded[n] = true
     end
     ISVehicleMenu, AnimalContextMenu = { FillMenuOutsideVehicle = function() end }, { doMenu = function() end }
-    loaded["MinidoracatCapsule/Notify"] = nil
-    require "MinidoracatCapsule/Notify"
-    loadfile(MEDIA .. "/client/MinidoracatCapsule/Menu.lua")()
+    loaded["MinidoracatPackThrow/Notify"] = nil
+    require "MinidoracatPackThrow/Notify"
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/Menu.lua")()
     local Menu = M.Menu
     local function ball(id) return { getID = function() return id end, getName = function() return "SphereMega: doubled" end } end
     local known = Menu.releaseLabel(ball(503))
@@ -2903,16 +2903,16 @@ local function infoCases() -- 獨立函式：主程式的 local 已接近 200 �
     reply({ { ok = true, id = 505, kind = "animal", animal = { name = "Hop2" } } })
     Menu.releasePending = { id = 506, item = b506, option = pooled, menu = menu }
     reply({ { ok = true, id = 506, kind = "animal", animal = { name = "Hop3" } } })
-    check(known == "ContextMenu_MinidoracatCapsule_Release(Kit)" and plain == "ContextMenu_MinidoracatCapsule_ReleasePlain"
+    check(known == "ContextMenu_MinidoracatPackThrow_Release(Kit)" and plain == "ContextMenu_MinidoracatPackThrow_ReleasePlain"
         and named == false and not known:find("doubled", 1, true) and not plain:find("doubled", 1, true)
-        and option.name == "ContextMenu_MinidoracatCapsule_Release(Hop2)" and widths == 1 and pooled.name == "Other"
+        and option.name == "ContextMenu_MinidoracatPackThrow_Release(Hop2)" and widths == 1 and pooled.name == "Other"
         and Menu.releasePending == nil,
         "放出選單：有名字寫「放出：名字」，還沒有就只寫「放出」（從不用物品名）；紀錄到了就把開著的那一項改名、重算寬度；被別的選單拿去用的選項不動")
     -- the strings
     local missing = {}
     for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
         local f = io.open(MEDIA .. "/shared/Translate/" .. lang .. "/ContextMenu.json", "rb")
-        local v = Json.decode(f:read("*a")).ContextMenu_MinidoracatCapsule_ReleasePlain or ""
+        local v = Json.decode(f:read("*a")).ContextMenu_MinidoracatPackThrow_ReleasePlain or ""
         f:close()
         if v == "" or v:find("%", 1, true) then missing[#missing + 1] = lang end
     end
@@ -2934,7 +2934,7 @@ local function effectsCases() -- 獨立函式：主程式的 local 已接近 200
     getSoundManager = function() return { PlayWorldSoundImpl = function() end } end
     getNumActivePlayers = function() return 0 end
     UIManager = { DrawTexture = function() end }
-    loadfile(MEDIA .. "/client/MinidoracatCapsule/Effects.lua")()
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/Effects.lua")()
     local E = M.Effects
     local function at(ms) nowMs = nowMs + ms; draw() end
     local function fly(id, capsuleId) E.play({ id = id, kind = "flight", x0 = 1, y0 = 1, z0 = 0, x = 5, y = 1, z = 0, capsuleId = capsuleId }) end

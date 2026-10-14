@@ -41,16 +41,16 @@ Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?
 
 [h2]💬 Feedback[/h2]
 [list]
-[*] GitHub Issues: https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues
+[*] GitHub Issues: https://github.com/Minidoracat/MinidoracatPackThrowFor42/issues
 [*] Discord: https://discord.gg/Gur2V67
 [/list]
 
 [h2]☕ Support[/h2]
 If this helps, please give it a 👍 here and a ⭐ on GitHub so more players can find it.
 The mod is always free. If you like it, you can buy me a coffee; donations go toward servers and mod development. The source is on GitHub.
-[url=https://ko-fi.com/minidoracat][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_kofi.png[/img][/url] [url=https://github.com/Minidoracat/MinidoracatCapsuleFor42][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_github.png[/img][/url]
+[url=https://ko-fi.com/minidoracat][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_kofi.png[/img][/url] [url=https://github.com/Minidoracat/MinidoracatPackThrowFor42][img]https://raw.githubusercontent.com/Minidoracat/workshop-resources/refs/heads/main/badges/badge_github.png[/img][/url]
 
 [b]#Minidoracat[/b]
 
 Workshop ID: TBD after first upload
-Mod ID: MinidoracatCapsuleFor42
+Mod ID: MinidoracatPackThrowFor42

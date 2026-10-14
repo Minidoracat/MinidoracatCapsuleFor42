@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "Guardar en cápsula",
+    "ContextMenu_MinidoracatPackThrow_Throw": "Lanzar cápsula",
+    "ContextMenu_MinidoracatPackThrow_Press": "Pulsar el botón",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "Lanzar para capturar",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "Atrapar en Esfera Pal",
+    "ContextMenu_MinidoracatPackThrow_Release": "Liberar: %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "Liberar"
+}

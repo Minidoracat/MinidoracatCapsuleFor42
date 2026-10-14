@@ -1,0 +1,184 @@
+VERSION = 1,
+
+/* 丟出收納。選項鍵不可改名。三頁的值也是管理面板「設定」「種類」「戰利品」分頁改的那一組（不另存設定）。 */
+
+/* ===== MinidoracatPackThrow：一般 ===== */
+
+/* 展開（膠囊）或放出（帕魯球）後把一顆同款的空膠囊或同等級的空帕魯球還給玩家 */
+option MinidoracatPackThrow.ReturnEmptyCapsule
+{type = boolean, default = true, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_ReturnEmptyCapsule,}
+
+/* 誰能收車（Vehicle Manager 沒綁定的車才看這個；綁定的車問它的 canUse(TOW)）：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員 */
+option MinidoracatPackThrow.PackPermission
+{type = enum, numValues = 3, default = 1, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_PackPermission,}
+
+/* 膠囊彈開的聲音引來殭屍的半徑（格）；0 不引殭屍 */
+option MinidoracatPackThrow.ZombieSoundRadius
+{type = integer, min = 0, max = 50, default = 0, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_ZombieSoundRadius,}
+
+/* 不用展開車也能從裝了車的膠囊拿出貨物（只能拿出，放不進去）。紀錄要已落盤：剛收好約 5 秒內、當機前未確認、已展開的膠囊照樣鎖住（Rules.cargoOpen） */
+option MinidoracatPackThrow.AllowCargoTakeOut
+{type = boolean, default = false, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_AllowCargoTakeOut,}
+
+/* 玩家可以把世界上活著的動物收進帕魯球（Rules.animalsOn）。關掉只擋抓動物：已裝了動物的帕魯球照樣能放出、管理員補回 */
+option MinidoracatPackThrow.AllowAnimals
+{type = boolean, default = true, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_AllowAnimals,}
+
+/* 抓野生動物（帕魯球：選單收與丟出抓取都算）的基本成功率（百分比）；最終＝基本＋帕魯球等級＋受傷＋幼崽＋沒發現你，上限 100（Rules.captureChance），伺服器在 Pack.packAnimal 擲骰（Rules.rollWild），失敗＝牠掙脫、什麼都不動。0＝不能抓野生動物（WILD_OFF，加成救不回來）；家養動物不擲骰 */
+option MinidoracatPackThrow.WildCaptureChance
+{type = integer, min = 0, max = 100, default = 50, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_WildCaptureChance,}
+
+/* 野生動物擲骰失敗（ESCAPED）時空帕魯球也消失（選單收：用的那顆從背包移除；丟出抓取：丟出的那顆不掉在落點）。只看擲骰失敗，其他沒抓到照舊（Rules.wildFailConsumes） */
+option MinidoracatPackThrow.WildCaptureFailConsumes
+{type = boolean, default = false, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_WildCaptureFailConsumes,}
+
+/* 抓野生動物的受傷加成（百分點）：round((1 - 健康) × 這個值)，健康 0.5 時加一半。0＝關掉（Rules.captureChance） */
+option MinidoracatPackThrow.WildCaptureInjuredBonus
+{type = integer, min = 0, max = 100, default = 30, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_WildCaptureInjuredBonus,}
+
+/* 抓野生動物的幼崽加成（百分點，animal:isBaby()）。0＝關掉 */
+option MinidoracatPackThrow.WildCaptureYoungBonus
+{type = integer, min = 0, max = 100, default = 15, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_WildCaptureYoungBonus,}
+
+/* 抓野生動物的「沒發現你」加成（百分點）：動物沒在警戒，而且玩家在潛行或在牠背後（Rules.unaware）。0＝關掉 */
+option MinidoracatPackThrow.WildCaptureUnawareBonus
+{type = integer, min = 0, max = 100, default = 20, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_WildCaptureUnawareBonus,}
+
+/* 已結束的紀錄（已展開且落盤、已補回、作廢）最後一筆事件超過幾天就從紀錄檔刪掉（Index.prune）；收起中與當機前未確認的永遠保留 */
+option MinidoracatPackThrow.RecordRetentionDays
+{type = integer, min = 1, max = 90, default = 30, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_RecordRetentionDays,}
+
+/* ===== MinidoracatPackThrowTypes：七種膠囊與四級帕魯球（shared/Core.lua M.TYPES 依序；每種兩個：可以用、出現在戰利品）。
+   膠囊只收車、帕魯球只抓動物。關掉「使用」只擋用它收／抓：已裝了的照樣能丟出、按按鈕展開或放出，也照樣還同一種空的（Rules.typeOn）；
+   戰利品要兩個都開才掉（Loot.items），膠囊地點由會掉的膠囊平分、帕魯球地點照等級稀有度 8:4:2:1 分。預設全開（設計稿 vcap-types-1012、使用者 2026-10-14） ===== */
+
+/* 卡通 */
+option MinidoracatPackThrow.TypeCartoon
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeCartoon,}
+
+option MinidoracatPackThrow.TypeCartoonLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeCartoonLoot,}
+
+/* 寫實 */
+option MinidoracatPackThrow.TypeReal
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeReal,}
+
+option MinidoracatPackThrow.TypeRealLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeRealLoot,}
+
+/* 塵土 */
+option MinidoracatPackThrow.TypeDust
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeDust,}
+
+option MinidoracatPackThrow.TypeDustLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeDustLoot,}
+
+/* 蒸汽 */
+option MinidoracatPackThrow.TypeSteam
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSteam,}
+
+option MinidoracatPackThrow.TypeSteamLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSteamLoot,}
+
+/* 科幻 */
+option MinidoracatPackThrow.TypeSciFi
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSciFi,}
+
+option MinidoracatPackThrow.TypeSciFiLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSciFiLoot,}
+
+/* 魔法 */
+option MinidoracatPackThrow.TypeMagic
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeMagic,}
+
+option MinidoracatPackThrow.TypeMagicLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeMagicLoot,}
+
+/* 衝擊 */
+option MinidoracatPackThrow.TypeShock
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeShock,}
+
+option MinidoracatPackThrow.TypeShockLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeShockLoot,}
+
+/* 帕魯球 */
+option MinidoracatPackThrow.TypeSphereBasic
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereBasic,}
+
+option MinidoracatPackThrow.TypeSphereBasicLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereBasicLoot,}
+
+/* 高級帕魯球 */
+option MinidoracatPackThrow.TypeSphereMega
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereMega,}
+
+option MinidoracatPackThrow.TypeSphereMegaLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereMegaLoot,}
+
+/* 優質帕魯球 */
+option MinidoracatPackThrow.TypeSphereGiga
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereGiga,}
+
+option MinidoracatPackThrow.TypeSphereGigaLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereGigaLoot,}
+
+/* 傳奇帕魯球 */
+option MinidoracatPackThrow.TypeSphereLegend
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereLegend,}
+
+option MinidoracatPackThrow.TypeSphereLegendLoot
+{type = boolean, default = true, page = MinidoracatPackThrowTypes, translation = MinidoracatPackThrow_TypeSphereLegendLoot,}
+
+/* ===== MinidoracatPackThrowLoot：戰利品（膠囊四個地點、帕魯球三個地點，各自開關與權重；權重直接寫進原版 ProceduralDistributions） ===== */
+
+option MinidoracatPackThrow.LootEnabled
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootEnabled,}
+
+/* 修車廠：MechanicShelfTools、CrateMechanics */
+option MinidoracatPackThrow.LootMechanic
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootMechanic,}
+
+option MinidoracatPackThrow.LootMechanicWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootMechanicWeight,}
+
+/* 汽車用品店：CarSupplyTools */
+option MinidoracatPackThrow.LootCarSupply
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootCarSupply,}
+
+option MinidoracatPackThrow.LootCarSupplyWeight
+{type = double, min = 0.0, max = 10.0, default = 0.5, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootCarSupplyWeight,}
+
+/* 加油站修車區：GasStorageMechanics */
+option MinidoracatPackThrow.LootGasStation
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootGasStation,}
+
+option MinidoracatPackThrow.LootGasStationWeight
+{type = double, min = 0.0, max = 10.0, default = 0.3, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootGasStationWeight,}
+
+/* 住家車庫：GarageMechanics（預設關） */
+option MinidoracatPackThrow.LootGarage
+{type = boolean, default = false, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootGarage,}
+
+option MinidoracatPackThrow.LootGarageWeight
+{type = double, min = 0.0, max = 10.0, default = 0.2, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootGarageWeight,}
+
+/* 帕魯球：穀倉（BarnTools、CrateAnimalFeed） */
+option MinidoracatPackThrow.LootSphereBarn
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSphereBarn,}
+
+option MinidoracatPackThrow.LootSphereBarnWeight
+{type = double, min = 0.0, max = 10.0, default = 0.4, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSphereBarnWeight,}
+
+/* 帕魯球：寵物店與寵物用品箱（PetShopShelf、CratePetSupplies） */
+option MinidoracatPackThrow.LootSpherePet
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSpherePet,}
+
+option MinidoracatPackThrow.LootSpherePetWeight
+{type = double, min = 0.0, max = 10.0, default = 0.4, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSpherePetWeight,}
+
+/* 帕魯球：獵人置物櫃（HuntingLockers） */
+option MinidoracatPackThrow.LootSphereHunting
+{type = boolean, default = true, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSphereHunting,}
+
+option MinidoracatPackThrow.LootSphereHuntingWeight
+{type = double, min = 0.0, max = 10.0, default = 0.3, page = MinidoracatPackThrowLoot, translation = MinidoracatPackThrow_LootSphereHuntingWeight,}

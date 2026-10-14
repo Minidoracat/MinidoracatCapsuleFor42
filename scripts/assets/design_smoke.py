@@ -31,8 +31,8 @@ from scipy import ndimage
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(REPO, "temp", "assets-review", "fx-v1", "smoke")
-C0_SRC = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
-                      "42", "media", "textures", "MinidoracatCapsule")
+C0_SRC = os.path.join(REPO, "MOD", "MinidoracatPackThrowFor42", "Contents", "mods", "MinidoracatPackThrowFor42",
+                      "42", "media", "textures", "MinidoracatPackThrow")
 BG = os.path.join(REPO, "temp", "e2e-vcap-press-1010r", "client1", "Screenshots", "vcap-press-done.png")
 SX, SY = 1148, 430                    # anchor (landing tile) in the background screenshot
 CROP = (770, 100, 1530, 660)          # 760x560 around it
@@ -637,8 +637,8 @@ def qa(sid, frames, frame_ms, px, anchor, bg, d):
 def install(sids):
     """--write: those styles' frames into the MOD as smoke_<ID>_<n>.png (Core.lua M.TYPES; C0 stays smoke_<n>.png from
     build_smoke.py). Their old smoke_<ID>_*.png go first, so a style that lost frames leaves none behind."""
-    dst = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
-                       "42", "media", "textures", "MinidoracatCapsule")
+    dst = os.path.join(REPO, "MOD", "MinidoracatPackThrowFor42", "Contents", "mods", "MinidoracatPackThrowFor42",
+                       "42", "media", "textures", "MinidoracatPackThrow")
     for f in os.listdir(dst):
         if f.endswith(".png") and any(f.startswith(f"smoke_{sid}_") for sid in sids):
             os.remove(os.path.join(dst, f))

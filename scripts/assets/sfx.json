@@ -1,18 +1,18 @@
 [
   {
-    "id": "UniversalCapsulePop",
+    "id": "PackThrowPop",
     "text": "Cartoon capsule bursting open on the ground: one crisp bright rounded pop at the very start, immediately followed by a soft airy puff of smoke billowing out and hissing away for about one second. Playful toy-like gadget sound, dry, no reverb, no music, no voice.",
     "duration": 1.4,
     "influence": 0.6
   },
   {
-    "id": "UniversalCapsulePack",
+    "id": "PackThrowPack",
     "text": "Cartoon reverse suction: a quick rising whoosh being sucked inward into a tiny capsule, ending with a small soft pop. Playful toy-like gadget sound, dry, no reverb, no music, no voice.",
     "duration": 1.3,
     "influence": 0.5
   },
   {
-    "id": "UniversalCapsuleButton",
+    "id": "PackThrowButton",
     "text": "Small mechanical push button on a plastic capsule: press down click then the spring snaps it back up, a quick click-clack, two soft crisp clicks about 0.2 seconds apart, close-up, dry, no reverb, not shrill.",
     "duration": 0.5,
     "influence": 0.5

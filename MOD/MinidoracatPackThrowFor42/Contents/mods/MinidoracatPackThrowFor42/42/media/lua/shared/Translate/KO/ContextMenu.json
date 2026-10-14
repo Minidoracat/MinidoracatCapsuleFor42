@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "캡슐에 넣기",
+    "ContextMenu_MinidoracatPackThrow_Throw": "캡슐 던지기",
+    "ContextMenu_MinidoracatPackThrow_Press": "버튼 누르기",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "던져서 포획",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "팰 스피어로 포획",
+    "ContextMenu_MinidoracatPackThrow_Release": "꺼내기: %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "꺼내기"
+}

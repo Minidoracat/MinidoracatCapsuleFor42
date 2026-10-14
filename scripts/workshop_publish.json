@@ -2,9 +2,9 @@
     "app_id": 108600,
     "published_file_id": null,
     "owner_steamid64": "76561198033176898",
-    "workshop_root": "MOD/MinidoracatCapsuleFor42",
-    "mod_info": "MOD/MinidoracatCapsuleFor42/Contents/mods/MinidoracatCapsuleFor42/42/mod.info",
-    "preview_gif": "MOD/MinidoracatCapsuleFor42/workshop/preview.gif",
+    "workshop_root": "MOD/MinidoracatPackThrowFor42",
+    "mod_info": "MOD/MinidoracatPackThrowFor42/Contents/mods/MinidoracatPackThrowFor42/42/mod.info",
+    "preview_gif": "MOD/MinidoracatPackThrowFor42/workshop/preview.gif",
     "changelog": "STEAM_CHANGELOG.md",
     "titles": {
         "english": "[B42] Pack & Throw by Minidoracat",

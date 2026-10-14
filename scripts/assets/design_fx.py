@@ -8,8 +8,8 @@
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx_v5.json \
         --out-dir temp/assets-review/sfx-v5/raw --format wav --variants 4 --trim --skip-existing
     uv run scripts/assets/design_smoke.py                 # 煙霧樣式 -> temp/assets-review/fx-v1/smoke/
-    python ../pz-family-docs/scripts/e2e/pz_e2e.py run --mod-id MinidoracatCapsuleFor42 \
-        --scenario .claude/skills/universalcapsule-e2e/scenarios/fxbg-sp --sp --scratch client1:Screenshots \
+    python ../pz-family-docs/scripts/e2e/pz_e2e.py run --mod-id MinidoracatPackThrowFor42 \
+        --scenario .claude/skills/packthrow-e2e/scenarios/fxbg-sp --sp --scratch client1:Screenshots \
         --id vcap-fxbg-<id> --collect temp/e2e-vcap-fxbg-<id>   # 乾淨背景與螢幕座標
     uv run scripts/assets/design_fx.py [--bg temp/e2e-vcap-fxbg-<id>]
 產物：temp/assets-review/fx-v1/index.html（直接用瀏覽器開檔；只用 <img>／<audio>，file:// 也能播）、
@@ -17,10 +17,10 @@ sfx/*.ogg（照 build_sfx 的整理法：剪前面靜音、淡入淡出、RMS �
 bg/*.jpg（背景裁切）、calib.png（遊戲內現行煙霧截圖 vs 演示頁畫法，對位檢查）。
 
 時間軸照程式（Effects.lua、ISThrowCapsuleAction.lua、ISPressCapsuleAction.lua、Pack.lua）：
-  丟出：放手時在丟的人位置播 UniversalCapsuleThrow，膠囊 0.5 s 飛到落點（拋物線，FLIGHT_MS／ARC_PX），
-        落地同時出車、閃光、播 UniversalCapsulePop、煙霧開始。
-  按鈕：按下動作開始時播 UniversalCapsuleButton，動作 40 單位＝0.8 s 結束時出車（同上，地上的膠囊消失）。
-  收車：10 秒動作結束時車消失、膠囊掉在原地、閃光、播 UniversalCapsulePack、同一套煙霧。
+  丟出：放手時在丟的人位置播 PackThrowThrow，膠囊 0.5 s 飛到落點（拋物線，FLIGHT_MS／ARC_PX），
+        落地同時出車、閃光、播 PackThrowPop、煙霧開始。
+  按鈕：按下動作開始時播 PackThrowButton，動作 40 單位＝0.8 s 結束時出車（同上，地上的膠囊消失）。
+  收車：10 秒動作結束時車消失、膠囊掉在原地、閃光、播 PackThrowPack、同一套煙霧。
 煙霧：每幀 frame_ms，畫在 x = sx - w/2、y = sy - w*anchor、w = px/zoom（Effects.lua drawSmoke），一般透明度混合。
 閃光：IsoLightSource 約 0.2 s。白天實測沒有亮度差（fxbg-calib-1..3 對 fxbg-throw-car，落點外圈 RGB 差 0），頁面不畫。
 """
@@ -44,16 +44,16 @@ REPO = bs.REPO
 SR = bs.SR
 OUT = os.path.join(bs.REVIEW, "fx-v1")
 RAW = os.path.join(bs.REVIEW, "sfx-v5", "raw")
-MOD_MEDIA = os.path.join(REPO, "MOD", "MinidoracatCapsuleFor42", "Contents", "mods", "MinidoracatCapsuleFor42",
+MOD_MEDIA = os.path.join(REPO, "MOD", "MinidoracatPackThrowFor42", "Contents", "mods", "MinidoracatPackThrowFor42",
                          "42", "media")
 SOFT_ABOVE_HZ = 4000  # 頻譜重心超過這個、且提示詞是容易刺耳的音色（閃光、鈴、電子音）才柔化；嘶聲、蒸汽本來就亮，柔化會變悶
 SHRILL = re.compile(r"shimmer|sparkl|twinkl|chime|blip|zap|whir|electric", re.I)
 
 SEGMENTS = {  # 段 -> (中文, MOD 音效名, 有聲長度範圍 s)
-    "Throw": ("丟出咻聲", "UniversalCapsuleThrow", (0.25, 0.9)),
-    "Pop": ("出車蹦聲", "UniversalCapsulePop", (0.3, 1.7)),
-    "Pack": ("收車聲", "UniversalCapsulePack", (0.4, 1.6)),
-    "Button": ("按鈕聲", "UniversalCapsuleButton", (0.06, 0.7)),
+    "Throw": ("丟出咻聲", "PackThrowThrow", (0.25, 0.9)),
+    "Pop": ("出車蹦聲", "PackThrowPop", (0.3, 1.7)),
+    "Pack": ("收車聲", "PackThrowPack", (0.4, 1.6)),
+    "Button": ("按鈕聲", "PackThrowButton", (0.06, 0.7)),
 }
 STYLES = {  # 提示詞 id 的尾段 -> 風格名
     "Real": "寫實機械", "Real2": "寫實低沉", "SmokeGrenade": "寫實煙霧彈", "HeavyDrop": "重落塵土", "Heavy": "重落塵土",
@@ -98,7 +98,7 @@ def build_sounds():
     manifest = json.load(open(os.path.join(HERE, "sfx_v5.json"), encoding="utf-8"))
     sounds = {}
     for seg, (_, name, _) in SEGMENTS.items():
-        src = os.path.join(MOD_MEDIA, "sound", "MinidoracatCapsule", name + ".ogg")
+        src = os.path.join(MOD_MEDIA, "sound", "MinidoracatPackThrow", name + ".ogg")
         dst = os.path.join(OUT, "sfx", f"Current_{seg}.ogg")
         shutil.copyfile(src, dst)
         s = bs.stats(bs.decode(dst))

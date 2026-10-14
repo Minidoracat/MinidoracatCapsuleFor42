@@ -1,0 +1,10 @@
+{
+    "ContextMenu_MinidoracatPackThrow_Pack": "Kapsüle koy",
+    "ContextMenu_MinidoracatPackThrow_Throw": "Kapsülü fırlat",
+    "ContextMenu_MinidoracatPackThrow_Press": "Düğmeye bas",
+    "ContextMenu_MinidoracatPackThrow_PackKind": "%1 ×%2",
+    "ContextMenu_MinidoracatPackThrow_Capture": "Yakalamak için fırlat",
+    "ContextMenu_MinidoracatPackThrow_PackSphere": "Pal Küresi ile yakala",
+    "ContextMenu_MinidoracatPackThrow_Release": "Serbest bırak: %1",
+    "ContextMenu_MinidoracatPackThrow_ReleasePlain": "Serbest bırak"
+}

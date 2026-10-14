@@ -21,7 +21,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 === 🧰 取得空膠囊與帕魯球
 [list]
 [*] [b]戰利品[/b]：七種空膠囊都會出現在修車廠、汽車用品店、加油站修車區的容器裡；住家車庫預設關閉。每個地點的量由開著的款式平分。空帕魯球有自己的三個地點：穀倉、寵物店、獵人置物櫃（預設都開），四級帕魯球照稀有度 8:4:2:1 分，越高級越少見。伺服器可以各自開關與調整權重，見「沙盒選項與預設值」。
-[*] [b]經濟中心[/b]：有裝 Minidoracat Economy 時，管理員把空膠囊（物品 ID [b]MinidoracatCapsule.Capsule<款式>[/b]，例如 CapsuleCartoon）或空帕魯球（[b]MinidoracatCapsule.Sphere<等級>[/b]，例如 SphereBasic）上架即可販售；管理面板「種類」分頁的「上架...」會在經濟中心直接打開那種空膠囊或空帕魯球的商品草稿。
+[*] [b]經濟中心[/b]：有裝 Minidoracat Economy 時，管理員把空膠囊（物品 ID [b]MinidoracatPackThrow.Capsule<款式>[/b]，例如 CapsuleCartoon）或空帕魯球（[b]MinidoracatPackThrow.Sphere<等級>[/b]，例如 SphereBasic）上架即可販售；管理面板「種類」分頁的「上架...」會在經濟中心直接打開那種空膠囊或空帕魯球的商品草稿。
 [*] [b]裝了車的膠囊與裝了動物的帕魯球[/b]：也能在市場上架或拍賣，見「在經濟中心買賣車與動物」。
 [*] [b]管理員發放[/b]：用原版的物品清單或 /additem 指令給空膠囊或空帕魯球。
 [/list]
@@ -450,9 +450,9 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === ⚙️ 建議設定
 [list]
-[*] [b]搭配 Minidoracat Cleaner[/b]：在它的沙盒「物品保護清單」加上七種裝了車的膠囊：[b]MinidoracatCapsule.LoadedCapsuleCartoon[/b]、LoadedCapsuleReal、LoadedCapsuleDust、LoadedCapsuleSteam、LoadedCapsuleSciFi、LoadedCapsuleMagic、LoadedCapsuleShock，以及四個裝了動物的帕魯球：[b]MinidoracatCapsule.LoadedSphereBasic[/b]、LoadedSphereMega、LoadedSphereGiga、LoadedSphereLegend（都加上 MinidoracatCapsule. 前綴），地上裝了東西的膠囊與帕魯球就不會被清掉。
+[*] [b]搭配 Minidoracat Cleaner[/b]：在它的沙盒「物品保護清單」加上七種裝了車的膠囊：[b]MinidoracatPackThrow.LoadedCapsuleCartoon[/b]、LoadedCapsuleReal、LoadedCapsuleDust、LoadedCapsuleSteam、LoadedCapsuleSciFi、LoadedCapsuleMagic、LoadedCapsuleShock，以及四個裝了動物的帕魯球：[b]MinidoracatPackThrow.LoadedSphereBasic[/b]、LoadedSphereMega、LoadedSphereGiga、LoadedSphereLegend（都加上 MinidoracatPackThrow. 前綴），地上裝了東西的膠囊與帕魯球就不會被清掉。
 [*] [b]其他清地上物品的 MOD[/b]：也請把這十一種物品排除。
-[*] [b]列入備份[/b]：每顆膠囊的紀錄與車況存在伺服器的 [b]Zomboid/Lua/MinidoracatCapsule/[/b] 資料夾（每個世界一個子資料夾，單人是 SP_<模式>_<存檔>），不在世界存檔裡。
+[*] [b]列入備份[/b]：每顆膠囊的紀錄與車況存在伺服器的 [b]Zomboid/Lua/MinidoracatPackThrow/[/b] 資料夾（每個世界一個子資料夾，單人是 SP_<模式>_<存檔>），不在世界存檔裡。
 [*] [b]資料夾被刪掉[/b]：收起中的車都補不回。
 [*] [b]一起備份、一起還原[/b]：和世界存檔一起；只還原世界存檔的話，已經展開過的膠囊要由管理員逐筆確認。
 [/list]
@@ -563,7 +563,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === 💬 回報方式
 [list]
-[*] [b][url=https://github.com/Minidoracat/MinidoracatCapsuleFor42/issues]GitHub Issues[/url][/b]
+[*] [b][url=https://github.com/Minidoracat/MinidoracatPackThrowFor42/issues]GitHub Issues[/url][/b]
 [*] [b][url=https://discord.gg/Gur2V67]Discord 社群[/url][/b]
 [*] [b]回報時請附上[/b]：
 [list]
