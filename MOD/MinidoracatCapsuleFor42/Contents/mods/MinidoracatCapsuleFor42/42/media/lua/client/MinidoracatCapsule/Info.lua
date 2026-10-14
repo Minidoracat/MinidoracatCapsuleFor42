@@ -9,15 +9,24 @@ local M = MinidoracatCapsule
 local Info = {}
 M.Info = Info
 
-Info.RETRY_MS = 3000 -- an unanswered request is sent again after this (the server drops requests that come too fast)
+-- Requests are batched: Info.get only queues the id; once per SEND_GAP_MS the queue goes out as one "query" with up to
+-- MAX_IDS ids. The server answers one request per player per 100 ms (server/Query.lua MIN_GAP_MS, MAX_IDS 20) and drops
+-- the rest, so one id per call (several capsules listed in the same tick) used to lose all but the first. An id
+-- still unanswered after RETRY_MS is queued again by the tick, whoever asked.
+Info.RETRY_MS = 1000
+Info.SEND_GAP_MS = 250
+Info.MAX_IDS = 20
 Info.CARGO_LINES = 4 -- cargo kinds listed before "N more"
 Info.MODS_TIP = 3   -- modification parts named in the tooltip before "N more"
 Info.MODS_FULL = 6  -- ... and in the preview list
 
 local cache = {}     -- capsuleId -> reply ({ ok = true, ... } or { ok = false, why })
-local asked = {}     -- capsuleId -> ms of the pending request
+local asked = {}     -- capsuleId -> ms of the pending request (queued or sent, unanswered)
+local queue, queued = {}, {} -- ids for the next batch, in order; id -> true while in it
+local lastSend = nil
 local waiting = {}   -- capsuleId -> true: shown in a window before its summary came (named when it comes)
-Info.listeners = {}  -- fn(capsuleId) when a summary arrives or is dropped (the preview window)
+local names = {}     -- capsuleId -> what it holds, in words, from the last good reply: kept when the cache is dropped
+Info.listeners = {}  -- fn(capsuleId) when a summary arrives or is dropped (the preview window, the release menu)
 
 local function T(key, a, b, c)
     local k = "Tooltip_MinidoracatCapsule_" .. key
@@ -36,6 +45,7 @@ local function store(reply)
     local id = tonumber(reply.id)
     if not id then return end
     cache[id], asked[id] = reply, nil
+    if reply.ok and (reply.script or reply.kind == "animal") then names[id] = Info.thingName(reply) end
     notify(id)
     if waiting[id] then
         waiting[id] = nil
@@ -43,7 +53,8 @@ local function store(reply)
     end
 end
 
--- Forgets a summary (the server wrote that snapshot). Also called directly in SP (server/Query.lua listener).
+-- Forgets a summary (the server wrote that snapshot). Also called directly in SP (server/Query.lua listener). The
+-- name it held stays known: what a packed capsule holds never changes.
 function Info.drop(id)
     id = tonumber(id)
     if not id then return end
@@ -52,27 +63,68 @@ function Info.drop(id)
 end
 M.QueryChanged = Info.drop
 
-local function request(id)
+-- The vehicle's or animal's name this client last read for the capsule, or nil.
+function Info.knownName(id)
+    return names[tonumber(id)]
+end
+
+local function enqueue(id)
+    if queued[id] then return end
+    queued[id] = true
+    queue[#queue + 1] = id
+end
+
+-- Sends the queue as one request (MP), at most every SEND_GAP_MS; ids answered meanwhile are skipped.
+function Info.flush(now)
+    if #queue == 0 or (lastSend and now >= lastSend and now - lastSend < Info.SEND_GAP_MS) then return end
     local player = getSpecificPlayer(0)
     if not player then return end
-    asked[id] = getTimestampMs()
-    if isClient() then
-        sendClientCommand(player, M.MODULE, "query", { ids = { id } })
-    elseif M.Query then -- SP: the server code is loaded in the same Lua state
-        for _, r in ipairs(M.Query.query(player, { id }).items) do store(r) end
+    local ids = {}
+    while #ids < Info.MAX_IDS and #queue > 0 do
+        local id = table.remove(queue, 1)
+        queued[id] = nil
+        if not cache[id] then
+            ids[#ids + 1] = id
+            asked[id] = now
+        end
+    end
+    if #ids == 0 then return end
+    lastSend = now
+    sendClientCommand(player, M.MODULE, "query", { ids = ids })
+end
+
+-- Ids whose request went unanswered (dropped by the server, or lost) go back in the queue.
+function Info.retry(now)
+    for id, at in pairs(asked) do
+        if not queued[id] and (now < at or now - at > Info.RETRY_MS) then enqueue(id) end
     end
 end
 
--- The cached reply, or nil while it is being fetched (a request goes out at most every RETRY_MS). In SP the answer
--- is computed in place, so it is returned right away.
+-- The cached reply, or nil while it is being fetched (MP: queued for the next batch). In SP the answer is computed in
+-- place, so it is returned right away.
 function Info.get(id)
     local r = cache[id]
     if r then return r end
-    local at = asked[id]
-    local now = getTimestampMs()
-    if not at or now < at or now - at > Info.RETRY_MS then request(id) end
-    return cache[id]
+    if not isClient() then
+        local player = getSpecificPlayer(0)
+        if player and M.Query then -- SP: the server code is loaded in the same Lua state
+            for _, x in ipairs(M.Query.query(player, { id }).items) do store(x) end
+        end
+        return cache[id]
+    end
+    if not asked[id] then
+        asked[id] = getTimestampMs()
+        enqueue(id)
+    end
+    return nil
 end
+
+Events.OnTickEvenPaused.Add(function()
+    if not isClient() then return end
+    local now = getTimestampMs()
+    Info.retry(now)
+    Info.flush(now)
+end)
 
 Events.OnServerCommand.Add(function(module, command, args)
     if module ~= M.MODULE or type(args) ~= "table" then return end

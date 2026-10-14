@@ -219,11 +219,30 @@ function Menu.onPress(player, item)
     end
 end
 
--- "Release: <name>": the animal's name from the record (Info), the item's name until it has come.
-local function releaseLabel(item)
-    local r = M.Info.get(item:getID())
-    local name = type(r) == "table" and r.ok and r.kind == "animal" and M.Info.thingName(r) or item:getName()
-    return getText("ContextMenu_MinidoracatCapsule_Release", name)
+-- "Release: <name>": the animal's name from the record (Info), or the name this client last read for it (a written
+-- record drops the cached summary, e.g. 5 s after the catch when it settles); never the item's own name, which is the
+-- capsule name "<tier>: <animal>" and read doubled ("Release: Mega Sphere: Hop"). Neither yet: a plain "Release",
+-- renamed in place when the summary comes (Menu.releasePending, the Info listener below).
+function Menu.releaseLabel(item)
+    local id = item:getID()
+    local r = M.Info.get(id)
+    local name = type(r) == "table" and r.ok and r.kind == "animal" and M.Info.thingName(r) or M.Info.knownName(id)
+    if name then return getText("ContextMenu_MinidoracatCapsule_Release", name), true end
+    return getText("ContextMenu_MinidoracatCapsule_ReleasePlain"), false
+end
+
+-- { id, item, option, menu }: the open menu's plain "Release" entry. Menus pool their options: rename it only while
+-- it is still this sphere's entry.
+Menu.releasePending = nil
+M.Info.listeners[#M.Info.listeners + 1] = function(id)
+    local p = Menu.releasePending
+    if not (p and p.id == id) then return end
+    local name = M.Info.knownName(id)
+    if not name then return end
+    Menu.releasePending = nil
+    if p.option.onSelect ~= Menu.onRelease or p.option.param1 ~= p.item then return end
+    p.option.name = getText("ContextMenu_MinidoracatCapsule_Release", name)
+    if p.menu.calcWidth then p.menu:setWidth(p.menu:calcWidth()) end
 end
 
 -- A loaded Pal Sphere is only released from the inventory, never pressed on the ground nor thrown, nor in a vehicle.
@@ -231,7 +250,10 @@ local function addCapsule(context, player, item)
     local carried = not item:getWorldItem() and player:getInventory():containsRecursive(item)
     if M.typeOf(item).sphere then
         if carried and not player:getVehicle() then
-            return context:addOption(releaseLabel(item), player, Menu.onRelease, item)
+            local label, named = Menu.releaseLabel(item)
+            local option = context:addOption(label, player, Menu.onRelease, item)
+            Menu.releasePending = not named and { id = item:getID(), item = item, option = option, menu = context } or nil
+            return option
         end
         return nil
     end

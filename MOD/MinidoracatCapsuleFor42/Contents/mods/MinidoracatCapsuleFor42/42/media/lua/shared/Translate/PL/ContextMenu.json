@@ -5,5 +5,6 @@
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
     "ContextMenu_MinidoracatCapsule_Capture": "Rzuć, aby złapać",
     "ContextMenu_MinidoracatCapsule_PackSphere": "Złap do Pal Sfery",
-    "ContextMenu_MinidoracatCapsule_Release": "Wypuść: %1"
+    "ContextMenu_MinidoracatCapsule_Release": "Wypuść: %1",
+    "ContextMenu_MinidoracatCapsule_ReleasePlain": "Wypuść"
 }

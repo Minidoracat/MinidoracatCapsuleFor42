@@ -2825,6 +2825,95 @@ local function toastCases() -- 獨立函式：主程式的 local 已接近 200 �
 end
 toastCases()
 
+print("Info：查詢合併成一批、伺服器丟掉的會重送；放出選單不用物品名（不會出現「放出：高級帕魯球：Hop」）")
+local function infoCases() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local saved = { Info = M.Info, Events = Events, isClient = isClient, getText = getText, gsp = getSpecificPlayer,
+        send = sendClientCommand }
+    local ticks, batches, srv = {}, {}, nil
+    Events = setmetatable({ OnTickEvenPaused = { Add = function(fn) ticks[#ticks + 1] = fn end },
+        OnServerCommand = { Add = function(fn) srv = srv or fn end } },
+        { __index = function() return { Add = function() end } end })
+    ISInventoryPane, ISInventoryPage = { refreshContainer = function() end }, { renderDirty = false }
+    loaded["ISUI/ISInventoryPane"] = true
+    isClient = function() return true end
+    local me = newPlayer("me", false)
+    getSpecificPlayer = function() return me end
+    sendClientCommand = function(_, _, cmd, args) if cmd == "query" then batches[#batches + 1] = args.ids end end
+    getText = function(key, a) return a and (key .. "(" .. tostring(a) .. ")") or key end
+    loadfile(MEDIA .. "/client/MinidoracatCapsule/Info.lua")()
+    local Info = M.Info
+    local function tick(ms) nowMs = nowMs + (ms or 0); for _, fn in ipairs(ticks) do fn() end end
+    local function reply(items) srv(M.MODULE, "query", { items = items }) end
+    -- three loaded items reach the inventory in the same tick (and one is asked twice)
+    local got = { Info.get(501), Info.get(502), Info.get(503), Info.get(501) }
+    tick(1)
+    local first = batches[1] and table.concat(batches[1], ",") or "-"
+    -- the server dropped that request (MIN_GAP_MS): nothing comes back; after RETRY_MS the same ids go again
+    tick(Info.RETRY_MS - 10)
+    local early = #batches
+    tick(20)
+    local again = batches[2] and table.concat(batches[2], ",") or "-"
+    -- a new id within SEND_GAP_MS of the last batch waits for the gap, then goes alone
+    Info.get(504)
+    tick(Info.SEND_GAP_MS - 50)
+    local gapped = #batches
+    tick(60)
+    local late = batches[3] and table.concat(batches[3], ",") or "-"
+    reply({ { ok = true, id = 501, kind = "animal", animal = { name = "Hop" } }, { ok = false, id = 502, why = "FAR" },
+        { ok = true, id = 503, kind = "animal", animal = { name = "Kit" } }, { ok = true, id = 504, kind = "animal",
+        animal = { name = "Bun" } } })
+    tick(Info.RETRY_MS + 10)
+    check(#got == 0 and first == "501,502,503" and early == 1 and again == "501,502,503" and gapped == 2 and late == "504"
+        and #batches == 3 and Info.get(501).ok and Info.get(502).why == "FAR",
+        "同一個 tick 的三顆合成一個請求（同一顆只問一次）；伺服器丟掉時 RETRY_MS 後整批重送；間隔不到 SEND_GAP_MS 先等；回覆後不再重送")
+    Info.drop(501)
+    check(Info.knownName(501) == "Hop" and Info.get(501) == nil and Info.knownName(502) == nil,
+        "紀錄改寫丟掉快取後，這個客戶端讀過的名字照樣記得（Info.knownName）")
+
+    -- the release entry: never the item's own name, a plain "Release" until the summary comes, then renamed in place
+    for _, n in ipairs({ "Vehicles/ISUI/ISVehicleMenu", "ISUI/Animal/ISAnimalContextMenu", "MinidoracatCapsule/ThrowCursor",
+        "TimedActions/ISPackVehicleAction", "TimedActions/ISPackAnimalAction", "TimedActions/ISReleaseSphereAction" }) do
+        loaded[n] = true
+    end
+    ISVehicleMenu, AnimalContextMenu = { FillMenuOutsideVehicle = function() end }, { doMenu = function() end }
+    loaded["MinidoracatCapsule/Notify"] = nil
+    require "MinidoracatCapsule/Notify"
+    loadfile(MEDIA .. "/client/MinidoracatCapsule/Menu.lua")()
+    local Menu = M.Menu
+    local function ball(id) return { getID = function() return id end, getName = function() return "SphereMega: doubled" end } end
+    local known = Menu.releaseLabel(ball(503))
+    local plain, named = Menu.releaseLabel(ball(505))
+    local b505 = ball(505)
+    local option = { name = plain, onSelect = Menu.onRelease, param1 = b505 }
+    local widths = 0
+    local menu = { calcWidth = function() return 1 end, setWidth = function() widths = widths + 1 end }
+    Menu.releasePending = { id = 505, item = b505, option = option, menu = menu }
+    local b506 = ball(506)
+    Menu.releaseLabel(b506)
+    local pooled = { name = "Other", onSelect = function() end, param1 = b506 } -- the pool gave this option to another menu
+    tick(Info.SEND_GAP_MS + 10)
+    reply({ { ok = true, id = 505, kind = "animal", animal = { name = "Hop2" } } })
+    Menu.releasePending = { id = 506, item = b506, option = pooled, menu = menu }
+    reply({ { ok = true, id = 506, kind = "animal", animal = { name = "Hop3" } } })
+    check(known == "ContextMenu_MinidoracatCapsule_Release(Kit)" and plain == "ContextMenu_MinidoracatCapsule_ReleasePlain"
+        and named == false and not known:find("doubled", 1, true) and not plain:find("doubled", 1, true)
+        and option.name == "ContextMenu_MinidoracatCapsule_Release(Hop2)" and widths == 1 and pooled.name == "Other"
+        and Menu.releasePending == nil,
+        "放出選單：有名字寫「放出：名字」，還沒有就只寫「放出」（從不用物品名）；紀錄到了就把開著的那一項改名、重算寬度；被別的選單拿去用的選項不動")
+    -- the strings
+    local missing = {}
+    for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
+        local f = io.open(MEDIA .. "/shared/Translate/" .. lang .. "/ContextMenu.json", "rb")
+        local v = Json.decode(f:read("*a")).ContextMenu_MinidoracatCapsule_ReleasePlain or ""
+        f:close()
+        if v == "" or v:find("%", 1, true) then missing[#missing + 1] = lang end
+    end
+    check(#missing == 0, "16 種語言都有 ReleasePlain（沒有 %）（" .. table.concat(missing, ",") .. "）")
+    M.Info, Events, isClient, getText, getSpecificPlayer, sendClientCommand = saved.Info, saved.Events, saved.isClient,
+        saved.getText, saved.gsp, saved.send
+end
+infoCases()
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")

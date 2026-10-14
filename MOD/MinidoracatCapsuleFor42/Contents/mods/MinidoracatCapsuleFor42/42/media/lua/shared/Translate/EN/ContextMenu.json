@@ -5,5 +5,6 @@
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
     "ContextMenu_MinidoracatCapsule_Capture": "Throw to Capture",
     "ContextMenu_MinidoracatCapsule_PackSphere": "Catch in Pal Sphere",
-    "ContextMenu_MinidoracatCapsule_Release": "Release: %1"
+    "ContextMenu_MinidoracatCapsule_Release": "Release: %1",
+    "ContextMenu_MinidoracatCapsule_ReleasePlain": "Release"
 }

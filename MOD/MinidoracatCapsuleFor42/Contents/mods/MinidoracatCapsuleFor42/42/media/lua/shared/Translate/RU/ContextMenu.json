@@ -5,5 +5,6 @@
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
     "ContextMenu_MinidoracatCapsule_Capture": "Бросить, чтобы поймать",
     "ContextMenu_MinidoracatCapsule_PackSphere": "Поймать в Пал-сферу",
-    "ContextMenu_MinidoracatCapsule_Release": "Выпустить: %1"
+    "ContextMenu_MinidoracatCapsule_Release": "Выпустить: %1",
+    "ContextMenu_MinidoracatCapsule_ReleasePlain": "Выпустить"
 }

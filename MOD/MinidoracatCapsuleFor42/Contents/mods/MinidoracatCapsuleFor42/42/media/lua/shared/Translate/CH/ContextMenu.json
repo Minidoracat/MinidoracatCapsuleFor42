@@ -5,5 +5,6 @@
     "ContextMenu_MinidoracatCapsule_PackKind": "%1 ×%2",
     "ContextMenu_MinidoracatCapsule_Capture": "丟出抓取",
     "ContextMenu_MinidoracatCapsule_PackSphere": "收進帕魯球",
-    "ContextMenu_MinidoracatCapsule_Release": "放出：%1"
+    "ContextMenu_MinidoracatCapsule_Release": "放出：%1",
+    "ContextMenu_MinidoracatCapsule_ReleasePlain": "放出"
 }
