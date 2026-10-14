@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Przedmioty",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Przedmioty",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Zwracaj pustą kapsułę lub Pal Sferę",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Gdy włączone, gracz, który rzucił kapsułę, po rozpakowaniu pojazdu dostaje z powrotem pustą kapsułę tego samego typu, a Pal Sfera, która wypuściła zwierzę, wraca pusta, tego samego poziomu, gotowa do ponownego użycia.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Kto może pakować pojazdy",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Oryginalne tabele przedmiotów: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Waga: garaże przydomowe",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "Od 0 do 10, ta sama skala co wagi w oryginalnych tabelach przedmiotów. Wyższa oznacza częściej.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Typy",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Typy",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Kapsuła kreskówkowa: można pakować",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Wyłączone: gracze nie mogą pakować pojazdów do kapsuł kreskówkowych. Pełne nadal można rzucić lub rozpakować przyciskiem, a zwrócona pusta kapsuła też będzie kreskówkowa.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Kapsuła kreskówkowa: do znalezienia",

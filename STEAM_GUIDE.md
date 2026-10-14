@@ -1,13 +1,13 @@
 <!-- Steam 指南稿源（繁中）：MOD 的完整說明以本指南為準，簡介只放摘要。格式與同步方式見 pz-family-docs/release.md「完整說明：Steam 指南」 -->
-<!-- 標題：📖 萬用膠囊 Universal Capsule MOD 完整說明：收納、展開與補回 -->
-<!-- 摘要：Minidoracat 萬用膠囊 MOD 的完整說明：取得空膠囊與帕魯球、用膠囊收車、用帕魯球抓動物與放出、丟出抓取、安全屋保護、貨物與動物保留什麼、提示框與 3D 預覽、在經濟中心買賣車與動物，以及沙盒選項、管理面板、補回車輛與動物和當機後的處理。 -->
+<!-- 標題：📖 丟出收納 Pack & Throw MOD 完整說明：收納、展開與補回 -->
+<!-- 摘要：Minidoracat 丟出收納 MOD 的完整說明：取得空膠囊與帕魯球、用膠囊收車、用帕魯球抓動物與放出、丟出抓取、安全屋保護、貨物與動物保留什麼、提示框與 3D 預覽、在經濟中心買賣車與動物，以及沙盒選項、管理面板、補回車輛與動物和當機後的處理。 -->
 === 🚀 快速上手
-[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_EN]Universal Capsule Mod Guide[/url]
+[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_EN]Pack & Throw Mod Guide[/url]
 
 MOD 本體（Steam Workshop）：
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
-萬用膠囊讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。活著的動物改用帕魯球抓：抓到的動物收在帕魯球裡，要用時直接放出在你身旁。收起來的車不在世界上，車多的基地也比較順。
+丟出收納讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。活著的動物改用帕魯球抓：抓到的動物收在帕魯球裡，要用時直接放出在你身旁。收起來的車不在世界上，車多的基地也比較順。
 帕魯球的名稱與外觀致敬《幻獸帕魯》，本 MOD 與 Pocketpair 無關。
 [olist]
 [*] [b]取得空膠囊與帕魯球[/b]：搜刮、管理員發放或經濟中心，見「取得空膠囊與帕魯球」。
@@ -319,8 +319,8 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]收車解決不了的部分[/b]：行駛中的車、沒收起來的車照舊；展開那一刻可能會頓一下。
 [/list]
 === ⚙️ 沙盒選項與預設值
-沙盒在「Minidoracat 萬用膠囊」「Minidoracat 萬用膠囊 - 種類」「Minidoracat 萬用膠囊 - 戰利品」三頁；管理面板的「設定」「種類」「戰利品」分頁改的也是這些選項。
-[h3]Minidoracat 萬用膠囊[/h3]
+沙盒在「Minidoracat 丟出收納」「Minidoracat 丟出收納 - 種類」「Minidoracat 丟出收納 - 戰利品」三頁；管理面板的「設定」「種類」「戰利品」分頁改的也是這些選項。
+[h3]Minidoracat 丟出收納[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]說明[/th][/tr]
 [tr][td]展開後歸還空膠囊或空帕魯球[/td][td]開[/td][td]膠囊展開後，有一顆同款的空膠囊回到丟的人背包；帕魯球放出動物後，有一顆同一級的空帕魯球回到你的背包[/td][/tr]
@@ -338,7 +338,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [list]
 [*] [b]誰能收車[/b]：管理員不受限制。有裝 Vehicle Manager 時，已綁定的車改由它判斷（車主和被分享「拖曳」權限的人），這個選項只管沒綁定的車。
 [/list]
-[h3]Minidoracat 萬用膠囊 - 種類[/h3]
+[h3]Minidoracat 丟出收納 - 種類[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]說明[/th][/tr]
 [tr][td]<款式>：可以收車[/td][td]開[/td][td]關掉後不能用這種膠囊收車；已裝車的照樣能丟出、按按鈕展開，展開後還的也是同一種[/td][/tr]
@@ -351,7 +351,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]膠囊戰利品平分[/b]：膠囊四個地點的權重由開著的款式平分，總量不變。
 [*] [b]帕魯球戰利品照稀有度分[/b]：帕魯球三個地點的量照等級稀有度 8:4:2:1 分給開著的等級。
 [/list]
-[h3]Minidoracat 萬用膠囊 - 戰利品[/h3]
+[h3]Minidoracat 丟出收納 - 戰利品[/h3]
 [table]
 [tr][th]選項[/th][th]預設[/th][th]權重[/th][/tr]
 [tr][td]空膠囊與空帕魯球出現在戰利品（總開關）[/td][td]開[/td][td]—[/td][/tr]
@@ -370,7 +370,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === ⚙️ 管理面板
 [list]
-[*] [b]打開[/b]：管理員在家族工具列會看到萬用膠囊的按鈕，點開「萬用膠囊管理」。
+[*] [b]打開[/b]：管理員在家族工具列會看到丟出收納的按鈕，點開「丟出收納管理」。
 [*] [b]隱藏按鈕[/b]：不想顯示可以在選項關掉。
 [*] [b]誰看得到[/b]：管理員；一般玩家看不到。
 [/list]

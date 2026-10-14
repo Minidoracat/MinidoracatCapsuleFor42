@@ -1,13 +1,13 @@
 <!-- Steam guide source (English): the full reference for this mod; the Workshop description only summarizes. Format and sync: pz-family-docs/release.md「完整說明：Steam 指南」 -->
-<!-- 標題：📖 Universal Capsule Mod Guide: Packing, Unpacking & Recovery -->
-<!-- 摘要：Guide to the Minidoracat Universal Capsule mod: getting empty capsules and Pal Spheres, packing vehicles with capsules, catching and releasing animals with Pal Spheres, throwing to capture, throwing capsules and Press the Button, safehouse protection, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
+<!-- 標題：📖 Pack & Throw Mod Guide: Packing, Unpacking & Recovery -->
+<!-- 摘要：Guide to the Minidoracat Pack & Throw mod: getting empty capsules and Pal Spheres, packing vehicles with capsules, catching and releasing animals with Pal Spheres, throwing to capture, throwing capsules and Press the Button, safehouse protection, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
 === 🚀 Quick start
-[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]萬用膠囊 MOD 完整說明[/url]
+[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]丟出收納 MOD 完整說明[/url]
 
 The mod on Steam Workshop:
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
-Universal Capsule lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need it: the vehicle appears exactly as it was, with its mods, condition and cargo. Live animals are caught in Pal Spheres instead: a caught animal is carried in the sphere and released right next to you when you want it. Packed vehicles are not in the world, so busy bases run smoother too.
+Pack & Throw lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need it: the vehicle appears exactly as it was, with its mods, condition and cargo. Live animals are caught in Pal Spheres instead: a caught animal is carried in the sphere and released right next to you when you want it. Packed vehicles are not in the world, so busy bases run smoother too.
 The Pal Sphere names and looks are a tribute to Palworld; this mod is not affiliated with Pocketpair.
 [olist]
 [*] [b]Get empty capsules and Pal Spheres[/b]: loot, an admin or the Economy Center; see "Getting capsules and Pal Spheres".
@@ -319,8 +319,8 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]What packing can't fix[/b]: vehicles being driven and vehicles that aren't packed cost the same as before, and the moment a vehicle is unpacked may hitch briefly.
 [/list]
 === ⚙️ Sandbox options and defaults
-The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidoracat Universal Capsule - Types" and "Minidoracat Universal Capsule - Loot"; the admin panel's "Settings", "Types" and "Loot" tabs edit these same options.
-[h3]Minidoracat Universal Capsule[/h3]
+The options are on the sandbox pages "Minidoracat Pack & Throw", "Minidoracat Pack & Throw - Types" and "Minidoracat Pack & Throw - Loot"; the admin panel's "Settings", "Types" and "Loot" tabs edit these same options.
+[h3]Minidoracat Pack & Throw[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
 [tr][td]Return an empty capsule or Pal Sphere[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory; after a Pal Sphere releases its animal, an empty Pal Sphere of the same tier goes back into your inventory[/td][/tr]
@@ -338,7 +338,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [list]
 [*] [b]Who can pack vehicles[/b]: admins are never limited. With Vehicle Manager installed, claimed vehicles follow it instead (the owner and players with Tow shared) and this option covers unclaimed vehicles.
 [/list]
-[h3]Minidoracat Universal Capsule - Types[/h3]
+[h3]Minidoracat Pack & Throw - Types[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
 [tr][td]<Type>: can pack[/td][td]On[/td][td]Off: players can't pack vehicles with this type; loaded ones still throw or unpack with the button, and the empty capsule given back is the same type[/td][/tr]
@@ -351,7 +351,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [*] [b]Capsule loot shared evenly[/b]: each capsule location's weight is split over the types that are on; the total stays the same.
 [*] [b]Pal Sphere loot by rarity[/b]: each Pal Sphere location is split 8:4:2:1 over the tiers that are on.
 [/list]
-[h3]Minidoracat Universal Capsule - Loot[/h3]
+[h3]Minidoracat Pack & Throw - Loot[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Weight[/th][/tr]
 [tr][td]Empty capsules and Pal Spheres appear as loot (master switch)[/td][td]On[/td][td]—[/td][/tr]
@@ -370,7 +370,7 @@ The options are on the sandbox pages "Minidoracat Universal Capsule", "Minidorac
 [/list]
 === ⚙️ Admin panel
 [list]
-[*] [b]Opening it[/b]: admins see a Universal Capsule button on the family toolbar that opens "Universal Capsule Admin".
+[*] [b]Opening it[/b]: admins see a Pack & Throw button on the family toolbar that opens "Pack & Throw Admin".
 [*] [b]Hiding the button[/b]: it can be hidden in the options.
 [*] [b]Who sees it[/b]: admins; regular players don't see it.
 [/list]

@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy"]
 # ///
-"""萬用膠囊音效：檢查 ElevenLabs 產生的候選檔，挑定的那一條做響度整理後轉成 MOD 用的 .ogg。
+"""丟出收納音效：檢查 ElevenLabs 產生的候選檔，挑定的那一條做響度整理後轉成 MOD 用的 .ogg。
 
 步驟（repo 根目錄；生成器見 skill elevenlabs-tts，提示詞在 scripts/assets/sfx.json）：
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx.json \

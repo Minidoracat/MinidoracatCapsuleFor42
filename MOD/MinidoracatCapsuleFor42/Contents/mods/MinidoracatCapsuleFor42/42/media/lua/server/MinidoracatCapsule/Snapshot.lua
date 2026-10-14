@@ -1,4 +1,4 @@
--- Universal Capsule: read a vehicle into a plain snapshot table and write it back onto a fresh vehicle.
+-- Pack & Throw: read a vehicle into a plain snapshot table and write it back onto a fresh vehicle.
 -- Cargo is never serialized: the original item objects travel inside the capsule (same Java objects).
 if isClient() then return end
 require "MinidoracatCapsule/Core"

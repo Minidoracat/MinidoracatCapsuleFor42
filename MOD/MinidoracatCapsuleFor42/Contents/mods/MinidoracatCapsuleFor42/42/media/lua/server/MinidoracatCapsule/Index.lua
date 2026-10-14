@@ -1,4 +1,4 @@
--- Universal Capsule: admin index over the records, <Store.dir>/index.json. One row per capsule (state, vehicle,
+-- Pack & Throw: admin index over the records, <Store.dir>/index.json. One row per capsule (state, vehicle,
 -- players, times, recorded spot, last sighting); the admin panel pages through it 50 rows at a time so a server never
 -- sends more than one page (sendServerCommand caps a packet at ~1 MB).
 -- The rows follow every Store read and write (Store.listeners). index.json also keeps each bucket's generation: on

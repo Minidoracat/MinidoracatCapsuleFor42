@@ -1,4 +1,4 @@
--- Universal Capsule: server commands of the admin panel (records tab). Every command checks M.isAdmin itself
+-- Pack & Throw: server commands of the admin panel (records tab). Every command checks M.isAdmin itself
 -- (Capability.ManipulateVehicle, same as Admin.resolve/restore); a refused one is logged and answered NOT_ADMIN.
 -- Restore always comes with the square and facing the admin picked with the restore cursor (Admin.restore checks the
 -- vehicle's ground there). The two "go to" buttons use the coordinates the detail reply carried (recorded

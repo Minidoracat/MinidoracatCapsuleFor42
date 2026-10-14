@@ -1,4 +1,4 @@
--- Universal Capsule: where a capsule may land and the ground its vehicle needs. Shared by the landing cursor (client)
+-- Pack & Throw: where a capsule may land and the ground its vehicle needs. Shared by the landing cursor (client)
 -- and the throw / landing checks (server), so both judge the same squares.
 -- addVehicleDebug puts the vehicle centre on the target square's north-west corner and turns it up to 0.2 rad off
 -- the asked direction (LuaManager.java:10806-10815). It only refuses another vehicle and indoor squares outside

@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Itens",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Itens",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Devolver cápsula ou Esfera de Pal vazia",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Se ativado, quem arremessou uma cápsula recebe uma vazia do mesmo tipo depois que o veículo aparece, e uma Esfera de Pal que soltou o seu animal volta vazia, do mesmo nível, pronta para usar de novo.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Quem pode guardar veículos",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Tabelas de itens originais: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Peso em garagens residenciais",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "De 0 a 10, a mesma escala dos pesos das tabelas de itens originais. Maior significa mais comum.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Tipos",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Tipos",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Cápsula de Desenho Animado: pode guardar",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Desativado: os jogadores não podem guardar veículos com Cápsulas de Desenho Animado. As carregadas ainda podem ser arremessadas ou liberadas pelo botão, e a cápsula vazia devolvida também é uma Cápsula de Desenho Animado.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Cápsula de Desenho Animado: aparece nos itens",

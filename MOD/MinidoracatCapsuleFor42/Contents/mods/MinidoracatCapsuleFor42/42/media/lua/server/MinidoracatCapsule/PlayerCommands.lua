@@ -1,4 +1,4 @@
--- Universal Capsule: what players do (pack, throw, press, release a Pal Sphere), server side. SP runs the same
+-- Pack & Throw: what players do (pack, throw, press, release a Pal Sphere), server side. SP runs the same
 -- functions locally.
 -- MP timed actions run complete() on the server only, rebuilt from the new() arguments the client sent
 -- (NetTimedAction.java:142-170), so `character` can name anyone. Identity comes from OnClientCommand (the server

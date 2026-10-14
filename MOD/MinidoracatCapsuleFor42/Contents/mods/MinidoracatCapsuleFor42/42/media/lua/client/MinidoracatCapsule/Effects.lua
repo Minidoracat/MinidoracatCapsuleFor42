@@ -1,4 +1,4 @@
--- Universal Capsule (client): draw the effects the server announces (server/MinidoracatCapsule/Fx.lua).
+-- Pack & Throw (client): draw the effects the server announces (server/MinidoracatCapsule/Fx.lua).
 --   pack / unpack: smoke frames, a ~0.2 s flash and a local sound.
 --   flight: the capsule flies from the thrower to the landing point in 0.5 s whatever the distance, with a whoosh at
 --   the thrower (one clip fits every throw), then lies there until the pop (REST_MS at most).

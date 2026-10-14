@@ -1,7 +1,7 @@
 module Base
 {
     /*
-        Universal Capsule sound effects (ElevenLabs; prompts in scripts/assets/sfx.json and sfx_v2..v6.json, take
+        Pack & Throw sound effects (ElevenLabs; prompts in scripts/assets/sfx.json and sfx_v2..v6.json, take
         selection and loudness in scripts/assets/build_sfx.py). Play with getSoundManager():PlayWorldSoundImpl("<name>", ...).
         Four per capsule type (throw, pop, pack, button), every one different; shared/MinidoracatCapsule/Core.lua
         M.TYPES names which type uses which. The four without a suffix are the cartoon type.

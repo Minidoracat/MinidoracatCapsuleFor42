@@ -1,4 +1,4 @@
--- Universal Capsule: a thrown or pressed capsule lands, or a Pal Sphere lets its animal out (server authority; SP runs
+-- Pack & Throw: a thrown or pressed capsule lands, or a Pal Sphere lets its animal out (server authority; SP runs
 -- the same code locally). The action's complete() schedules the landing; the capsule stays where it is (inventory or
 -- ground) until then.
 -- Landing: a record that is not a usable PACKED one goes straight to Unpack (it refuses, logs and clears stale cargo);

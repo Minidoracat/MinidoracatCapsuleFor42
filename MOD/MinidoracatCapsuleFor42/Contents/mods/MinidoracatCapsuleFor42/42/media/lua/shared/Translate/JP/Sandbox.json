@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat 万能カプセル",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 万能カプセル - 戦利品",
+    "Sandbox_MinidoracatCapsule": "Minidoracat 投げて収納",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 投げて収納 - 戦利品",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "空のカプセル・パルスフィアを返す",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "オンにすると、車両が出た後、カプセルを投げたプレイヤーに同じ種類の空のカプセルが戻ります。動物を出したパルスフィアも同じ等級の空のものとして戻り、また使えます。",
     "Sandbox_MinidoracatCapsule_PackPermission": "車両を収納できる人",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "バニラの戦利品テーブル：GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "住宅のガレージの重み",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0 から 10、バニラの戦利品テーブルの重みと同じ尺度です。大きいほど出やすくなります。",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 万能カプセル - 種類",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 投げて収納 - 種類",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "カートゥーンカプセル：収納に使える",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "オフにすると、プレイヤーはカートゥーンカプセルで車両を収納できなくなります。車両入りのカートゥーンカプセルはこれまでどおり投げたりボタンで展開したりでき、戻ってくる空のカプセルもカートゥーンカプセルです。",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "カートゥーンカプセル：戦利品に出現",

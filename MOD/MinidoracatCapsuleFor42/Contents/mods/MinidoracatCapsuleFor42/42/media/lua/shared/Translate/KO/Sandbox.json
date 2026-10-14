@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat 만능 캡슐",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 만능 캡슐 - 전리품",
+    "Sandbox_MinidoracatCapsule": "Minidoracat 던져서 수납",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 던져서 수납 - 전리품",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "빈 캡슐·팰 스피어 돌려주기",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "켜면 차량이 나온 뒤 캡슐을 던진 플레이어가 같은 종류의 빈 캡슐을 돌려받고, 동물을 꺼낸 팰 스피어도 같은 등급의 빈 것으로 돌아와 다시 쓸 수 있습니다.",
     "Sandbox_MinidoracatCapsule_PackPermission": "차량을 넣을 수 있는 사람",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "기본 게임 전리품 테이블: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "주택 차고 가중치",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0에서 10, 기본 게임 전리품 테이블의 가중치와 같은 기준입니다. 높을수록 자주 나옵니다.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 만능 캡슐 - 종류",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 던져서 수납 - 종류",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "카툰 캡슐: 차량 넣기 가능",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "끄면 플레이어가 카툰 캡슐에 차량을 넣을 수 없습니다. 차량이 든 카툰 캡슐은 그대로 던지거나 버튼으로 꺼낼 수 있고, 돌려받는 빈 캡슐도 카툰 캡슐입니다.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "카툰 캡슐: 전리품에 등장",

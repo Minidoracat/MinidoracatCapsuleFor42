@@ -1,4 +1,4 @@
--- Universal Capsule (client): what is inside a capsule, under the item tooltip. Same stacking as MiniMapWatch
+-- Pack & Throw (client): what is inside a capsule, under the item tooltip. Same stacking as MiniMapWatch
 -- Hud.lua and ItemCleaner Tooltip.lua: the wrapper is installed in OnGameStart (outermost), lets everything below
 -- draw first, measures how far it drew and adds one box under it. Nothing is written in render: the summary comes
 -- from Info (requested once, cached), the lines are built once per summary.

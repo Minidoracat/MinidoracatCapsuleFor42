@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Universal Capsule 的 Blender headless 產線（Blender 5.2）。
+"""Pack & Throw 的 Blender headless 產線（Blender 5.2）。
 
 用法（由 repo 根目錄執行）：
     "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup \

@@ -1,4 +1,4 @@
--- Universal Capsule: loaded capsules in Minidoracat Economy, every type registered on its own (one full type each). API
+-- Pack & Throw: loaded capsules in Minidoracat Economy, every type registered on its own (one full type each). API
 -- rev 6 (unique item types): market listings and auctions take them, cargo included (Trade.lua carries the record and
 -- the cargo across Economy's rebuild); buy orders and the shop do not (Economy refuses unique types there). Without
 -- rev 6, or when a registration is refused, that type stays out of every channel: a capsule Economy rebuilt would come

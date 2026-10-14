@@ -1,4 +1,4 @@
--- Universal Capsule (client): the admin panel, opened from the family Dock (MinidoracatUIFor42 rev 18).
+-- Pack & Throw (client): the admin panel, opened from the family Dock (MinidoracatUIFor42 rev 18).
 --   Records: search by capsule id or player, state chips (crash-uncertain and "not seen for a week" among them), one
 --     page of 50 rows from the server index, and the detail of the selected capsule: timeline, cargo list, last
 --     sighting, go to the recorded spot or to the last sighting, restore, and the verdicts "car is there, close" /

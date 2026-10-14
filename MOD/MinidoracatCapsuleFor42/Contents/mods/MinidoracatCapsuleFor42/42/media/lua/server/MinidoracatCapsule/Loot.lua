@@ -1,4 +1,4 @@
--- Universal Capsule: empty capsules in four vanilla loot locations and empty Pal Spheres in three (server / SP; MP
+-- Pack & Throw: empty capsules in four vanilla loot locations and empty Pal Spheres in three (server / SP; MP
 -- clients do not fill containers). Switches and weights are sandbox options (page MinidoracatCapsuleLoot; which types
 -- drop: page MinidoracatCapsuleTypes). A place's weight is shared by the dropping types of its kind (capsules evenly,
 -- spheres by tier rarity) and goes into ProceduralDistributions as is. How a change takes effect, same as MiniMapWatch

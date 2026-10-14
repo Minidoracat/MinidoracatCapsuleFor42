@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Добыча",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Добыча",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Возвращать пустую капсулу или Пал-сферу",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Если включено, игрок, бросивший капсулу, после распаковки транспорта получает пустую капсулу того же типа, а Пал-сфера, выпустившая животное, возвращается пустой, того же уровня, и её можно использовать снова.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Кто может упаковывать транспорт",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Ванильные таблицы добычи: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Домашние гаражи: вес",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "От 0 до 10, та же шкала, что у весов в ванильных таблицах добычи. Чем больше, тем чаще.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Типы",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Типы",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Мультяшная капсула: можно упаковывать",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Если выключено, игроки не могут упаковывать транспорт в мультяшные капсулы. Заполненные по-прежнему можно бросить или распаковать кнопкой, а возвращённая пустая капсула - тоже мультяшная.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Мультяшная капсула: в добыче",

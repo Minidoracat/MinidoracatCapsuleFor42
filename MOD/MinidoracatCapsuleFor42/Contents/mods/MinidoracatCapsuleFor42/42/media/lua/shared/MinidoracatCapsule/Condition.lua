@@ -1,4 +1,4 @@
--- Universal Capsule: condition numbers of a recorded vehicle from its parts in the Query.summary format
+-- Pack & Throw: condition numbers of a recorded vehicle from its parts in the Query.summary format
 -- ({ id, c = condition, i = item, ic = item condition, u = uses, a = amount }). The tooltip and the preview word
 -- them (client Info.details: part and item names in the player's language); the Economy listing shows the numbers
 -- (server Trade.view), so a buyer reads what the tooltip says.

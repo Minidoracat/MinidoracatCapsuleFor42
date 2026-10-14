@@ -1,4 +1,4 @@
--- Universal Capsule: admin API (server). Resolve records a crash left uncertain, and restore a lost vehicle.
+-- Pack & Throw: admin API (server). Resolve records a crash left uncertain, and restore a lost vehicle.
 -- Callers: the debug commands now (Commands.lua), the admin panel later. Every entry checks M.isAdmin itself.
 -- Results are { ok = true, state } or { ok = false, why }.
 if isClient() then return end

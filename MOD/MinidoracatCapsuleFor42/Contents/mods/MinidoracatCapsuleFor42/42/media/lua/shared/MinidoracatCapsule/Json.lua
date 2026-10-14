@@ -1,4 +1,4 @@
--- Universal Capsule: JSON that keeps Lua key types.
+-- Pack & Throw: JSON that keeps Lua key types.
 -- Every table is a JSON object. Keys: string "abc" stays "abc"; a string starting with "#" gets one more "#";
 -- a number key n is written "#<n>". Values: string, finite number, boolean, table. Anything else fails with a path.
 -- Pure Lua (Kahlua and standard Lua). Kahlua has no next/xpcall and no table.sort here.

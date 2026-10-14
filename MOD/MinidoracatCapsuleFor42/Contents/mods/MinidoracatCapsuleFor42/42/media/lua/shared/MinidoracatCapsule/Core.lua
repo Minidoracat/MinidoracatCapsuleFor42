@@ -1,4 +1,4 @@
--- Universal Capsule: shared constants and helpers.
+-- Pack & Throw: shared constants and helpers.
 MinidoracatCapsule = MinidoracatCapsule or {}
 local M = MinidoracatCapsule
 

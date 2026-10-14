@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pillow"]
 # ///
-"""Universal Capsule 的可重跑外層產線。
+"""Pack & Throw 的可重跑外層產線。
 
 用途：用固定 seed 的 PIL 直接畫 7 種膠囊（TYPES）各一組空／裝車 512 x 512 RGB
 atlas，呼叫 ``capsule_blender.py`` 建立共用 FBX、每張 atlas 一張圖示原圖與預覽，
@@ -555,7 +555,7 @@ def run(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="建立 Universal Capsule 的 atlas、FBX、PZ 物品圖示與預覽")
+    ap = argparse.ArgumentParser(description="建立 Pack & Throw 的 atlas、FBX、PZ 物品圖示與預覽")
     ap.add_argument("--blender", default=str(BLENDER_DEFAULT), help="Blender 5.2 可執行檔絕對路徑")
     run(ap.parse_args())
 

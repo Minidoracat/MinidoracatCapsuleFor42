@@ -1,4 +1,4 @@
--- Universal Capsule: server guards over loaded capsules, driven by one OnTickEvenPaused handler.
+-- Pack & Throw: server guards over loaded capsules, driven by one OnTickEvenPaused handler.
 --   * Store.settleDue every tick. OnTick stops on an empty dedicated server with PauseEmpty; OnTickEvenPaused fires
 --     at the top of IngameState.updateInternal, before the pause check (IngameState.java:1347 vs 1517-1520).
 --   * Every PASS_MS, for loaded capsules in online players' inventories (any depth) and on the ground around them:

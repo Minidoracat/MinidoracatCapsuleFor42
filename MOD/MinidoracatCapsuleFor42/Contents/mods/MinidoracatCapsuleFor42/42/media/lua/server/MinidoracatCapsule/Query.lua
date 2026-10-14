@@ -1,4 +1,4 @@
--- Universal Capsule: capsule summaries for the tooltip and the 3D preview (server authority).
+-- Pack & Throw: capsule summaries for the tooltip and the 3D preview (server authority).
 -- The capsule item only carries its id; the vehicle, its condition and the cargo list come from its record (Store).
 -- Replies are raw data (script, parts, manifest, history times): the client words them in the player's language.
 -- A regular player may only ask about capsules on them or within LOOK_RANGE (ground, containers, vehicle parts);

@@ -1,4 +1,4 @@
--- Universal Capsule (client): context menu entries.
+-- Pack & Throw (client): context menu entries.
 --   * "Pack into capsule" at the end of the vanilla outside-vehicle menu, and "Catch in Pal Sphere" in a live animal's
 --     own submenu (the vanilla animal menu, AnimalContextMenu.doMenu): capsules take vehicles, spheres animals (user
 --     2026-10-14). With two or more types (sphere tiers) it opens a submenu, one entry per type ("Steam Capsule x2");

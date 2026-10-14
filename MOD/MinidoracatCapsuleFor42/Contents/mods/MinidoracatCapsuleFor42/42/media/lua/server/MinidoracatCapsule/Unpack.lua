@@ -1,4 +1,4 @@
--- Universal Capsule: unpack a capsule into a vehicle (server authority). The snapshot is claimed (UNPACKED)
+-- Pack & Throw: unpack a capsule into a vehicle (server authority). The snapshot is claimed (UNPACKED)
 -- before the vehicle exists; any failure before the vehicle is in the world puts it back to PACKED.
 -- Unpack.spawn is the one place that builds a vehicle from a snapshot (also used by Admin.restore).
 if isClient() then return end

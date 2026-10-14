@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Beute",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Beute",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Leere Kapsel oder Pal-Sphäre zurückgeben",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Wenn aktiv, bekommt der Spieler, der eine Kapsel geworfen hat, nach dem Entpacken des Fahrzeugs eine leere Kapsel desselben Typs zurück, und eine Pal-Sphäre, die ihr Tier freigelassen hat, kommt leer und in derselben Stufe zurück, bereit zum nächsten Einsatz.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Wer Fahrzeuge einpacken darf",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Vanilla-Beutetabellen: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Gewichtung Hausgaragen",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0 bis 10, dieselbe Skala wie die Gewichtungen der Vanilla-Beutetabellen. Höher heißt häufiger.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Typen",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Typen",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Cartoon-Kapsel: kann einpacken",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Aus: Spieler können mit Cartoon-Kapseln keine Fahrzeuge einpacken. Beladene lassen sich weiterhin werfen oder per Knopf entpacken, und die zurückgegebene leere Kapsel ist ebenfalls eine Cartoon-Kapsel.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Cartoon-Kapsel: als Beute",

@@ -1,4 +1,4 @@
--- Universal Capsule (client): capsule summaries from the server (server/Query.lua), cached by capsule id, and the
+-- Pack & Throw (client): capsule summaries from the server (server/Query.lua), cached by capsule id, and the
 -- wording the tooltip and the preview share. The item only carries its id; nothing here reads item modData.
 -- A cached summary is dropped when the server writes that snapshot (queryChanged), so the next hover asks again.
 -- Text is built in the player's language from raw data: vehicle and part names from the scripts, not the server.

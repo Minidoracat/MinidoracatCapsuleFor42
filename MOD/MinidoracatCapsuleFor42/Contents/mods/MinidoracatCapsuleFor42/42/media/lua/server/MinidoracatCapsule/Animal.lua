@@ -1,4 +1,4 @@
--- Universal Capsule: read a live animal into a plain table (the record's `animal`, JSON-storable) and build it again.
+-- Pack & Throw: read a live animal into a plain table (the record's `animal`, JSON-storable) and build it again.
 -- Nothing of the animal travels in the capsule: a vanilla Base.Animal item would weigh the animal (a cow ~104), and a
 -- container item always weighs its contents (AGENTS.md). Ported from the feasibility spike vcap-animal-*-1012b.
 -- Not written back (no Lua setter; reset or recomputed): lastMilkTimer, eggsToday, clutchSize, petTimer,

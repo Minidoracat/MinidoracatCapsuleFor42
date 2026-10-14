@@ -1,4 +1,4 @@
--- Universal Capsule: the server's capsule records, the only source of truth for a capsule. States:
+-- Pack & Throw: the server's capsule records, the only source of truth for a capsule. States:
 --   PACKED   -> UNPACKED (unpack) | RESTORED (admin restore) | VOID (admin: the original car is still there)
 --   UNPACKED -> PACKED (spawn failed, or admin: the new car is gone) | RESTORED (admin, uncertain records only)
 -- Every change that touched vehicles.db is marked `settled` SETTLE_MS later. A record without it that is not

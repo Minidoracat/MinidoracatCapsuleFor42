@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow"]
 # ///
-"""萬用膠囊七種款式的音效挑選頁：卡通以外六款 × 四段（丟出、彈開、收車、按鈕），每段 4 個 ElevenLabs 候選，
+"""丟出收納七種款式的音效挑選頁：卡通以外六款 × 四段（丟出、彈開、收車、按鈕），每段 4 個 ElevenLabs 候選，
 每款配一個遊戲畫面，按 ▶ 就照遊戲的時間軸播那一段的特效（2026-10-12 使用者要求「加上對應的特效動畫搭配組合」）。
 
 2026-10-12 使用者在設計稿 vcap-types-1012 選「28 段全部由你挑」，補一句「卡通的音效就先維持吧」：卡通四段只當參考。
@@ -268,7 +268,7 @@ def build(bg):
 
 PAGE = """<!doctype html>
 <html lang="zh-Hant-TW"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>萬用膠囊音效挑選</title>
+<title>丟出收納音效挑選</title>
 <style>
   :root { color-scheme: dark; }
   body { margin: 0; font: 15px/1.5 "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", system-ui, sans-serif; background: #17181b; color: #ececec; }
@@ -306,7 +306,7 @@ PAGE = """<!doctype html>
   .sum { color: #c4c4c4; font-size: 14px; }
 </style>
 <body><main>
-<h1>萬用膠囊音效挑選：六款 × 四段，配特效</h1>
+<h1>丟出收納音效挑選：六款 × 四段，配特效</h1>
 <ul class="intro">
   <li>按 ▶ 試聽，畫面會照遊戲的時間軸播那一段特效：丟出、彈開用「丟出」畫面（膠囊飛 0.5 秒落地彈開），按鈕用「按下按鈕」畫面（按下 0.8 秒後出車），收車用「收車」畫面。</li>
   <li>同一個畫面裡的另一段聲音，用那一列現在勾的那條。每款畫面下的三顆按鈕，用現在勾的組合整段播一次。</li>
@@ -448,7 +448,7 @@ document.addEventListener("click", e => {
 });
 for (const c of document.querySelectorAll("canvas.stage")) { STAGE[c.dataset.t] = c; idle(c.dataset.t, "throw"); }
 function render() {
-  const lines = ["萬用膠囊音效挑選（__STAMP__）"];
+  const lines = ["丟出收納音效挑選（__STAMP__）"];
   let changed = 0;
   for (const r of CFG.rows) {
     const v = chosen(r.slot), cur = CFG.cur[r.slot];

@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat 萬用膠囊",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 萬用膠囊 - 戰利品",
+    "Sandbox_MinidoracatCapsule": "Minidoracat 丟出收納",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat 丟出收納 - 戰利品",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "展開後歸還空膠囊或空帕魯球",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "開啟時，膠囊展開後會有一顆同款的空膠囊回到丟的人背包；帕魯球放出動物後，玩家拿回一顆同等級的空帕魯球。可以再拿來收東西。",
     "Sandbox_MinidoracatCapsule_PackPermission": "誰能收車",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "原版戰利品表：GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "住家車庫的權重",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0 到 10，和原版戰利品表的權重是同一套，數字越大越常出現。",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 萬用膠囊 - 種類",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat 丟出收納 - 種類",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "卡通膠囊：可以收車",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "關掉後玩家不能用卡通膠囊收車；已裝了車的卡通膠囊照樣能丟出、按按鈕展開，展開後還的也是卡通膠囊。",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "卡通膠囊：出現在戰利品",

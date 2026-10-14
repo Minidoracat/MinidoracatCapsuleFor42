@@ -1,4 +1,4 @@
--- Universal Capsule (client): cargo inside a loaded capsule stays there until the vehicle is unpacked. This is the
+-- Pack & Throw (client): cargo inside a loaded capsule stays there until the vehicle is unpacked. This is the
 -- player-facing side only; the server puts back anything that leaves (server/MinidoracatCapsule/Guard.lua).
 --   * every vanilla way of taking an item out (drag, loot all, grab, eat/drink/equip/reload/craft, which all move the
 --     item into the main inventory first) is an ISInventoryTransferAction: refuse it and say why;

@@ -1,4 +1,4 @@
--- Universal Capsule (client): the landing cursor for "throw capsule" and "press the button", the admin panel's
+-- Pack & Throw (client): the landing cursor for "throw capsule" and "press the button", the admin panel's
 -- "restore at a picked spot", and "throw to capture" (an empty capsule at an animal or a vehicle). A build cursor
 -- (ISBuildingObject, like vanilla ISFarmingCursorMouse): the engine calls isValid/render every frame and create on a
 -- left click (only when valid); right click opens the world menu, which drops the drag (ISWorldObjectContextMenu

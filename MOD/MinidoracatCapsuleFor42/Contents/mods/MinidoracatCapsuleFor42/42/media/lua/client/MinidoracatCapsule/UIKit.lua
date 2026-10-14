@@ -1,4 +1,4 @@
--- Universal Capsule (client): the family UI framework (MinidoracatUIFor42, require= in mod.info) for the preview
+-- Pack & Throw (client): the family UI framework (MinidoracatUIFor42, require= in mod.info) for the preview
 -- window and the admin panel. Needs API rev 18 (opaque windows; ScrollPanel is rev 16, Dock rev 13, chip buttons and
 -- Text.fit rev 11, Slider rev 9) with the window, controls, virtualList, scrollPanel and opaqueWindow capabilities.
 -- Without it Kit.ok is false: the windows do not open and the entry points say so (fail-soft, no half-built UI), the

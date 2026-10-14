@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow", "scipy"]
 # ///
-"""Procedural, non-cartoon smoke / burst styles for the Universal Capsule pack/unpack effect (the sandbox EffectStyle
+"""Procedural, non-cartoon smoke / burst styles for the Pack & Throw pack/unpack effect (the sandbox EffectStyle
 choices, client/Effects.lua STYLES).
 
 Usage (repo root):

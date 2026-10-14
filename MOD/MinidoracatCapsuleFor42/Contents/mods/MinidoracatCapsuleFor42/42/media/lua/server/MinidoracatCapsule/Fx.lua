@@ -1,4 +1,4 @@
--- Universal Capsule: tell nearby clients to draw an effect (client/MinidoracatCapsule/Effects.lua). The server only
+-- Pack & Throw: tell nearby clients to draw an effect (client/MinidoracatCapsule/Effects.lua). The server only
 -- sends a few numbers; smoke, flash and sound are local to each client and attract nothing. The sandbox zombie radius
 -- is the only world sound (addSound). SP has no server->client channel: Effects.play is called directly.
 if isClient() then return end

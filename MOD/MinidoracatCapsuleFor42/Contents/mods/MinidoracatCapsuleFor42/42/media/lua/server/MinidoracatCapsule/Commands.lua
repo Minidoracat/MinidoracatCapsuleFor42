@@ -1,4 +1,4 @@
--- Universal Capsule: admin-only debug entry points (E2E). The server re-resolves every target by id;
+-- Pack & Throw: admin-only debug entry points (E2E). The server re-resolves every target by id;
 -- client coordinates are only accepted as the unpack spot, within PACK_RANGE of the player, or an admin restore spot.
 -- Real player actions/UI come in later phases.
 if isClient() then return end

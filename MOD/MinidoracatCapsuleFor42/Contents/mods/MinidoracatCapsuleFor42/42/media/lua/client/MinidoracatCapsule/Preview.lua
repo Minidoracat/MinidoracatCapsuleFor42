@@ -1,4 +1,4 @@
--- Universal Capsule (client): "Preview vehicle" on a loaded capsule's context menu opens a 3D view of the vehicle type
+-- Pack & Throw (client): "Preview vehicle" on a loaded capsule's context menu opens a 3D view of the vehicle type
 -- and lists the real condition next to it. The scene is the vanilla preview (ISUI3DScene, as in VehicleSpawnControl
 -- MVSC_VehicleTab.lua): it draws the type's default look with every optional part, not this vehicle's paint and parts,
 -- which the note under the list says. One window, reused; the list follows the cached summary (Info).

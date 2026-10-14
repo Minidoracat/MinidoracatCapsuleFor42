@@ -1,4 +1,4 @@
--- Universal Capsule (client): server messages for players (module MinidoracatCapsule). Effects go to Effects.lua,
+-- Pack & Throw (client): server messages for players (module MinidoracatCapsule). Effects go to Effects.lua,
 -- capsule info to the landing cursor, results become a Toast or a Dialog of the family UI framework
 -- (MinidoracatUIFor42, API 1 rev 7: toast + dialog). Without the framework: halo text above the player.
 -- SP has no server->client channel; the server code calls M.onServerCommand directly (PlayerCommands.send).

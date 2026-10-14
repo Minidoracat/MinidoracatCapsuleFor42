@@ -1,4 +1,4 @@
--- Universal Capsule: player rules shared by the client menus (what the tooltip rows show) and the server actions
+-- Pack & Throw: player rules shared by the client menus (what the tooltip rows show) and the server actions
 -- (what complete() enforces). The client copy only decides the menu; the server checks again before anything moves.
 require "MinidoracatCapsule/Core"
 require "MinidoracatCapsule/Footprint"

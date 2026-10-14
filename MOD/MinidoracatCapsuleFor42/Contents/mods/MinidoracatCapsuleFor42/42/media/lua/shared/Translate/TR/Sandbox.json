@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Ganimet",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Ganimet",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Boş kapsülü ya da Pal Küresini geri ver",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Açıksa, araç çıktıktan sonra kapsülü fırlatan oyuncu aynı türden boş bir kapsül geri alır; hayvanını serbest bırakan Pal Küresi de aynı seviyede, boş ve yeniden kullanıma hazır olarak geri döner.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Araçları kim kapsüle koyabilir",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Orijinal ganimet tabloları: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Ev garajları ağırlığı",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0 ile 10 arası, orijinal ganimet tablosu ağırlıklarıyla aynı ölçek. Yüksek değer daha sık demektir.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Türler",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Türler",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Çizgi Film Kapsülü: araç koyabilir",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Kapalıyken oyuncular Çizgi Film Kapsülü ile araç koyamaz. Dolu olanlar yine fırlatılabilir veya düğmeyle açılabilir; geri verilen boş kapsül de yine Çizgi Film Kapsülü olur.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Çizgi Film Kapsülü: ganimette çıkar",

@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Loot",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Loot",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Return an empty capsule or Pal Sphere",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "When on, the player who threw a capsule gets an empty one of the same type back once the vehicle is out, and a Pal Sphere that released its animal comes back empty, same tier, ready to use again.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Who can pack vehicles",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Vanilla loot tables: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Home garages weight",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "0 to 10, the same scale as vanilla loot table weights. Higher means more common.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Types",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Types",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Cartoon Capsule: can pack",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Off: players cannot pack vehicles with Cartoon Capsules. Loaded ones can still be thrown or unpacked with the button, and the empty capsule given back is a Cartoon Capsule too.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Cartoon Capsule: in loot",

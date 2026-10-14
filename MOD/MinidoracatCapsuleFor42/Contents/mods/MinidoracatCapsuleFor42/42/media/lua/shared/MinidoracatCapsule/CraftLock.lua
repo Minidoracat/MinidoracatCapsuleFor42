@@ -1,4 +1,4 @@
--- Universal Capsule: crafting never uses inputs or tools that are cargo inside a loaded capsule (client, SP, server).
+-- Pack & Throw: crafting never uses inputs or tools that are cargo inside a loaded capsule (client, SP, server).
 -- HandcraftLogic reads only the containers it is given, not bags inside them (CraftRecipeManager.java:274-282), and the
 -- server builds it from the container list the client sent (ISHandcraftAction.serverStart). So the server drops
 -- capsule containers itself, and refuses a recipe whose inputs are still cargo (manual input lists also come from the

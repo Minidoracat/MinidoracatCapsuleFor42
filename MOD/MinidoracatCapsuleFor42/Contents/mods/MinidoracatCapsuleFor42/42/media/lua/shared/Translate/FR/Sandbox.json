@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Butin",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Butin",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Rendre une capsule ou Sphère de Pal vide",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Si activé, le joueur qui a lancé une capsule en récupère une vide du même type une fois le véhicule sorti, et une Sphère de Pal qui a libéré son animal revient vide, du même rang, prête à resservir.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Qui peut ranger des véhicules",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Tables de butin d'origine : GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Poids : garages résidentiels",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "De 0 à 10, même échelle que les poids des tables de butin d'origine. Plus c'est élevé, plus c'est fréquent.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Types",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Types",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Capsule dessin animé : peut ranger",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Désactivé : les joueurs ne peuvent pas ranger de véhicule avec les capsules dessin animé. Celles qui sont chargées se lancent ou se déploient toujours avec le bouton, et la capsule vide rendue est aussi une capsule dessin animé.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Capsule dessin animé : dans le butin",

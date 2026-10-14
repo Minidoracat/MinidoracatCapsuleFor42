@@ -1,4 +1,4 @@
--- Universal Capsule: loaded capsules traded through Minidoracat Economy (market listings, auctions), cargo included.
+-- Pack & Throw: loaded capsules traded through Minidoracat Economy (market listings, auctions), cargo included.
 -- Economy (API rev 6, unique item types) keeps a snapshot of the capsule and builds a new item when it hands it over,
 -- which would come back with a new id, away from its record, and empty. Economy keeps only `ext`: the capsule id and
 -- what the listing shows (view). The cargo goes into the record (snap.escrow) through Economy's own codec

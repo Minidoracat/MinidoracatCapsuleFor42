@@ -1,6 +1,6 @@
 {
-    "Sandbox_MinidoracatCapsule": "Minidoracat Universal Capsule",
-    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Universal Capsule - Botín",
+    "Sandbox_MinidoracatCapsule": "Minidoracat Pack & Throw",
+    "Sandbox_MinidoracatCapsuleLoot": "Minidoracat Pack & Throw - Botín",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule": "Devolver cápsula o Esfera Pal vacía",
     "Sandbox_MinidoracatCapsule_ReturnEmptyCapsule_tooltip": "Si está activado, quien lanzó una cápsula recibe una vacía del mismo tipo cuando aparece el vehículo, y una Esfera Pal que liberó su animal vuelve vacía, del mismo nivel, lista para usarse otra vez.",
     "Sandbox_MinidoracatCapsule_PackPermission": "Quién puede guardar vehículos",
@@ -32,7 +32,7 @@
     "Sandbox_MinidoracatCapsule_LootGarage_tooltip": "Tablas de botín originales: GarageMechanics",
     "Sandbox_MinidoracatCapsule_LootGarageWeight": "Peso en garajes de casas",
     "Sandbox_MinidoracatCapsule_LootGarageWeight_tooltip": "De 0 a 10, la misma escala que los pesos de las tablas de botín originales. Cuanto más alto, más común.",
-    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Universal Capsule - Tipos",
+    "Sandbox_MinidoracatCapsuleTypes": "Minidoracat Pack & Throw - Tipos",
     "Sandbox_MinidoracatCapsule_TypeCartoon": "Cápsula de caricatura: puede guardar",
     "Sandbox_MinidoracatCapsule_TypeCartoon_tooltip": "Desactivado: los jugadores no pueden guardar vehículos con cápsulas de caricatura. Las cargadas se pueden seguir lanzando o desplegando con el botón, y la cápsula vacía que se devuelve también es una cápsula de caricatura.",
     "Sandbox_MinidoracatCapsule_TypeCartoonLoot": "Cápsula de caricatura: en el botín",

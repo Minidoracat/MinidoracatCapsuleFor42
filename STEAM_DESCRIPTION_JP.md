@@ -1,4 +1,4 @@
-[h1]🚗 Minidoracat 万能カプセル Universal Capsule[/h1]
+[h1]🚗 Minidoracat 投げて収納 Pack & Throw[/h1]
 [h3]By Minidoracat[/h3]
 
 [hr][/hr]
@@ -34,7 +34,7 @@
 [*] [b]セーフハウス保護[/b]：他人のセーフハウス内の車や動物はしまえず、そこに出すこともできません
 [*] [b]増えない・戻せる[/b]：クラッシュやセーブの巻き戻しで車・動物・積み荷が増えず、なくしても管理者が行方を調べて戻せます
 [/list]
-📖 [b]車のしまい方、パルスフィアでの捕獲と放出、投げて捕獲、セーフハウス、サーバー設定、管理者の復旧、よくある質問：[/b][url=初回公開後に記入]Universal Capsule Guide: Packing, Unpacking & Recovery[/url]（英語）
+📖 [b]車のしまい方、パルスフィアでの捕獲と放出、投げて捕獲、セーフハウス、サーバー設定、管理者の復旧、よくある質問：[/b][url=初回公開後に記入]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]（英語）
 
 [h2]🔗 Minidoracat 全シリーズ[/h2]
 ほかの作品は[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat コレクション[/url]からどうぞ。必要なものだけ購読してください。

@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy"]
 # ///
-"""萬用膠囊音效第 2–4 版候選：從 ElevenLabs 原始 take 加程式合成元素，重建所有候選與試聽頁。
+"""丟出收納音效第 2–4 版候選：從 ElevenLabs 原始 take 加程式合成元素，重建所有候選與試聽頁。
 
 步驟（repo 根目錄）：
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx_v2.json \
@@ -408,7 +408,7 @@ def build_v2():
         rows[name].append(row("目前使用", f"{name}_now.wav", "ElevenLabs（第 1 版）", f"sfx-takes/{name}_{take}.wav", guess, s, "now"))
     for name, cid, how, recipe, guess, make in V2_CANDIDATES:
         rows[name].append(row(cid, f"{name}_{cid}.wav", how, recipe, guess, save("v2", name, cid, make())))
-    page("v2", "萬用膠囊音效候選（第 2 版）",
+    page("v2", "丟出收納音效候選（第 2 版）",
          NOTE + "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsulePop=v2:P3</code>（換成你選的 ID）。",
          [(TITLES[n], rows[n]) for n in (POP, PACK, BTN)])
     return rows
@@ -436,7 +436,7 @@ def build_v3(v2rows):
         out = overlay(bs.decode(bs.src_path(THROW, throw)), bs.decode(bs.src_path(POP, pop)))
         combos.append(row(cid, f"Combo_{cid}.wav", "組合", f"{throw[3:]} 咻（0 s）＋ {pop[3:]} 蹦（0.5 s）", guess,
                           save("v3", "Combo", cid, out)))
-    page("v3", "萬用膠囊音效候選（第 3 版）",
+    page("v3", "丟出收納音效候選（第 3 版）",
          NOTE + "組合只供試聽整個丟出的感覺（咻從 0 s、蹦從 0.5 s 開始）；裝進 MOD 時分別選咻（T）與蹦（P）："
          "<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsuleThrow=v3:T1 UniversalCapsulePop=v3:P13</code>"
          "（換成你選的 ID；第 2 版的 P1–P9 用 <code>v2:P3</code> 這種寫法）。",
@@ -470,7 +470,7 @@ def build_v4(v2, v3):
                                 bs.decode(bs.src_path(POP, f"v3:{cid}"))))
     older = [ref(r, "v3", f"{r['label']}（第 3 版）") for (n, _), r in v3.items() if n == POP and r["src"].startswith(POP)]
     older += [ref(r, "v2", f"{r['label']}（第 2 版）") for (n, lbl), r in v2.items() if n == POP and lbl != "目前使用"]
-    page("v4", "萬用膠囊音效候選（第 4 版）：蹦要大一點、有炸開的感覺",
+    page("v4", "丟出收納音效候選（第 4 版）：蹦要大一點、有炸開的感覺",
          NOTE.replace("RMS 峰值 -18 dBFS", "RMS 峰值 -14 dBFS（Pop；咻、Pack、Button 照舊 -18）")
          + "「T1＋蹦」欄是已選的咻 T1（0 s）接這條蹦（0.5 s），只當聽感參考。「對照」一組用來分辨差別是內容還是音量。"
          "選好後：<code>uv run scripts/assets/build_sfx.py --write --pick UniversalCapsulePop=v4:P19</code>（換成你選的 ID；"

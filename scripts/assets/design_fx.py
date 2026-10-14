@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["numpy", "pillow"]
 # ///
-"""萬用膠囊效果演示頁（第 1 版）：煙霧樣式 × 音效候選，照遊戲裡的時間軸與畫法播放，給使用者自由搭配挑選。
+"""丟出收納效果演示頁（第 1 版）：煙霧樣式 × 音效候選，照遊戲裡的時間軸與畫法播放，給使用者自由搭配挑選。
 
 步驟（repo 根目錄）：
     python ~/.omp/agent/skills/elevenlabs-tts/scripts/eleven_tts.py sfx --manifest scripts/assets/sfx_v5.json \
@@ -448,7 +448,7 @@ def main():
             continue
         pick = {seg: (f"Current_{seg}" if p == "Current" else best_take(sounds, p)) for seg, p in snd.items()}
         presets.append({"name": name, "smoke": sm, "snd": pick})
-    cfg = {"title": "萬用膠囊效果演示（第 1 版）", "lead": LEAD_MS, "flight": FLIGHT_MS, "press": PRESS_MS, "arc": ARC_PX,
+    cfg = {"title": "丟出收納效果演示（第 1 版）", "lead": LEAD_MS, "flight": FLIGHT_MS, "press": PRESS_MS, "arc": ARC_PX,
            "capsulePx": CAPSULE_PX, "capsule": "capsule.png",
            "segments": {k: v[0] for k, v in SEGMENTS.items()}, "smoke": smoke, "scenes": scenes, "sounds": sounds,
            "presets": presets}

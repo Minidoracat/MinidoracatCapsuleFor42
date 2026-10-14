@@ -1,4 +1,4 @@
--- Universal Capsule: pack a parked vehicle or a live animal into a capsule (server authority, fixed order; the vehicle
+-- Pack & Throw: pack a parked vehicle or a live animal into a capsule (server authority, fixed order; the vehicle
 -- or the animal goes last).
 if isClient() then return end
 require "MinidoracatCapsule/Core"
