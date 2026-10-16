@@ -3163,6 +3163,54 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     loaded["MinidoracatPackThrow/Info"], loaded["ISUI/ISToolTipInv"] = saved.infoLoaded, saved.tipLoaded
 end)() end
 
+print("ThrowCursor：丟出與抓取的游標開著時，站著的角色轉向瞄準的那一格（按下時已經面向目標，不用等轉身）")
+do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local saved = { core = getCore, queue = ISTimedActionQueue }
+    for _, n in ipairs({ "TimedActions/ISThrowCapsuleAction", "TimedActions/ISPressCapsuleAction" }) do loaded[n] = true end
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/ThrowCursor.lua")()
+    local Cursor = M.ThrowCursor
+    local busy = false
+    ISTimedActionQueue = { isPlayerDoingAction = function() return busy end }
+    local function player(o)
+        o = o or {}
+        local p = { faced = {} }
+        function p:isPlayerMoving() return o.moving == true end
+        function p:getVehicle() return o.vehicle end
+        function p:isSitOnGround() return o.sitting == true end
+        function p:getX() return 10.5 end
+        function p:getY() return 20.5 end
+        function p:faceLocation(x, y) self.faced[#self.faced + 1] = x .. "," .. y end
+        return p
+    end
+    local function cursor(mode, p) return setmetatable({ mode = mode, character = p }, { __index = Cursor }) end
+    local function turned(mode, o, x, y)
+        local p = player(o)
+        local r = cursor(mode, p):face(x or 15, y or 20)
+        return r and table.concat(p.faced, ";") or "-"
+    end
+    busy = true
+    local whileBusy = turned("throw")
+    busy = false
+    check(turned("throw") == "15,20" and turned("capture", nil, 8, 24) == "8,24" and turned("press") == "-"
+        and turned("restore") == "-",
+        "丟出與抓取的游標轉向瞄準的那一格（faceLocation 那一格的中心，跟丟出動作同一點）；按下按鈕與管理員補回不轉")
+    check(turned("throw", { moving = true }) == "-" and turned("throw", { vehicle = {} }) == "-"
+        and turned("throw", { sitting = true }) == "-" and whileBusy == "-" and turned("throw", nil, 10, 20) == "-",
+        "走路中（沒在瞄準的走路沿面向走，轉身會改走向）、在車上、坐在地上、正在做別的動作、瞄準自己那一格：都不轉")
+    -- the engine calls render every frame with the square under the mouse: that is where the turn happens
+    getCore = function()
+        local col = { getR = function() return 1 end, getG = function() return 1 end, getB = function() return 1 end }
+        return { getGoodHighlitedColor = function() return col end, getBadHighlitedColor = function() return col end }
+    end
+    local p = player()
+    local c = cursor("throw", p)
+    c.getFloorCursorSprite = function() return { RenderGhostTileColor = function() end } end
+    c.renderTooltip = function() end
+    c:render(13, 17, 0, {})
+    check(table.concat(p.faced, ";") == "13,17", "游標每一幀的 render 都轉向滑鼠下的那一格")
+    getCore, ISTimedActionQueue = saved.core, saved.queue
+end)() end
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")

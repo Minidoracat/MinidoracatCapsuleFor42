@@ -163,7 +163,26 @@ function Cursor:isValid(square)
     return self.why == nil
 end
 
+-- Throw and capture: the body turns toward the aimed square while the cursor is open, as vanilla aiming turns it to
+-- the mouse (IsoPlayer.java:2602-2607), so a click finds it already facing the target and ISThrowCapsuleAction
+-- waitToStart passes at once (it waits for the turn: up to ~700 ms from behind, throw-mp 1010c; user report
+-- 2026-10-16). Only while standing still with no action running: a walking player that is not aiming moves along its
+-- facing (IsoPlayer.java:2627-2630), so turning it would steer the walk. faceLocation aims at the square's centre, the
+-- same as the action. Returns true when it turned the player.
+function Cursor:face(x, y)
+    if self.mode ~= "throw" and self.mode ~= "capture" then return false end
+    local c = self.character
+    if c:isPlayerMoving() or c:getVehicle() or c:isSitOnGround() or ISTimedActionQueue.isPlayerDoingAction(c) then
+        return false
+    end
+    local dx, dy = x + 0.5 - c:getX(), y + 0.5 - c:getY()
+    if dx * dx + dy * dy < 0.25 then return false end
+    c:faceLocation(x, y)
+    return true
+end
+
 function Cursor:render(x, y, z, square)
+    self:face(x, y)
     local c = self.why == nil and getCore():getGoodHighlitedColor() or getCore():getBadHighlitedColor()
     local sprite = self:getFloorCursorSprite()
     local h = self.home

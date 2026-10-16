@@ -32,7 +32,9 @@ end
 -- faceLocation sets the direction at once but the body (animAngle) turns over up to ~700 ms, and the clip
 -- only plays after that turn while the server emulates the release from start(): wait for the body
 -- (E2E throw-mp 1010c: 40 deg late = release 250 ms late, 170 deg = 680 ms; server completed before the
--- client clip reached CapsuleEnd). The 1.5 s cap only keeps an odd state from blocking the queue.
+-- client clip reached CapsuleEnd). The throw cursor already turns the standing player toward the aimed square
+-- (ThrowCursor Cursor:face), so this normally passes at once; it stays for a click while walking and for E2E queues.
+-- The 1.5 s cap only keeps an odd state from blocking the queue.
 function ISThrowCapsuleAction:waitToStart()
     local c = self.character
     c:faceLocation(self.x, self.y)
