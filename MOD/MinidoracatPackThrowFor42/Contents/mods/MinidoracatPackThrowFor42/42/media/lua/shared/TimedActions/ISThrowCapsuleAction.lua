@@ -29,19 +29,23 @@ function ISThrowCapsuleAction:isValid()
         and self.character:getInventory():containsID(self.item:getID())
 end
 
--- faceLocation sets the direction at once but the body (animAngle) turns over up to ~700 ms, and the clip
--- only plays after that turn while the server emulates the release from start(): wait for the body
--- (E2E throw-mp 1010c: 40 deg late = release 250 ms late, 170 deg = 680 ms; server completed before the
--- client clip reached CapsuleEnd). The throw cursor already turns the standing player toward the aimed square
--- (ThrowCursor Cursor:face), so this normally passes at once; it stays for a click while walking and for E2E queues.
--- The 1.5 s cap only keeps an odd state from blocking the queue.
+-- faceLocation sets the direction at once, but the body (animAngle) turns only when the gap is more than the waist
+-- twist covers (IsoGameCharacter.shouldBeTurning: excess over getMaxTwist(), 15 deg, above 1 deg; the turn then runs
+-- until the gap is under 1 deg). The clip waits for that turn while the server emulates the release from start():
+-- wait for it (E2E throw-mp 1010c: 40 deg late = release 250 ms late, 170 deg = 680 ms; server completed before the
+-- client clip reached CapsuleEnd). A gap the twist covers never turns the body, so it must not be waited for: a
+-- 5 deg test hung there until the cap (user report 2026-10-16: 1-2 s with the target slightly off the facing).
+-- shouldBeTurning lags a frame behind a new direction (the anim player updates after this), hence the gap test.
+-- The throw cursor already turns the standing player toward the aimed square (ThrowCursor Cursor:face), so a turn is
+-- rare here; it stays for a click while walking and for E2E queues. The 1.5 s cap only keeps an odd state from
+-- blocking the queue.
 function ISThrowCapsuleAction:waitToStart()
     local c = self.character
     c:faceLocation(self.x, self.y)
     self.waitMs = self.waitMs or getTimestampMs()
     if getTimestampMs() - self.waitMs > 1500 then return false end
-    local diff = math.abs(c:getAnimAngle() - c:getDirectionAngle()) % 360
-    return c:shouldBeTurning() or math.min(diff, 360 - diff) > 5
+    local gap = math.abs(c:getAnimAngle() - c:getDirectionAngle()) % 360
+    return c:shouldBeTurning() or math.min(gap, 360 - gap) > c:getMaxTwist() + 1
 end
 
 function ISThrowCapsuleAction:update()

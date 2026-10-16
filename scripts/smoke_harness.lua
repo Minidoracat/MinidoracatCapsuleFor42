@@ -3211,6 +3211,33 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     getCore, ISTimedActionQueue = saved.core, saved.queue
 end)() end
 
+print("ISThrowCapsuleAction:waitToStart：只等真的要轉身的角度；腰扭得過去的小角度馬上丟（使用者 2026-10-16 還是等一兩秒）")
+do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local saved = { base = ISBaseTimedAction, now = nowMs }
+    ISBaseTimedAction = { derive = function(self, name) return setmetatable({ Type = name }, { __index = self }) end }
+    loaded["TimedActions/ISBaseTimedAction"] = true
+    loadfile(MEDIA .. "/shared/TimedActions/ISThrowCapsuleAction.lua")()
+    -- anim = the body's angle, dir = the facing just set; the engine twists the waist up to getMaxTwist() (15 deg)
+    local function waits(anim, dir, turning, startedMsAgo)
+        local p = {}
+        function p:faceLocation() end
+        function p:getAnimAngle() return anim end
+        function p:getDirectionAngle() return dir end
+        function p:getMaxTwist() return 15 end
+        function p:shouldBeTurning() return turning == true end
+        local a = setmetatable({ character = p, x = 15, y = 20 }, { __index = ISThrowCapsuleAction })
+        if startedMsAgo then a.waitMs = nowMs - startedMsAgo end
+        return a:waitToStart()
+    end
+    check(waits(0, 10) == false and waits(0, 16) == false and waits(175, -175) == false and waits(30, 30) == false,
+        "落點偏 10 度、16 度（含跨 180 度）：腰扭得過去，身體不會轉，馬上開始丟")
+    check(waits(0, 40) == true and waits(170, -150) == true and waits(0, 10, true) == true,
+        "偏 40 度（引擎下一幀才開始轉）或正在轉身：等身體轉過去再丟（動作片段要等轉身，伺服器從 start 起算）")
+    check(waits(0, 90, true, 1600) == false, "等超過 1.5 秒一定開始，卡住的狀態不會堵住佇列")
+    ISBaseTimedAction, nowMs = saved.base, saved.now
+    loaded["TimedActions/ISBaseTimedAction"] = nil
+end)() end
+
 print()
 if failures > 0 then
     print(failures .. " 項失敗")
