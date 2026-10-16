@@ -121,9 +121,9 @@ end
 -- Returns { ok = true, vehicleId, sqlId, returned, script, ... } (an animal: kind = "animal", animal = { type, breed,
 -- name }, animalId, onlineId) or { ok = false, why }. A capsule whose record is stale (its cargo is a second copy) is
 -- replaced by an empty one: why = "CLEARED"; when the world save is older than that unpack and its car is not loaded,
--- an admin checks first: why = "UNCERTAIN" (Guard.stale). An empty capsule of the same type goes back to the player
--- when SandboxVars ReturnEmptyCapsule is on (returned = true), also when that type is switched off: nothing turns
--- into another type.
+-- an admin checks first: why = "UNCERTAIN" (Guard.stale). An empty capsule of the same type (a sphere: of the same
+-- tier) goes back to the player when Rules.returnsEmpty says so (sandbox ReturnEmptyCapsule / ReturnEmptySphere;
+-- returned = true), also when that type is switched off: nothing turns into another type.
 function Unpack.unpack(player, capsule, square, dir, opts)
     local capsuleId = capsule:getID()
     local snap, why, stale = Store.claim(capsuleId, player)
@@ -139,7 +139,7 @@ function Unpack.unpack(player, capsule, square, dir, opts)
     local t = M.typeOf(capsule) or M.TYPES[1]
     removeCapsule(player, capsule)
     local inv = player:getInventory()
-    local empty = M.Rules.sandbox().ReturnEmptyCapsule ~= false and instanceItem(t.empty)
+    local empty = M.Rules.returnsEmpty(t) and instanceItem(t.empty)
     if empty then
         inv:AddItem(empty)
         sendAddItemToContainer(inv, empty)

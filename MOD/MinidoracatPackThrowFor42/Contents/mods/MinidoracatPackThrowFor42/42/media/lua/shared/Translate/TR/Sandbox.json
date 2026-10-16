@@ -1,8 +1,10 @@
 {
     "Sandbox_MinidoracatPackThrow": "Minidoracat Pack & Throw",
     "Sandbox_MinidoracatPackThrowLoot": "Minidoracat Pack & Throw - Ganimet",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Boş kapsülü ya da Pal Küresini geri ver",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Açıksa, araç çıktıktan sonra kapsülü fırlatan oyuncu aynı türden boş bir kapsül geri alır; hayvanını serbest bırakan Pal Küresi de aynı seviyede, boş ve yeniden kullanıma hazır olarak geri döner.",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Boş kapsülü geri ver",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Açıksa, araç çıktıktan sonra kapsülü fırlatan oyuncu aynı türden boş bir kapsül geri alır ve yeniden kullanabilir. Pal Küreleri için ayrı bir seçenek var: \"Boş Pal Küresini geri ver\".",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere": "Boş Pal Küresini geri ver",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere_tooltip": "Açıksa, hayvanını serbest bırakan Pal Küresi oyuncuya aynı seviyede boş bir Pal Küresi geri verir; yeniden yakalamak için kullanılabilir.",
     "Sandbox_MinidoracatPackThrow_PackPermission": "Araçları kim kapsüle koyabilir",
     "Sandbox_MinidoracatPackThrow_PackPermission_tooltip": "Minidoracat Vehicle Manager yüklüyse, sahiplenilmiş bir aracı yalnızca sahibi ve “Çek” izni paylaşılan kişiler kapsüle koyabilir (yöneticilerin filo penceresinden geçersiz kılmayı açması gerekir); bu seçenek sahiplenilmemiş araçlar için geçerlidir.\nAnahtarı olanlar: oyuncu bu aracın anahtarını taşıyor veya anahtar kontakta.\nHerkes: tüm oyuncular kapsüle koyabilir.\nYalnızca yöneticiler: normal oyuncular kapsüle koyamaz.\nYöneticiler, bu seçenek ne olursa olsun her zaman kapsüle koyabilir.",
     "Sandbox_MinidoracatPackThrow_PackPermission_option1": "Anahtarı olanlar",

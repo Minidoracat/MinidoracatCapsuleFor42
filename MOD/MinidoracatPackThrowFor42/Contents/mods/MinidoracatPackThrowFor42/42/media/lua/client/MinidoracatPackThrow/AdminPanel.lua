@@ -1022,6 +1022,7 @@ end
 -- an enum option) or int (slider; pct: its value shown as a percentage).
 Panel.GENERAL = {
     { key = "ReturnEmptyCapsule", kind = "bool", default = true },
+    { key = "ReturnEmptySphere", kind = "bool", default = true },
     { key = "PackPermission", kind = "choice", count = 3, default = 1 },
     { key = "ZombieSoundRadius", kind = "int", min = 0, max = 50, default = 0 },
     { key = "AllowCargoTakeOut", kind = "bool", default = false },

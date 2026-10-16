@@ -171,7 +171,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 {{img:04-unpacked-en.jpg}}
 [list]
 [*] [b]Unpacking[/b]: the capsule whooshes to the spot, lands with a pop, smoke and a flash, and the vehicle appears as it was with its cargo back on board; the screen says "Unpacked: <vehicle>".
-[*] [b]Empty capsule back[/b]: with the sandbox option "Return an empty capsule after unpacking" on (the default), an empty capsule of the same type goes back into your inventory, ready for the next vehicle.
+[*] [b]Empty capsule back[/b]: with the sandbox option "Return an empty capsule" on (the default), an empty capsule of the same type goes back into your inventory, ready for the next vehicle.
 [*] [b]Ownership[/b]: with Vehicle Manager installed, the unpacked vehicle is reattached to its original claim: the owner and the shared list stay the same and the old key still opens the doors.
 [*] [b]While packed[/b]: the fleet window shows "Claimed - not here right now"; Vehicle Manager's inactivity release still counts, so an owner who stays offline too long loses the claim just as with a parked vehicle.
 [*] [b]Zombies are not affected[/b]: the smoke and flash are drawn on screen only, so zombies don't lose track of you; the capsule's pop doesn't attract zombies by default (servers can turn that on in the sandbox options).
@@ -199,7 +199,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [*] [b]No room[/b]: if none of the eight squares works, a "The animal was not released" window says "no free square next to you" and the Pal Sphere stays in your inventory; try again somewhere else.
 [*] [b]In a vehicle[/b]: not possible; get out of the vehicle first.
 [*] [b]Landing[/b]: smoke appears where the animal does, it comes out as it was, and the screen says "Released: <name>".
-[*] [b]Empty Pal Sphere back[/b]: with "Return an empty capsule or Pal Sphere" on (the default), an empty Pal Sphere of the same tier goes back into your inventory: "An empty Mega Sphere is back in your inventory."
+[*] [b]Empty Pal Sphere back[/b]: with "Return an empty Pal Sphere" on (the default), an empty Pal Sphere of the same tier goes back into your inventory: "An empty Mega Sphere is back in your inventory." This option is set separately from the capsules' "Return an empty capsule".
 [*] [b]Not thrown, no button[/b]: a Pal Sphere has no "Throw" and the one on the ground has no "Press the Button"; release it from your inventory.
 [*] [b]A tier an admin switched off[/b]: only stops catching with it; loaded ones still release.
 [*] [b]No 3D preview[/b]: a Pal Sphere holding an animal has no "Preview vehicle" in its menu.
@@ -293,7 +293,7 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]Loading[/b]: the data comes from the server, so it says "Reading vehicle condition..." for a moment.
 [*] [b]Capsules on the ground[/b]: walk closer to see the details.
 [*] [b]Other states[/b]: an empty capsule tells you its type and how to pack, with a "!" line when an admin switched its type off; already unpacked, restored by an admin, unconfirmed after a crash, or data missing on this server are all spelled out.
-[*] [b]Does it come back[/b]: every capsule and Pal Sphere, empty or loaded, has a line saying whether the empty one comes back to your inventory after unpacking or release. When it does the line is grey, for example "After unpacking, the empty capsule comes back to your inventory."; when the server turns "Return an empty capsule or Pal Sphere" off it is in the warning colour, for example "Single use: unpacking the vehicle uses up this capsule (server setting)."
+[*] [b]Does it come back[/b]: every capsule and Pal Sphere, empty or loaded, has a line saying whether the empty one comes back to your inventory after unpacking or release. When it does the line is grey, for example "After unpacking, the empty capsule comes back to your inventory."; when the server turns "Return an empty capsule" (capsules) or "Return an empty Pal Sphere" (Pal Spheres) off it is in the warning colour, for example "Single use: unpacking the vehicle uses up this capsule (server setting)."
 [/list]
 [h3]Pal Spheres holding an animal[/h3]
 {{img:08-sphere-tooltip-en.jpg}}
@@ -339,7 +339,8 @@ The options are on the sandbox pages "Minidoracat Pack & Throw", "Minidoracat Pa
 [h3]Minidoracat Pack & Throw[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
-[tr][td]Return an empty capsule or Pal Sphere[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory; after a Pal Sphere releases its animal, an empty Pal Sphere of the same tier goes back into your inventory. Every capsule and Pal Sphere tooltip says whether it comes back, in the warning colour when it doesn't[/td][/tr]
+[tr][td]Return an empty capsule[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory. Every capsule tooltip says whether it comes back, in the warning colour when it doesn't[/td][/tr]
+[tr][td]Return an empty Pal Sphere[/td][td]On[/td][td]After a Pal Sphere releases its animal, an empty Pal Sphere of the same tier goes back into your inventory. Every Pal Sphere tooltip says whether it comes back, in the warning colour when it doesn't[/td][/tr]
 [tr][td]Who can pack vehicles[/td][td]Key holders[/td][td]The key in the inventory or in the ignition; can be set to "Anyone" or "Admins only"[/td][/tr]
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
@@ -404,7 +405,7 @@ The options are on the sandbox pages "Minidoracat Pack & Throw", "Minidoracat Pa
 [/list]
 [h3]Settings, Types and Loot[/h3]
 [list]
-[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule or Pal Sphere, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, allow catching animals, wild catch base chance, Pal Sphere lost on a failed catch, injured bonus, young bonus, unaware bonus, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
+[*] [b]Settings[/b]: the general sandbox options of this mod can be changed here (return an empty capsule, return an empty Pal Sphere, who can pack, the zombie attraction radius of the capsule sound, taking cargo out of capsules, allow catching animals, wild catch base chance, Pal Sphere lost on a failed catch, injured bonus, young bonus, unaware bonus, days to keep closed records); they take effect as soon as you press "Apply". Long lists scroll, and "Discard changes" and "Apply" stay at the bottom.
 [*] [b]Types[/b]: one row per capsule type and per Pal Sphere tier with its "Use" (capsules pack vehicles, Pal Spheres catch animals) and "Loot" switches.
 [*] [b]Preview[/b]: press a row's "Preview": the panel steps aside and a capsule of that type is thrown beside you (the Sci-Fi effect for a Pal Sphere), seen by you only. It works before you press "Apply" too.
 [*] [b]List...[/b]: with Minidoracat Economy installed, opens a product draft for that empty capsule or Pal Sphere on the Economy Center's shop page; set the price there. One already on sale is skipped.

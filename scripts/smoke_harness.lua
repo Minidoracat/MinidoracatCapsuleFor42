@@ -2198,7 +2198,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         Sandbox = { "AllowAnimals", "AllowAnimals_tooltip", "LootSphereBarn", "LootSphereBarn_tooltip", "LootSphereBarnWeight",
             "LootSphereBarnWeight_tooltip", "LootSpherePet", "LootSpherePet_tooltip", "LootSpherePetWeight",
             "LootSpherePetWeight_tooltip", "LootSphereHunting", "LootSphereHunting_tooltip", "LootSphereHuntingWeight",
-            "LootSphereHuntingWeight_tooltip" },
+            "LootSphereHuntingWeight_tooltip", "ReturnEmptySphere", "ReturnEmptySphere_tooltip" },
         ContextMenu = { "PackSphere", "Release" },
     }
     local PREFIX = { Tooltip = "Tooltip_MinidoracatPackThrow_", IG_UI = "IGUI_MinidoracatPackThrow_",
@@ -2246,7 +2246,7 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
                     "Why_NO_FLOOR", "Why_SPAWN", "TypeOffRow", "Why_TYPE_OFF" },
                 UI = { "Why_BLOCKED", "Why_PICK_BLOCKED", "Verdict_present", "Verdict_missing", "VerdictPresent",
                     "VerdictMissing", "UncertainHelp", "TypeUseTip", "TypeOffLine" },
-                Sandbox = { "ReturnEmptyCapsule_tooltip", "RecordRetentionDays_tooltip" },
+                Sandbox = { "RecordRetentionDays_tooltip" }, -- ReturnEmptyCapsule is capsules only since the split
             }
             for _, t in ipairs(M.TYPES) do -- capsules take vehicles only (their switches say so); spheres animals
                 if t.sphere then
@@ -2746,7 +2746,7 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
         "硬送裝了動物的帕魯球的 throw／press intent：伺服器拒絕 WRONG_ITEM，不排落地")
     Throw.schedule = savedSchedule
 
-    -- the landing: Unpack as for a capsule; ReturnEmptyCapsule gives back an empty sphere of the same tier
+    -- the landing: Unpack as for a capsule; ReturnEmptySphere gives back an empty sphere of the same tier
     local savedSpawn, savedFx, savedOnline = Unpack.spawn, M.Fx.broadcast, getOnlinePlayers
     local fx = {}
     Unpack.spawn = function(_, square)
@@ -2758,19 +2758,32 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
     SandboxVars = { MinidoracatPackThrow = {} }
     quiet = true
     Throw.land(sp)
-    local landed = lastSent()
-    SandboxVars.MinidoracatPackThrow.ReturnEmptyCapsule = false
+    local landed, megaBack = lastSent(), r.inv:getCountTypeRecurse(Mega.empty)
+    SandboxVars.MinidoracatPackThrow.ReturnEmptySphere = false
     local legend = loaded(Legend, r)
     Throw.land({ player = r, capsuleId = legend.id, x = 11, y = 10, z = 0, mode = "release", dir = "E" })
     local noBack = lastSent()
+    -- the two options are independent: capsules follow ReturnEmptyCapsule, spheres ReturnEmptySphere
+    SandboxVars.MinidoracatPackThrow = { ReturnEmptyCapsule = false }
+    local mega2 = loaded(Mega, r)
+    Throw.land({ player = r, capsuleId = mega2.id, x = 12, y = 10, z = 0, mode = "release", dir = "E" })
+    local sphereStill = lastSent()
+    local capOff = Unpack.unpack(r, loaded(Steam, r), getCell():getGridSquare(13, 10, 0), "E")
+    local steamAfterOff = r.inv:getCountTypeRecurse(Steam.empty)
+    SandboxVars.MinidoracatPackThrow = { ReturnEmptySphere = false }
+    local capOn = Unpack.unpack(r, loaded(Steam, r), getCell():getGridSquare(14, 10, 0), "E")
+    local steamAfterOn = r.inv:getCountTypeRecurse(Steam.empty)
     quiet = false
     check(landed.ok and landed.mode == "release" and landed.kind == "animal" and landed.type == "SphereMega" and landed.returned
-        and r.inv:getItemWithIDRecursiv(ball.id) == nil and r.inv:getCountTypeRecurse(Mega.empty) == 1
+        and r.inv:getItemWithIDRecursiv(ball.id) == nil and megaBack == 1
         and Store.read(ball.id).state == "UNPACKED" and fx[1] and fx[1][1] == "unpack" and fx[1][2].style == Mega.index
         and fx[1][2].capsuleId == ball.id,
         "放出落地：紀錄 UNPACKED、帕魯球拿走、還一顆空的高級帕魯球（同等級），特效用它的款式（科幻）、帶那顆的編號")
     check(noBack.ok and not noBack.returned and r.inv:getCountTypeRecurse(Legend.empty) == 0,
-        "ReturnEmptyCapsule 關掉時不還空帕魯球")
+        "ReturnEmptySphere 關掉時不還空帕魯球")
+    check(sphereStill.ok and sphereStill.returned and capOff.ok and not capOff.returned and capOn.ok and capOn.returned
+        and steamAfterOn == steamAfterOff + 1 and M.Rules.returnsEmpty(Steam) and not M.Rules.returnsEmpty(Mega),
+        "兩個設定互不影響：ReturnEmptyCapsule 關、帕魯球照還；ReturnEmptySphere 關、膠囊照還（伺服器 Unpack 與 Rules.returnsEmpty）")
     check(Mega.smoke == M.TYPE_BY_ID.SciFi.smoke and Mega.pop == M.TYPE_BY_ID.SciFi.pop and Mega.pack == M.TYPE_BY_ID.SciFi.pack,
         "帕魯球的煙霧與音效＝科幻款")
     Unpack.spawn, M.Fx.broadcast, getOnlinePlayers = savedSpawn, savedFx, savedOnline
@@ -3126,32 +3139,35 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
         for _, row in ipairs(rows or {}) do if row[2] == "T:" .. key then return row end end
         return nil
     end
-    local function setSandbox(back, gone)
-        SandboxVars = { MinidoracatPackThrow = { ReturnEmptyCapsule = back, WildCaptureFailConsumes = gone } }
+    -- capsule return, sphere return, lost on a miss (the two returns are separate options since 2026-10-17)
+    local function setSandbox(cap, sph, gone)
+        SandboxVars = { MinidoracatPackThrow = { ReturnEmptyCapsule = cap, ReturnEmptySphere = sph,
+            WildCaptureFailConsumes = gone } }
     end
     local kinds = {
         { name = "空膠囊", ft = capsule.empty, key = "Empty" },
         { name = "裝了車的膠囊", ft = capsule.loaded, kind = "vehicle", key = "Loaded" },
-        { name = "空帕魯球", ft = sphere.empty, key = "EmptySphere" },
-        { name = "裝了動物的帕魯球", ft = sphere.loaded, kind = "animal", key = "LoadedSphere" },
+        { name = "空帕魯球", ft = sphere.empty, key = "EmptySphere", sphere = true },
+        { name = "裝了動物的帕魯球", ft = sphere.loaded, kind = "animal", key = "LoadedSphere", sphere = true },
     }
     local wrong = {}
-    for _, state in ipairs({ { true, false }, { false, true }, { true, true }, { false, false } }) do
-        setSandbox(state[1], state[2])
+    for _, state in ipairs({ { true, true, false }, { false, false, true }, { true, false, true }, { false, true, false } }) do
+        setSandbox(state[1], state[2], state[3])
         for _, k in ipairs(kinds) do
+            local back = k.sphere and state[2] or (not k.sphere and state[1])
             local rows = Tip.rows(item(k.ft, k.kind))
             local on, off = find(rows, "ReturnOn_" .. k.key), find(rows, "ReturnOff_" .. k.key)
-            local row = state[1] and on or off
+            local row = back and on or off
             local fail = find(rows, "FailGone")
-            local wantFail = k.ft == sphere.empty and state[2]
-            if not row or (state[1] and off) or (not state[1] and on) or row[1] ~= "" or row[3] ~= (state[1] and "muted" or "warn")
+            local wantFail = k.ft == sphere.empty and state[3]
+            if not row or (back and off) or (not back and on) or row[1] ~= "" or row[3] ~= (back and "muted" or "warn")
                 or (fail ~= nil) ~= wantFail or (fail and fail[3] ~= "warn") then
-                wrong[#wrong + 1] = k.name .. (state[1] and "/歸還" or "/不歸還") .. (state[2] and "/會消失" or "")
+                wrong[#wrong + 1] = k.name .. (back and "/歸還" or "/不歸還") .. (state[3] and "/會消失" or "")
             end
         end
     end
     -- order on an empty sphere: usage, return, fail, time note
-    setSandbox(false, true)
+    setSandbox(false, false, true)
     local es = Tip.rows(item(sphere.empty))
     local order = {}
     for i, row in ipairs(es) do order[row[2]] = i end
@@ -3162,14 +3178,14 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     local okLoaded = lc[#lc][2] == "T:PreviewHint" and lc[#lc - 1][2] == "T:ReturnOff_Loaded"
     -- a live change: the same item, hovered again after the admin switched it, shows the other line
     local same = item(capsule.loaded, "vehicle")
-    setSandbox(true, false)
+    setSandbox(true, true, false)
     local before = find(Tip.rows(same), "ReturnOn_Loaded") ~= nil
-    setSandbox(false, false)
+    setSandbox(false, true, false)
     local after = find(Tip.rows(same), "ReturnOff_Loaded") ~= nil
     SandboxVars = nil
     local default = find(Tip.rows(item(capsule.empty)), "ReturnOn_Empty") ~= nil and find(Tip.rows(item(sphere.empty)), "FailGone") == nil
     check(#wrong == 0 and okOrder and okLoaded and before and after and default,
-        "會不會歸還：四種物品在歸還開／關各寫對應的一列（開＝灰字、關＝警告色），空帕魯球在「沒抓到會消失」開著時多一列警告；"
+        "會不會歸還：四種物品各照自己的設定（膠囊看 ReturnEmptyCapsule、帕魯球看 ReturnEmptySphere，膠囊開帕魯球關與反過來都對）寫對應的一列（開＝灰字、關＝警告色），空帕魯球在「沒抓到會消失」開著時多一列警告；"
             .. "順序是用法→歸還→會消失→時間靜止、裝了車的膠囊歸還列在預覽提示前；管理員改設定後下一次滑過就換；沒有沙盒值時照預設（歸還、不消失）（"
             .. table.concat(wrong, ",") .. "）")
     -- every language, every capsule and sphere, empty and loaded: every value wraps inside the box (framework
@@ -3182,7 +3198,7 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
         local bad, frWidest, renders = {}, 0, 0
         for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
           for _, state in ipairs({ { true, false }, { false, true } }) do
-            setSandbox(state[1], state[2])
+            setSandbox(state[1], state[1], state[2])
             local fh = assert(io.open(MEDIA .. "/shared/Translate/" .. lang .. "/Tooltip.json", "rb"))
             local data = Json.decode(fh:read("*a"))
             fh:close()

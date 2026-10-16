@@ -1,8 +1,10 @@
 {
     "Sandbox_MinidoracatPackThrow": "Minidoracat Pack & Throw",
     "Sandbox_MinidoracatPackThrowLoot": "Minidoracat Pack & Throw - Itens",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Devolver cápsula ou Esfera de Pal vazia",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Se ativado, quem arremessou uma cápsula recebe uma vazia do mesmo tipo depois que o veículo aparece, e uma Esfera de Pal que soltou o seu animal volta vazia, do mesmo nível, pronta para usar de novo.",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Devolver cápsula vazia",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Se ativado, quem arremessou uma cápsula recebe uma vazia do mesmo tipo depois que o veículo aparece, pronta para usar de novo. As Esferas de Pal têm a sua própria opção, «Devolver Esfera de Pal vazia».",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere": "Devolver Esfera de Pal vazia",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere_tooltip": "Se ativado, uma Esfera de Pal que soltou o seu animal devolve ao jogador uma Esfera de Pal vazia do mesmo nível, pronta para capturar de novo.",
     "Sandbox_MinidoracatPackThrow_PackPermission": "Quem pode guardar veículos",
     "Sandbox_MinidoracatPackThrow_PackPermission_tooltip": "Com o Minidoracat Vehicle Manager instalado, um veículo reivindicado só pode ser guardado pelo dono e por quem recebeu a permissão “Rebocar” (admins precisam ligar o acesso total na janela da frota); esta opção vale para os veículos não reivindicados.\nCom a chave: o jogador carrega a chave deste veículo ou a chave está na ignição.\nQualquer um: todos os jogadores podem guardar.\nSó administradores: jogadores comuns não podem guardar.\nAdministradores sempre podem guardar, independentemente desta opção.",
     "Sandbox_MinidoracatPackThrow_PackPermission_option1": "Com a chave",

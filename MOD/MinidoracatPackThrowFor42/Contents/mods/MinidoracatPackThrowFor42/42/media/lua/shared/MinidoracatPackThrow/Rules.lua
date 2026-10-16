@@ -17,6 +17,15 @@ function Rules.sandbox()
     return SandboxVars and SandboxVars.MinidoracatPackThrow or {}
 end
 
+-- Whether unpacking (a capsule) or releasing (a Pal Sphere) gives an empty one of the same type or tier back: sandbox
+-- ReturnEmptyCapsule for capsules, ReturnEmptySphere for spheres, both default on (split by the user 2026-10-17; the
+-- capsule key kept its name so servers keep their setting). The server's Unpack and the client's tooltip ask here.
+function Rules.returnsEmpty(t)
+    local s = Rules.sandbox()
+    if t and t.sphere then return s.ReturnEmptySphere ~= false end
+    return s.ReturnEmptyCapsule ~= false
+end
+
 -- Sandbox AllowCargoTakeOut: cargo may leave a loaded capsule whose record is a confirmed PACKED one (settled, so
 -- never one still settling, left uncertain by a crash, unpacked or void). rec: a snapshot, a Store.status entry or
 -- a Query reply. Nothing can be put into a capsule either way (MaxItemSize in the item script).

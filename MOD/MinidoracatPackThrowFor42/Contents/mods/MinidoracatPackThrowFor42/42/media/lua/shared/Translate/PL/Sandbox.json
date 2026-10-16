@@ -1,8 +1,10 @@
 {
     "Sandbox_MinidoracatPackThrow": "Minidoracat Pack & Throw",
     "Sandbox_MinidoracatPackThrowLoot": "Minidoracat Pack & Throw - Przedmioty",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Zwracaj pustą kapsułę lub Pal Sferę",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Gdy włączone, gracz, który rzucił kapsułę, po rozpakowaniu pojazdu dostaje z powrotem pustą kapsułę tego samego typu, a Pal Sfera, która wypuściła zwierzę, wraca pusta, tego samego poziomu, gotowa do ponownego użycia.",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "Zwracaj pustą kapsułę",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "Gdy włączone, gracz, który rzucił kapsułę, po rozpakowaniu pojazdu dostaje z powrotem pustą kapsułę tego samego typu, gotową do ponownego użycia. Pal Sfery mają osobną opcję, „Zwracaj pustą Pal Sferę”.",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere": "Zwracaj pustą Pal Sferę",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere_tooltip": "Gdy włączone, po wypuszczeniu zwierzęcia gracz dostaje z powrotem pustą Pal Sferę tego samego poziomu, gotową do kolejnego łapania.",
     "Sandbox_MinidoracatPackThrow_PackPermission": "Kto może pakować pojazdy",
     "Sandbox_MinidoracatPackThrow_PackPermission_tooltip": "Gdy zainstalowany jest Minidoracat Vehicle Manager, przypisany pojazd może spakować tylko właściciel i osoby, którym udostępnił uprawnienie „Holowanie” (administratorzy muszą włączyć pełny dostęp w oknie floty); ta opcja dotyczy pojazdów nieprzypisanych.\nPosiadacze kluczyka: gracz ma przy sobie kluczyk do tego pojazdu lub kluczyk jest w stacyjce.\nKażdy: każdy gracz może pakować.\nTylko administratorzy: zwykli gracze nie mogą pakować.\nAdministratorzy zawsze mogą pakować, niezależnie od tej opcji.",
     "Sandbox_MinidoracatPackThrow_PackPermission_option1": "Posiadacze kluczyka",

@@ -1,8 +1,10 @@
 {
     "Sandbox_MinidoracatPackThrow": "Minidoracat 投げて収納",
     "Sandbox_MinidoracatPackThrowLoot": "Minidoracat 投げて収納 - 戦利品",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "空のカプセル・パルスフィアを返す",
-    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "オンにすると、車両が出た後、カプセルを投げたプレイヤーに同じ種類の空のカプセルが戻ります。動物を出したパルスフィアも同じ等級の空のものとして戻り、また使えます。",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule": "空のカプセルを返す",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptyCapsule_tooltip": "オンにすると、車両が出た後、カプセルを投げたプレイヤーに同じ種類の空のカプセルが戻り、また使えます。パルスフィアは「空のパルスフィアを返す」で別に設定します。",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere": "空のパルスフィアを返す",
+    "Sandbox_MinidoracatPackThrow_ReturnEmptySphere_tooltip": "オンにすると、動物を出したあと、同じ等級の空のパルスフィアがプレイヤーに戻り、また捕獲に使えます。",
     "Sandbox_MinidoracatPackThrow_PackPermission": "車両を収納できる人",
     "Sandbox_MinidoracatPackThrow_PackPermission_tooltip": "Minidoracat Vehicle Manager が導入されている場合、登録済みの車両は所有者と「牽引」の権限を共有された人だけが収納できます（管理者は車両一覧でオーバーライドをオンにする必要があります）。この設定は未登録の車両に適用されます。\n鍵の所持者：この車両の鍵を持っているか、鍵がイグニッションに挿さっている。\n誰でも：全プレイヤーが収納できる。\n管理者のみ：一般プレイヤーは収納できない。\n管理者はこの設定に関係なく、いつでも収納できます。",
     "Sandbox_MinidoracatPackThrow_PackPermission_option1": "鍵の所持者",

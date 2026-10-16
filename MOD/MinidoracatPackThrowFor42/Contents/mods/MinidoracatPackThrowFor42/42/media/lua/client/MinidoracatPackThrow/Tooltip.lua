@@ -117,10 +117,10 @@ local function typeRow(t)
     return { T("Type"), T("Look_" .. t.id) }
 end
 
--- Whether the empty one comes back (sandbox ReturnEmptyCapsule, default on; user 2026-10-17 「在道具補上會不會歸還」):
--- said in both states, grey when it does, the warning colour when the item is used up. Read on every hover through
--- the cache keys, so an admin's live change shows on the next one.
-local function returnOn() return M.Rules.sandbox().ReturnEmptyCapsule ~= false end
+-- Whether the empty one comes back (Rules.returnsEmpty: sandbox ReturnEmptyCapsule for capsules, ReturnEmptySphere for
+-- spheres, both default on; user 2026-10-17 「在道具補上會不會歸還」): said in both states, grey when it does, the
+-- warning colour when the item is used up. Read on every hover through the cache keys, so an admin's live change
+-- shows on the next one.
 local function returnRow(t, loaded, on)
     local key = (on and "ReturnOn_" or "ReturnOff_") .. (loaded and "Loaded" or "Empty") .. (t.sphere and "Sphere" or "")
     return { "", T(key), on and "muted" or "warn" }
@@ -133,7 +133,7 @@ function Tooltip.rows(item)
     if not item or not item.getFullType then return nil end -- ISToolTipInv also shows energy and fluid bars
     local t = M.typeOf(item)
     if not t then return nil end
-    local back = returnOn()
+    local back = M.Rules.returnsEmpty(t)
     if M.isEmpty(item) then
         local on = M.Rules.typeOn(t)
         local gone = t.sphere and M.Rules.wildFailConsumes()

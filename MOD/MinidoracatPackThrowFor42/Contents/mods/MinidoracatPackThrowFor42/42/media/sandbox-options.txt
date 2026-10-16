@@ -4,9 +4,13 @@ VERSION = 1,
 
 /* ===== MinidoracatPackThrow：一般 ===== */
 
-/* 展開（膠囊）或放出（帕魯球）後把一顆同款的空膠囊或同等級的空帕魯球還給玩家 */
+/* 膠囊展開後把一顆同款的空膠囊還給丟的人（鍵名照舊，伺服器的設定不變；帕魯球另見 ReturnEmptySphere） */
 option MinidoracatPackThrow.ReturnEmptyCapsule
 {type = boolean, default = true, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_ReturnEmptyCapsule,}
+
+/* 帕魯球放出動物後把一顆同等級的空帕魯球還給玩家 */
+option MinidoracatPackThrow.ReturnEmptySphere
+{type = boolean, default = true, page = MinidoracatPackThrow, translation = MinidoracatPackThrow_ReturnEmptySphere,}
 
 /* 誰能收車（Vehicle Manager 沒綁定的車才看這個；綁定的車問它的 canUse(TOW)）：1 有這台車鑰匙的人（背包或點火孔）、2 任何人、3 只有管理員 */
 option MinidoracatPackThrow.PackPermission
