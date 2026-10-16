@@ -79,6 +79,15 @@ function Animal.restore(s, sq, player)
             setAllele(g:getAllele2(), gs.a2)
         end
     end
+    -- The disorder list: IsoAnimal.new already rolled a random genome and listed its disorders (IsoAnimal.java:1513-1514),
+    -- and checkGeneticDisorder only adds, never removes (AnimalGene.java:250-259), so a disorder of that throwaway
+    -- genome would stay on the released animal. Start empty, put back the stored list, then add what the stored alleles
+    -- give (the same disorders; it also covers records without the list).
+    local dl = a:getGeneticDisorder()
+    dl:clear()
+    for _, name in ipairs(s.disorders or {}) do
+        if not dl:contains(name) then dl:add(name) end
+    end
     AnimalGene.checkGeneticDisorder(a)
     a:setAgeDebug(s.age)
     a:setHoursSurvived(s.hours)

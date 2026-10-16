@@ -1952,13 +1952,34 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
             return function(_, v) order[#order + 1] = name .. "." .. k .. "(" .. tostring(v) .. ")" end
         end })
     end
+    -- the disorder list IsoAnimal.new leaves behind: its init rolled a random genome and listed that genome's disorders
+    local initDisorders = { "fromInit" }
+    local function arrayList(items)
+        local l = { items = items }
+        function l:clear() self.items = {} end
+        function l:add(v) self.items[#self.items + 1] = v end
+        function l:contains(v) for _, x in ipairs(self.items) do if x == v then return true end end return false end
+        function l:size() return #self.items end
+        function l:get(i) return self.items[i + 1] end
+        return l
+    end
+    local function storing(name)
+        return rec(name, { setGeneticDisorder = function(self, v)
+            order[#order + 1] = name .. ".setGeneticDisorder(" .. tostring(v) .. ")"
+            self.gd = v
+        end })
+    end
     IsoAnimal = { new = function(_, x, y, z, t, b)
-        local a1, a2, data = rec("a1"), rec("a2"), rec("d")
+        local a1, a2, data = storing("a1"), storing("a2"), rec("d")
         local gn = { getName = function() return "strength" end, getAllele1 = function() return a1 end,
             getAllele2 = function() return a2 end }
-        spawned = rec("an", { at = { x, y, z, t, b }, md = {},
+        local copy = {}
+        for i, v in ipairs(initDisorders) do copy[i] = v end
+        local dl = arrayList(copy)
+        spawned = rec("an", { at = { x, y, z, t, b }, md = {}, dl = dl,
             getAnimalType = function() return not water and t or nil end,
             getFullGenomeList = function() return javaList({ gn }) end,
+            getGeneticDisorder = function() return dl end,
             getData = function() return data end, getStats = function() return rec("st") end,
             getAnimalVisual = function() return rec("vis") end, getModData = function(self) return self.md end,
             setAnimalID = function(self, id) order[#order + 1] = "an.setAnimalID(" .. id .. ")"; self.id = id end,
@@ -1966,7 +1987,18 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
             getOnlineID = function() return 77 end, isDead = function() return false end })
         return spawned
     end }
-    AnimalGene = { checkGeneticDisorder = function() order[#order + 1] = "AnimalGene.check" end }
+    -- as vanilla (AnimalGene.java:250-259): adds a disorder both alleles of a gene carry, never removes one
+    AnimalGene = { checkGeneticDisorder = function(a)
+        order[#order + 1] = "AnimalGene.check"
+        local list = a:getFullGenomeList()
+        for i = 0, list:size() - 1 do
+            local g = list:get(i)
+            local gd = g:getAllele1().gd
+            if gd and gd ~= "" and gd == g:getAllele2().gd and not a:getGeneticDisorder():contains(gd) then
+                a:getGeneticDisorder():add(gd)
+            end
+        end
+    end }
     local function at(s, from)
         for i = from or 1, #order do if order[i] == s then return i end end
         return math.huge
@@ -1990,6 +2022,23 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local none, why = A.restore(back, sq(10, 10), packer)
     water = false
     check(none == nil and why == "BLOCKED" and at("an.addToWorld(nil)") == math.huge, "水上 IsoAnimal.new 沒初始化（沒有種類）：BLOCKED、不放進世界")
+    -- genetic disorders: the released animal has exactly the stored ones, not the throwaway init genome's
+    local function disordersAfter(mut)
+        local s = Json.decode(text)
+        mut(s)
+        order = {}
+        A.restore(s, sq(10, 10), packer)
+        return table.concat(spawned.dl.items, ",")
+    end
+    local plain = disordersAfter(function() end)
+    local paired = disordersAfter(function(s) s.genome.strength.a1.gd = "blind"; s.disorders = { "blind" } end)
+    local oldRecord = disordersAfter(function(s) s.genome.strength.a1.gd = "blind"; s.disorders = nil end)
+    initDisorders = {}
+    local cleanInit = disordersAfter(function() end)
+    initDisorders = { "fromInit" }
+    check(plain == "dwarf" and paired == "blind" and oldRecord == "blind" and cleanInit == "dwarf",
+        "遺傳病：IsoAnimal.new 隨機基因留下的病（fromInit）放出後不在，只有紀錄裡的（" .. plain .. "）；兩個等位基因同一種病的照樣在（"
+            .. paired .. "）；沒有清單的舊紀錄由基因算回（" .. oldRecord .. "）")
 
     -- rules
     SandboxVars = { MinidoracatPackThrow = {} }

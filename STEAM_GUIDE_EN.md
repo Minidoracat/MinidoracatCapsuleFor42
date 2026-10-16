@@ -529,6 +529,7 @@ Select the record, check on site, tick "I checked on site", then press:
 [h3]Do animals grow or get hungry inside a Pal Sphere?[/h3]
 [list]
 [*] No. Time stands still inside a Pal Sphere: the animal doesn't grow or get hungry or thirsty, and a pregnancy pauses; it comes out just as it went in.
+[*] Hunger, thirst, health and genetic disorders come back exactly as they were when it was caught. A wild animal that became tame when caught starts getting hungry and thirsty after release, like one picked up in vanilla (vanilla wild animals never get hungry or thirsty).
 [*] Only a few vanilla timers start over: the milking and petting intervals, the eggs laid today, and breeding cooldowns.
 [/list]
 [h3]Does a caught wild animal become mine?[/h3]
