@@ -34,7 +34,7 @@
 [*] [b]安全屋保護[/b]：別人安全屋裡的車和動物收不走，也不能在那裡放出
 [*] [b]不複製、補得回[/b]：當機或回溯存檔不會多出東西，遺失時管理員查得到去向並補回
 [/list]
-📖 [b]收車、用帕魯球抓動物與放出、丟出抓取、安全屋保護、伺服器設定、管理員補回與常見問題：[/b][url=首發後補]丟出收納 Pack & Throw MOD 完整說明：收納、展開與補回[/url]
+📖 [b]收車、用帕魯球抓動物與放出、丟出抓取、安全屋保護、伺服器設定、管理員補回與常見問題：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3820792412]丟出收納 Pack & Throw MOD 完整說明：收納、展開與補回[/url]
 
 [h2]🔗 Minidoracat 全系列[/h2]
 其他作品都在[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat 全系列收藏[/url]，依需求自選訂閱。
@@ -52,5 +52,5 @@ MOD 永遠免費。喜歡的話可以請我喝杯咖啡，贊助會用在伺服�
 
 [b]#Minidoracat[/b]
 
-Workshop ID: 首發後補
+Workshop ID: 3820790323
 Mod ID: MinidoracatPackThrowFor42

@@ -1,4 +1,5 @@
 version=1
+id=3820790323
 title=[B42] Pack & Throw by Minidoracat
 description=[h1]🚗 Minidoracat Pack & Throw[/h1]
 description=[h3]By Minidoracat[/h3]
@@ -36,7 +37,7 @@ description=[*] [b]Tooltip and 3D preview[/b]: hover a capsule or Pal Sphere to 
 description=[*] [b]Safehouse protection[/b]: vehicles and animals in someone else's safehouse can't be packed, and nothing can be released there
 description=[*] [b]No copies, nothing lost[/b]: a crash or a rolled-back save never creates an extra vehicle, animal or cargo, and admins can trace a lost capsule and restore what it held
 description=[/list]
-description=📖 [b]Packing vehicles, catching and releasing animals, throwing to capture, safehouses, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]
+description=📖 [b]Packing vehicles, catching and releasing animals, throwing to capture, safehouses, server settings, admin recovery and FAQ:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3820792446]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]
 description=
 description=[h2]🔗 All Minidoracat Mods[/h2]
 description=Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat collection[/url] and subscribe to what you need.
@@ -54,7 +55,7 @@ description=[url=https://ko-fi.com/minidoracat][img]https://raw.githubuserconten
 description=
 description=[b]#Minidoracat[/b]
 description=
-description=Workshop ID: TBD after first upload
+description=Workshop ID: 3820790323
 description=Mod ID: MinidoracatPackThrowFor42
-tags=Build 42;Items;Vehicles;Multiplayer
+tags=Build 42;Items;Multiplayer;Vehicles
 visibility=public

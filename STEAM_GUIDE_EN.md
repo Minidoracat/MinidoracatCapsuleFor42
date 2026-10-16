@@ -1,11 +1,12 @@
+<!-- 指南網址：https://steamcommunity.com/sharedfiles/filedetails/?id=3820792446 -->
 <!-- Steam guide source (English): the full reference for this mod; the Workshop description only summarizes. Format and sync: pz-family-docs/release.md「完整說明：Steam 指南」 -->
 <!-- 標題：📖 Pack & Throw Mod Guide: Packing, Unpacking & Recovery -->
 <!-- 摘要：Guide to the Minidoracat Pack & Throw mod: getting empty capsules and Pal Spheres, packing vehicles with capsules, catching and releasing animals with Pal Spheres, throwing to capture, throwing capsules and Press the Button, safehouse protection, cargo and what animals keep, the tooltip and 3D preview, trading vehicles and animals in the Economy Center, plus sandbox options, the admin panel, restoring vehicles and animals and what happens after a crash. -->
 === 🚀 Quick start
-[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_ZH]丟出收納 MOD 完整說明[/url]
+[b]繁體中文版：[/b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3820792412]丟出收納 MOD 完整說明[/url]
 
 The mod on Steam Workshop:
-https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
+https://steamcommunity.com/sharedfiles/filedetails/?id=3820790323
 
 {{img:01-overview-en.jpg}}
 Pack & Throw lets you pack a parked vehicle into a capsule and carry it around. Throw the capsule when you need it: the vehicle appears exactly as it was, with its mods, condition and cargo. Live animals are caught in Pal Spheres instead: a caught animal is carried in the sphere and released right next to you when you want it. Packed vehicles are not in the world, so busy bases run smoother too.
@@ -309,6 +310,7 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]It shows the model, not this vehicle[/b]: the preview draws the vehicle type's default look with every optional part, not this vehicle's actual paint and parts; the list next to it shows this vehicle's real state.
 [/list]
 === 🧰 Trading vehicles and animals in the Economy Center
+{{img:13-economy-en.jpg}}
 [list]
 [*] [b]Needs a recent Minidoracat Economy[/b]: a loaded capsule can be listed on the market or put up for auction, cargo included. Older Economy versions still refuse loaded capsules.
 [*] [b]What buyers see[/b]: market and auction listings show the vehicle and its condition (engine and body, fuel, battery, number of missing parts, number of cargo items).

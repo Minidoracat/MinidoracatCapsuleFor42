@@ -4,7 +4,7 @@
 
 舊名：萬用膠囊（Universal Capsule，舊 Mod ID `MinidoracatCapsuleFor42`），更早叫車輛膠囊（Vehicle Capsule，舊 Mod ID `MinidoracatVehicleCapsuleFor42`），都在首發前改名，目前的 Mod ID 是 `MinidoracatPackThrowFor42`；GitHub repo 也跟著改名成 `Minidoracat/MinidoracatPackThrowFor42`（舊網址會自動轉到這裡）。
 
-Project Zomboid Build 42 MOD。**尚未發布**（首發版 `42.21.0-0.1.0` 準備中）。
+Project Zomboid Build 42 MOD。2026-10-16 首發（`42.21.0-0.1.0`），Steam Workshop ID `3820790323`。
 
 帕魯球的名稱與外觀致敬《幻獸帕魯》，本 MOD 與 Pocketpair 無關。
 
@@ -36,7 +36,7 @@ Project Zomboid Build 42 MOD。**尚未發布**（首發版 `42.21.0-0.1.0` 準�
 - **安全屋保護**：多人伺服器上，別人安全屋裡的車和動物不能用選單收、不能抓，也不能丟出膠囊、按下按鈕、在那裡放出動物或由管理員補回到那裡（收看動物那格與車身壓到的格子，放看落點範圍）。屋主、成員、有原版安全屋權限的管理人員與戰爭期間照原版不受限。丟出前就被拒，球留在背包；落地時才被拒，丟出的掉在丟的人腳下，不會掉進別人的安全屋。
 - **經濟中心**：裝了車的膠囊連貨物、裝了動物的帕魯球連動物資料都能在市場上架或拍賣（需要新版 Minidoracat Economy），不能用求購單收、不能賣給商店；空帕魯球是一般商品。
 
-完整玩家說明見 Steam 指南稿源 [`STEAM_GUIDE.md`](STEAM_GUIDE.md)（英文 [`STEAM_GUIDE_EN.md`](STEAM_GUIDE_EN.md)）；首發後簡介會連到 Steam 指南。
+完整玩家說明見 Steam 指南：繁中 https://steamcommunity.com/sharedfiles/filedetails/?id=3820792412 、英文 https://steamcommunity.com/sharedfiles/filedetails/?id=3820792446 （稿源 [`STEAM_GUIDE.md`](STEAM_GUIDE.md)、[`STEAM_GUIDE_EN.md`](STEAM_GUIDE_EN.md)）。
 
 設計稿：[`docs/design/vehicle-capsule-plan.html`](docs/design/vehicle-capsule-plan.html)（`.packed.html` 是內嵌素材的單檔版）
 
@@ -48,7 +48,7 @@ Project Zomboid Build 42 MOD。**尚未發布**（首發版 `42.21.0-0.1.0` 準�
 
 ## 安裝
 
-- Steam Workshop：（首發後補上連結）
+- Steam Workshop：https://steamcommunity.com/sharedfiles/filedetails/?id=3820790323
 - 手動安裝：把 `MOD/MinidoracatPackThrowFor42/Contents/mods/MinidoracatPackThrowFor42` 複製到 `%USERPROFILE%\Zomboid\mods\` 並將資料夾改名為 `MinidoracatPackThrowFor42`
 
 ## 開發

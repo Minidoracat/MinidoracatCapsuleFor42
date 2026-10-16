@@ -34,7 +34,7 @@ The Pal Sphere names and looks are a tribute to Palworld; this mod is not affili
 [*] [b]Safehouse protection[/b]: vehicles and animals in someone else's safehouse can't be packed, and nothing can be released there
 [*] [b]No copies, nothing lost[/b]: a crash or a rolled-back save never creates an extra vehicle, animal or cargo, and admins can trace a lost capsule and restore what it held
 [/list]
-📖 [b]Packing vehicles, catching and releasing animals, throwing to capture, safehouses, server settings, admin recovery and FAQ:[/b] [url=TBD after first upload]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]
+📖 [b]Packing vehicles, catching and releasing animals, throwing to capture, safehouses, server settings, admin recovery and FAQ:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3820792446]Pack & Throw Mod Guide: Packing, Unpacking & Recovery[/url]
 
 [h2]🔗 All Minidoracat Mods[/h2]
 Browse the rest in the [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809297109]Minidoracat collection[/url] and subscribe to what you need.
@@ -52,5 +52,5 @@ The mod is always free. If you like it, you can buy me a coffee; donations go to
 
 [b]#Minidoracat[/b]
 
-Workshop ID: TBD after first upload
+Workshop ID: 3820790323
 Mod ID: MinidoracatPackThrowFor42

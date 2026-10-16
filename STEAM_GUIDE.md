@@ -1,11 +1,12 @@
+<!-- 指南網址：https://steamcommunity.com/sharedfiles/filedetails/?id=3820792412 -->
 <!-- Steam 指南稿源（繁中）：MOD 的完整說明以本指南為準，簡介只放摘要。格式與同步方式見 pz-family-docs/release.md「完整說明：Steam 指南」 -->
 <!-- 標題：📖 丟出收納 Pack & Throw MOD 完整說明：收納、展開與補回 -->
 <!-- 摘要：Minidoracat 丟出收納 MOD 的完整說明：取得空膠囊與帕魯球、用膠囊收車、用帕魯球抓動物與放出、丟出抓取、安全屋保護、貨物與動物保留什麼、提示框與 3D 預覽、在經濟中心買賣車與動物，以及沙盒選項、管理面板、補回車輛與動物和當機後的處理。 -->
 === 🚀 快速上手
-[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=GUIDE_EN]Pack & Throw Mod Guide[/url]
+[b]English version:[/b] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3820792446]Pack & Throw Mod Guide[/url]
 
 MOD 本體（Steam Workshop）：
-https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
+https://steamcommunity.com/sharedfiles/filedetails/?id=3820790323
 
 {{img:01-overview-zh.jpg}}
 丟出收納讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。活著的動物改用帕魯球抓：抓到的動物收在帕魯球裡，要用時直接放出在你身旁。收起來的車不在世界上，車多的基地也比較順。
@@ -309,6 +310,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]畫的是車種外觀[/b]：預覽畫的是這個車種的預設外觀，選配零件全部畫出，不照這台車實際的塗裝與零件；這台車的實際狀態看旁邊的清單。
 [/list]
 === 🧰 在經濟中心買賣車與動物
+{{img:13-economy-zh.jpg}}
 [list]
 [*] [b]需要新版 Minidoracat Economy[/b]：裝了車的膠囊可以在市場上架或拍賣，裡面的貨物一起賣。舊版 Economy 不收裝了車的膠囊。
 [*] [b]買方看得到什麼[/b]：上架與拍賣頁會列出車名與車況（引擎與車身、油量、電瓶、缺件數、貨物件數）。
