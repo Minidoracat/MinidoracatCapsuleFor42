@@ -91,6 +91,11 @@ function Body:prerender()
     Kit.theme:fill(self, w.scene:getX(), w.scene:getY(), SCENE_W, SCENE_H, "well")
 end
 
+-- The list's first line (under the title and the subtitle); render and Win:listRows use the same numbers.
+local function listTop()
+    return PAD + getTextManager():getFontHeight(UIFont.Medium) + 2 + FH + GAP
+end
+
 function Body:render()
     local w = self.pv
     local x0 = PAD + SCENE_W + PAD
@@ -103,9 +108,9 @@ function Body:render()
     Kit.text(self, w.title or "", x0, y, "text", UIFont.Medium)
     y = y + getTextManager():getFontHeight(UIFont.Medium) + 2
     Kit.text(self, w.subtitle or "", x0, y, "textFaint")
-    y = y + FH + GAP
+    y = listTop()
     for _, row in ipairs(w.lines) do
-        if y + FH > w.noteY - GAP then break end
+        if y + FH > w.noteY - GAP then break end -- last resort: Win:show already cut the cargo list to fit
         if row[1] ~= "" then Kit.text(self, row[1], x0, y, "textMuted") end
         Kit.text(self, row[2], x0 + w.labelW, y, row[3] or "text")
         y = y + FH + 2
@@ -234,7 +239,29 @@ function Win.sceneWheel(scene, del)
     return true
 end
 
--- Puts the summary on screen: 3D model of the type (when the script exists and draws safely) and the list.
+-- How many list lines fit between the list's top and the note (the window height is fixed).
+function Win:listRows()
+    return math.max(0, math.floor((self.noteY - GAP - FH - listTop()) / (FH + 2)) + 1)
+end
+
+-- rows -> one entry per screen line: long values (missing parts, mods) continue on the next lines instead of being
+-- cut. Returns the lines and the label column width.
+local function layout(rows)
+    local labelW = 0
+    for _, row in ipairs(rows) do labelW = math.max(labelW, Kit.measure(row[1])) end
+    labelW = labelW > 0 and labelW + GAP or 0
+    local out = {}
+    for _, row in ipairs(rows) do
+        for i, part in ipairs(Kit.wrap(row[2], LIST_W - labelW)) do
+            out[#out + 1] = { i == 1 and row[1] or "", part, row[3] }
+        end
+    end
+    return out, labelW
+end
+
+-- Puts the summary on screen: 3D model of the type (when the script exists and draws safely) and the list. A list
+-- longer than the window lists fewer cargo kinds, so the rows after the cargo (packed by) stay and the "N more" line
+-- counts what was cut (the EN font and a wrapped Mods row dropped the last rows silently, 06-preview-en, f3ab7bb).
 function Win:show(r)
     local j = self.scene.javaObject
     local script = r and r.ok and r.script
@@ -246,27 +273,29 @@ function Win:show(r)
     self.resetAt = self.shown and 30 or nil
     self.sceneMsg = (not r and U("Loading")) or (script and not sc and U("ScriptMissing")) or (blocked and U("CannotDraw"))
         or ""
-    local lines
     if not r then
-        self.title, self.subtitle, lines = U("Loading"), "", {}
+        self.title, self.subtitle = U("Loading"), ""
+        self.lines, self.labelW = layout({})
+        return
     elseif not r.ok then
         self.title, self.subtitle = U("PreviewTitle"), ""
-        lines = { { "", Info.T(r.why == "FAR" and "Far" or "NoRecord"), "errorText" } }
-    else
-        self.title, self.subtitle = Info.thingName(r), tostring(r.script or "")
-        lines = Info.rows(r, true)
-        table.remove(lines, 1) -- the vehicle name is the title
-        local status = Info.status(r)
-        if status then table.insert(lines, 1, { "", status, "errorText" }) end
+        self.lines, self.labelW = layout({ { "", Info.T(r.why == "FAR" and "Far" or "NoRecord"), "errorText" } })
+        return
     end
-    local labelW = 0
-    for _, row in ipairs(lines) do labelW = math.max(labelW, Kit.measure(row[1])) end
-    labelW = labelW > 0 and labelW + GAP or 0
-    -- long values (missing parts, mods) continue on the next rows instead of being cut
-    local out = {}
-    for _, row in ipairs(lines) do
-        for i, part in ipairs(Kit.wrap(row[2], LIST_W - labelW)) do
-            out[#out + 1] = { i == 1 and row[1] or "", part, row[3] }
+    self.title, self.subtitle = Info.thingName(r), tostring(r.script or "")
+    local status = Info.status(r)
+    local function rows(cap)
+        local lines = Info.rows(r, true, cap)
+        table.remove(lines, 1) -- the vehicle name is the title
+        if status then table.insert(lines, 1, { "", status, "errorText" }) end
+        return lines
+    end
+    local out, labelW = layout(rows(nil))
+    local fit = self:listRows()
+    if #out > fit and r.kind ~= "animal" then
+        for cap = #Info.details(r).cargo - 1, 0, -1 do
+            out, labelW = layout(rows(cap))
+            if #out <= fit then break end
         end
     end
     self.lines, self.labelW = out, labelW

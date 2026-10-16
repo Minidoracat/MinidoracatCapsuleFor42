@@ -3183,6 +3183,120 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     loaded["MinidoracatPackThrow/Info"], loaded["ISUI/ISToolTipInv"] = saved.infoLoaded, saved.tipLoaded
 end)() end
 
+print("Preview：預覽視窗的清單放不下時少列幾種貨物、最後一列「其餘 N 種」，收進的人照樣看得到；短清單不變")
+do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
+    local Kit = M.UIKit
+    if not (Kit and Kit.ok) then
+        print("  SKIP  沒有框架（見上方 UI 段），跳過預覽視窗版面")
+        return
+    end
+    local UI = Kit.UI
+    local saved = { tm = getTextManager, core = getCore, text = getText, orNull = getTextOrNull, sm = getScriptManager,
+        panel = ISPanel, scene = ISUI3DScene, win = UI.Window, button = UI.Button, fh = Kit.FH, info = M.Info,
+        preview = M.Preview, infoLoaded = loaded["MinidoracatPackThrow/Info"] }
+    -- EN strings (%1, %2 filled in) and an EN-like font: taller than the harness default, 7 px per character
+    local en = {}
+    for _, file in ipairs({ "Tooltip", "UI" }) do
+        local fh = assert(io.open(MEDIA .. "/shared/Translate/EN/" .. file .. ".json", "rb"))
+        for k, v in pairs(Json.decode(fh:read("*a"))) do en[k] = v end
+        fh:close()
+    end
+    getText = function(k, a, b)
+        local s = en[k] or k
+        s = s:gsub("%%1", tostring(a)):gsub("%%2", tostring(b)):gsub("%%%%", "%%")
+        return s
+    end
+    getTextOrNull = function(k) return en[k] end
+    local function width(s) return 7 * select(2, tostring(s):gsub("[^\128-\191]", "")) end
+    getTextManager = function()
+        return { MeasureStringX = function(_, _, s) return width(s) end,
+            getFontHeight = function(_, font) return font == UIFont.Medium and 23 or 19 end }
+    end
+    getCore = function() return { getScreenWidth = function() return 1920 end, getScreenHeight = function() return 1080 end } end
+    getScriptManager = function() return { getVehicle = function() return nil end, FindItem = function() return nil end } end
+    Kit.FH = 19
+    ISPanel = {}
+    function ISPanel:derive() local c = setmetatable({}, { __index = self }); c.__index = c; return c end
+    function ISPanel:new(x, y, w, h) return setmetatable({ x = x, y = y, width = w, height = h }, self) end
+    function ISPanel:initialise() end
+    function ISPanel:addChild() end
+    local java = { fromLua1 = function() end, fromLua2 = function() end, fromLua3 = function() end }
+    ISUI3DScene = { new = function(_, x, y)
+        return { javaObject = java, initialise = function() end, instantiate = function() end, setView = function() end,
+            getX = function() return x end, getY = function() return y end }
+    end }
+    UI.Window = { new = function()
+        local nop = function() end
+        return { contentTop = function() return 24 end, setHeight = nop, addChild = nop, addToUIManager = nop,
+            setVisible = nop, bringToTop = nop, getIsVisible = function() return true end }
+    end }
+    UI.Button = { new = function() return {} end }
+    for _, n in ipairs({ "Vehicles/ISUI/ISUI3DScene", "ISUI/ISInventoryPaneContextMenu" }) do loaded[n] = true end
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/Info.lua")()
+    local Info = M.Info
+    loaded["MinidoracatPackThrow/Info"] = true
+    loadfile(MEDIA .. "/client/MinidoracatPackThrow/Preview.lua")()
+    local Preview = M.Preview
+    -- a pickup with twelve cargo kinds and six modifications (the Mods row wraps to two lines)
+    local function record(kinds, mods)
+        local d = { engine = 80, body = 64, fuel = 7.5, fuelCap = 20, battery = 37, missing = {}, mods = {}, cargo = {},
+            cargoN = 0 }
+        for i = 1, mods do d.mods[i] = "Heavy Duty Part " .. i end
+        for i = 1, kinds do
+            d.cargo[i] = { name = "Cargo Item " .. string.char(64 + i), n = 20 - i }
+            d.cargoN = d.cargoN + 20 - i
+        end
+        return { ok = true, script = "Base.PickUpTruck", name = "Chevalier Pickup", by = "test", state = "PACKED", d = d }
+    end
+    local current
+    Info.get = function() return current end
+    local function open(r)
+        current = r
+        local w = Preview.open(1)
+        local drawn = {}
+        w.body.drawText = function(_, s, x, y) drawn[#drawn + 1] = { s = s, x = x, y = y } end
+        w.body:render()
+        local rowsDrawn = 0
+        for _, t in ipairs(drawn) do -- values only: labels and the title sit at the list's left edge (12 + 440 + 12)
+            if t.y >= 0 and t.y < w.noteY and t.x > 12 + 440 + 12 then
+                rowsDrawn = rowsDrawn + 1
+            end
+        end
+        return w, rowsDrawn
+    end
+    local function count(w, pattern)
+        local n = 0
+        for _, line in ipairs(w.lines) do if line[2]:find(pattern, 1, true) then n = n + 1 end end
+        return n
+    end
+    local long = record(12, 6)
+    local w, drawnLong = open(long)
+    local fit, shownKinds = w:listRows(), count(w, "Cargo Item ")
+    local packedBy = false
+    for _, line in ipairs(w.lines) do if line[1] == en.Tooltip_MinidoracatPackThrow_PackedBy then packedBy = true end end
+    local more = getText("Tooltip_MinidoracatPackThrow_CargoMore", tostring(12 - shownKinds))
+    -- the Mods row wraps: its label line plus the label-less lines up to the next labelled row
+    local modsLines, inMods = 0, false
+    for _, line in ipairs(w.lines) do
+        if line[1] == en.Tooltip_MinidoracatPackThrow_Mods then inMods, modsLines = true, 1
+        elseif inMods and line[1] == "" then modsLines = modsLines + 1
+        else inMods = false end
+    end
+    check(#w.lines <= fit and drawnLong == #w.lines and packedBy and shownKinds < 12 and count(w, more) == 1
+        and modsLines >= 2 and w.lines[#w.lines][1] == en.Tooltip_MinidoracatPackThrow_PackedBy,
+        "12 種貨物＋換兩行的改裝（EN 字高 19）：清單 " .. #w.lines .. " 行 ≤ 放得下的 " .. fit .. " 行、每行都畫出；列 "
+            .. shownKinds .. " 種，其餘 " .. (12 - shownKinds) .. " 種寫在「and N more kinds」；最後一列「Packed by」")
+    -- a short list is exactly the uncut one
+    local short = record(2, 0)
+    local ws = open(short)
+    local direct = Info.rows(short, true)
+    check(#ws.lines == #direct - 1 and count(ws, "more kinds") == 0 and count(ws, "Cargo Item ") == 2,
+        "短清單（2 種貨物、沒有改裝）不受影響：全部列出、沒有「其餘 N 種」")
+    getTextManager, getCore, getText, getTextOrNull, getScriptManager = saved.tm, saved.core, saved.text, saved.orNull, saved.sm
+    ISPanel, ISUI3DScene, UI.Window, UI.Button, Kit.FH = saved.panel, saved.scene, saved.win, saved.button, saved.fh
+    M.Info, M.Preview, loaded["MinidoracatPackThrow/Info"] = saved.info, saved.preview, saved.infoLoaded
+end)() end
+
 print("ThrowCursor：丟出與抓取的游標開著時，站著的角色轉向瞄準的那一格（按下時已經面向目標，不用等轉身）")
 do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     local saved = { core = getCore, queue = ISTimedActionQueue }

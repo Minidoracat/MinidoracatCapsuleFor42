@@ -289,8 +289,9 @@ function Info.status(r)
 end
 
 -- { { label, value, token? }, ... } describing the vehicle (PACKED and uncertain ones): what the tooltip and the
--- preview list. `full` adds paint and the whole cargo list (preview). An animal record lists the animal instead.
-function Info.rows(r, full)
+-- preview list. `full` adds paint and the whole cargo list (preview), or at most `cargoCap` cargo kinds when given
+-- (the preview window has a fixed height; the "N more" line counts the rest). An animal record lists the animal.
+function Info.rows(r, full, cargoCap)
     if r.kind == "animal" then
         local rows = Info.animalRows(r.animal)
         if r.by then rows[#rows + 1] = { T("PackedBy"), tostring(r.by) } end
@@ -328,7 +329,7 @@ function Info.rows(r, full)
         add("Cargo", T("CargoNone"))
     else
         add("Cargo", T("CargoCount", tostring(d.cargoN)))
-        local shown = full and #d.cargo or math.min(#d.cargo, Info.CARGO_LINES)
+        local shown = full and math.min(#d.cargo, cargoCap or #d.cargo) or math.min(#d.cargo, Info.CARGO_LINES)
         for i = 1, shown do
             local e = d.cargo[i]
             rows[#rows + 1] = { "", T("CargoLine", e.name, tostring(e.n)) }
