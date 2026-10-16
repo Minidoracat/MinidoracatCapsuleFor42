@@ -157,6 +157,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [h3]Throwing a capsule[/h3]
 [list]
 [*] [b]How[/b]: with the capsule on you, right-click it in the inventory and choose "Throw Capsule" to get the landing cursor. Left-click to throw, right-click to cancel.
+[*] [b]Turning[/b]: while the cursor is open, a standing character turns toward the aimed square (as with vanilla aiming); a left-click throws at once, with no wait for the turn.
 [*] [b]Landing spot[/b]: within about 8 tiles of you and in sight.
 [*] [b]Green outline[/b]: the vehicle's footprint on the ground, with "Fits: <vehicle>" when it fits.
 [*] [b]Red outline[/b]: it doesn't fit, with the reason: too far, can't see there, not loaded yet, another vehicle, a person, a tree, no ground to park on, furniture or other objects, a wall or fence, indoors, the spot is in someone else's safehouse.
@@ -200,6 +201,7 @@ Vanilla and modded vehicles such as KI5's work the same way.
 [h3]How to throw[/h3]
 [list]
 [*] [b]The menu[/b]: with an empty capsule or Pal Sphere on you (bags count), right-click it in the inventory and choose "Throw to Capture" to get the capture cursor. Left-click to throw, right-click to cancel.
+[*] [b]Turning[/b]: as with Throw Capsule, a standing character turns toward the aimed square while the cursor is open, and a left-click throws at once.
 [*] [b]Capsules take vehicles, Pal Spheres take animals[/b]: an empty capsule only recognizes vehicles, an empty Pal Sphere only animals.
 [*] [b]Target[/b]: an animal or a vehicle on the square under the cursor or right next to it; any square of a vehicle's body counts.
 [*] [b]Range[/b]: the spot you aim at must be within about 8 tiles of you and in sight.
