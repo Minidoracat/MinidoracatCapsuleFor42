@@ -3082,7 +3082,13 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
         T = function(k) return strings[k] or ("T:" .. k) end,
         get = function(id) return records[id] end,
         status = function() return nil end,
-        rows = function() return { { strings.Animal or "T:Animal", "Hop" }, { strings.AgeDays or "T:AgeDays", "12" } } end,
+        rows = function(r)
+            if r.kind == "vehicle" then
+                return { { strings.Vehicle or "T:Vehicle", "Chevalier D6 Pickup Truck (Military Surplus Edition)" },
+                    { "", "Wrench, Jack, Tire Pump, Gas Can, Duct Tape, Hammer, Screwdriver, Spare Tire, First Aid Kit" } }
+            end
+            return { { strings.Animal or "T:Animal", "Hop" }, { strings.AgeDays or "T:AgeDays", "12" } }
+        end,
         thingName = function() return "Hop" end,
     }
     loaded["MinidoracatPackThrow/Info"], loaded["ISUI/ISToolTipInv"] = true, true
@@ -3112,52 +3118,66 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     check(spheresEmpty and hasNote(Tip.rows(item(sphere.loaded, "animal")))
         and not hasNote(Tip.rows(item(capsule.empty))) and not hasNote(Tip.rows(item(capsule.loaded, "vehicle"))),
         "四級空帕魯球與裝了動物的帕魯球都有「時間靜止」說明列（灰色說明）；空膠囊與裝了車的膠囊沒有")
-    -- every language: the note wraps inside the box (framework Text.wrap), nothing is lost or drawn past the right edge
+    -- every language, every capsule and sphere, empty and loaded: every value wraps inside the box (framework
+    -- Text.wrap), labelled rows too (the French type row made the box 805-930 px wide, user 2026-10-17); the sphere
+    -- note is drawn whole
     local UI = MinidoracatUI and MinidoracatUI.v1
     if not (UI and UI.CAPABILITIES and UI.CAPABILITIES.textWrap) then
         print("  SKIP  沒有框架 Text.wrap（見上方 UI 段），跳過換行檢查")
     else
-        local bad = {}
+        local bad, frWidest, renders = {}, 0, 0
         for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
             local fh = assert(io.open(MEDIA .. "/shared/Translate/" .. lang .. "/Tooltip.json", "rb"))
             local data = Json.decode(fh:read("*a"))
             fh:close()
             strings = {}
             for k, v in pairs(data) do strings[k:gsub("^Tooltip_MinidoracatPackThrow_", "")] = v end
-            -- a fresh copy per language: the rows are built once and kept (empty spheres per type)
+            -- a fresh copy per language: the rows are built once and kept (empty capsules per type)
             ISToolTipInv = { render = function(self) self:drawRect(0, 0, self.width, 120, 1, 0, 0, 0) end }
             loadfile(MEDIA .. "/client/MinidoracatPackThrow/Tooltip.lua")()
             M.Tooltip.install()
-            for _, ft in ipairs({ sphere.empty, sphere.loaded }) do
-                local texts, box = {}, nil
-                local cls = {
-                    drawRect = function(_, x, y, w) if y > 0 then box = { x = x, w = w } end end,
-                    drawRectBorder = function() end,
-                    drawText = function(_, s, x) texts[#texts + 1] = { s = s, x = x } end,
-                }
-                local self = setmetatable({ item = item(ft, ft == sphere.loaded and "animal" or nil), width = 200, y = 0,
-                    tooltip = { getFont = function() return "Small" end },
-                    backgroundColor = { a = 0.5, r = 0, g = 0, b = 0 }, borderColor = { a = 1, r = 1, g = 1, b = 1 } },
-                    { __index = cls })
-                ISToolTipInv.render(self)
-                local note, lines, inside = (strings.SphereTime or ""):gsub(" ", ""), {}, box ~= nil
-                for _, t in ipairs(texts) do
-                    if box and t.x + width(t.s) > box.x + box.w - 5 then inside = false end
-                end
-                -- the note is the last row: its lines are the texts at the end that are pieces of it
-                for k = #texts, 1, -1 do
-                    local s = texts[k].s
-                    if note == "" or s == "" or not note:find((s:gsub(" ", "")), 1, true) then break end
-                    table.insert(lines, 1, s)
-                end
-                local joined = table.concat(lines):gsub(" ", "")
-                if not inside or note == "" or joined ~= note or (lang == "FR" and #lines < 2) then
-                    bad[#bad + 1] = lang .. (ft == sphere.empty and ":empty" or ":loaded") .. "(" .. #lines .. ")"
+            for _, t in ipairs(M.TYPES) do
+                for _, ft in ipairs({ t.empty, t.loaded }) do
+                    local loadedOne = ft == t.loaded
+                    local texts, box = {}, nil
+                    local cls = {
+                        drawRect = function(_, x, y, w) if y > 0 then box = { x = x, w = w } end end,
+                        drawRectBorder = function() end,
+                        drawText = function(_, s, x) texts[#texts + 1] = { s = s, x = x } end,
+                    }
+                    local self = setmetatable({ width = 200, y = 0,
+                        item = item(ft, loadedOne and (t.sphere and "animal" or "vehicle") or nil),
+                        tooltip = { getFont = function() return "Small" end },
+                        backgroundColor = { a = 0.5, r = 0, g = 0, b = 0 }, borderColor = { a = 1, r = 1, g = 1, b = 1 } },
+                        { __index = cls })
+                    ISToolTipInv.render(self)
+                    renders = renders + 1
+                    local inside = box ~= nil
+                    for _, tx in ipairs(texts) do
+                        if box and tx.x + width(tx.s) > box.x + box.w - 5 then inside = false end
+                    end
+                    if lang == "FR" and box then frWidest = math.max(frWidest, box.w) end
+                    local ok = inside
+                    if t.sphere then
+                        -- the note is the last row: its lines are the texts at the end that are pieces of it
+                        local note, lines = (strings.SphereTime or ""):gsub(" ", ""), {}
+                        for k = #texts, 1, -1 do
+                            local s = texts[k].s
+                            if note == "" or s == "" or not note:find((s:gsub(" ", "")), 1, true) then break end
+                            table.insert(lines, 1, s)
+                        end
+                        ok = ok and note ~= "" and table.concat(lines):gsub(" ", "") == note
+                            and not (lang == "FR" and #lines < 2)
+                    end
+                    if not ok then bad[#bad + 1] = lang .. ":" .. ft end
                 end
             end
         end
-        check(#bad == 0, "16 種語言的空的與裝了動物的帕魯球：說明整段畫出、換成多行、每行都在框內（法文至少兩行）（"
-            .. table.concat(bad, ",") .. "）")
+        check(#bad == 0 and renders == 16 * 2 * #M.TYPES,
+            "16 種語言、七種膠囊與四級帕魯球的空的與裝了的提示框：每一行（含有標籤的款式列）都在框內，帕魯球說明整段畫出（法文至少兩行）（"
+                .. table.concat(bad, ",") .. "）")
+        check(frWidest > 0 and frWidest <= 400,
+            "法文提示框不再被款式列撐寬：最寬 " .. frWidest .. " px（上限 400；舊版只換無標籤的列時約 750）")
     end
     M.Info, M.Rules.typeOn, getTextManager, getCore, ISToolTipInv = saved.Info, saved.typeOn, saved.tm, saved.core, saved.tip
     loaded["MinidoracatPackThrow/Info"], loaded["ISUI/ISToolTipInv"] = saved.infoLoaded, saved.tipLoaded

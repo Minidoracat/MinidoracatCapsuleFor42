@@ -13,12 +13,13 @@ local Tooltip = {}
 M.Tooltip = Tooltip
 
 local PAD, GAP = 5, 10
-local MIN_W = 380 -- with wrapping, the box is at least this wide and continuation rows wrap to it
+local MIN_W = 380 -- with wrapping, the box is at least this wide and every value wraps to it
+local MIN_TEXT_W = 120 -- with wrapping, the value column is at least this wide (a long label widens the box)
 local loading, empties -- built on first use (translations are ready by then); empties: "<type id><0|1>" -> rows
 
 -- The framework's line breaker (MinidoracatUI Text.wrap, rev 16: CJK, French punctuation, cached per font, width and
--- text, so calling it every frame allocates nothing), or nil on a framework without it: then rows stay one line and
--- the box widens to the longest, as before.
+-- text, so calling it every frame allocates nothing), or nil on a framework without it: then every value stays one
+-- line and the box widens to the longest, as before.
 local function wrapper()
     local UI = MinidoracatUI and MinidoracatUI.v1
     if UI and UI.CAPABILITIES and UI.CAPABILITIES.textWrap and UI.Text and type(UI.Text.wrap) == "function" then
@@ -59,8 +60,10 @@ local function renderMeasured(self, original)
     return bottom
 end
 
--- rows = { { label, value, token? } }; a row with an empty label continues the one above (cargo list, notes) and
--- wraps to the box width. Below the vanilla box; above it when the screen ends, not at all when neither fits.
+-- rows = { { label, value, token? } }; a row with an empty label continues the one above (cargo list, notes). With
+-- the framework's wrap, every value wraps to the box width in the value column (a labelled row keeps its label on its
+-- first line; the French type row made the box 805-930 px wide before, user 2026-10-17). Below the vanilla box; above
+-- it when the screen ends, not at all when neither fits.
 local function appendBox(self, rows, bottom)
     local tm = getTextManager()
     local font = self.tooltip:getFont()
@@ -69,13 +72,16 @@ local function appendBox(self, rows, bottom)
     local labelW = 0
     for _, row in ipairs(rows) do labelW = math.max(labelW, tm:MeasureStringX(font, row[1])) end
     local valueX = PAD + labelW + (labelW > 0 and GAP or 0)
-    local w = math.max(self.width, wrap and MIN_W or 0)
-    for _, row in ipairs(rows) do
-        if row[1] ~= "" or not wrap then w = math.max(w, valueX + tm:MeasureStringX(font, row[2]) + PAD) end
+    local w
+    if wrap then
+        w = math.max(self.width, MIN_W, valueX + MIN_TEXT_W + PAD)
+    else
+        w = self.width
+        for _, row in ipairs(rows) do w = math.max(w, valueX + tm:MeasureStringX(font, row[2]) + PAD) end
     end
     local textW = w - valueX - PAD
     local n = 0
-    for _, row in ipairs(rows) do n = n + ((wrap and row[1] == "") and #wrap(row[2], textW, font) or 1) end
+    for _, row in ipairs(rows) do n = n + (wrap and #wrap(row[2], textW, font) or 1) end
     local h = PAD * 2 + lineH * n
     local y = bottom - 1
     if self.y + y + h > getCore():getScreenHeight() then
@@ -89,13 +95,13 @@ local function appendBox(self, rows, bottom)
     for _, row in ipairs(rows) do
         local r, g, b = 0.95, 0.95, 0.95
         if row[3] == "warn" then r, g, b = 1, 0.65, 0.3 elseif row[3] == "muted" then r, g, b = 0.65, 0.65, 0.65 end
-        if wrap and row[1] == "" then
+        if row[1] ~= "" then self:drawText(row[1], PAD, ty, 0.65, 0.65, 0.65, 1, font) end
+        if wrap then
             for _, line in ipairs(wrap(row[2], textW, font)) do
                 self:drawText(line, valueX, ty, r, g, b, 1, font)
                 ty = ty + lineH
             end
         else
-            if row[1] ~= "" then self:drawText(row[1], PAD, ty, 0.65, 0.65, 0.65, 1, font) end
             self:drawText(row[2], valueX, ty, r, g, b, 1, font)
             ty = ty + lineH
         end
