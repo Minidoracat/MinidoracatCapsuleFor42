@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Bilim Kurgu Kapsülü gibi ışık sütunu ve enerji sesleri; yabani yakalama şansı +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Bilim Kurgu Kapsülü gibi ışık sütunu ve enerji sesleri; yabani yakalama şansı +50",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Boş Pal Küresi. Bir hayvanı hayvan menüsünden yakala ya da Yakalamak için fırlat ile hayvana fırlat; yabani bir hayvan kurtulabilir.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "Pal Küresinin içinde zaman durur: hayvan büyümez, acıkmaz ya da susamaz ve gebelik duraklar."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Pal Küresinin içinde zaman durur: hayvan büyümez, acıkmaz ya da susamaz ve gebelik duraklar.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Açıldıktan sonra boş kapsül envanterine geri döner.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Açmak bu kapsülü harcar; boş kapsül geri dönmez (sunucu ayarı).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Serbest bıraktıktan sonra aynı seviyede boş bir Pal Küresi envanterine geri döner.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Serbest bırakmak bu Pal Küresini harcar; boş küre geri dönmez (sunucu ayarı).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Araç açıldıktan sonra boş kapsül envanterine döner ve yeniden kullanılabilir.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Tek kullanımlık: aracı açmak bu kapsülü harcar (sunucu ayarı).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Hayvan serbest bırakıldıktan sonra boş Pal Küresi envanterine döner ve yeniden kullanılabilir.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Tek kullanımlık: hayvanı serbest bırakmak bu Pal Küresini harcar (sunucu ayarı).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Yabani bir hayvan kurtulursa bu Pal Küresi kaybolur (sunucu ayarı)."
 }

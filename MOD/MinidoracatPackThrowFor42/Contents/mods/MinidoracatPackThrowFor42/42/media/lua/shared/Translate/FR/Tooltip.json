@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +30 de chance de capture (sauvage)",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +50 de chance de capture (sauvage)",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Sphère de Pal vide. Capturez un animal depuis son menu animal, ou lancez-la dessus avec « Lancer pour capturer » ; un animal sauvage peut s'échapper.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "Le temps s'arrête dans une Sphère de Pal : l'animal ne grandit pas, n'a ni faim ni soif, et une gestation est mise en pause."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Le temps s'arrête dans une Sphère de Pal : l'animal ne grandit pas, n'a ni faim ni soif, et une gestation est mise en pause.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Après le déploiement, la capsule vide revient dans votre inventaire.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Le déploiement consomme cette capsule ; aucune capsule vide ne revient (réglage du serveur).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Après la libération, une Sphère de Pal vide du même niveau revient dans votre inventaire.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "La libération consomme cette Sphère de Pal ; aucune sphère vide ne revient (réglage du serveur).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Une fois le véhicule déployé, la capsule vide revient dans votre inventaire et peut resservir.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Usage unique : déployer le véhicule consomme cette capsule (réglage du serveur).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Une fois l'animal libéré, la Sphère de Pal vide revient dans votre inventaire et peut resservir.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Usage unique : libérer l'animal consomme cette Sphère de Pal (réglage du serveur).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Si un animal sauvage s'échappe, cette Sphère de Pal est perdue (réglage du serveur)."
 }

@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +50",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "空のパルスフィアです。動物メニューから捕獲するか、「投げて捕獲」で動物に投げてください。野生動物には逃げられることがあります。",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "パルスフィアの中では時間が止まります。動物は成長せず、お腹もすかず喉も渇かず、妊娠も一時停止します。"
+    "Tooltip_MinidoracatPackThrow_SphereTime": "パルスフィアの中では時間が止まります。動物は成長せず、お腹もすかず喉も渇かず、妊娠も一時停止します。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "展開後、空のカプセルがインベントリに戻ります。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "展開するとこのカプセルはなくなり、空のカプセルは戻りません（サーバー設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "出したあと、同じランクの空のパルスフィアがインベントリに戻ります。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "出すとこのパルスフィアはなくなり、空のパルスフィアは戻りません（サーバー設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "車両を展開したあと、空のカプセルがインベントリに戻り、また使えます。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "一回きり：車両を展開するとこのカプセルはなくなります（サーバー設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "動物を出したあと、空のパルスフィアがインベントリに戻り、また使えます。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "一回きり：動物を出すとこのパルスフィアはなくなります（サーバー設定）。",
+    "Tooltip_MinidoracatPackThrow_FailGone": "野生動物に逃げられると、このパルスフィアは消えます（サーバー設定）。"
 }

@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "SF 빛기둥과 에너지 소리, 야생 동물 포획 확률 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "SF 빛기둥과 에너지 소리, 야생 동물 포획 확률 +50",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "빈 팰 스피어입니다. 동물 메뉴에서 포획하거나 '던져서 포획'으로 동물에게 던질 수 있습니다. 야생 동물은 빠져나갈 수 있습니다.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "팰 스피어 안에서는 시간이 멈춥니다. 동물은 자라지 않고 배고프거나 목마르지 않으며, 임신도 일시 정지됩니다."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "팰 스피어 안에서는 시간이 멈춥니다. 동물은 자라지 않고 배고프거나 목마르지 않으며, 임신도 일시 정지됩니다.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "차량을 꺼낸 뒤 빈 캡슐이 인벤토리로 돌아옵니다.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "차량을 꺼내면 이 캡슐은 사라지고 빈 캡슐은 돌아오지 않습니다 (서버 설정).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "꺼낸 뒤 같은 등급의 빈 팰 스피어가 인벤토리로 돌아옵니다.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "꺼내면 이 팰 스피어는 사라지고 빈 팰 스피어는 돌아오지 않습니다 (서버 설정).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "차량을 꺼낸 뒤 빈 캡슐이 인벤토리로 돌아와 다시 쓸 수 있습니다.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "한 번만 사용: 차량을 꺼내면 이 캡슐은 사라집니다 (서버 설정).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "동물을 꺼낸 뒤 빈 팰 스피어가 인벤토리로 돌아와 다시 쓸 수 있습니다.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "한 번만 사용: 동물을 꺼내면 이 팰 스피어는 사라집니다 (서버 설정).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "야생 동물이 빠져나가면 이 팰 스피어는 사라집니다 (서버 설정)."
 }

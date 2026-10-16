@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +30 Fangchance bei wilden Tieren",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +50 Fangchance bei wilden Tieren",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Leere Pal-Sphäre. Fang ein Tier über sein Tiermenü oder wirf sie mit „Werfen und fangen“ darauf; ein wildes kann sich losreißen.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "In einer Pal-Sphäre steht die Zeit still: Das Tier wächst nicht, bekommt weder Hunger noch Durst, und eine Trächtigkeit pausiert."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "In einer Pal-Sphäre steht die Zeit still: Das Tier wächst nicht, bekommt weder Hunger noch Durst, und eine Trächtigkeit pausiert.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Nach dem Entpacken ist die leere Kapsel wieder in deinem Inventar.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Entpacken verbraucht diese Kapsel; es kommt keine leere Kapsel zurück (Servereinstellung).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Nach dem Freilassen ist eine leere Pal-Sphäre derselben Stufe wieder in deinem Inventar.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Freilassen verbraucht diese Pal-Sphäre; es kommt keine leere zurück (Servereinstellung).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Nach dem Entpacken des Fahrzeugs ist die leere Kapsel wieder in deinem Inventar und wiederverwendbar.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Einmalig: Das Entpacken des Fahrzeugs verbraucht diese Kapsel (Servereinstellung).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Nach dem Freilassen des Tiers ist die leere Pal-Sphäre wieder in deinem Inventar und wiederverwendbar.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Einmalig: Das Freilassen des Tiers verbraucht diese Pal-Sphäre (Servereinstellung).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Reißt sich ein wildes Tier los, ist diese Pal-Sphäre verloren (Servereinstellung)."
 }

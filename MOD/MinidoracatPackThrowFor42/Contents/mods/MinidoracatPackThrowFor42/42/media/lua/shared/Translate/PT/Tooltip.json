@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "A coluna de luz futurista e sons de energia; +30 na chance de capturar animais selvagens",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "A coluna de luz futurista e sons de energia; +50 na chance de capturar animais selvagens",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Esfera de Pal vazia. Capture um animal pelo menu do animal, ou arremesse-a nele com «Arremessar para capturar»; um selvagem pode escapar.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "O tempo para dentro de uma Esfera de Pal: o animal não cresce nem sente fome ou sede, e uma gestação fica em pausa."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "O tempo para dentro de uma Esfera de Pal: o animal não cresce nem sente fome ou sede, e uma gestação fica em pausa.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Depois de liberar o veículo, a cápsula vazia volta para o seu inventário.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Liberar o veículo gasta esta cápsula; nenhuma cápsula vazia volta (configuração do servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Depois de soltar, uma Esfera de Pal vazia do mesmo nível volta para o seu inventário.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Soltar gasta esta Esfera de Pal; nenhuma vazia volta (configuração do servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Quando o veículo é liberado, a cápsula vazia volta para o seu inventário para usar de novo.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Uso único: liberar o veículo gasta esta cápsula (configuração do servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Quando o animal é solto, a Esfera de Pal vazia volta para o seu inventário para usar de novo.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Uso único: soltar o animal gasta esta Esfera de Pal (configuração do servidor).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Se um animal selvagem escapar, esta Esfera de Pal se perde (configuração do servidor)."
 }

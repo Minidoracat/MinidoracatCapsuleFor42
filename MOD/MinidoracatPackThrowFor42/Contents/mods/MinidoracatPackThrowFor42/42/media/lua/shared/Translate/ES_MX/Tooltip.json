@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "La columna de luz futurista y sonidos de energía; +30 a la probabilidad de capturar animales silvestres",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "La columna de luz futurista y sonidos de energía; +50 a la probabilidad de capturar animales silvestres",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Esfera Pal vacía. Captura un animal desde su menú de animal, o lánzala a uno con «Lanzar para capturar»; uno silvestre puede escaparse.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "El tiempo se detiene dentro de una Esfera Pal: el animal no crece, no le da hambre ni sed, y una preñez queda en pausa."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "El tiempo se detiene dentro de una Esfera Pal: el animal no crece, no le da hambre ni sed, y una preñez queda en pausa.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Al desplegarla, la cápsula vacía vuelve a tu inventario.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Desplegarla gasta esta cápsula; no vuelve ninguna cápsula vacía (ajuste del servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Al liberarlo, una Esfera Pal vacía del mismo nivel vuelve a tu inventario.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Liberarlo gasta esta Esfera Pal; no vuelve ninguna vacía (ajuste del servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Cuando se despliega el vehículo, la cápsula vacía vuelve a tu inventario para usarla otra vez.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "De un solo uso: desplegar el vehículo gasta esta cápsula (ajuste del servidor).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Cuando se libera el animal, la Esfera Pal vacía vuelve a tu inventario para usarla otra vez.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "De un solo uso: liberar el animal gasta esta Esfera Pal (ajuste del servidor).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Si un animal salvaje se escapa, esta Esfera Pal se pierde (ajuste del servidor)."
 }

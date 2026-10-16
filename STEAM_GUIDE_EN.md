@@ -293,13 +293,14 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]Loading[/b]: the data comes from the server, so it says "Reading vehicle condition..." for a moment.
 [*] [b]Capsules on the ground[/b]: walk closer to see the details.
 [*] [b]Other states[/b]: an empty capsule tells you its type and how to pack, with a "!" line when an admin switched its type off; already unpacked, restored by an admin, unconfirmed after a crash, or data missing on this server are all spelled out.
+[*] [b]Does it come back[/b]: every capsule and Pal Sphere, empty or loaded, has a line saying whether the empty one comes back to your inventory after unpacking or release. When it does the line is grey, for example "After unpacking, the empty capsule comes back to your inventory."; when the server turns "Return an empty capsule or Pal Sphere" off it is in the warning colour, for example "Single use: unpacking the vehicle uses up this capsule (server setting)."
 [/list]
 [h3]Pal Spheres holding an animal[/h3]
 {{img:08-sphere-tooltip-en.jpg}}
 [list]
 [*] [b]It lists[/b]: the tier, the animal's kind and breed, name, sex, age, weight, health, milk (when it can be milked), wool (when it has some), whether it is wild, and who caught it.
 [*] [b]Pregnancy and fertilization[/b]: as in vanilla, only shown to players with Husbandry level 3 or higher.
-[*] [b]Empty Pal Spheres[/b]: the tooltip says "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free."
+[*] [b]Empty Pal Spheres[/b]: the tooltip says "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free." With "Pal Sphere lost on a failed catch" on, a warning line adds "If a wild animal breaks free, this Pal Sphere is lost (server setting)."
 [*] [b]Time stands still[/b]: empty and loaded Pal Spheres both end with a grey line, "Time stands still inside a Pal Sphere: the animal won't grow or get hungry or thirsty, and a pregnancy pauses."
 [/list]
 [h3]3D preview[/h3]
@@ -338,13 +339,13 @@ The options are on the sandbox pages "Minidoracat Pack & Throw", "Minidoracat Pa
 [h3]Minidoracat Pack & Throw[/h3]
 [table]
 [tr][th]Option[/th][th]Default[/th][th]Notes[/th][/tr]
-[tr][td]Return an empty capsule or Pal Sphere[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory; after a Pal Sphere releases its animal, an empty Pal Sphere of the same tier goes back into your inventory[/td][/tr]
+[tr][td]Return an empty capsule or Pal Sphere[/td][td]On[/td][td]After a capsule unpacks, an empty capsule of the same type goes back into the thrower's inventory; after a Pal Sphere releases its animal, an empty Pal Sphere of the same tier goes back into your inventory. Every capsule and Pal Sphere tooltip says whether it comes back, in the warning colour when it doesn't[/td][/tr]
 [tr][td]Who can pack vehicles[/td][td]Key holders[/td][td]The key in the inventory or in the ignition; can be set to "Anyone" or "Admins only"[/td][/tr]
 [tr][td]Zombie attraction radius of the capsule sound[/td][td]0 tiles (0–50)[/td][td]0 means the capsule's pop attracts no zombies[/td][/tr]
 [tr][td]Allow taking cargo out of capsules[/td][td]Off[/td][td]When on, players can take cargo out of a loaded capsule without unpacking the vehicle, but can't put anything in; a capsule packed in the last ~5 seconds or left unconfirmed by a crash stays locked[/td][/tr]
 [tr][td]Allow catching animals[/td][td]On[/td][td]Players can catch live animals in Pal Spheres, from the animal's menu or by throwing; off only stops catching animals, and Pal Spheres already holding one can still release it and be restored by admins[/td][/tr]
 [tr][td]Wild catch base chance[/td][td]50 (0–100)[/td][td]Base chance in percent that catching a wild animal works. The final chance is the base plus the Pal Sphere tier bonus and the three bonuses below, at most 100; on a miss the animal breaks free and the Pal Sphere is not used up. 0: wild animals can't be caught (bonuses can't save it); 100: always works. Tame animals and vehicles are not affected[/td][/tr]
-[tr][td]Pal Sphere lost on a failed catch[/td][td]Off[/td][td]When on, a wild animal that breaks free on the catch roll also takes the empty Pal Sphere: from the menu it leaves the inventory, a thrown one does not land. Any other miss keeps the Pal Sphere[/td][/tr]
+[tr][td]Pal Sphere lost on a failed catch[/td][td]Off[/td][td]When on, a wild animal that breaks free on the catch roll also takes the empty Pal Sphere: from the menu it leaves the inventory, a thrown one does not land. Any other miss keeps the Pal Sphere. When on, empty Pal Sphere tooltips show a warning line[/td][/tr]
 [tr][td]Injured bonus[/td][td]30 (0–100)[/td][td]Points added to the catch chance of an injured wild animal, in proportion to the health it lost; 0 turns it off[/td][/tr]
 [tr][td]Young bonus[/td][td]15 (0–100)[/td][td]Points added to the catch chance of a wild young animal; 0 turns it off[/td][/tr]
 [tr][td]Unaware bonus[/td][td]20 (0–100)[/td][td]Points added when the wild animal is not alerted and you are sneaking or behind it; 0 turns it off[/td][/tr]

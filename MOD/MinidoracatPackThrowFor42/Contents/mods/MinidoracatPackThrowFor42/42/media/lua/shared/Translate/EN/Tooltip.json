@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "The Sci-Fi light column and energy sounds; +30 wild catch chance",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "The Sci-Fi light column and energy sounds; +50 wild catch chance",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "Time stands still inside a Pal Sphere: the animal won't grow or get hungry or thirsty, and a pregnancy pauses."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Time stands still inside a Pal Sphere: the animal won't grow or get hungry or thirsty, and a pregnancy pauses.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "After unpacking, the empty capsule comes back to your inventory.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Unpacking uses up this capsule; no empty capsule comes back (server setting).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "After release, an empty Pal Sphere of the same tier comes back to your inventory.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Releasing uses up this Pal Sphere; no empty one comes back (server setting).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Once the vehicle is unpacked, the empty capsule comes back to your inventory to use again.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Single use: unpacking the vehicle uses up this capsule (server setting).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Once the animal is released, the empty Pal Sphere comes back to your inventory to use again.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Single use: releasing the animal uses up this Pal Sphere (server setting).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "If a wild animal breaks free, this Pal Sphere is lost (server setting)."
 }

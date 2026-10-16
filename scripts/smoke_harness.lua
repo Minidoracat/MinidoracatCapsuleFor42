@@ -2187,7 +2187,9 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
 
     -- strings: every new key in the 16 languages; the loaded name no longer says "vehicle packed"
     local want = {
-        Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty", "EmptySphere", "SphereTime" },
+        Tooltip = { "Animal", "Name", "AgeDays", "Weight", "Milk", "Wild", "Empty", "EmptySphere", "SphereTime",
+            "ReturnOn_Loaded", "ReturnOff_Loaded", "ReturnOn_LoadedSphere", "ReturnOff_LoadedSphere", "ReturnOn_Empty",
+            "ReturnOff_Empty", "ReturnOn_EmptySphere", "ReturnOff_EmptySphere", "FailGone" },
         IG_UI = { "PackAnimalFailed", "PackAnimalInfo", "Why_ANIMALS_OFF", "Why_NO_ANIMAL", "Why_ANIMAL_AWAY", "Why_ROPE",
             "Why_WATER", "HasSphereNo", "HasSphereKind", "TypeOffRowSphere", "Why_WRONG_ITEM", "Why_WRONG_ITEM_VEHICLE",
             "Why_WRONG_ITEM_RELEASE", "Why_NO_ROOM", "Why_IN_VEHICLE", "ChanceFactor", "FactorSep", "Factor_Injured",
@@ -3069,7 +3071,7 @@ effectsCases()
 print("Tooltip：帕魯球（空的四級與裝了動物的）多一列「時間靜止」說明，膠囊沒有；說明在每種語言都在框內換行")
 do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     local saved = { Info = M.Info, typeOn = M.Rules.typeOn, tm = getTextManager, core = getCore, tip = ISToolTipInv,
-        infoLoaded = loaded["MinidoracatPackThrow/Info"], tipLoaded = loaded["ISUI/ISToolTipInv"] }
+        infoLoaded = loaded["MinidoracatPackThrow/Info"], tipLoaded = loaded["ISUI/ISToolTipInv"], sandbox = SandboxVars }
     local strings = {}
     local function width(s) return 7 * select(2, s:gsub("[^\128-\191]", "")) end
     getTextManager = function()
@@ -3118,6 +3120,58 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     check(spheresEmpty and hasNote(Tip.rows(item(sphere.loaded, "animal")))
         and not hasNote(Tip.rows(item(capsule.empty))) and not hasNote(Tip.rows(item(capsule.loaded, "vehicle"))),
         "四級空帕魯球與裝了動物的帕魯球都有「時間靜止」說明列（灰色說明）；空膠囊與裝了車的膠囊沒有")
+    -- whether the empty one comes back: every item, both states, the right key and colour; the lost-on-a-miss line
+    -- only on empty spheres with WildCaptureFailConsumes on; a live change shows on the next hover (cache keys)
+    local function find(rows, key)
+        for _, row in ipairs(rows or {}) do if row[2] == "T:" .. key then return row end end
+        return nil
+    end
+    local function setSandbox(back, gone)
+        SandboxVars = { MinidoracatPackThrow = { ReturnEmptyCapsule = back, WildCaptureFailConsumes = gone } }
+    end
+    local kinds = {
+        { name = "空膠囊", ft = capsule.empty, key = "Empty" },
+        { name = "裝了車的膠囊", ft = capsule.loaded, kind = "vehicle", key = "Loaded" },
+        { name = "空帕魯球", ft = sphere.empty, key = "EmptySphere" },
+        { name = "裝了動物的帕魯球", ft = sphere.loaded, kind = "animal", key = "LoadedSphere" },
+    }
+    local wrong = {}
+    for _, state in ipairs({ { true, false }, { false, true }, { true, true }, { false, false } }) do
+        setSandbox(state[1], state[2])
+        for _, k in ipairs(kinds) do
+            local rows = Tip.rows(item(k.ft, k.kind))
+            local on, off = find(rows, "ReturnOn_" .. k.key), find(rows, "ReturnOff_" .. k.key)
+            local row = state[1] and on or off
+            local fail = find(rows, "FailGone")
+            local wantFail = k.ft == sphere.empty and state[2]
+            if not row or (state[1] and off) or (not state[1] and on) or row[1] ~= "" or row[3] ~= (state[1] and "muted" or "warn")
+                or (fail ~= nil) ~= wantFail or (fail and fail[3] ~= "warn") then
+                wrong[#wrong + 1] = k.name .. (state[1] and "/歸還" or "/不歸還") .. (state[2] and "/會消失" or "")
+            end
+        end
+    end
+    -- order on an empty sphere: usage, return, fail, time note
+    setSandbox(false, true)
+    local es = Tip.rows(item(sphere.empty))
+    local order = {}
+    for i, row in ipairs(es) do order[row[2]] = i end
+    local a, b, c, d = order["T:EmptySphere"], order["T:ReturnOff_EmptySphere"], order["T:FailGone"], order["T:SphereTime"]
+    local okOrder = a ~= nil and b ~= nil and c ~= nil and d ~= nil and a < b and b < c and c < d
+    -- a loaded capsule: return line before the preview hint (the last row)
+    local lc = Tip.rows(item(capsule.loaded, "vehicle"))
+    local okLoaded = lc[#lc][2] == "T:PreviewHint" and lc[#lc - 1][2] == "T:ReturnOff_Loaded"
+    -- a live change: the same item, hovered again after the admin switched it, shows the other line
+    local same = item(capsule.loaded, "vehicle")
+    setSandbox(true, false)
+    local before = find(Tip.rows(same), "ReturnOn_Loaded") ~= nil
+    setSandbox(false, false)
+    local after = find(Tip.rows(same), "ReturnOff_Loaded") ~= nil
+    SandboxVars = nil
+    local default = find(Tip.rows(item(capsule.empty)), "ReturnOn_Empty") ~= nil and find(Tip.rows(item(sphere.empty)), "FailGone") == nil
+    check(#wrong == 0 and okOrder and okLoaded and before and after and default,
+        "會不會歸還：四種物品在歸還開／關各寫對應的一列（開＝灰字、關＝警告色），空帕魯球在「沒抓到會消失」開著時多一列警告；"
+            .. "順序是用法→歸還→會消失→時間靜止、裝了車的膠囊歸還列在預覽提示前；管理員改設定後下一次滑過就換；沒有沙盒值時照預設（歸還、不消失）（"
+            .. table.concat(wrong, ",") .. "）")
     -- every language, every capsule and sphere, empty and loaded: every value wraps inside the box (framework
     -- Text.wrap), labelled rows too (the French type row made the box 805-930 px wide, user 2026-10-17); the sphere
     -- note is drawn whole
@@ -3127,6 +3181,8 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
     else
         local bad, frWidest, renders = {}, 0, 0
         for _, lang in ipairs({ "AR", "CH", "CN", "DE", "EN", "ES", "ES_CL", "ES_MX", "FR", "JP", "KO", "PL", "PT", "PTBR", "RU", "TR" }) do
+          for _, state in ipairs({ { true, false }, { false, true } }) do
+            setSandbox(state[1], state[2])
             local fh = assert(io.open(MEDIA .. "/shared/Translate/" .. lang .. "/Tooltip.json", "rb"))
             local data = Json.decode(fh:read("*a"))
             fh:close()
@@ -3172,14 +3228,16 @@ do (function() -- 獨立函式：主程式的 local 已接近 200 個上限
                     if not ok then bad[#bad + 1] = lang .. ":" .. ft end
                 end
             end
+          end
         end
-        check(#bad == 0 and renders == 16 * 2 * #M.TYPES,
-            "16 種語言、七種膠囊與四級帕魯球的空的與裝了的提示框：每一行（含有標籤的款式列）都在框內，帕魯球說明整段畫出（法文至少兩行）（"
+        check(#bad == 0 and renders == 16 * 2 * 2 * #M.TYPES,
+            "16 種語言、歸還開與關（沒抓到會消失關與開）、七種膠囊與四級帕魯球的空的與裝了的提示框：每一行（含有標籤的款式列、歸還列）都在框內，帕魯球說明整段畫出（法文至少兩行）（"
                 .. table.concat(bad, ",") .. "）")
         check(frWidest > 0 and frWidest <= 400,
             "法文提示框不再被款式列撐寬：最寬 " .. frWidest .. " px（上限 400；舊版只換無標籤的列時約 750）")
     end
     M.Info, M.Rules.typeOn, getTextManager, getCore, ISToolTipInv = saved.Info, saved.typeOn, saved.tm, saved.core, saved.tip
+    SandboxVars = saved.sandbox
     loaded["MinidoracatPackThrow/Info"], loaded["ISUI/ISToolTipInv"] = saved.infoLoaded, saved.tipLoaded
 end)() end
 

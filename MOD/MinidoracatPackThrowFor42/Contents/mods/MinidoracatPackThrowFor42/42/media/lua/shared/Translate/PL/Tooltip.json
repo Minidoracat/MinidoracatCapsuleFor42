@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Słup światła i dźwięki energii jak w kapsule sci-fi; +30 do szansy złapania dzikich",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Słup światła i dźwięki energii jak w kapsule sci-fi; +50 do szansy złapania dzikich",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Pusta Pal Sfera. Złap zwierzę z menu zwierzęcia albo rzuć w nie sferą przez „Rzuć, aby złapać”; dzikie może się wyrwać.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "W Pal Sferze czas stoi w miejscu: zwierzę nie rośnie, nie robi się głodne ani spragnione, a ciąża zostaje wstrzymana."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "W Pal Sferze czas stoi w miejscu: zwierzę nie rośnie, nie robi się głodne ani spragnione, a ciąża zostaje wstrzymana.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "Po rozpakowaniu pusta kapsuła wraca do twojego ekwipunku.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Rozpakowanie zużywa tę kapsułę; pusta kapsuła nie wraca (ustawienie serwera).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "Po wypuszczeniu pusta Pal Sfera tego samego poziomu wraca do twojego ekwipunku.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Wypuszczenie zużywa tę Pal Sferę; pusta nie wraca (ustawienie serwera).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "Po rozpakowaniu pojazdu pusta kapsuła wraca do twojego ekwipunku i można jej użyć ponownie.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Jednorazowa: rozpakowanie pojazdu zużywa tę kapsułę (ustawienie serwera).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "Po wypuszczeniu zwierzęcia pusta Pal Sfera wraca do twojego ekwipunku i można jej użyć ponownie.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Jednorazowa: wypuszczenie zwierzęcia zużywa tę Pal Sferę (ustawienie serwera).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Jeśli dzikie zwierzę się wyrwie, ta Pal Sfera przepada (ustawienie serwera)."
 }

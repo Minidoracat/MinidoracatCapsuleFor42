@@ -117,19 +117,33 @@ local function typeRow(t)
     return { T("Type"), T("Look_" .. t.id) }
 end
 
--- Rows for a capsule item, or nil for any other item. Built once per summary (empty capsules: per type and switch)
--- and kept.
+-- Whether the empty one comes back (sandbox ReturnEmptyCapsule, default on; user 2026-10-17 「在道具補上會不會歸還」):
+-- said in both states, grey when it does, the warning colour when the item is used up. Read on every hover through
+-- the cache keys, so an admin's live change shows on the next one.
+local function returnOn() return M.Rules.sandbox().ReturnEmptyCapsule ~= false end
+local function returnRow(t, loaded, on)
+    local key = (on and "ReturnOn_" or "ReturnOff_") .. (loaded and "Loaded" or "Empty") .. (t.sphere and "Sphere" or "")
+    return { "", T(key), on and "muted" or "warn" }
+end
+
+-- Rows for a capsule item, or nil for any other item. Built once per summary and sandbox state (empty capsules: per
+-- type, switch and sandbox state) and kept. Order: what it is or holds, its state, whether the empty one comes back,
+-- the sphere's lost-on-a-miss warning, the time note, the preview hint.
 function Tooltip.rows(item)
     if not item or not item.getFullType then return nil end -- ISToolTipInv also shows energy and fluid bars
     local t = M.typeOf(item)
     if not t then return nil end
+    local back = returnOn()
     if M.isEmpty(item) then
         local on = M.Rules.typeOn(t)
-        local key = t.id .. (on and "1" or "0")
+        local gone = t.sphere and M.Rules.wildFailConsumes()
+        local key = t.id .. (on and "1" or "0") .. (back and "1" or "0") .. (gone and "1" or "0")
         empties = empties or {}
         if not empties[key] then
             local rows = { typeRow(t), { "", T(t.sphere and "EmptySphere" or "Empty"), "muted" } }
             if not on then rows[#rows + 1] = { "", T("TypeOff"), "warn" } end -- the text starts with a "!" mark
+            rows[#rows + 1] = returnRow(t, false, back)
+            if gone then rows[#rows + 1] = { "", T("FailGone"), "warn" } end
             if t.sphere then rows[#rows + 1] = sphereNote() end
             empties[key] = rows
         end
@@ -140,7 +154,7 @@ function Tooltip.rows(item)
         loading = loading or { { "", T("Loading"), "muted" } }
         return loading
     end
-    if r.tipRows then return r.tipRows end
+    if r.tipRows and r.tipBack == back then return r.tipRows end
     local rows
     if not r.ok then
         rows = { { "", T(r.why == "FAR" and "Far" or "NoRecord"), "warn" } }
@@ -153,11 +167,12 @@ function Tooltip.rows(item)
             rows = Info.rows(r, false)
             table.insert(rows, 1, typeRow(t))
             if status then rows[#rows + 1] = { "", status, "warn" } end
-            if not animal then rows[#rows + 1] = { "", T("PreviewHint"), "muted" } end -- no 3D preview of animals
+            rows[#rows + 1] = returnRow(t, true, back)
             if t.sphere then rows[#rows + 1] = sphereNote() end
+            if not animal then rows[#rows + 1] = { "", T("PreviewHint"), "muted" } end -- no 3D preview of animals
         end
     end
-    r.tipRows = rows
+    r.tipRows, r.tipBack = rows, back
     return rows
 end
 

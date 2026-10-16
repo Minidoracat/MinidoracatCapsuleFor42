@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Столб света и звуки энергии, как у футуристической капсулы; +30 к шансу поймать дикое животное",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Столб света и звуки энергии, как у футуристической капсулы; +50 к шансу поймать дикое животное",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "Пустая Пал-сфера. Поймайте животное через его меню или бросьте в него сферу через «Бросить, чтобы поймать»; дикое животное может вырваться.",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "В Пал-сфере время останавливается: животное не растёт, не голодает и не испытывает жажды, а беременность приостанавливается."
+    "Tooltip_MinidoracatPackThrow_SphereTime": "В Пал-сфере время останавливается: животное не растёт, не голодает и не испытывает жажды, а беременность приостанавливается.",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "После распаковки пустая капсула вернётся в ваш инвентарь.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "Распаковка расходует эту капсулу; пустая капсула не вернётся (настройка сервера).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "После выпуска пустая Пал-сфера того же уровня вернётся в ваш инвентарь.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "Выпуск расходует эту Пал-сферу; пустая не вернётся (настройка сервера).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "После распаковки транспорта пустая капсула вернётся в ваш инвентарь, её можно использовать снова.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "Одноразовая: распаковка транспорта расходует эту капсулу (настройка сервера).",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "После выпуска животного пустая Пал-сфера вернётся в ваш инвентарь, её можно использовать снова.",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "Одноразовая: выпуск животного расходует эту Пал-сферу (настройка сервера).",
+    "Tooltip_MinidoracatPackThrow_FailGone": "Если дикое животное вырвется, эта Пал-сфера пропадёт (настройка сервера)."
 }

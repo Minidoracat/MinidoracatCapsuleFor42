@@ -49,5 +49,14 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "科幻款的光柱與能量聲，抓野生動物成功率 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "科幻款的光柱與能量聲，抓野生動物成功率 +50",
     "Tooltip_MinidoracatPackThrow_EmptySphere": "空帕魯球。從動物選單收進帕魯球，或右鍵「丟出抓取」丟向動物；野生動物不一定抓得到。",
-    "Tooltip_MinidoracatPackThrow_SphereTime": "帕魯球裡時間靜止：動物不會長大、不會餓或渴，懷孕也會暫停。"
+    "Tooltip_MinidoracatPackThrow_SphereTime": "帕魯球裡時間靜止：動物不會長大、不會餓或渴，懷孕也會暫停。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Loaded": "展開後，空膠囊會回到你的背包。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Loaded": "展開後這顆膠囊會用掉，不會拿回空膠囊（伺服器設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_LoadedSphere": "放出後，同等級的空帕魯球會回到你的背包。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_LoadedSphere": "放出後這顆帕魯球會用掉，不會拿回空帕魯球（伺服器設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_Empty": "車展開後，空膠囊會回到你的背包，可以再用。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_Empty": "只能用一次：車展開後這顆膠囊會用掉（伺服器設定）。",
+    "Tooltip_MinidoracatPackThrow_ReturnOn_EmptySphere": "動物放出後，空帕魯球會回到你的背包，可以再用。",
+    "Tooltip_MinidoracatPackThrow_ReturnOff_EmptySphere": "只能用一次：動物放出後這顆帕魯球會用掉（伺服器設定）。",
+    "Tooltip_MinidoracatPackThrow_FailGone": "抓野生動物沒抓到時，這顆帕魯球會消失（伺服器設定）。"
 }
