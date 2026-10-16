@@ -1,5 +1,5 @@
 [h1]Minidoracat Pack & Throw for B42 42.21.0-0.1.0[/h1]
-[i]未發布[/i]
+[i]2026-10-16[/i]
 
 [h3]✨ 首次發布[/h3]
 [list]
