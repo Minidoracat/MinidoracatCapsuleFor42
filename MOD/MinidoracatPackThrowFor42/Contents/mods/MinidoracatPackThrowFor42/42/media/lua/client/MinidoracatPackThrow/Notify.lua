@@ -156,8 +156,8 @@ function Handlers.packed(args)
 end
 
 -- A thrown empty capsule (mode "capture"): a toast either way; a miss says why and where the capsule went. The reason
--- goes in the message, which wraps: the toast title is one line the framework never wraps, and the French reason ran
--- past the toast's edge (vcap-capture-fr-1013r).
+-- goes in the message, which wraps freely: the toast title wraps to two lines at most (UI rev 19, the second ends in
+-- "...") and not at all before rev 19, and the French reason ran past the toast's edge (vcap-capture-fr-1013r).
 local function captured(args)
     if args.ok then
         local name = args.kind == "animal" and M.Info.animalName(args.animal) or Notify.vehicleName(args.script)
