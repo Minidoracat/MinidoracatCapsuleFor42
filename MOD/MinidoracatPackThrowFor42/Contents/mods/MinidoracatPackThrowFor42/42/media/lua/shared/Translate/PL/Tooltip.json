@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "Słup światła i dźwięki energii jak w kapsule sci-fi; +15 do szansy złapania dzikich",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Słup światła i dźwięki energii jak w kapsule sci-fi; +30 do szansy złapania dzikich",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Słup światła i dźwięki energii jak w kapsule sci-fi; +50 do szansy złapania dzikich",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Pusta Pal Sfera. Złap zwierzę z menu zwierzęcia albo rzuć w nie sferą przez „Rzuć, aby złapać”; dzikie może się wyrwać."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Pusta Pal Sfera. Złap zwierzę z menu zwierzęcia albo rzuć w nie sferą przez „Rzuć, aby złapać”; dzikie może się wyrwać.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "W Pal Sferze czas stoi w miejscu: zwierzę nie rośnie, nie robi się głodne ani spragnione, a ciąża zostaje wstrzymana."
 }

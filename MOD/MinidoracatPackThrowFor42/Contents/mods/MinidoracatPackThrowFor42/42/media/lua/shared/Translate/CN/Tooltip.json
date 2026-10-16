@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "科幻款的光柱与能量声，抓野生动物成功率 +15",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "科幻款的光柱与能量声，抓野生动物成功率 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "科幻款的光柱与能量声，抓野生动物成功率 +50",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "空帕鲁球。从动物菜单收进帕鲁球，或右键「丢出抓取」丢向动物；野生动物不一定抓得到。"
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "空帕鲁球。从动物菜单收进帕鲁球，或右键「丢出抓取」丢向动物；野生动物不一定抓得到。",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "帕鲁球里时间静止：动物不会长大、不会饿或渴，怀孕也会暂停。"
 }

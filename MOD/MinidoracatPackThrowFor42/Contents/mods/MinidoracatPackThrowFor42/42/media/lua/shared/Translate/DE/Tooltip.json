@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +15 Fangchance bei wilden Tieren",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +30 Fangchance bei wilden Tieren",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Lichtsäule und Energiegeräusche der Sci-Fi-Kapsel; +50 Fangchance bei wilden Tieren",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Leere Pal-Sphäre. Fang ein Tier über sein Tiermenü oder wirf sie mit „Werfen und fangen“ darauf; ein wildes kann sich losreißen."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Leere Pal-Sphäre. Fang ein Tier über sein Tiermenü oder wirf sie mit „Werfen und fangen“ darauf; ein wildes kann sich losreißen.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "In einer Pal-Sphäre steht die Zeit still: Das Tier wächst nicht, bekommt weder Hunger noch Durst, und eine Trächtigkeit pausiert."
 }

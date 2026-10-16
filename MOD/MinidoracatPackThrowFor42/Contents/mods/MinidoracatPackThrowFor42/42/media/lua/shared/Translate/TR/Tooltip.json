@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "Bilim Kurgu Kapsülü gibi ışık sütunu ve enerji sesleri; yabani yakalama şansı +15",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Bilim Kurgu Kapsülü gibi ışık sütunu ve enerji sesleri; yabani yakalama şansı +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Bilim Kurgu Kapsülü gibi ışık sütunu ve enerji sesleri; yabani yakalama şansı +50",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Boş Pal Küresi. Bir hayvanı hayvan menüsünden yakala ya da Yakalamak için fırlat ile hayvana fırlat; yabani bir hayvan kurtulabilir."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Boş Pal Küresi. Bir hayvanı hayvan menüsünden yakala ya da Yakalamak için fırlat ile hayvana fırlat; yabani bir hayvan kurtulabilir.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Pal Küresinin içinde zaman durur: hayvan büyümez, acıkmaz ya da susamaz ve gebelik duraklar."
 }

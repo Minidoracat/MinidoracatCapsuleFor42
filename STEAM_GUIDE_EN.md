@@ -288,6 +288,7 @@ With the sandbox option "Allow taking cargo out of capsules" on:
 [*] [b]It lists[/b]: the tier, the animal's kind and breed, name, sex, age, weight, health, milk (when it can be milked), wool (when it has some), whether it is wild, and who caught it.
 [*] [b]Pregnancy and fertilization[/b]: as in vanilla, only shown to players with Husbandry level 3 or higher.
 [*] [b]Empty Pal Spheres[/b]: the tooltip says "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free."
+[*] [b]Time stands still[/b]: empty and loaded Pal Spheres both end with a grey line, "Time stands still inside a Pal Sphere: the animal won't grow or get hungry or thirsty, and a pregnancy pauses."
 [/list]
 [h3]3D preview[/h3]
 [list]
@@ -525,10 +526,10 @@ Select the record, check on site, tick "I checked on site", then press:
 [*] Packing, unpacking and restoring are all validated by the server.
 [*] The vehicle data lives only on the server, and the capsule itself only carries its name.
 [/list]
-[h3]Do caught animals grow or get hungry?[/h3]
+[h3]Do animals grow or get hungry inside a Pal Sphere?[/h3]
 [list]
-[*] No. Time stands still in a Pal Sphere; the animal comes out just as it went in.
-[*] The milking and petting intervals and breeding cooldowns start over.
+[*] No. Time stands still inside a Pal Sphere: the animal doesn't grow or get hungry or thirsty, and a pregnancy pauses; it comes out just as it went in.
+[*] Only a few vanilla timers start over: the milking and petting intervals, the eggs laid today, and breeding cooldowns.
 [/list]
 [h3]Does a caught wild animal become mine?[/h3]
 [list]

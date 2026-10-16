@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +15",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "SFの光の柱とエネルギーの音、野生動物の捕獲成功率 +50",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "空のパルスフィアです。動物メニューから捕獲するか、「投げて捕獲」で動物に投げてください。野生動物には逃げられることがあります。"
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "空のパルスフィアです。動物メニューから捕獲するか、「投げて捕獲」で動物に投げてください。野生動物には逃げられることがあります。",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "パルスフィアの中では時間が止まります。動物は成長せず、お腹もすかず喉も渇かず、妊娠も一時停止します。"
 }

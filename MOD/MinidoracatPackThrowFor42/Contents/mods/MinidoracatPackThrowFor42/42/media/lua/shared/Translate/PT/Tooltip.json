@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "A coluna de luz futurista e sons de energia; +15 na chance de capturar animais selvagens",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "A coluna de luz futurista e sons de energia; +30 na chance de capturar animais selvagens",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "A coluna de luz futurista e sons de energia; +50 na chance de capturar animais selvagens",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Esfera de Pal vazia. Capture um animal pelo menu do animal, ou arremesse-a nele com «Arremessar para capturar»; um selvagem pode escapar."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Esfera de Pal vazia. Capture um animal pelo menu do animal, ou arremesse-a nele com «Arremessar para capturar»; um selvagem pode escapar.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "O tempo para dentro de uma Esfera de Pal: o animal não cresce nem sente fome ou sede, e uma gestação fica em pausa."
 }

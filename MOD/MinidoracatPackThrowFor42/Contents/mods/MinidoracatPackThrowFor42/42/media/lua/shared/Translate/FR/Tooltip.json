@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +15 de chance de capture (sauvage)",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +30 de chance de capture (sauvage)",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "Colonne de lumière et sons d'énergie de la capsule futuriste ; +50 de chance de capture (sauvage)",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Sphère de Pal vide. Capturez un animal depuis son menu animal, ou lancez-la dessus avec « Lancer pour capturer » ; un animal sauvage peut s'échapper."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Sphère de Pal vide. Capturez un animal depuis son menu animal, ou lancez-la dessus avec « Lancer pour capturer » ; un animal sauvage peut s'échapper.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Le temps s'arrête dans une Sphère de Pal : l'animal ne grandit pas, n'a ni faim ni soif, et une gestation est mise en pause."
 }

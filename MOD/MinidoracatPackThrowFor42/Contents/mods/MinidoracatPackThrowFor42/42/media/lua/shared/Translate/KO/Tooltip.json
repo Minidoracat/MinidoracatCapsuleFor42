@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "SF 빛기둥과 에너지 소리, 야생 동물 포획 확률 +15",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "SF 빛기둥과 에너지 소리, 야생 동물 포획 확률 +30",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "SF 빛기둥과 에너지 소리, 야생 동물 포획 확률 +50",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "빈 팰 스피어입니다. 동물 메뉴에서 포획하거나 '던져서 포획'으로 동물에게 던질 수 있습니다. 야생 동물은 빠져나갈 수 있습니다."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "빈 팰 스피어입니다. 동물 메뉴에서 포획하거나 '던져서 포획'으로 동물에게 던질 수 있습니다. 야생 동물은 빠져나갈 수 있습니다.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "팰 스피어 안에서는 시간이 멈춥니다. 동물은 자라지 않고 배고프거나 목마르지 않으며, 임신도 일시 정지됩니다."
 }

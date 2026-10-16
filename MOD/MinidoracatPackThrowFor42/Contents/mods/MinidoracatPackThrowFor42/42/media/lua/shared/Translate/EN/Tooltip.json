@@ -48,5 +48,6 @@
     "Tooltip_MinidoracatPackThrow_Look_SphereMega": "The Sci-Fi light column and energy sounds; +15 wild catch chance",
     "Tooltip_MinidoracatPackThrow_Look_SphereGiga": "The Sci-Fi light column and energy sounds; +30 wild catch chance",
     "Tooltip_MinidoracatPackThrow_Look_SphereLegend": "The Sci-Fi light column and energy sounds; +50 wild catch chance",
-    "Tooltip_MinidoracatPackThrow_EmptySphere": "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free."
+    "Tooltip_MinidoracatPackThrow_EmptySphere": "Empty Pal Sphere. Catch an animal from its animal menu, or throw it at one with Throw to Capture; a wild one may break free.",
+    "Tooltip_MinidoracatPackThrow_SphereTime": "Time stands still inside a Pal Sphere: the animal won't grow or get hungry or thirsty, and a pregnancy pauses."
 }

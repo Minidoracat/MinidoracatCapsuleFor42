@@ -13,7 +13,19 @@ local Tooltip = {}
 M.Tooltip = Tooltip
 
 local PAD, GAP = 5, 10
+local MIN_W = 380 -- with wrapping, the box is at least this wide and continuation rows wrap to it
 local loading, empties -- built on first use (translations are ready by then); empties: "<type id><0|1>" -> rows
+
+-- The framework's line breaker (MinidoracatUI Text.wrap, rev 16: CJK, French punctuation, cached per font, width and
+-- text, so calling it every frame allocates nothing), or nil on a framework without it: then rows stay one line and
+-- the box widens to the longest, as before.
+local function wrapper()
+    local UI = MinidoracatUI and MinidoracatUI.v1
+    if UI and UI.CAPABILITIES and UI.CAPABILITIES.textWrap and UI.Text and type(UI.Text.wrap) == "function" then
+        return UI.Text.wrap
+    end
+    return nil
+end
 
 local function ownSlots(self)
     local rect, border
@@ -47,18 +59,24 @@ local function renderMeasured(self, original)
     return bottom
 end
 
--- rows = { { label, value, token? } }; a row with an empty label continues the one above (cargo list).
--- Below the vanilla box; above it when the screen ends, not at all when neither fits.
+-- rows = { { label, value, token? } }; a row with an empty label continues the one above (cargo list, notes) and
+-- wraps to the box width. Below the vanilla box; above it when the screen ends, not at all when neither fits.
 local function appendBox(self, rows, bottom)
     local tm = getTextManager()
     local font = self.tooltip:getFont()
     local lineH = tm:getFontHeight(font)
+    local wrap = wrapper()
     local labelW = 0
     for _, row in ipairs(rows) do labelW = math.max(labelW, tm:MeasureStringX(font, row[1])) end
     local valueX = PAD + labelW + (labelW > 0 and GAP or 0)
-    local w = self.width
-    for _, row in ipairs(rows) do w = math.max(w, valueX + tm:MeasureStringX(font, row[2]) + PAD) end
-    local h = PAD * 2 + lineH * #rows
+    local w = math.max(self.width, wrap and MIN_W or 0)
+    for _, row in ipairs(rows) do
+        if row[1] ~= "" or not wrap then w = math.max(w, valueX + tm:MeasureStringX(font, row[2]) + PAD) end
+    end
+    local textW = w - valueX - PAD
+    local n = 0
+    for _, row in ipairs(rows) do n = n + ((wrap and row[1] == "") and #wrap(row[2], textW, font) or 1) end
+    local h = PAD * 2 + lineH * n
     local y = bottom - 1
     if self.y + y + h > getCore():getScreenHeight() then
         if self.y - h < 0 then return end
@@ -67,18 +85,26 @@ local function appendBox(self, rows, bottom)
     local bg, bd = self.backgroundColor, self.borderColor
     self:drawRect(0, y, w, h, math.min(1, bg.a + 0.4), bg.r, bg.g, bg.b)
     self:drawRectBorder(0, y, w, h, bd.a, bd.r, bd.g, bd.b)
-    for i, row in ipairs(rows) do
-        local ty = y + PAD + (i - 1) * lineH
-        if row[1] ~= "" then self:drawText(row[1], PAD, ty, 0.65, 0.65, 0.65, 1, font) end
-        if row[3] == "warn" then
-            self:drawText(row[2], valueX, ty, 1, 0.65, 0.3, 1, font)
-        elseif row[3] == "muted" then
-            self:drawText(row[2], valueX, ty, 0.65, 0.65, 0.65, 1, font)
+    local ty = y + PAD
+    for _, row in ipairs(rows) do
+        local r, g, b = 0.95, 0.95, 0.95
+        if row[3] == "warn" then r, g, b = 1, 0.65, 0.3 elseif row[3] == "muted" then r, g, b = 0.65, 0.65, 0.65 end
+        if wrap and row[1] == "" then
+            for _, line in ipairs(wrap(row[2], textW, font)) do
+                self:drawText(line, valueX, ty, r, g, b, 1, font)
+                ty = ty + lineH
+            end
         else
-            self:drawText(row[2], valueX, ty, 0.95, 0.95, 0.95, 1, font)
+            if row[1] ~= "" then self:drawText(row[1], PAD, ty, 0.65, 0.65, 0.65, 1, font) end
+            self:drawText(row[2], valueX, ty, r, g, b, 1, font)
+            ty = ty + lineH
         end
     end
 end
+
+-- The note every Pal Sphere carries (user 2026-10-16): time stands still inside (Animal.restore writes the snapshot
+-- back without simulating the time away).
+local function sphereNote() return { "", T("SphereTime"), "muted" } end
 
 -- The "Type" row: the type's look and sounds in words, so the type never shows by colour alone.
 local function typeRow(t)
@@ -98,6 +124,7 @@ function Tooltip.rows(item)
         if not empties[key] then
             local rows = { typeRow(t), { "", T(t.sphere and "EmptySphere" or "Empty"), "muted" } }
             if not on then rows[#rows + 1] = { "", T("TypeOff"), "warn" } end -- the text starts with a "!" mark
+            if t.sphere then rows[#rows + 1] = sphereNote() end
             empties[key] = rows
         end
         return empties[key]
@@ -121,6 +148,7 @@ function Tooltip.rows(item)
             table.insert(rows, 1, typeRow(t))
             if status then rows[#rows + 1] = { "", status, "warn" } end
             if not animal then rows[#rows + 1] = { "", T("PreviewHint"), "muted" } end -- no 3D preview of animals
+            if t.sphere then rows[#rows + 1] = sphereNote() end
         end
     end
     r.tipRows = rows
