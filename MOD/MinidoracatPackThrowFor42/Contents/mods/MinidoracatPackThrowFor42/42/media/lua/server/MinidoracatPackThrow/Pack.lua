@@ -73,7 +73,8 @@ function Pack.pack(player, vehicle, opts)
     end
     sq:AddWorldInventoryItem(capsule, 0.5, 0.5, 0) -- transmits the whole item (contents included) to clients
     vehicle:permanentlyRemove()
-    M.Fx.broadcast("pack", { x = x, y = y, z = z, style = t.index })
+    -- capsuleId: the empty capsule used, which a capture threw; its flight ends with this smoke (client Effects.endFlight)
+    M.Fx.broadcast("pack", { x = x, y = y, z = z, style = t.index, capsuleId = opts.empty and opts.empty:getID() })
     writeLine(M.LOG_PREFIX .. "PACKED capsule=" .. capsuleId .. " state=PACKED by=" .. snap.packedBy
         .. " x=" .. x .. " y=" .. y .. " z=" .. z .. " car=" .. tostring(car) .. " script=" .. tostring(snap.script)
         .. " type=" .. t.id
@@ -136,7 +137,7 @@ function Pack.packAnimal(player, animal, opts)
     local empty = useUp(player, opts.capsule)
     sq:AddWorldInventoryItem(capsule, 0.5, 0.5, 0)
     animal:remove()
-    M.Fx.broadcast("pack", { x = x, y = y, z = z, style = t.index })
+    M.Fx.broadcast("pack", { x = x, y = y, z = z, style = t.index, capsuleId = opts.capsule and opts.capsule:getID() })
     writeLine(M.LOG_PREFIX .. "PACKED capsule=" .. capsuleId .. " state=PACKED by=" .. by .. " x=" .. x .. " y=" .. y
         .. " z=" .. z .. " kind=animal animal=" .. tostring(a.animalId) .. " animalType=" .. tostring(a.type)
         .. " breed=" .. tostring(a.breed) .. " name=" .. tostring(a.name) .. " wild=" .. tostring(a.wild)

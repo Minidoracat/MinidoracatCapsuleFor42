@@ -215,8 +215,9 @@ function Play.throw(action)
     if not intent then return refuse(player, kind, "NO_INTENT", id) end
     local why = throwWhyNot(action, intent)
     if why then
-        -- the release may already have shown a capture flying (the target changed in between): end it, it stayed here
-        if kind == "capture" and action.flightAt then Fx.broadcast("miss", { x = x, y = y, z = z, capsuleId = id }) end
+        -- the release may already have shown it flying (the target or the spot changed in between): end that flight,
+        -- the capsule stayed in the inventory
+        if action.flightAt then Fx.broadcast("miss", { x = x, y = y, z = z, capsuleId = id }) end
         Play.send(player, "landed", { ok = false, why = why, capsuleId = id, mode = kind })
         return refuse(player, kind, why, id)
     end

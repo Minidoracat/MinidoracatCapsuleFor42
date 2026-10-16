@@ -2022,7 +2022,10 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
     local failed = Pack.packAnimal(packer, lost, { capsule = empty, typeId = "SphereBasic" })
     dropWrites = false
     local afterFail = { ground = #ground, empties = packer.inv:getCountTypeRecurse(Ball.empty) }
+    local savedFxB, packFx = M.Fx.broadcast, nil
+    M.Fx.broadcast = function(kind, args) if kind == "pack" then packFx = args end end
     local res = Pack.packAnimal(packer, cow, { capsule = empty, typeId = "SphereBasic" })
+    M.Fx.broadcast = savedFxB
     quiet = false
     check(dead.ok == false and dead.why == "NO_ANIMAL" and failed.ok == false and failed.why == "WRITE_FAILED"
         and #lost.log == 1 and afterFail.ground == 0 and afterFail.empties == 1,
@@ -2037,6 +2040,8 @@ local function animals() -- 獨立函式：主程式的 local 已接近 200 個�
         and cow.removedWith.kind == "animal", "快照前 setWild(false)（照原版抱起）；紀錄與地上的膠囊都在之後才 remove 動物")
     check(#ground == 1 and ground[1]:getFullType() == Ball.loaded and packer.inv:getCountTypeRecurse(Ball.empty) == 0,
         "裝好的帕魯球放在動物那一格，玩家的空帕魯球用掉")
+    check(packFx and packFx.capsuleId == empty.id and packFx.x == 101,
+        "收的煙霧帶用掉那顆的編號（丟出抓取時就是飛出去那顆，客戶端用它收掉飛行，不靠同一格）")
     wildCases(live, packer)
 
     -- unpack by the existing claim / spawn / event path
@@ -2463,6 +2468,8 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     local l1 = animalRecord(stranger.inv:AddItem(instanceItem(Steam.loaded)))
     local l2 = animalRecord(stranger.inv:AddItem(instanceItem(Steam.loaded)))
     feet = drops(sq(19, 37))
+    landingNow = function() return #feet end
+    local missesBefore = #misses
     quiet = true
     Throw.land({ player = stranger, capsuleId = l1.id, x = 22, y = 31, z = 0, mode = "throw", dir = "E" })
     local throwSent = lastSent()
@@ -2471,6 +2478,9 @@ local function captureCases() -- 獨立函式：主程式的 local 已接近 200
     quiet = false
     check(throwSent.why == "SAFEHOUSE" and throwSent.feet == true and throwSent.dropped == true and feet[1] == l1
         and Store.read(l1.id).state == "PACKED", "丟裝好的膠囊進別人的安全屋：落地被拒，膠囊掉在丟的人腳下，紀錄不動")
+    local m = misses[missesBefore + 1] or {}
+    check(#misses == missesBefore + 1 and m.id == l1.id and m.dropsBefore == 1,
+        "落地被拒的丟出廣播 miss（帶那顆的編號、在掉到腳下之後）：飛行圖示馬上收；按按鈕被拒沒有飛行、不廣播")
     check(pressSent.why == "SAFEHOUSE" and pressSent.dropped == nil and stranger.inv:getItemWithIDRecursiv(l2.id) == l2
         and Throw.safehouse(owner, Store.read(l2.id), 22, 31, 0, "E") == nil and Throw.safehouse(stranger, Store.read(l2.id), 12, 31, 0, "E") == nil,
         "按按鈕放進別人的安全屋被拒、膠囊不動；屋主或安全屋外可以")
@@ -2705,8 +2715,9 @@ local function sphereCases() -- 獨立函式：主程式的 local 已接近 200 
     quiet = false
     check(landed.ok and landed.mode == "release" and landed.kind == "animal" and landed.type == "SphereMega" and landed.returned
         and r.inv:getItemWithIDRecursiv(ball.id) == nil and r.inv:getCountTypeRecurse(Mega.empty) == 1
-        and Store.read(ball.id).state == "UNPACKED" and fx[1] and fx[1][1] == "unpack" and fx[1][2].style == Mega.index,
-        "放出落地：紀錄 UNPACKED、帕魯球拿走、還一顆空的高級帕魯球（同等級），特效用它的款式（科幻）")
+        and Store.read(ball.id).state == "UNPACKED" and fx[1] and fx[1][1] == "unpack" and fx[1][2].style == Mega.index
+        and fx[1][2].capsuleId == ball.id,
+        "放出落地：紀錄 UNPACKED、帕魯球拿走、還一顆空的高級帕魯球（同等級），特效用它的款式（科幻）、帶那顆的編號")
     check(noBack.ok and not noBack.returned and r.inv:getCountTypeRecurse(Legend.empty) == 0,
         "ReturnEmptyCapsule 關掉時不還空帕魯球")
     check(Mega.smoke == M.TYPE_BY_ID.SciFi.smoke and Mega.pop == M.TYPE_BY_ID.SciFi.pop and Mega.pack == M.TYPE_BY_ID.SciFi.pack,
@@ -2922,7 +2933,7 @@ local function infoCases() -- 獨立函式：主程式的 local 已接近 200 �
 end
 infoCases()
 
-print("Effects：抓取沒中時飛行圖示馬上收掉（不再停 1.5 秒），抓到與丟出照舊")
+print("Effects：每個落地結果用膠囊編號收掉那次飛行（收車煙霧在別格、丟出展開、落地被拒、沒中），預覽照同格、沒結果的照舊最多停 1.5 秒")
 local function effectsCases() -- 獨立函式：主程式的 local 已接近 200 個上限
     local saved = { Events = Events, getCell = getCell }
     local draw
@@ -2945,28 +2956,62 @@ local function effectsCases() -- 獨立函式：主程式的 local 已接近 200
     E.play({ id = "m1", kind = "miss", x = 5, y = 1, z = 0, capsuleId = 7 })
     at(1)
     local missGone = E.active.f1 == nil and E.active.m1 == nil
-    -- no miss (a catch, a vehicle throw): rests the full 1.5 s as before
+    -- no outcome at all (a lost message): capped at FLIGHT_MS + REST_MS
     fly("f2", 8)
     at(500 + 1500 - 10)
     local restsOn = E.active.f2 ~= nil
     at(20)
     local restEnds = E.active.f2 == nil
-    -- a miss while still in the air: it finishes flying, then goes (no jump back mid-air)
+    -- an outcome while still in the air: it finishes flying, then goes (no jump back mid-air)
     fly("f3", 9)
     at(200)
-    local age = E.miss(9)
+    local age = E.endFlight(9, "miss")
     at(200)
     local stillFlying = E.active.f3 ~= nil
     at(110)
     local landedGone = E.active.f3 == nil
-    -- another capsule's miss does not touch this flight
+    -- another capsule's outcome does not touch this flight
     fly("f4", 10)
     at(700)
-    local unknown = E.miss(11)
+    local unknown = E.endFlight(11, "miss")
     at(1)
     check(before and missGone and restsOn and restEnds and age == 200 and stillFlying and landedGone and unknown == nil
         and E.active.f4 ~= nil,
-        "沒中：落地後回覆一到就收掉；回覆比落地早就飛完再收；別的膠囊的 miss 不影響；抓到或丟出（沒有 miss）照舊停 1.5 秒")
+        "沒中：落地後回覆一到就收掉；回覆比落地早就飛完再收；別的膠囊的結果不影響；完全沒有結果的照舊最多停 1.5 秒")
+    E.active = {}
+    -- a vehicle capture: the pack smoke plays on the vehicle's centre (7,3), not the aim square (5,1); same id ends it
+    fly("v1", 20)
+    at(600)
+    E.play({ id = "p1", kind = "pack", x = 7, y = 3, z = 0, capsuleId = 20 })
+    at(1)
+    local vehicleGone = E.active.v1 == nil and E.active.p1 ~= nil
+    -- a throw that unpacks: the unpack smoke with the thrown id ends it (on any square)
+    fly("t1", 21)
+    at(600)
+    E.play({ id = "u1", kind = "unpack", x = 6, y = 2, z = 0, capsuleId = 21 })
+    at(1)
+    local unpackGone = E.active.t1 == nil
+    -- a throw refused at the landing (BLOCKED, SAFEHOUSE, record refusal): "miss" with the id ends it at the reply
+    fly("t2", 22)
+    at(650)
+    E.play({ id = "r1", kind = "miss", x = 5, y = 1, z = 0, capsuleId = 22 })
+    at(1)
+    local refusedGone = E.active.t2 == nil
+    -- smoke with an id never pops a flight of another id lying on its square
+    fly("t3", 23)
+    at(600)
+    E.play({ id = "u2", kind = "unpack", x = 5, y = 1, z = 0, capsuleId = 99 })
+    at(1)
+    local otherKept = E.active.t3 ~= nil
+    E.active = {}
+    -- the admin preview: no ids; its unpack on the same square pops its flight
+    E.play({ id = "pf", kind = "flight", x0 = 1, y0 = 1, z0 = 0, x = 5, y = 1, z = 0 })
+    at(500)
+    E.play({ id = "pu", kind = "unpack", x = 5, y = 1, z = 0 })
+    at(1)
+    local previewGone = E.active.pf == nil and E.active.pu ~= nil
+    check(vehicleGone and unpackGone and refusedGone and otherKept and previewGone,
+        "收車煙霧在車心（不在落點）也用編號收掉飛行；丟出展開、落地被拒同樣馬上收；別的編號的煙霧不動這次飛行；預覽沒有編號，照同格收")
     E.active = {}
     Events, getCell = saved.Events, saved.getCell
 end

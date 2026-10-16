@@ -154,7 +154,13 @@ function Throw.land(p)
         if res.why == "BLOCKED" and p.mode == "throw" and sq then res.dropped = dropAt(player, capsule, sq) end
     end
     res.capsuleId, res.mode, res.type = p.capsuleId, p.mode, t and t.id
-    if res.ok then Fx.broadcast("unpack", { x = p.x, y = p.y, z = p.z, style = t and t.index }) end
+    -- every outcome of a thrown capsule ends its flight by capsuleId (client Effects.endFlight): the unpack smoke, or
+    -- "miss" for a throw refused at the landing (after dropAt: the dropped capsule goes out first)
+    if res.ok then
+        Fx.broadcast("unpack", { x = p.x, y = p.y, z = p.z, style = t and t.index, capsuleId = p.capsuleId })
+    elseif p.mode == "throw" then
+        Fx.broadcast("miss", { x = p.x, y = p.y, z = p.z, capsuleId = p.capsuleId })
+    end
     M.log(string.format("LANDED capsule=%d by=%s mode=%s x=%d y=%d z=%d dir=%s ok=%s why=%s reason=%s dropped=%s",
         p.capsuleId, player:getUsername(), p.mode, p.x, p.y, p.z, tostring(p.dir), tostring(res.ok),
         tostring(res.why), tostring(res.reason), tostring(res.dropped)))

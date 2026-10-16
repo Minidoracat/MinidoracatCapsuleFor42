@@ -1,10 +1,12 @@
 -- Pack & Throw (client): draw the effects the server announces (server/MinidoracatPackThrow/Fx.lua).
 --   pack / unpack: smoke frames, a ~0.2 s flash and a local sound.
 --   flight: the capsule flies from the thrower to the landing point in 0.5 s whatever the distance, with a whoosh at
---   the thrower (one clip fits every throw), then lies there until the pop (REST_MS at most).
---   miss: a thrown empty capsule or sphere caught nothing (Throw.capture failed): its flight (same capsuleId) ends at
---   once, or when it reaches the ground if still in the air; no sound, no flash. The server has by then dropped the
---   capsule on the ground or used it up (user 2026-10-14: the miss must not linger 1.5 s).
+--   the thrower (one clip fits every throw); then it lies there only until its landing has an outcome.
+--   Every outcome of a thrown capsule names it by capsuleId (Effects.endFlight): the pack smoke of a capture, the
+--   unpack smoke of a throw, or "miss" (a capture that caught nothing, a throw refused at the landing: no sound, no
+--   flash). The flight ends then, or when it reaches the ground if still in the air. By square it was not enough: a
+--   vehicle's smoke plays on the vehicle's centre square, not where the capsule landed, and two capsules showed for
+--   1.5 s (user 2026-10-14/15). REST_MS is only the cap for an outcome that never arrives.
 -- The look and the sounds are the capsule's own type (Core M.TYPES): the server knows which capsule it is and sends
 -- its index as args.style (Pack.lua, PlayerCommands.lua fly, Throw.lua), so every client draws the same thing. The
 -- admin panel can also play one type here only (Effects.preview).
@@ -41,11 +43,11 @@ local function removeAll(ids)
 end
 
 -- args from the server: id, kind, x, y, z (flight: x0, y0, z0 too, capsuleId, and empty = an empty capsule thrown to
--- capture; miss: capsuleId), style (index into M.TYPES; unknown = cartoon). The preview adds onDone (called when the
--- effect ends).
+-- capture; pack / unpack: capsuleId of the thrown capsule when a throw caused it; miss: capsuleId), style (index into
+-- M.TYPES; unknown = cartoon). The preview adds onDone (called when the effect ends).
 function Effects.play(args)
     if not args.id or Effects.active[args.id] then return end -- split screen: one copy per message
-    if args.kind == "miss" then return Effects.miss(args.capsuleId) end
+    if args.kind == "miss" then return Effects.endFlight(args.capsuleId, "miss") end
     local st = M.TYPES[tonumber(args.style)] or M.TYPES[1]
     -- the frames load now, at the throw too, so the pop does not wait for them
     local fx = { kind = args.kind, st = st, tex = frames(st), t0 = getTimestampMs(), x = args.x, y = args.y, z = args.z,
@@ -54,14 +56,18 @@ function Effects.play(args)
     Effects.played = Effects.played + 1
     local sound = st[SOUND[fx.kind] or "pop"]
     if fx.kind ~= "flight" then
-        local landed = {} -- the capsule lying on the landing point pops
-        for id, other in pairs(Effects.active) do
-            if other.kind == "flight" and math.floor(other.x) == math.floor(fx.x)
-                and math.floor(other.y) == math.floor(fx.y) then
-                landed[#landed + 1] = id
+        if fx.capsuleId ~= nil then
+            Effects.endFlight(fx.capsuleId, fx.kind)
+        else -- no thrown capsule named (the admin preview): the flight lying on this very square pops
+            local landed = {}
+            for id, other in pairs(Effects.active) do
+                if other.kind == "flight" and other.capsuleId == nil and math.floor(other.x) == math.floor(fx.x)
+                    and math.floor(other.y) == math.floor(fx.y) then
+                    landed[#landed + 1] = id
+                end
             end
+            removeAll(landed)
         end
-        removeAll(landed)
         local x, y, z = math.floor(fx.x), math.floor(fx.y), math.floor(fx.z)
         local c = st.flash
         getCell():addLamppost(IsoLightSource.new(x, y, z, c[1], c[2], c[3], 8, 6))
@@ -73,9 +79,9 @@ function Effects.play(args)
     Effects.active[args.id] = fx
 end
 
--- A capture that caught nothing: the flight of that capsule skips its rest (Effects.miss is also what the harness
--- calls). Returns how long it had been flying (ms), or nil when no such flight is drawn here.
-function Effects.miss(capsuleId)
+-- The landing of thrown capsule capsuleId has an outcome (why: "miss", "pack" or "unpack"): its flight skips the rest
+-- of REST_MS. Returns how long it had been flying (ms), or nil when no such flight is drawn here.
+function Effects.endFlight(capsuleId, why)
     if capsuleId == nil then return nil end
     local now, age = getTimestampMs(), nil
     for _, fx in pairs(Effects.active) do
@@ -84,11 +90,11 @@ function Effects.miss(capsuleId)
             age = now - fx.t0
         end
     end
-    if age then M.log("FX miss capsule=" .. tostring(capsuleId) .. " flightAge=" .. age) end
+    if age then M.log("FX end capsule=" .. tostring(capsuleId) .. " by=" .. tostring(why) .. " flightAge=" .. age) end
     return age
 end
 
--- How long an effect is drawn: a flight flies, then rests unless its capture missed; smoke plays its frames.
+-- How long an effect is drawn: a flight flies, then rests until its outcome (REST_MS at most); smoke plays its frames.
 function Effects.lifetime(fx)
     if fx.kind == "flight" then return FLIGHT_MS + (fx.noRest and 0 or REST_MS) end
     return fx.st.frameMs * fx.st.frames

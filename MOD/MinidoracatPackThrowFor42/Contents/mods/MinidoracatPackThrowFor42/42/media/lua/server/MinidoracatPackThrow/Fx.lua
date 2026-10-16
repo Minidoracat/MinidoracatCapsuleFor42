@@ -11,8 +11,9 @@ M.Fx = Fx
 Fx.RANGE = 30 -- tiles from the effect to a player who gets it
 local nextId = 0
 
--- kind: "pack" | "unpack" (x, y, z), "flight" (x0, y0, z0 -> x, y, z, capsuleId) or "miss" (x, y, z, capsuleId: that
--- capture caught nothing, its flight ends now). Only pack and unpack make the zombie sound.
+-- kind: "pack" | "unpack" (x, y, z; capsuleId when a thrown capsule caused it), "flight" (x0, y0, z0 -> x, y, z,
+-- capsuleId) or "miss" (x, y, z, capsuleId: that throw or capture had no effect; its flight ends now). Every landing
+-- outcome carries the thrown capsule's id so the client ends that flight. Only pack and unpack make the zombie sound.
 function Fx.broadcast(kind, args)
     nextId = nextId + 1
     args.kind, args.id = kind, nextId
