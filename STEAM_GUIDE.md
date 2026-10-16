@@ -7,6 +7,7 @@
 MOD 本體（Steam Workshop）：
 https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 
+{{img:01-overview-zh.jpg}}
 丟出收納讓你把停著的車收進一顆膠囊帶著走，要用時丟出去，車就連同改裝、車況和貨物原樣出現。活著的動物改用帕魯球抓：抓到的動物收在帕魯球裡，要用時直接放出在你身旁。收起來的車不在世界上，車多的基地也比較順。
 帕魯球的名稱與外觀致敬《幻獸帕魯》，本 MOD 與 Pocketpair 無關。
 [olist]
@@ -34,6 +35,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]管理員停用的款式[/b]：不能再用它收車；已經裝了車的照樣能丟出、按下按鈕。停用的空膠囊提示框會註明。膠囊只收車，動物要用帕魯球。
 [/list]
 === 🧰 收車
+{{img:02-pack-menu-zh.jpg}}
 [h3]選單與條件[/h3]
 [list]
 [*] [b]選單[/b]：右鍵車輛，選單最後會有「收進膠囊」。
@@ -133,6 +135,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]已經裝了動物的帕魯球[/b]：照樣能放出，也能由管理員補回。
 [/list]
 [h3]野生動物的成功率[/h3]
+{{img:07-capture-cursor-zh.jpg}}
 [list]
 [*] [b]只對野生動物[/b]：選單收與丟出抓取都一樣；家養動物和車一律成功，也不顯示成功率。
 [*] [b]算法[/b]：成功率＝基本成功率＋帕魯球等級加成＋受傷＋幼崽＋沒發現你，最高 100。
@@ -155,6 +158,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === 🧰 丟出膠囊與按下按鈕
 [h3]丟出膠囊[/h3]
+{{img:03-throw-cursor-zh.jpg}}
 [list]
 [*] [b]怎麼丟[/b]：膠囊在身上時，在物品欄對它按右鍵選「丟出膠囊」，會出現落點游標。左鍵丟出、右鍵取消。
 [*] [b]轉身[/b]：游標開著時，站著的角色會轉向瞄準的那一格（跟原版瞄準一樣）；按下左鍵就直接丟出，不用再等轉身。
@@ -163,6 +167,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]紅框[/b]：放不下，寫出原因：太遠、看不到那裡、那裡還沒載入、有其他車、有人、有樹、沒有可以停車的地面、有家具或其他東西、有牆或圍欄、在室內、落點在別人的安全屋裡。
 [/list]
 [h3]落地展開[/h3]
+{{img:04-unpacked-zh.jpg}}
 [list]
 [*] [b]展開[/b]：丟出時「咻～」一聲，膠囊飛到落點，落地「蹦」地冒煙、閃光，車原樣出現，貨物放回車上，畫面寫「已展開：車名」。
 [*] [b]歸還空膠囊[/b]：沙盒選項「展開後歸還空膠囊」開著時（預設開），會有一顆同款的空膠囊回到你的背包，可以再拿來收車。
@@ -186,6 +191,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]不會遺失[/b]：車和貨物都還在膠囊裡。
 [/list]
 === 🧰 放出動物
+{{img:09-released-zh.jpg}}
 [list]
 [*] [b]放出[/b]：在物品欄（含袋子）對裝了動物的帕魯球按右鍵選「放出：名字」。角色做一個短短的動作，動物就出現在你身旁。不用丟，也不用走到哪裡。
 [*] [b]出現在哪[/b]：先試你面向的那一格，放不下再試身旁其他格（離面向近的先）。每一格都只要一格空地：水上、車底、樹、沒有地面或有東西擋住的格子不行，室內可以。
@@ -225,6 +231,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]落點在別人的安全屋裡[/b]：沒抓到的空球改掉在你腳邊。
 [/list]
 === 🧰 安全屋保護
+{{img:10-safehouse-zh.jpg}}
 [list]
 [*] [b]規則[/b]：多人伺服器上，不能收、抓或放出別人安全屋裡的車和動物。誰不受限照原版：安全屋的屋主與成員、有原版安全屋權限的管理人員，以及安全屋戰爭期間。
 [*] [b]單人遊戲[/b]：沒有安全屋，不受影響。
@@ -278,6 +285,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [/list]
 === 🧰 提示框與 3D 預覽
 [h3]提示框[/h3]
+{{img:05-capsule-tooltip-zh.jpg}}
 [list]
 [*] [b]在哪裡[/b]：滑鼠移到膠囊上，原版提示框下方會多一格。
 [*] [b]列出[/b]：款式（外觀與音效）、車名、車種、塗裝、車況（引擎與車身）、油量、電瓶、缺件、改裝、貨物（件數與前幾項清單）與收車者。
@@ -286,6 +294,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]其他狀態[/b]：空膠囊會寫款式和怎麼收車，管理員停用的款式另有一行「！」提醒；已經展開過、管理員補回過、當機前未確認，或資料不在這台伺服器上的膠囊，也會寫清楚。
 [/list]
 [h3]裝了動物的帕魯球[/h3]
+{{img:08-sphere-tooltip-zh.jpg}}
 [list]
 [*] [b]列出[/b]：等級、種類與品種、名字、性別、年齡、體重、健康、奶量（能擠奶時）、羊毛（有羊毛時）、是否野生與收的人。
 [*] [b]懷孕與受精[/b]：跟原版一樣，畜牧技能 3 級以上才看得到。
@@ -293,6 +302,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]時間靜止[/b]：空的和裝了動物的帕魯球最後都有一行灰字「帕魯球裡時間靜止：動物不會長大、不會餓或渴，懷孕也會暫停。」
 [/list]
 [h3]3D 預覽[/h3]
+{{img:06-preview-zh.jpg}}
 [list]
 [*] [b]打開[/b]：右鍵膠囊選「預覽車輛」。
 [*] [b]操作[/b]：左鍵拖曳旋轉、右鍵平移、滾輪縮放、雙擊重設，也可以按按鈕切換正面、側面、俯視。
@@ -372,6 +382,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]生效時機[/b]：只影響之後第一次打開的容器，已經翻過的容器不會重新生成；開服後修改也會套用到之後新打開的容器。
 [/list]
 === ⚙️ 管理面板
+{{img:11-admin-records-zh.jpg}}
 [list]
 [*] [b]打開[/b]：管理員在家族工具列會看到丟出收納的按鈕，點開「丟出收納管理」。
 [*] [b]隱藏按鈕[/b]：不想顯示可以在選項關掉。
@@ -403,6 +414,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=WORKSHOP_ID
 [*] [b]玩家死亡時[/b]：膠囊在屍體上或掉在地上，找得回來就不必補。
 [/list]
 [h3]怎麼補[/h3]
+{{img:12-admin-restore-zh.jpg}}
 [olist]
 [*] 在紀錄裡選那筆膠囊，先按「前往紀錄位置」。
 [*] 按「補回車輛」。面板會先收起來，地上出現白框，那就是紀錄的位置（最後一次收車或展開時車所在的地方）。
